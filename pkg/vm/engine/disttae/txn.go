@@ -133,7 +133,7 @@ func (txn *Transaction) getDatabaseId(ctx context.Context, name string) (uint64,
 }
 
 func (txn *Transaction) getTableMeta(ctx context.Context, databaseId uint64,
-	name string, needUpdated bool) (*tableMeta, error) {
+	name string, needUpdated bool, columnLength int) (*tableMeta, error) {
 	blocks := make([][]BlockMeta, len(txn.dnStores))
 	if needUpdated {
 		for i, dnStore := range txn.dnStores {
@@ -145,7 +145,7 @@ func (txn *Transaction) getTableMeta(ctx context.Context, databaseId uint64,
 			if err != nil {
 				return nil, err
 			}
-			blocks[i], err = genBlockMetas(rows, txn.proc.FileService, txn.proc.GetMPool())
+			blocks[i], err = genBlockMetas(rows, columnLength, txn.proc.FileService, txn.proc.GetMPool())
 			if err != nil {
 				return nil, err
 			}

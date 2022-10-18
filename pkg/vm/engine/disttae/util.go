@@ -156,7 +156,7 @@ func fetchZonemapFromBlockInfo(columnLength int, blockInfo catalog.BlockInfo, fs
 		copy(zonemapList[i][:], bytes[:])
 	}
 
-	return nil, nil
+	return zonemapList, nil
 }
 
 func getZonemapDataFromMeta(columns []int, meta BlockMeta, tableDef *plan.TableDef) ([][2]any, []uint8, error) {

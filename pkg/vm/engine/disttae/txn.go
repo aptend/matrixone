@@ -419,7 +419,14 @@ func (h *transactionHeap) Pop() any {
 // needRead determine if a block needs to be read
 func needRead(expr *plan.Expr, blkInfo BlockMeta, tableDef *plan.TableDef, proc *process.Process) bool {
 	var err error
-	columns := getColumnsByExpr(expr)
+	var columns []int
+	if expr == nil {
+		for _, col := range tableDef.Cols {
+			columns = append(columns, int(tableDef.Name2ColIndex[col.Name]))
+		}
+	} else {
+		columns = getColumnsByExpr(expr)
+	}
 
 	// if expr match no columns, just eval expr
 	if len(columns) == 0 {

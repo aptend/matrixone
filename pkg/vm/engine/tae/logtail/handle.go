@@ -201,6 +201,7 @@ func (b *CatalogLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 
 	if b.insBatch.Length() > 0 {
 		bat, err := containersBatchToProtoBatch(b.insBatch)
+		logutil.Infof("[111111] insert catalog resp for %s, %s", tblName, b.insBatch.String())
 		if err != nil {
 			return api.SyncLogTailResp{}, err
 		}
@@ -216,6 +217,7 @@ func (b *CatalogLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 	}
 	if b.delBatch.Length() > 0 {
 		bat, err := containersBatchToProtoBatch(b.delBatch)
+		logutil.Infof("[222222] delete catalog from %s, %s", tblName, b.delBatch.String())
 		if err != nil {
 			return api.SyncLogTailResp{}, err
 		}

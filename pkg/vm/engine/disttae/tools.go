@@ -950,13 +950,14 @@ func isMetaTable(name string) bool {
 
 func genBlockMetas(rows [][]any, fs fileservice.FileService, m *mpool.MPool) ([]BlockMeta, error) {
 	blockInfos := catalog.GenBlockInfo(rows)
-	columnLength := len(rows)
-	metas := make([]BlockMeta, len(rows))
+	columnLength := len(rows[0])
+	metas := make([]BlockMeta, len(blockInfos))
 	for i, blockInfo := range blockInfos {
 		zm, err := fetchZonemapFromBlockInfo(columnLength, blockInfo, fs, m)
 		if err != nil {
 			return nil, err
 		}
+		fmt.Printf("----------- block id %d, colCnt %d, zm: %v \n", blockInfo.BlockID, columnLength, zm)
 		metas[i] = BlockMeta{
 			info:    blockInfo,
 			zonemap: zm,

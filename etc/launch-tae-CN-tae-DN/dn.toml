@@ -1,8 +1,8 @@
 service-type = "DN"
 
 [log]
-level = "error"
-format = "json"
+level = "info"
+format = "console"
 max-size = 512
 
 [hakeeper-client]
@@ -13,7 +13,8 @@ service-addresses = [
 
 [[fileservice]]
 name = "LOCAL"
-backend = "MEM"
+backend = "DISK"
+data-dir = "mo-data/tae"
 
 [[fileservice]]
 name = "S3"

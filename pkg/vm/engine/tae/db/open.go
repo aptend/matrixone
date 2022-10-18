@@ -16,10 +16,11 @@ package db
 
 import (
 	"context"
-	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"path"
 	"sync/atomic"
 	"time"
+
+	"github.com/matrixorigin/matrixone/pkg/objectio"
 
 	"github.com/matrixorigin/matrixone/pkg/common/stopper"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/logtail"
@@ -59,8 +60,7 @@ func Open(dirname string, opts *options.Options) (db *DB, err error) {
 
 	// TODO:fileservice needs to be passed in as a parameter
 	serviceDir := path.Join(dirname, "data")
-	service := objectio.TmpNewFileservice(path.Join(dirname, "data"))
-	fs := objectio.NewObjectFS(service, serviceDir)
+	fs := objectio.NewObjectFS(opts.Fs, serviceDir)
 
 	db = &DB{
 		Dir:         dirname,

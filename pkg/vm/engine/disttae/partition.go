@@ -17,6 +17,7 @@ package disttae
 import (
 	"bytes"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/matrixorigin/matrixone/pkg/catalog"
@@ -128,6 +129,18 @@ func (p *Partition) Insert(ctx context.Context, b *api.Batch) error {
 	bat, err := batch.ProtoBatchToBatch(b)
 	if err != nil {
 		return err
+	}
+
+	{
+		fmt.Printf("+++%v\n", bat.Attrs)
+		for i, vec := range bat.Vecs {
+			if vec.Typ.IsVarlen() {
+				vs := vector.MustStrCols(vec)
+				fmt.Printf("\t[%v] = %v\n", i, vs)
+			} else {
+				fmt.Printf("\t[%v] = %v\n", i, vec)
+			}
+		}
 	}
 
 	txID := uuid.NewString()

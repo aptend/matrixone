@@ -173,12 +173,12 @@ func (task *compactBlockTask) Execute() (err error) {
 		var data *containers.Batch
 		var deletes *containers.Batch
 		aBlkData := aBlkMeta.GetBlockData()
-		data, err = aBlkData.CollectAppendInRange(types.TS{}, task.txn.GetStartTS())
+		data, err = aBlkData.CollectAppendInRange(types.TS{}, task.txn.GetStartTS(), true)
 		if err != nil {
 			return
 		}
 		defer data.Close()
-		deletes, err = aBlkData.CollectDeleteInRange(aBlkMeta.GetCreatedAt(), task.txn.GetStartTS())
+		deletes, err = aBlkData.CollectDeleteInRange(aBlkMeta.GetCreatedAt(), task.txn.GetStartTS(), true)
 		if err != nil {
 			return
 		}

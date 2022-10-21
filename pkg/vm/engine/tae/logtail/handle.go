@@ -23,6 +23,7 @@ an application on logtail mgr: build reponse to SyncLogTailRequest
 import (
 	"fmt"
 	"hash/fnv"
+	"os"
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -42,6 +43,15 @@ func HandleSyncLogTailReq(mgr *LogtailMgr, c *catalog.Catalog, req api.SyncLogTa
 	logutil.Debugf("[Logtail] begin handle %v", req)
 	defer func() {
 		logutil.Debugf("[Logtail] end handle err %v", err)
+	}()
+	if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+		fmt.Printf("------- logtail begin %+v\n\n", req)
+	}
+	defer func() {
+		logutil.Infof("[Logtail] end handle err %v", err)
+		if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+			fmt.Printf("------- logtail end %+v\n\n", req)
+		}
 	}()
 	start := types.BuildTS(req.CnHave.PhysicalTime, req.CnHave.LogicalTime)
 	end := types.BuildTS(req.CnWant.PhysicalTime, req.CnWant.LogicalTime)
@@ -210,6 +220,9 @@ func (b *CatalogLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 
 	if b.insBatch.Length() > 0 {
 		bat, err := containersBatchToProtoBatch(b.insBatch)
+		if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+			fmt.Printf("------- catalog insert to %d-%s, %s", tblID, tblName, b.insBatch.String())
+		}
 		if err != nil {
 			return api.SyncLogTailResp{}, err
 		}
@@ -225,6 +238,9 @@ func (b *CatalogLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 	}
 	if b.delBatch.Length() > 0 {
 		bat, err := containersBatchToProtoBatch(b.delBatch)
+		if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+			fmt.Printf("------- catalog delete from %d-%s, %s", tblID, tblName, b.delBatch.String())
+		}
 		if err != nil {
 			return api.SyncLogTailResp{}, err
 		}
@@ -469,6 +485,13 @@ func (b *TableLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 		if metaChange {
 			tableName = fmt.Sprintf("_%d_meta", b.tid)
 			logutil.Infof("[Logtail] send block meta for %q", b.tname)
+		}
+		if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+			if metaChange {
+				fmt.Printf("------- table meta [%v] %d-%s: %s", typ, b.tid, b.tname, batch.String())
+			} else {
+				fmt.Printf("------- table data [%v] %d-%s: %s", typ, b.tid, b.tname, batch.String())
+			}
 		}
 		entry := &api.Entry{
 			EntryType:    typ,

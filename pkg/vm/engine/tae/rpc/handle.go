@@ -16,6 +16,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"syscall"
 
@@ -25,6 +26,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	apipb "github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
@@ -62,6 +64,12 @@ func (h *Handle) HandleCommit(
 	meta txn.TxnMeta) (err error) {
 	var txn moengine.Txn
 	txn, err = h.eng.GetTxnByID(meta.GetID())
+	if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+		fmt.Printf("--- begin commit Txn: %s\n\n", txn.String())
+		defer func() {
+			fmt.Printf("--- end commit Txn: %s,%v\n\n", txn.String(), err)
+		}()
+	}
 	if err != nil {
 		return err
 	}
@@ -77,6 +85,14 @@ func (h *Handle) HandleRollback(
 	meta txn.TxnMeta) (err error) {
 	var txn moengine.Txn
 	txn, err = h.eng.GetTxnByID(meta.GetID())
+
+	if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+		fmt.Printf("--- begin rollback Txn: %s\n\n", txn.String())
+		defer func() {
+			fmt.Printf("--- end rollback Txn: %s,%v\n\n", txn.String(), err)
+		}()
+	}
+
 	if err != nil {
 		return err
 	}
@@ -168,6 +184,7 @@ func (h *Handle) HandlePreCommit(
 	var e any
 
 	es := req.EntryList
+
 	for len(es) > 0 {
 		e, es, err = catalog.ParseEntryList(es)
 		if err != nil {
@@ -185,6 +202,9 @@ func (h *Handle) HandlePreCommit(
 						RoleID:    cmd.Owner,
 						AccountID: cmd.AccountId,
 					},
+				}
+				if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+					fmt.Printf("----- precommit create database %+v\n\n", req)
 				}
 				if err = h.HandleCreateDatabase(ctx, meta, req,
 					new(db.CreateDatabaseResp)); err != nil {
@@ -205,6 +225,9 @@ func (h *Handle) HandlePreCommit(
 					DatabaseID:   cmd.DatabaseId,
 					Defs:         cmd.Defs,
 				}
+				if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+					fmt.Printf("----- precommit create table %+v\n\n", req)
+				}
 				if err = h.HandleCreateRelation(ctx, meta, req,
 					new(db.CreateRelationResp)); err != nil {
 					return err
@@ -215,6 +238,9 @@ func (h *Handle) HandlePreCommit(
 				req := db.DropDatabaseReq{
 					Name: cmd.Name,
 					ID:   cmd.Id,
+				}
+				if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+					fmt.Printf("----- precommit drop database %+v\n\n", req)
 				}
 				if err = h.HandleDropDatabase(ctx, meta, req,
 					new(db.DropDatabaseResp)); err != nil {
@@ -230,6 +256,9 @@ func (h *Handle) HandlePreCommit(
 					NewId:        cmd.NewId,
 					DatabaseName: cmd.DatabaseName,
 					DatabaseID:   cmd.DatabaseId,
+				}
+				if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+					fmt.Printf("----- precommit drop table %+v\n\n", req)
 				}
 				if err = h.HandleDropOrTruncateRelation(ctx, meta, req,
 					new(db.DropOrTruncateRelationResp)); err != nil {
@@ -250,6 +279,18 @@ func (h *Handle) HandlePreCommit(
 				DatabaseName: pe.GetDatabaseName(),
 				TableName:    pe.GetTableName(),
 				Batch:        moBat,
+			}
+			if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+				fmt.Printf("---- handle write typ: %v, tbl: %d-%s, db: %d-%s", req.Type, req.TableID, req.TableName, pe.GetDatabaseId(), req.DatabaseName)
+				fmt.Printf("---- %v\n", moBat.Attrs)
+				for i, vec := range moBat.Vecs {
+					if vec.Typ.IsVarlen() {
+						vs := vector.MustStrCols(vec)
+						fmt.Printf("\t[%v] = %v\n", i, vs)
+					} else {
+						fmt.Printf("\t[%v] = %v\n", i, vec)
+					}
+				}
 			}
 			if err = h.HandleWrite(ctx, meta, req,
 				new(db.WriteResp)); err != nil {
@@ -375,6 +416,12 @@ func (h *Handle) HandleWrite(
 		return err
 	}
 
+	if val, _ := os.LookupEnv("__MOPrint"); val == "y" {
+		fmt.Printf("--- begin write Txn: %s\n\n", txn.String())
+		defer func() {
+			fmt.Printf("--- end write Txn: %s\n\n", txn.String())
+		}()
+	}
 	dbase, err := h.eng.GetDatabaseByID(ctx, req.DatabaseId, txn)
 	if err != nil {
 		return

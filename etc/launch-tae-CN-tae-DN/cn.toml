@@ -2,8 +2,8 @@ service-type = "CN"
 data-dir = "./mo-data"
 
 [log]
-level = "info"
-format = "json"
+level = "error"
+format = "console"
 max-size = 512
 
 [hakeeper-client]

@@ -23,12 +23,10 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/log"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
-	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/rpc"
 	"go.uber.org/zap"
 )
 
@@ -311,10 +309,6 @@ func (ss *Session) FilterLogtail(tails ...wrapLogtail) []logtail.TableLogtail {
 	for _, t := range tails {
 		if state, ok := ss.tables[t.id]; ok && state == TableSubscribed {
 			qualified = append(qualified, t.tail)
-			for _, entry := range t.tail.Commands {
-				bat, _ := batch.ProtoBatchToBatch(entry.Bat)
-				logutil.Infof("ticktick send %v %v %v", entry.EntryType, entry.TableId, rpc.DebugMoBatch(bat))
-			}
 		} else {
 			logutil.Infof("ticktick filter out %v", t.tail.Table)
 		}

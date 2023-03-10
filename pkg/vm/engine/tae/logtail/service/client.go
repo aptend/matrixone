@@ -151,5 +151,15 @@ func (c *LogtailClient) Receive() (*LogtailResponse, error) {
 			logutil.Infof("ticktick subresp %v %v %v", entry.EntryType, entry.TableId, rpc.DebugMoBatch(bat))
 		}
 	}
+
+	if sub := resp.GetUpdateResponse(); sub != nil {
+		for _, t := range sub.LogtailList {
+			logutil.Infof("ticktick send table %v %q", t.Table.TbId, t.CkpLocation)
+			for _, entry := range t.Commands {
+				bat, _ := batch.ProtoBatchToBatch(entry.Bat)
+				logutil.Infof("ticktick send %v %v %v", entry.EntryType, entry.TableId, rpc.DebugMoBatch(bat))
+			}
+		}
+	}
 	return resp, nil
 }

@@ -74,8 +74,8 @@ func LogTxnCreated(
 func LogTxnUpdated(
 	logger *log.MOLogger,
 	txnMeta txn.TxnMeta) {
-	if logger.Enabled(zap.DebugLevel) {
-		logger.Debug("txn updated", zap.String("txn", txnMeta.DebugString()))
+	if logger.Enabled(zap.InfoLevel) {
+		logger.Info("txn updated", zap.String("txn", txnMeta.DebugString()))
 	}
 }
 

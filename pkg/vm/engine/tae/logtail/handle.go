@@ -535,9 +535,11 @@ func (b *TableLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 			logutil.Infof("[Logtail] send block meta for %q", b.tname)
 		}
 		if metaChange {
+			logutil.Infof("[logtail] table meta %s %s", b.start.ToString(), b.end.ToString())
 			logutil.Infof("[logtail] table meta [%v] %d-%s: %s", typ, b.tid, b.tname,
 				DebugBatchToString("meta", batch, true, zap.InfoLevel))
 		} else {
+			logutil.Infof("[logtail] table data %s %s", b.start.ToString(), b.end.ToString())
 			logutil.Infof("[logtail] table data [%v] %d-%s: %s", typ, b.tid, b.tname,
 				DebugBatchToString("data", batch, false, zap.InfoLevel))
 		}

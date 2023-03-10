@@ -818,7 +818,7 @@ func (h *Handle) HandleWrite(
 		req.TableName, req.DatabaseId, req.DatabaseName,
 		txn.String(),
 	)
-	logutil.Debugf("[precommit] write batch: %s\n", debugMoBatch(req.Batch))
+	logutil.Debugf("[precommit] write batch: %s\n", DebugMoBatch(req.Batch))
 	defer func() {
 		logutil.Infof("[precommit] handle write end txn: %s\n", txn.String())
 	}()
@@ -965,10 +965,10 @@ func moVec2String(v *vector.Vector, printN int) string {
 	return fmt.Sprintf("unkown type vec... %v", v.Typ)
 }
 
-func debugMoBatch(moBat *batch.Batch) string {
-	if !logutil.GetSkip1Logger().Core().Enabled(zap.DebugLevel) {
-		return "not debug level"
-	}
+func DebugMoBatch(moBat *batch.Batch) string {
+	// if !logutil.GetSkip1Logger().Core().Enabled(zap.DebugLevel) {
+	// 	return "not debug level"
+	// }
 	printN := moBat.Length()
 	if printN > logtail.PrintN {
 		printN = logtail.PrintN

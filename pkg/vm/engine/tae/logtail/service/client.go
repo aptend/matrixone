@@ -21,8 +21,11 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
+	"github.com/matrixorigin/matrixone/pkg/container/batch"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/rpc"
 )
 
 type ClientOption func(*LogtailClient)
@@ -84,6 +87,7 @@ func (c *LogtailClient) Subscribe(
 		},
 	}
 	request.SetID(c.stream.ID())
+	logutil.Infof("ticktick sub %v", table)
 	return c.stream.Send(ctx, request)
 }
 
@@ -137,6 +141,15 @@ func (c *LogtailClient) Receive() (*LogtailResponse, error) {
 	resp := &LogtailResponse{}
 	if err := resp.Unmarshal(buf); err != nil {
 		return nil, err
+	}
+
+	if sub := resp.GetSubscribeResponse(); sub != nil {
+		l := sub.Logtail
+		logutil.Infof("ticktick subresp %v %v %v %v %v", l.Table, l.CkpLocation, l.Ts.PhysicalTime, l.Ts.LogicalTime)
+		for _, entry := range l.Commands {
+			bat, _ := batch.ProtoBatchToBatch(entry.Bat)
+			logutil.Infof("ticktick subresp %v %v %v", entry.EntryType, entry.TableId, rpc.DebugMoBatch(bat))
+		}
 	}
 	return resp, nil
 }

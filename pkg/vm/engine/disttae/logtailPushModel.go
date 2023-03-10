@@ -98,6 +98,7 @@ func (s *subscribedTable) setTableSubscribe(dbId, tblId uint64) {
 	s.mutex.Lock()
 	s.m[subscribeID{dbId, tblId}] = true
 	s.mutex.Unlock()
+	logutil.Infof("ticktick cn set %d", tblId)
 }
 
 func (s *subscribedTable) setTableUnsubscribe(dbId, tblId uint64) {

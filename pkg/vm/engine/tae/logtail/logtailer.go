@@ -16,7 +16,6 @@ package logtail
 
 import (
 	"context"
-	"math"
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
@@ -91,28 +90,12 @@ func (l *LogtailerImpl) RangeLogtail(
 	start := types.BuildTS(from.PhysicalTime, from.LogicalTime)
 	end := types.BuildTS(to.PhysicalTime, to.LogicalTime)
 
-	ckpLoc, checkpointed, err := l.ckpClient.CollectCheckpointsInRange(ctx, start, end)
-	if err != nil {
-		return nil, err
-	}
-
-	if checkpointed.GreaterEq(end) {
-		return []logtail.TableLogtail{{
-			CkpLocation: ckpLoc,
-			Ts:          &to,
-			Table:       &api.TableID{DbId: math.MaxUint64, TbId: math.MaxUint64},
-		}}, nil
-	} else if ckpLoc != "" {
-		start = checkpointed.Next()
-	}
-
 	reader := l.mgr.GetReader(start, end)
 	resps := make([]logtail.TableLogtail, 0, 8)
 
-	// collect resp for the three system tables
 	if reader.HasCatalogChanges() {
-		for _, scope := range []Scope{ScopeDatabases, ScopeTables, ScopeColumns} {
-			resp, err := l.getCatalogRespBuilder(scope, reader, ckpLoc).build()
+		for _, tblid := range []uint64{1, 2, 3} {
+			resp, err := l.TableLogtail(ctx, api.TableID{DbId: 1, TbId: tblid}, from, to)
 			if err != nil {
 				return nil, err
 			}
@@ -120,18 +103,59 @@ func (l *LogtailerImpl) RangeLogtail(
 		}
 	}
 
-	// collect resp for every dirty normal table
 	dirties, _ := reader.GetDirty()
+
 	for _, table := range dirties.Tables {
 		did, tid := table.DbID, table.ID
-		resp, err := l.getTableRespBuilder(did, tid, reader, ckpLoc).build()
+		resp, err := l.TableLogtail(ctx, api.TableID{DbId: did, TbId: tid}, from, to)
 		if err != nil {
-			// fixme: log err and continue?
-			return resps, err
+			return nil, err
 		}
 		resps = append(resps, resp)
 	}
 	return resps, nil
+
+	// ckpLoc, checkpointed, err := l.ckpClient.CollectCheckpointsInRange(ctx, start, end)
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// if checkpointed.GreaterEq(end) {
+	// 	return []logtail.TableLogtail{{
+	// 		CkpLocation: ckpLoc,
+	// 		Ts:          &to,
+	// 		Table:       &api.TableID{DbId: math.MaxUint64, TbId: math.MaxUint64},
+	// 	}}, nil
+	// } else if ckpLoc != "" {
+	// 	start = checkpointed.Next()
+	// }
+
+	// reader := l.mgr.GetReader(start, end)
+	// resps := make([]logtail.TableLogtail, 0, 8)
+
+	// // collect resp for the three system tables
+	// if reader.HasCatalogChanges() {
+	// 	for _, scope := range []Scope{ScopeDatabases, ScopeTables, ScopeColumns} {
+	// 		resp, err := l.getCatalogRespBuilder(scope, reader, ckpLoc).build()
+	// 		if err != nil {
+	// 			return nil, err
+	// 		}
+	// 		resps = append(resps, resp)
+	// 	}
+	// }
+
+	// // collect resp for every dirty normal table
+	// dirties, _ := reader.GetDirty()
+	// for _, table := range dirties.Tables {
+	// 	did, tid := table.DbID, table.ID
+	// 	resp, err := l.getTableRespBuilder(did, tid, reader, ckpLoc).build()
+	// 	if err != nil {
+	// 		// fixme: log err and continue?
+	// 		return resps, err
+	// 	}
+	// 	resps = append(resps, resp)
+	// }
+	// return resps, nil
 }
 
 func (l *LogtailerImpl) getTableRespBuilder(did, tid uint64, reader *Reader, ckpLoc string) *tableRespBuilder {

@@ -638,6 +638,8 @@ func (blk *ablock) inMemoryCollectAppendInRange(
 	start, end types.TS,
 	withAborted bool) (bat *containers.Batch, err error) {
 	blk.RLock()
+
+	logutil.Infof("ticktick mvcc chain %s", blk.mvcc.StringLocked())
 	minRow, maxRow, commitTSVec, abortVec, abortedMap :=
 		blk.mvcc.CollectAppendLocked(start, end)
 	if bat, err = mnode.GetDataWindow(minRow, maxRow); err != nil {

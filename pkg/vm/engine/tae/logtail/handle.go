@@ -491,7 +491,7 @@ func (b *TableLogtailRespBuilder) appendBlkMeta(e *catalog.BlockEntry, metaNode 
 
 func (b *TableLogtailRespBuilder) visitBlkData(e *catalog.BlockEntry) (err error) {
 	block := e.GetBlockData()
-	logutil.Infof("ticktick visit table data %s %s", b.start.ToString(), b.end.ToString())
+	logutil.Infof("ticktick visit table data %d %s %s", b.tid, b.start.ToString(), b.end.ToString())
 	insBatch, err := block.CollectAppendInRange(b.start, b.end, false)
 	if err != nil {
 		return
@@ -506,7 +506,7 @@ func (b *TableLogtailRespBuilder) visitBlkData(e *catalog.BlockEntry) (err error
 		return
 	}
 	if delBatch != nil && delBatch.Length() > 0 {
-		logutil.Infof("ticktick visit table del %v", insBatch.Length())
+		logutil.Infof("ticktick visit table del %v", delBatch.Length())
 		b.dataDelBatch.Extend(delBatch)
 		// delBatch is freed, don't use anymore
 	}

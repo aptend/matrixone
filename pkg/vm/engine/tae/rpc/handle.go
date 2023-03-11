@@ -18,11 +18,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 	"os"
 	"sync"
 	"syscall"
 	"time"
+
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 
 	"github.com/google/shlex"
 	"github.com/matrixorigin/matrixone/pkg/catalog"
@@ -818,7 +819,7 @@ func (h *Handle) HandleWrite(
 		req.TableName, req.DatabaseId, req.DatabaseName,
 		txn.String(),
 	)
-	logutil.Debugf("[precommit] write batch: %s\n", debugMoBatch(req.Batch))
+	logutil.Debugf("[precommit] write batch: %s\n", DebugMoBatch(req.Batch))
 	defer func() {
 		logutil.Infof("[precommit] handle write end txn: %s\n", txn.String())
 	}()
@@ -965,7 +966,7 @@ func moVec2String(v *vector.Vector, printN int) string {
 	return fmt.Sprintf("unkown type vec... %v", v.Typ)
 }
 
-func debugMoBatch(moBat *batch.Batch) string {
+func DebugMoBatch(moBat *batch.Batch) string {
 	if !logutil.GetSkip1Logger().Core().Enabled(zap.DebugLevel) {
 		return "not debug level"
 	}

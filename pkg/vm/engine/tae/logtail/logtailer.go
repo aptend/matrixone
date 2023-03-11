@@ -89,6 +89,7 @@ func (l *LogtailerImpl) RangeLogtail(
 	ctx context.Context, from, to timestamp.Timestamp,
 ) ([]logtail.TableLogtail, error) {
 	start := types.BuildTS(from.PhysicalTime, from.LogicalTime)
+	old_start := start
 	end := types.BuildTS(to.PhysicalTime, to.LogicalTime)
 
 	ckpLoc, checkpointed, err := l.ckpClient.CollectCheckpointsInRange(ctx, start, end)
@@ -120,6 +121,7 @@ func (l *LogtailerImpl) RangeLogtail(
 		}
 	}
 
+	logutil.Infof("ticktick collect range %s %s %s", old_start.ToString(), start.ToString(), end.ToString())
 	// collect resp for every dirty normal table
 	dirties, _ := reader.GetDirty()
 	for _, table := range dirties.Tables {

@@ -16,6 +16,7 @@ package jobs
 
 import (
 	"fmt"
+
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
@@ -60,7 +61,7 @@ func (t *delSegTask) Execute() (err error) {
 		return
 	}
 	for _, entry := range t.delSegs {
-		if err = rel.SoftDeleteSegment(entry.GetID()); err != nil {
+		if err = rel.SoftDeleteSegment(entry.ID); err != nil {
 			return
 		}
 	}

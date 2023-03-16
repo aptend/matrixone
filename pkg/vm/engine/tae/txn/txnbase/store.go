@@ -15,6 +15,7 @@
 package txnbase
 
 import (
+	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/dataio"
@@ -94,7 +95,7 @@ func (store *NoopTxnStore) CreateNonAppendableSegment(dbId, tid uint64, _ bool) 
 	return
 }
 func (store *NoopTxnStore) GetBlock(dbId uint64, id *common.ID) (blk handle.Block, err error) { return }
-func (store *NoopTxnStore) CreateBlock(uint64, uint64, uint64, bool) (blk handle.Block, err error) {
+func (store *NoopTxnStore) CreateBlock(uint64, uint64, types.Uuid, bool) (blk handle.Block, err error) {
 	return
 }
 func (store *NoopTxnStore) CreateNonAppendableBlock(dbId uint64, id *common.ID) (blk handle.Block, err error) {

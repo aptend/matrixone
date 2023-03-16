@@ -483,7 +483,7 @@ func (b *TableLogtailRespBuilder) appendBlkMeta(e *catalog.BlockEntry, metaNode 
 	insBatch.GetVectorByName(pkgcatalog.BlockMeta_CommitTs).Append(metaNode.GetEnd())
 	insBatch.GetVectorByName(pkgcatalog.BlockMeta_SegmentID).Append(e.GetSegment().ID)
 	insBatch.GetVectorByName(catalog.AttrCommitTs).Append(metaNode.CreatedAt)
-	insBatch.GetVectorByName(catalog.AttrRowID).Append(u64ToRowID(e.ID))
+	insBatch.GetVectorByName(catalog.AttrRowID).Append(blockid2rowid(&e.ID))
 
 	// if block is deleted, send both Insert and Delete api entry
 	// see also https://github.com/matrixorigin/docs/blob/main/tech-notes/dnservice/ref_logtail_protocol.md#table-metadata-deletion-invalidate-table-data
@@ -493,7 +493,7 @@ func (b *TableLogtailRespBuilder) appendBlkMeta(e *catalog.BlockEntry, metaNode 
 		}
 		delBatch := b.blkMetaDelBatch
 		delBatch.GetVectorByName(catalog.AttrCommitTs).Append(metaNode.DeletedAt)
-		delBatch.GetVectorByName(catalog.AttrRowID).Append(u64ToRowID(e.ID))
+		delBatch.GetVectorByName(catalog.AttrRowID).Append(blockid2rowid(&e.ID))
 	}
 }
 

@@ -17,6 +17,7 @@ package tables
 import (
 	"bytes"
 	"context"
+
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/model"
 
@@ -29,7 +30,7 @@ import (
 )
 
 func constructRowId(id *common.ID, rows uint32) (col containers.Vector, err error) {
-	prefix := model.EncodeBlockKeyPrefix(id.SegmentID, id.BlockID)
+	prefix := id.BlockID[:]
 	return model.PreparePhyAddrData(
 		types.T_Rowid.ToType(),
 		prefix,

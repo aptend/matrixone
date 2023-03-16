@@ -17,6 +17,7 @@ package txnimpl
 import (
 	"bytes"
 	"fmt"
+
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/dataio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 
@@ -41,14 +42,6 @@ func init() {
 	localSegmentIdAlloc = common.NewIdAlloctor(LocalSegmentStartID)
 }
 
-func isLocalSegment(id *common.ID) bool {
-	return id.SegmentID >= LocalSegmentStartID
-}
-
-func isLocalSegmentByID(id uint64) bool {
-	return id >= LocalSegmentStartID
-}
-
 type localSegment struct {
 	entry      *catalog.SegmentEntry
 	appendable InsertNode
@@ -67,7 +60,6 @@ type localSegment struct {
 func newLocalSegment(table *txnTable) *localSegment {
 	entry := catalog.NewStandaloneSegment(
 		table.entry,
-		localSegmentIdAlloc.Alloc(),
 		table.store.txn.GetStartTS())
 	return &localSegment{
 		entry:   entry,
@@ -93,7 +85,7 @@ func (seg *localSegment) GetLocalPhysicalAxis(row uint32) (int, uint32) {
 func (seg *localSegment) registerNode(metaLoc string, deltaLoc string, zm dataio.Index) {
 	meta := catalog.NewStandaloneBlockWithLoc(
 		seg.entry,
-		uint64(len(seg.nodes)),
+		common.NewBlockid(&seg.entry.ID, 0, uint16(len(seg.nodes))),
 		seg.table.store.txn.GetStartTS(),
 		metaLoc,
 		deltaLoc)
@@ -113,7 +105,7 @@ func (seg *localSegment) registerNode(metaLoc string, deltaLoc string, zm dataio
 func (seg *localSegment) registerANode() {
 	meta := catalog.NewStandaloneBlock(
 		seg.entry,
-		uint64(len(seg.nodes)),
+		common.NewBlockid(&seg.entry.ID, 0, uint16(len(seg.nodes))),
 		seg.table.store.txn.GetStartTS())
 	seg.entry.AddEntryLocked(meta)
 	n := NewANode(
@@ -456,8 +448,8 @@ func (seg *localSegment) GetColumnDataByIds(
 	blk *catalog.BlockEntry,
 	colIdxes []int,
 	buffers []*bytes.Buffer) (view *model.BlockView, err error) {
-	npos := int(blk.ID)
-	n := seg.nodes[npos]
+	_, pos := blk.ID.Offsets()
+	n := seg.nodes[int(pos)]
 	return n.GetColumnDataByIds(colIdxes, buffers)
 }
 
@@ -465,14 +457,14 @@ func (seg *localSegment) GetColumnDataById(
 	blk *catalog.BlockEntry,
 	colIdx int,
 	buffer *bytes.Buffer) (view *model.ColumnView, err error) {
-	npos := int(blk.ID)
-	n := seg.nodes[npos]
+	_, pos := blk.ID.Offsets()
+	n := seg.nodes[int(pos)]
 	return n.GetColumnDataById(colIdx, buffer)
 }
 
 func (seg *localSegment) GetBlockRows(blk *catalog.BlockEntry) int {
-	npos := int(blk.ID)
-	n := seg.nodes[npos]
+	_, pos := blk.ID.Offsets()
+	n := seg.nodes[int(pos)]
 	return int(n.Rows())
 }
 

@@ -33,13 +33,16 @@ import (
 type SegmentDataFactory = func(meta *SegmentEntry) data.Segment
 
 func compareSegmentFn(a, b *SegmentEntry) int {
-	return a.MetaBaseEntry.DoCompre(b.MetaBaseEntry)
+	return a.ID.Compare(b.ID)
 }
 
 type SegmentEntry struct {
 	*MetaBaseEntry
-	table   *TableEntry
-	entries map[uint64]*common.GenericDLNode[*BlockEntry]
+	ID            types.Uuid
+	IsLocal       bool // this segment is hold by localsegment
+	nextObjectIdx uint16
+	table         *TableEntry
+	entries       map[types.Blockid]*common.GenericDLNode[*BlockEntry]
 	//link.head and tail is nil when new a segmentEntry object.
 	link    *common.GenericSortedDList[*BlockEntry]
 	state   EntryState
@@ -48,12 +51,12 @@ type SegmentEntry struct {
 }
 
 func NewSegmentEntry(table *TableEntry, txn txnif.AsyncTxn, state EntryState, dataFactory SegmentDataFactory) *SegmentEntry {
-	id := table.GetDB().catalog.NextSegment()
 	e := &SegmentEntry{
-		MetaBaseEntry: NewMetaBaseEntry(id),
+		MetaBaseEntry: NewMetaBaseEntry(),
+		ID:            common.NewSegmentid(),
 		table:         table,
 		link:          common.NewGenericSortedDList(compareBlockFn),
-		entries:       make(map[uint64]*common.GenericDLNode[*BlockEntry]),
+		entries:       make(map[types.Blockid]*common.GenericDLNode[*BlockEntry]),
 		state:         state,
 	}
 	e.CreateWithTxn(txn)
@@ -67,33 +70,36 @@ func NewReplaySegmentEntry() *SegmentEntry {
 	e := &SegmentEntry{
 		MetaBaseEntry: NewReplayMetaBaseEntry(),
 		link:          common.NewGenericSortedDList(compareBlockFn),
-		entries:       make(map[uint64]*common.GenericDLNode[*BlockEntry]),
+		entries:       make(map[types.Blockid]*common.GenericDLNode[*BlockEntry]),
 	}
 	return e
 }
 
-func NewStandaloneSegment(table *TableEntry, id uint64, ts types.TS) *SegmentEntry {
+func NewStandaloneSegment(table *TableEntry, ts types.TS) *SegmentEntry {
 	e := &SegmentEntry{
-		MetaBaseEntry: NewMetaBaseEntry(id),
+		MetaBaseEntry: NewMetaBaseEntry(),
+		ID:            common.NewSegmentid(),
+		IsLocal:       true,
 		table:         table,
 		link:          common.NewGenericSortedDList(compareBlockFn),
-		entries:       make(map[uint64]*common.GenericDLNode[*BlockEntry]),
+		entries:       make(map[types.Blockid]*common.GenericDLNode[*BlockEntry]),
 		state:         ES_Appendable,
 	}
 	e.CreateWithTS(ts)
 	return e
 }
 
-func NewSysSegmentEntry(table *TableEntry, id uint64) *SegmentEntry {
+func NewSysSegmentEntry(table *TableEntry, id types.Uuid) *SegmentEntry {
 	e := &SegmentEntry{
-		MetaBaseEntry: NewMetaBaseEntry(id),
+		MetaBaseEntry: NewMetaBaseEntry(),
+		ID:            id,
 		table:         table,
 		link:          common.NewGenericSortedDList(compareBlockFn),
-		entries:       make(map[uint64]*common.GenericDLNode[*BlockEntry]),
+		entries:       make(map[types.Blockid]*common.GenericDLNode[*BlockEntry]),
 		state:         ES_Appendable,
 	}
 	e.CreateWithTS(types.SystemDBTS)
-	var bid uint64
+	var bid types.Blockid
 	if table.schema.Name == SystemTableSchema.Name {
 		bid = SystemBlock_Table_ID
 	} else if table.schema.Name == SystemDBSchema.Name {
@@ -108,14 +114,14 @@ func NewSysSegmentEntry(table *TableEntry, id uint64) *SegmentEntry {
 	return e
 }
 
-func (entry *SegmentEntry) GetBlockEntryByID(id uint64) (blk *BlockEntry, err error) {
+func (entry *SegmentEntry) GetBlockEntryByID(id types.Blockid) (blk *BlockEntry, err error) {
 	entry.RLock()
 	defer entry.RUnlock()
 	return entry.GetBlockEntryByIDLocked(id)
 }
 
 // XXX API like this, why do we need the error?   Isn't blk is nil enough?
-func (entry *SegmentEntry) GetBlockEntryByIDLocked(id uint64) (blk *BlockEntry, err error) {
+func (entry *SegmentEntry) GetBlockEntryByIDLocked(id types.Blockid) (blk *BlockEntry, err error) {
 	node := entry.entries[id]
 	if node == nil {
 		err = moerr.GetOkExpectedEOB()
@@ -274,7 +280,9 @@ func (entry *SegmentEntry) LastAppendableBlock() (blk *BlockEntry) {
 func (entry *SegmentEntry) CreateBlock(txn txnif.AsyncTxn, state EntryState, dataFactory BlockDataFactory) (created *BlockEntry, err error) {
 	entry.Lock()
 	defer entry.Unlock()
-	created = NewBlockEntry(entry, txn, state, dataFactory)
+	id := common.NewBlockid(&entry.ID, entry.nextObjectIdx, 0)
+	created = NewBlockEntry(entry, id, txn, state, dataFactory)
+	entry.nextObjectIdx += 1
 	entry.AddEntryLocked(created)
 	return
 }
@@ -285,14 +293,14 @@ func (entry *SegmentEntry) CreateBlockWithMeta(
 	dataFactory BlockDataFactory,
 	metaLoc string,
 	deltaLoc string) (created *BlockEntry, err error) {
-	entry.Lock()
-	defer entry.Unlock()
-	created = NewBlockEntryWithMeta(entry, txn, state, dataFactory, metaLoc, deltaLoc)
-	entry.AddEntryLocked(created)
+	// entry.Lock()
+	// defer entry.Unlock()
+	// created = NewBlockEntryWithMeta(entry, txn, state, dataFactory, metaLoc, deltaLoc)
+	// entry.AddEntryLocked(created)
 	return
 }
 
-func (entry *SegmentEntry) DropBlockEntry(id uint64, txn txnif.AsyncTxn) (deleted *BlockEntry, err error) {
+func (entry *SegmentEntry) DropBlockEntry(id types.Blockid, txn txnif.AsyncTxn) (deleted *BlockEntry, err error) {
 	blk, err := entry.GetBlockEntryByID(id)
 	if err != nil {
 		return
@@ -321,13 +329,13 @@ func (entry *SegmentEntry) MakeBlockIt(reverse bool) *common.GenericSortedDListI
 
 func (entry *SegmentEntry) AddEntryLocked(block *BlockEntry) {
 	n := entry.link.Insert(block)
-	entry.entries[block.GetID()] = n
+	entry.entries[block.ID] = n
 }
 
 func (entry *SegmentEntry) AsCommonID() *common.ID {
 	return &common.ID{
 		TableID:   entry.GetTable().GetID(),
-		SegmentID: entry.GetID(),
+		SegmentID: entry.ID,
 	}
 }
 
@@ -343,11 +351,11 @@ func (entry *SegmentEntry) InitData(factory DataFactory) {
 func (entry *SegmentEntry) GetSegmentData() data.Segment { return entry.segData }
 
 func (entry *SegmentEntry) deleteEntryLocked(block *BlockEntry) error {
-	if n, ok := entry.entries[block.GetID()]; !ok {
+	if n, ok := entry.entries[block.ID]; !ok {
 		return moerr.GetOkExpectedEOB()
 	} else {
 		entry.link.Delete(n)
-		delete(entry.entries, block.GetID())
+		delete(entry.entries, block.ID)
 	}
 	// block.blkData.Close()
 	// block.blkData = nil

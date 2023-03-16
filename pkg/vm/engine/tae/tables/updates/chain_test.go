@@ -159,7 +159,8 @@ func TestDeleteChain1(t *testing.T) {
 func TestDeleteChain2(t *testing.T) {
 	defer testutils.AfterTest(t)()
 	testutils.EnsureNoLeak(t)
-	controller := NewMVCCHandle(catalog.NewStandaloneBlock(nil, 0, types.TS{}))
+	seg := common.NewSegmentid()
+	controller := NewMVCCHandle(catalog.NewStandaloneBlock(nil, common.NewBlockid(&seg, 0, 0), types.TS{}))
 	chain := NewDeleteChain(nil, controller)
 
 	txn1 := mockTxn()

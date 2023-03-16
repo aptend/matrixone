@@ -19,6 +19,7 @@ import (
 	"io"
 
 	"github.com/RoaringBitmap/roaring"
+	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/model"
@@ -53,7 +54,7 @@ func NewEQFilter(v any) *Filter {
 
 type BlockReader interface {
 	io.Closer
-	ID() uint64
+	ID() types.Blockid
 	String() string
 	IsUncommitted() bool
 	GetByFilter(filter *Filter) (uint32, error)

@@ -14,7 +14,52 @@
 
 package common
 
-import "sync/atomic"
+import (
+	"encoding/binary"
+	"sync/atomic"
+
+	"github.com/google/uuid"
+	"github.com/matrixorigin/matrixone/pkg/container/types"
+)
+
+func NewSegmentid() types.Uuid {
+	return types.Uuid(uuid.New())
+}
+
+func NewBlockid(segid *types.Uuid, fileOffset, blkOffset uint16) types.Blockid {
+	var id types.Blockid
+	size := types.UuidSize
+	copy(id[:size], segid[:])
+	binary.BigEndian.PutUint16(id[size:size+2], fileOffset)
+	binary.BigEndian.PutUint16(id[size+2:size+4], blkOffset)
+	return id
+}
+
+func NewRowid(blkid *types.Blockid, offset uint32) types.Rowid {
+	var rowid types.Rowid
+	size := types.BlockidSize
+	copy(rowid[:size], blkid[:])
+	binary.BigEndian.PutUint32(rowid[size:size+4], offset)
+	return rowid
+}
+
+func IsEmptySegid(id *types.Uuid) bool {
+	for _, x := range id[:] {
+		if x != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func IsEmptyBlkid(id *types.Blockid) bool {
+	for _, x := range id[:] {
+		if x != 0 {
+			return false
+		}
+	}
+	return true
+}
 
 type IdAllocator struct {
 	id atomic.Uint64

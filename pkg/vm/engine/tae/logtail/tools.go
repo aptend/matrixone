@@ -84,6 +84,18 @@ func u64ToRowID(v uint64) types.Rowid {
 	return rowid
 }
 
+func blockid2rowid(bid *types.Blockid) types.Rowid {
+	var rowid types.Rowid
+	copy(rowid[:], bid[:])
+	return rowid
+}
+
+func segid2rowid(sid *types.Uuid) types.Rowid {
+	var rowid types.Rowid
+	copy(rowid[:], sid[:])
+	return rowid
+}
+
 func bytesToRowID(bs []byte) types.Rowid {
 	var rowid types.Rowid
 	if size := len(bs); size <= types.RowidSize {

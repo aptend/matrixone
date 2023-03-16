@@ -72,11 +72,11 @@ func NewCompactBlockTask(
 	if err != nil {
 		return
 	}
-	seg, err := rel.GetSegment(meta.GetSegment().GetID())
+	seg, err := rel.GetSegment(meta.GetSegment().ID)
 	if err != nil {
 		return
 	}
-	task.compacted, err = seg.GetBlock(meta.GetID())
+	task.compacted, err = seg.GetBlock(meta.ID)
 	if err != nil {
 		return
 	}

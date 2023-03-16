@@ -19,6 +19,7 @@ import (
 	"sync"
 
 	"github.com/RoaringBitmap/roaring"
+	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
@@ -134,7 +135,7 @@ func newBlock(table *txnTable, meta *catalog.BlockEntry) *txnBlock {
 		},
 		entry:         meta,
 		table:         table,
-		isUncommitted: isLocalSegmentByID(meta.GetSegment().ID),
+		isUncommitted: meta.GetSegment().IsLocal,
 	}
 	return blk
 }
@@ -156,7 +157,7 @@ func (blk *txnBlock) GetTotalChanges() int {
 	return blk.entry.GetBlockData().GetTotalChanges()
 }
 func (blk *txnBlock) IsAppendableBlock() bool { return blk.entry.IsAppendable() }
-func (blk *txnBlock) ID() uint64              { return blk.entry.GetID() }
+func (blk *txnBlock) ID() types.Blockid       { return blk.entry.ID }
 func (blk *txnBlock) Fingerprint() *common.ID { return blk.entry.AsCommonID() }
 func (blk *txnBlock) BatchDedup(pks containers.Vector, invisibility *roaring.Bitmap) (err error) {
 	blkData := blk.entry.GetBlockData()

@@ -91,11 +91,11 @@ func NewMergeBlocksTask(ctx *tasks.Context, txn txnif.AsyncTxn, mergedBlks []*ca
 		return
 	}
 	for _, meta := range mergedBlks {
-		seg, err := task.rel.GetSegment(meta.GetSegment().GetID())
+		seg, err := task.rel.GetSegment(meta.GetSegment().ID)
 		if err != nil {
 			return nil, err
 		}
-		blk, err := seg.GetBlock(meta.GetID())
+		blk, err := seg.GetBlock(meta.ID)
 		if err != nil {
 			return nil, err
 		}
@@ -189,7 +189,7 @@ func (task *mergeBlocksTask) Execute() (err error) {
 		task.toSegEntry.SetSorted()
 		task.createdSegs = append(task.createdSegs, task.toSegEntry)
 	} else {
-		if toSegEntry, err = task.rel.GetSegment(task.toSegEntry.GetID()); err != nil {
+		if toSegEntry, err = task.rel.GetSegment(task.toSegEntry.ID); err != nil {
 			return
 		}
 	}
@@ -348,12 +348,12 @@ func (task *mergeBlocksTask) Execute() (err error) {
 
 	for _, compacted := range task.compacted {
 		seg := compacted.GetSegment()
-		if err = seg.SoftDeleteBlock(compacted.Fingerprint().BlockID); err != nil {
+		if err = seg.SoftDeleteBlock(compacted.ID()); err != nil {
 			return err
 		}
 	}
 	for _, entry := range task.mergedSegs {
-		if err = task.rel.SoftDeleteSegment(entry.GetID()); err != nil {
+		if err = task.rel.SoftDeleteSegment(entry.ID); err != nil {
 			return err
 		}
 	}

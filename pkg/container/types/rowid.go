@@ -16,7 +16,9 @@ package types
 
 import (
 	"bytes"
+	"encoding/binary"
 	"fmt"
+	"unsafe"
 
 	"github.com/google/uuid"
 )
@@ -47,13 +49,22 @@ func (r Rowid) GetBlockid() Blockid {
 	// return (Blockid)(r[:BlockidSize])
 }
 
+func (r Rowid) GetSegid() Uuid {
+	return *(*Uuid)(r[:UuidSize])
+	// return (Blockid)(r[:BlockidSize])
+}
+
+func (r *Rowid) GetBlockidUnsafe() *Blockid {
+	return (*Blockid)(unsafe.Pointer(&r[0]))
+}
+
 func (r Rowid) GetObject() ObjectBytes {
 	return *(*ObjectBytes)(r[:ObjectBytesSize])
 }
 
 func (r Rowid) GetObjectString() string {
-	uuid := *(*uuid.UUID)(r[:16])
-	s := DecodeUint16(r[16:18])
+	uuid := (*uuid.UUID)(r[:16])
+	s := binary.BigEndian.Uint16(r[16:18])
 	return fmt.Sprintf("%s-%d", uuid.String(), s)
 }
 
@@ -62,4 +73,34 @@ func RandomRowid() Rowid {
 	u := uuid.New()
 	copy(r[:], u[:])
 	return r
+}
+
+func (b Blockid) Compare(other Blockid) int {
+	return bytes.Compare(b[:], other[:])
+}
+
+func (b *Blockid) IsEmpty() bool {
+	for _, v := range b[:] {
+		if v != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func (b *Blockid) String() string {
+	uuid := (*uuid.UUID)(b[:16])
+	filen, blkn := b.Offsets()
+	return fmt.Sprintf("%s-%d-%d", uuid.String(), filen, blkn)
+}
+
+func (b *Blockid) ShortString() string {
+	filen, blkn := b.Offsets()
+	return fmt.Sprintf("%d-%d", filen, blkn)
+}
+
+func (b *Blockid) Offsets() (uint16, uint16) {
+	filen := binary.BigEndian.Uint16(b[16:18])
+	blkn := binary.BigEndian.Uint16(b[18:20])
+	return filen, blkn
 }

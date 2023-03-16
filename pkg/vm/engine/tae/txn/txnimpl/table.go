@@ -17,9 +17,10 @@ package txnimpl
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/dataio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/dataio/blockio"
-	"time"
 
 	"github.com/RoaringBitmap/roaring"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -97,8 +98,6 @@ type txnTable struct {
 	entry        *catalog.TableEntry
 	schema       *catalog.Schema
 	logs         []wal.LogEntry
-	maxSegId     uint64
-	maxBlkId     uint64
 
 	txnEntries *txnEntries
 	csnStart   uint32
@@ -302,18 +301,6 @@ func (tbl *txnTable) commitTransferDeleteNode(id *common.ID, node *deleteNode) {
 	tbl.store.warChecker.Delete(id)
 	tbl.txnEntries.Delete(node.idx)
 	delete(tbl.deleteNodes, *id)
-}
-
-func (tbl *txnTable) LogSegmentID(sid uint64) {
-	if tbl.maxSegId < sid {
-		tbl.maxSegId = sid
-	}
-}
-
-func (tbl *txnTable) LogBlockID(bid uint64) {
-	if tbl.maxBlkId < bid {
-		tbl.maxBlkId = bid
-	}
 }
 
 func (tbl *txnTable) WaitSynced() {
@@ -979,10 +966,6 @@ func (tbl *txnTable) DoPrecommitDedupByPK(pks containers.Vector) (err error) {
 	segIt := tbl.entry.MakeSegmentIt(false)
 	for segIt.Valid() {
 		seg := segIt.Get().GetPayload()
-		//FIXME::Where is this tbl.maxSegId assigned, it always be zero?
-		if seg.GetID() < tbl.maxSegId {
-			return
-		}
 		{
 			seg.RLock()
 			//FIXME:: Why need to wait committing here? waiting had happened at Dedup.
@@ -1013,9 +996,6 @@ func (tbl *txnTable) DoPrecommitDedupByPK(pks containers.Vector) (err error) {
 		blkIt := seg.MakeBlockIt(false)
 		for blkIt.Valid() {
 			blk := blkIt.Get().GetPayload()
-			if blk.GetID() < tbl.maxBlkId {
-				return
-			}
 			{
 				blk.RLock()
 				shouldSkip = blk.HasDropCommittedLocked() || blk.IsCreatingOrAborted()
@@ -1052,10 +1032,6 @@ func (tbl *txnTable) DoPrecommitDedupByNode(node InsertNode) (err error) {
 	segIt := tbl.entry.MakeSegmentIt(false)
 	for segIt.Valid() {
 		seg := segIt.Get().GetPayload()
-		//FIXME::Where is this tbl.maxSegId assigned, it always be zero?
-		if seg.GetID() < tbl.maxSegId {
-			return
-		}
 		{
 			seg.RLock()
 			//FIXME:: Why need to wait committing here? waiting had happened at Dedup.
@@ -1099,9 +1075,6 @@ func (tbl *txnTable) DoPrecommitDedupByNode(node InsertNode) (err error) {
 		blkIt := seg.MakeBlockIt(false)
 		for blkIt.Valid() {
 			blk := blkIt.Get().GetPayload()
-			if blk.GetID() < tbl.maxBlkId {
-				return
-			}
 			{
 				blk.RLock()
 				shouldSkip = blk.HasDropCommittedLocked() || blk.IsCreatingOrAborted()

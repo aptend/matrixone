@@ -48,7 +48,11 @@ func (rel *txnRelation) Write(ctx context.Context, bat *batch.Batch) error {
 	allNullables := schema.AllNullables()
 	taeBatch := containers.NewEmptyBatch()
 	defer taeBatch.Close()
+	expected := bat.Vecs[0].Length()
 	for i, vec := range bat.Vecs {
+		if l := vec.Length(); l != expected {
+			logutil.Infof("%s has %d, expect %d", bat.Attrs[i], l, expected)
+		}
 		v := containers.NewVectorWithSharedMemory(vec, allNullables[i])
 		//v := MOToVector(vec, allNullables[i])
 		taeBatch.AddVector(bat.Attrs[i], v)

@@ -385,6 +385,7 @@ func (tcc *TxnCompilerContext) getTableDef(ctx context.Context, table engine.Rel
 
 	var clusterByDef *plan2.ClusterByDef
 	var cols []*plan2.ColDef
+	var schemaVersion uint32
 	var defs []*plan2.TableDefType
 	var properties []*plan2.Property
 	var TableType, Createsql string
@@ -420,6 +421,7 @@ func (tcc *TxnCompilerContext) getTableDef(ctx context.Context, table engine.Rel
 				OnUpdate:  attr.Attr.OnUpdate,
 				Comment:   attr.Attr.Comment,
 				ClusterBy: attr.Attr.ClusterBy,
+				Seqnum:    uint32(attr.Attr.Seqnum),
 			}
 			// Is it a composite primary key
 			if attr.Attr.Name == catalog.CPrimaryKeyColName {
@@ -479,6 +481,8 @@ func (tcc *TxnCompilerContext) getTableDef(ctx context.Context, table engine.Rel
 				}
 				partitionInfo = p
 			}
+		} else if v, ok := def.(*engine.VersionDef); ok {
+			schemaVersion = v.Version
 		}
 	}
 	if len(properties) > 0 {
@@ -523,6 +527,7 @@ func (tcc *TxnCompilerContext) getTableDef(ctx context.Context, table engine.Rel
 		RefChildTbls: refChildTbls,
 		ClusterBy:    clusterByDef,
 		Indexes:      indexes,
+		Version:      schemaVersion,
 	}
 	return obj, tableDef
 }

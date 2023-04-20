@@ -193,7 +193,7 @@ func (tbl *txnTable) LoadDeletesForBlock(blockID string, deleteBlockId map[types
 			if err != nil {
 				return err
 			}
-			rowIdBat, err := s3BlockReader.LoadColumns(tbl.db.txn.proc.Ctx, []uint16{0}, location.ID(), tbl.db.txn.proc.GetMPool())
+			rowIdBat, err := s3BlockReader.LoadColumns(tbl.db.txn.proc.Ctx, []uint16{0}, nil, location.ID(), tbl.db.txn.proc.GetMPool())
 			if err != nil {
 				return err
 			}
@@ -347,6 +347,7 @@ func (tbl *txnTable) getTableDef() *plan.TableDef {
 					OnUpdate:  attr.Attr.OnUpdate,
 					Comment:   attr.Attr.Comment,
 					ClusterBy: attr.Attr.ClusterBy,
+					Seqnum:    uint32(attr.Attr.Seqnum),
 				})
 				i++
 			}
@@ -365,6 +366,7 @@ func (tbl *txnTable) TableDefs(ctx context.Context) ([]engine.TableDef, error) {
 	// I don't understand why the logic now is not to get all the tableDef. Don't understand.
 	// copy from tae's logic
 	defs := make([]engine.TableDef, 0, len(tbl.defs))
+	defs = append(defs, &engine.VersionDef{Version: tbl.version})
 	if tbl.comment != "" {
 		commentDef := new(engine.CommentDef)
 		commentDef.Comment = tbl.comment
@@ -598,14 +600,19 @@ func (tbl *txnTable) compaction() error {
 			err = e
 			return false
 		}
-		if tbl.idxs == nil {
-			idxs := make([]uint16, 0, len(tbl.tableDef.Cols)-1)
+		if tbl.seqnums == nil {
+			n := len(tbl.tableDef.Cols) - 1
+			idxs := make([]uint16, 0, n)
+			typs := make([]types.Type, 0, n)
 			for i := 0; i < len(tbl.tableDef.Cols)-1; i++ {
-				idxs = append(idxs, uint16(i))
+				col := tbl.tableDef.Cols[i]
+				idxs = append(idxs, uint16(col.Seqnum))
+				typs = append(typs, vector.ProtoTypeToType(col.Typ))
 			}
-			tbl.idxs = idxs
+			tbl.seqnums = idxs
+			tbl.typs = typs
 		}
-		bat, e := s3BlockReader.LoadColumns(tbl.db.txn.proc.Ctx, tbl.idxs, location.ID(), tbl.db.txn.proc.GetMPool())
+		bat, e := s3BlockReader.LoadColumns(tbl.db.txn.proc.Ctx, tbl.seqnums, tbl.typs, location.ID(), tbl.db.txn.proc.GetMPool())
 		if e != nil {
 			err = e
 			return false
@@ -814,13 +821,13 @@ func (tbl *txnTable) newBlockReader(ctx context.Context, num int, expr *plan.Exp
 	if len(ranges) < num || len(ranges) == 1 {
 		for i := range ranges {
 			rds[i] = &blockReader{
-				fs:         tbl.db.txn.engine.fs,
-				tableDef:   tableDef,
-				primaryIdx: tbl.primaryIdx,
-				expr:       expr,
-				ts:         ts,
-				ctx:        ctx,
-				blks:       []*catalog.BlockInfo{blks[i]},
+				fs:            tbl.db.txn.engine.fs,
+				tableDef:      tableDef,
+				primarySeqnum: tbl.primarySeqnum,
+				expr:          expr,
+				ts:            ts,
+				ctx:           ctx,
+				blks:          []*catalog.BlockInfo{blks[i]},
 			}
 		}
 		for j := len(ranges); j < num; j++ {
@@ -830,7 +837,7 @@ func (tbl *txnTable) newBlockReader(ctx context.Context, num int, expr *plan.Exp
 	}
 
 	infos, steps := groupBlocksToObjects(blks, num)
-	blockReaders := newBlockReaders(ctx, tbl.db.txn.engine.fs, tableDef, tbl.primaryIdx, ts, num, expr)
+	blockReaders := newBlockReaders(ctx, tbl.db.txn.engine.fs, tableDef, tbl.primarySeqnum, ts, num, expr)
 	distributeBlocksToBlockReaders(blockReaders, num, infos, steps)
 	for i := 0; i < num; i++ {
 		rds[i] = blockReaders[i]
@@ -883,14 +890,12 @@ func (tbl *txnTable) newReader(
 	}
 	readers := make([]engine.Reader, readerNumber)
 
-	mp := make(map[string]types.Type)
-	colIdxMp := make(map[string]int)
-	if tbl.tableDef != nil {
-		for i := range tbl.tableDef.Cols {
-			colIdxMp[tbl.tableDef.Cols[i].Name] = i
-		}
+	seqnumMp := make(map[string]int)
+	for _, coldef := range tbl.tableDef.Cols {
+		seqnumMp[coldef.Name] = int(coldef.Seqnum)
 	}
 
+	mp := make(map[string]types.Type)
 	mp[catalog.Row_ID] = types.New(types.T_Rowid, 0, 0)
 	for _, def := range tbl.defs {
 		attr, ok := def.(*engine.AttributeDef)
@@ -925,7 +930,7 @@ func (tbl *txnTable) newReader(
 		deletes:         deletes,
 		skipBlocks:      tbl.skipBlocks,
 		iter:            iter,
-		colIdxMp:        colIdxMp,
+		seqnumMp:        seqnumMp,
 		extendId2s3File: make(map[string]int),
 		s3FileService:   fs,
 		procMPool:       txn.proc.GetMPool(),
@@ -1051,6 +1056,7 @@ func (tbl *txnTable) updateLocalState(
 	switch typ {
 
 	case INSERT:
+		// this batch is from user, rather than logtail, use primaryIdx
 		primaryKeys := tbl.localState.HandleRowsInsert(ctx, protoBatch, tbl.primaryIdx, packer)
 
 		// check primary key

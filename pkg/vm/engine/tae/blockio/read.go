@@ -31,7 +31,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/model"
 )
 
@@ -44,9 +43,6 @@ func BlockRead(
 	ts timestamp.Timestamp,
 	fs fileservice.FileService,
 	mp *mpool.MPool, vp engine.VectorPool) (*batch.Batch, error) {
-
-	logutil.Infof("yyyy read block %s %v %v", info.BlockID.String(), seqnums, colTypes)
-	// read
 	columnBatch, err := BlockReadInner(
 		ctx, info, seqnums, colTypes,
 		types.TimestampToTS(ts), fs, mp, vp,
@@ -55,10 +51,17 @@ func BlockRead(
 		return nil, err
 	}
 
-	columnBatch.SetZs(columnBatch.Vecs[0].Length(), mp)
-	for i, vec := range columnBatch.Vecs {
-		logutil.Infof("yyyyy read result c%d %s", i, containers.ToDNVector(vec).PPString(5))
+	retTyps := make([]*types.Type, 0, len(colTypes))
+	retLens := make([]int, 0, len(colTypes))
+	for _, vec := range columnBatch.Vecs {
+		retTyps = append(retTyps, vec.GetType())
+		retLens = append(retLens, vec.Length())
 	}
+	logutil.Infof("yyyy read block %s %v %v, ret %v %v", info.BlockID.String(), seqnums, colTypes, retLens, retTyps)
+	// for i, vec := range columnBatch.Vecs {
+	// 	logutil.Infof("yyyyy read result c%d %s", i, containers.ToDNVector(vec).PPString(5))
+	// }
+	columnBatch.SetZs(columnBatch.Vecs[0].Length(), mp)
 
 	return columnBatch, nil
 }

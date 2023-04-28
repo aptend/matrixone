@@ -602,8 +602,8 @@ func (blk *ablock) persistedCollectAppendInRange(
 	pnode *persistedNode,
 	start, end types.TS,
 	withAborted bool) (bat *containers.BatchWithVersion, err error) {
-	panic("to be implemented")
-	// FIXME: we'll gc mvcc after being persisted. refactor it later
+	// logtail should have sent metaloc
+	return nil, nil
 	// blk.RLock()
 	// minRow, maxRow, commitTSVec, abortVec, abortedMap :=
 	// 	blk.mvcc.CollectAppendLocked(start, end)

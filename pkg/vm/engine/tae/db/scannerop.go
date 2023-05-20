@@ -205,10 +205,6 @@ func (ml *mergeLimiter) OnExecDone(_ any) {
 // 2. is actively updating, which means total rows changes obviously compared with last time
 // in other cases, wait some time to merge
 func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, blks int) bool {
-	logutil.Warnf(
-		"mergeblocks onPostTable %v-%v, totalRow %v, blks %v",
-		tid, ml.tableName, totalRow, blks)
-
 	if atomic.LoadInt32(&ml.activeMergeCount) >= ml.concurrentMergeLimit {
 		return false
 	}
@@ -274,6 +270,7 @@ type MergeTaskBuilder struct {
 	*catalog.LoopProcessor
 	runCnt      int
 	tableRowCnt int
+	tableDelete int
 	tid         uint64
 	limiter     *mergeLimiter
 	segBuilder  *deletableSegBuilder
@@ -315,6 +312,11 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 	// deletable segs
 	mergedSegs := s.segBuilder.finish()
 	hasDelSeg := len(mergedSegs) > 0
+
+	logutil.Warnf(
+		"mergeblocks onPostTable %v-%v, totalRow %v, deleteRow %v, blks %v",
+		s.tid, s.limiter.tableName, s.tableRowCnt, s.tableDelete, len(mergedBlks))
+
 	hasMergeBlk := s.limiter.canMerge(s.tid, s.tableRowCnt, len(mergedBlks))
 	if !hasDelSeg && !hasMergeBlk {
 		return
@@ -474,8 +476,10 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 	// these blks are formed by continuous append
 	entry.RUnlock()
 	rows := entry.GetBlockData().Rows()
+	dels := entry.GetBlockData().GetTotalDeletes()
 	entry.RLock()
 	s.tableRowCnt += rows
+	s.tableDelete += dels
 	s.blkBuilder.push(&mItem{row: rows, entry: entry})
 	return nil
 }

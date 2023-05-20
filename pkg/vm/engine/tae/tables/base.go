@@ -727,6 +727,10 @@ func (blk *baseBlock) GetTotalChanges() int {
 	return int(blk.mvcc.GetDeleteCnt())
 }
 
+func (blk *baseBlock) GetTotalDeletes() int {
+	return int(blk.mvcc.GetDeleteCnt())
+}
+
 func (blk *baseBlock) IsAppendable() bool { return false }
 
 func (blk *baseBlock) MutationInfo() string {

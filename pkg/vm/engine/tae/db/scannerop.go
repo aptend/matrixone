@@ -29,7 +29,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/options"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tables/jobs"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tasks"
 )
@@ -41,10 +40,8 @@ type ScannerOp interface {
 }
 
 const (
-	constMergeRightNow     = int(options.DefaultBlockMaxRows) * int(options.DefaultBlocksPerSegment)
-	constMergeWaitDuration = 3 * time.Minute
-	constMergeMinBlks      = 3
-	constMergeMinRows      = 3000
+	constMergeWaitDuration = 1 * time.Minute
+	constMergeMinBlks      = 5
 	constHeapCapacity      = 300
 	const4GBytes           = 4 * (1 << 30)
 )
@@ -118,6 +115,7 @@ func (h *mergedBlkBuilder) finish() []*catalog.BlockEntry {
 // segment has the max segment id, appender may creates block in it.
 type deletableSegBuilder struct {
 	segHasNonDropBlk bool
+	segIsSorted      bool
 	maxSegId         uint64
 	segCandids       []*catalog.SegmentEntry // appendable
 	nsegCandids      []*catalog.SegmentEntry // non-appendable
@@ -125,6 +123,7 @@ type deletableSegBuilder struct {
 
 func (d *deletableSegBuilder) reset() {
 	d.segHasNonDropBlk = false
+	d.segIsSorted = false
 	d.maxSegId = 0
 	d.segCandids = d.segCandids[:0]
 	d.nsegCandids = d.nsegCandids[:0]
@@ -132,6 +131,7 @@ func (d *deletableSegBuilder) reset() {
 
 func (d *deletableSegBuilder) resetForNewSeg() {
 	d.segHasNonDropBlk = false
+	d.segIsSorted = false
 }
 
 // call this when a non dropped block was found when iterating blocks of a segment,
@@ -186,6 +186,8 @@ func (st *stat) String() string {
 // mergeLimiter consider update rate and time to decide to merge or not.
 type mergeLimiter struct {
 	stats                map[uint64]*stat
+	mergeMaxRows         int
+	tableName            string
 	concurrentMergeLimit int32
 	activeMergeCount     int32
 }
@@ -203,15 +205,22 @@ func (ml *mergeLimiter) OnExecDone(_ any) {
 // 2. is actively updating, which means total rows changes obviously compared with last time
 // in other cases, wait some time to merge
 func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, blks int) bool {
+	logutil.Warnf(
+		"mergeblocks onPostTable %v-%v, totalRow %v, blks %v",
+		tid, ml.tableName, totalRow, blks)
+
 	if atomic.LoadInt32(&ml.activeMergeCount) >= ml.concurrentMergeLimit {
 		return false
 	}
-	if totalRow > constMergeRightNow {
-		logutil.Infof("Mergeblocks %d merge right now: %d rows %d blks", tid, totalRow, blks)
+	if totalRow > ml.mergeMaxRows {
+		logutil.Warnf(
+			"Mergeblocks %d-%s merge right now: %d rows %d blks",
+			tid, ml.tableName, totalRow, blks)
 		delete(ml.stats, tid)
 		return true
 	}
-	if blks < constMergeMinBlks || totalRow < constMergeMinRows {
+
+	if blks < constMergeMinBlks {
 		return false
 	}
 
@@ -221,11 +230,14 @@ func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, blks int) bool {
 			lastTotalRow: totalRow,
 		}
 		return false
-	} else if d := totalRow - st.lastTotalRow; d > 5 || d < -5 {
-		// a lot of things happened in the past scan interval...
+	} else if d := totalRow - st.lastTotalRow; d > 1000 {
+		// quick append is happening, wait some time...
+		// it is not bad to gather 5 full blocks anyway.
 		st.ttl = ml.ttl(totalRow)
 		st.lastTotalRow = totalRow
-		logutil.Infof("Mergeblocks delta %d on table %d, resched to %v", d, tid, st.ttl)
+		logutil.Warnf(
+			"Mergeblocks delta %d on table %d-%s, resched to %v",
+			d, tid, ml.tableName, st.ttl)
 		return false
 	} else {
 		// this table is quiet finally, check ttl
@@ -235,8 +247,8 @@ func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, blks int) bool {
 
 func (ml *mergeLimiter) ttl(totalRow int) time.Time {
 	return time.Now().Add(time.Duration(
-		(float32(constMergeWaitDuration) / float32(constMergeRightNow)) *
-			(float32(constMergeRightNow) - float32(totalRow))))
+		(float32(constMergeWaitDuration) / float32(ml.mergeMaxRows)) *
+			(float32(ml.mergeMaxRows) - float32(totalRow))))
 }
 
 // prune old stat entry
@@ -290,6 +302,7 @@ func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
 	op.BlockFn = op.onBlock
 	op.SegmentFn = op.onSegment
 	op.PostSegmentFn = op.onPostSegment
+	op.PostTableFn = op.onPostTable
 	return op
 }
 
@@ -319,10 +332,10 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 		}
 		_, err := s.db.Runtime.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, segScopes, factory)
 		if err != nil {
-			logutil.Infof("[Mergeblocks] Schedule del seg errinfo=%v", err)
+			logutil.Warnf("[Mergeblocks] Schedule del seg errinfo=%v", err)
 			return
 		}
-		logutil.Infof("[Mergeblocks] Scheduled | del %d seg", len(mergedSegs))
+		logutil.Warnf("[Mergeblocks] Scheduled | del %d seg", len(mergedSegs))
 		return
 	}
 
@@ -337,7 +350,7 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 	task, err := s.db.Runtime.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, scopes, factory)
 	if err != nil {
 		if err != tasks.ErrScheduleScopeConflict {
-			logutil.Infof("[Mergeblocks] Schedule error info=%v", err)
+			logutil.Warnf("[Mergeblocks] Schedule error info=%v", err)
 		}
 	} else {
 		// record big merge
@@ -345,19 +358,37 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 			s.limiter.IncActiveCount()
 			task.AddObserver(s.limiter)
 		}
-		logutil.Infof("[Mergeblocks] Scheduled | Scopes=[%d],[%d]%s",
+		logutil.Warnf("[Mergeblocks] Scheduled | Scopes=[%d],[%d]%s",
 			len(segScopes), len(scopes),
 			common.BlockIDArraryString(scopes[:constMergeMinBlks]))
 	}
 }
 
-func (s *MergeTaskBuilder) resetForTable(tid uint64) {
+func (s *MergeTaskBuilder) resetForTable(entry *catalog.TableEntry) {
 	s.tableRowCnt = 0
-	s.tid = tid
+	s.tid = 0
+	if entry != nil {
+		s.tid = entry.ID
+		schema := entry.GetLastestSchema()
+		s.limiter.mergeMaxRows = determineMaxRows(
+			int(schema.SegmentMaxBlocks), int(schema.BlockMaxRows))
+		s.limiter.tableName = schema.Name
+	}
 	s.segBuilder.reset()
 	s.blkBuilder.reset()
 }
 
+func determineMaxRows(segMaxBlks, blkMaxRows int) int {
+	fullrows := segMaxBlks * blkMaxRows
+	// for first merged layer, we want at most 5 full blocks in merged segment
+	maxRows := 5 * blkMaxRows
+	if fullrows < 10000 || fullrows < maxRows { // for small config in unit test
+		return fullrows
+	}
+	return maxRows
+}
+
+// PreExecute is called before each loop, refresh and print stats
 func (s *MergeTaskBuilder) PreExecute() error {
 	// clean stale stats for every 10min (default)
 	if s.runCnt++; s.runCnt >= 120 {
@@ -367,46 +398,49 @@ func (s *MergeTaskBuilder) PreExecute() error {
 
 	// print stats for every 50s (default)
 	if s.runCnt%10 == 0 {
-		logutil.Infof("Mergeblocks stats: %s", s.limiter.String())
+		logutil.Warnf("Mergeblocks stats: %s", s.limiter.String())
 	}
 
 	if s.runCnt%5 == 0 {
 		// fresh mem use
 		if stats, err := mem.VirtualMemory(); err == nil {
-			logutil.Infof("Mergeblocks available mem: %dg", stats.Available/(1<<30))
+			logutil.Warnf("Mergeblocks available mem: %dg", stats.Available/(1<<30))
 			if limit := int32(stats.Available / const4GBytes); limit != s.limiter.concurrentMergeLimit && limit > 1 {
 				s.limiter.concurrentMergeLimit = limit
-				logutil.Infof("Mergeblocks set concurrency limit %d", limit)
+				logutil.Warnf("Mergeblocks set concurrency limit %d", limit)
 			}
 		}
 	}
 	return nil
 }
 func (s *MergeTaskBuilder) PostExecute() error {
-	s.trySchedMergeTask()
-	s.resetForTable(0)
 	if cnt := atomic.LoadInt32(&s.limiter.activeMergeCount); cnt > 0 {
-		logutil.Infof("Mergeblocks current big active task: %d", cnt)
+		logutil.Warnf("Mergeblocks current big active task: %d", cnt)
 	}
 	return nil
 }
 
 func (s *MergeTaskBuilder) onTable(tableEntry *catalog.TableEntry) (err error) {
-	s.trySchedMergeTask()
-	s.resetForTable(tableEntry.ID)
 	if !tableEntry.IsActive() {
 		err = moerr.GetOkStopCurrRecur()
 	}
+	s.resetForTable(tableEntry)
+	return
+}
+
+func (s *MergeTaskBuilder) onPostTable(tableEntry *catalog.TableEntry) (err error) {
+	// base on the info of tableEntry, we can decide whether to merge or not
+	s.trySchedMergeTask()
 	return
 }
 
 func (s *MergeTaskBuilder) onSegment(segmentEntry *catalog.SegmentEntry) (err error) {
-	if !segmentEntry.IsActive() || (!segmentEntry.IsAppendable() && segmentEntry.IsSorted()) {
+	if !segmentEntry.IsActive() {
 		return moerr.GetOkStopCurrRecur()
 	}
-	// handle appendable segs
 	// TODO Iter non appendable segs to delete all. Typical occasion is TPCC
 	s.segBuilder.resetForNewSeg()
+	s.segBuilder.segIsSorted = segmentEntry.IsSorted()
 	return
 }
 
@@ -431,6 +465,13 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 		return
 	}
 
+	if s.segBuilder.segIsSorted {
+		// TODO: handle one-object segments, do object-aware merge
+		return
+	}
+
+	// nblks in appenable segs or non-sorted non-appendable segs
+	// these blks are formed by continuous append
 	entry.RUnlock()
 	rows := entry.GetBlockData().Rows()
 	entry.RLock()

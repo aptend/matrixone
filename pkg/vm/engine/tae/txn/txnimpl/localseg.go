@@ -248,6 +248,7 @@ func (seg *localSegment) prepareApplyPNode(node *pnode) (err error) {
 	blkn := metaloc.ID()
 	sid := metaloc.Name().SegmentId()
 	filen := metaloc.Name().Num()
+	rows := metaloc.Rows()
 
 	shouldCreateNewSeg := func() bool {
 		if seg.nseg == nil {
@@ -259,7 +260,9 @@ func (seg *localSegment) prepareApplyPNode(node *pnode) (err error) {
 
 	if shouldCreateNewSeg() {
 		seg.nseg, err = seg.table.CreateNonAppendableSegment(true, new(objectio.CreateSegOpt).WithId(&sid))
-		seg.nseg.GetMeta().(*catalog.SegmentEntry).SetSorted()
+		if rows > 2048 {
+			seg.nseg.GetMeta().(*catalog.SegmentEntry).SetSorted()
+		}
 		if err != nil {
 			return
 		}

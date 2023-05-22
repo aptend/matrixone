@@ -17,6 +17,7 @@ package db
 import (
 	"container/heap"
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 	"sync/atomic"
@@ -299,8 +300,8 @@ func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
 			cap:   constHeapCapacity,
 		},
 		sortedSegBuilder: &heapBuilder[*catalog.SegmentEntry]{
-			items: make(itemSet[*catalog.SegmentEntry], 0, constHeapCapacity),
-			cap:   constHeapCapacity,
+			items: make(itemSet[*catalog.SegmentEntry], 0, 2),
+			cap:   2,
 		},
 	}
 
@@ -315,24 +316,28 @@ func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
 func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
 	mblks []*catalog.BlockEntry, msegs []*catalog.SegmentEntry,
 ) {
-	var (
-		i, totalrow int
-	)
-	for ; i < len(segs); i++ {
-		rows := segs[i].Stat.Rows - segs[i].Stat.Dels
-		if rows > s.limiter.mergeMaxRows*10 {
-			break
-		}
-		totalrow += rows
-		if totalrow > s.limiter.mergeMaxRows*20 {
-			break
-		}
+	if len(segs) < 2 {
+		return
 	}
-	if i < 2 {
+	s1, s2 := segs[0], segs[1]
+	r1 := s1.Stat.Rows - s1.Stat.Dels
+	r2 := s2.Stat.Rows - s2.Stat.Dels
+	// skip big segment
+	if r1 > s.limiter.mergeMaxRows*15 || r2 > s.limiter.mergeMaxRows*15 {
 		return
 	}
 
-	msegs = segs[:i]
+	// push back schedule for big gap
+	if math.Abs(float64(r1-r2)) > float64(s.limiter.mergeMaxRows) {
+		// bump intention
+		s1.Stat.MergeIntent++
+		s2.Stat.MergeIntent++
+		if s1.Stat.MergeIntent < 20 || s2.Stat.MergeIntent < 20 {
+			return
+		}
+	}
+
+	msegs = segs[:2]
 	mblks = make([]*catalog.BlockEntry, 0, len(msegs)*constMergeMinBlks)
 	for _, seg := range msegs {
 		blkit := seg.MakeBlockIt(true)
@@ -350,8 +355,8 @@ func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
 		}
 	}
 
-	logutil.Infof("mergeblocks merge %v-%v, sorted %d rows, %d segs %d blks",
-		s.tid, s.limiter.tableName, totalrow, len(msegs), len(mblks))
+	logutil.Infof("mergeblocks merge %v-%v, sorted %d and %d rows",
+		s.tid, s.limiter.tableName, r1, r2)
 	return
 }
 
@@ -421,6 +426,7 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 		// reset flag of sorted
 		for _, seg := range mergedSegs {
 			seg.Stat.SameDelsStreak = 0
+			seg.Stat.MergeIntent = 0
 		}
 		// record big merge
 		if len(scopes) > constHeapCapacity/3 {
@@ -556,16 +562,6 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 		return
 	}
 
-	if s.segBuilder.segIsSorted {
-		// TODO: handle one-object segments, do object-aware merge
-		filen, _ := entry.ID.Offsets()
-		// optimize for updating, if blk in sorted segs has non zero file number,
-		// it must be compacted again due to deleting. it is okay to merge them
-		if filen == 0 {
-			return
-		}
-	}
-
 	// nblks in appenable segs or non-sorted non-appendable segs
 	// these blks are formed by continuous append
 	entry.RUnlock()
@@ -574,6 +570,9 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 	entry.RLock()
 	s.segBuilder.segRowCnt += rows
 	s.segBuilder.segRowDel += rows
+	if s.segBuilder.segIsSorted {
+		return
+	}
 	s.tableRowCnt += rows
 	s.tableDelete += dels
 	s.blkBuilder.push(&mItem[*catalog.BlockEntry]{row: rows - dels, entry: entry})

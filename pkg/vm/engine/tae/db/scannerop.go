@@ -41,36 +41,36 @@ type ScannerOp interface {
 }
 
 const (
-	constMergeWaitDuration = 2 * time.Minute
+	constMergeWaitDuration = 1 * time.Minute
 	constMergeMinBlks      = 5
 	constHeapCapacity      = 300
 	const4GBytes           = 4 * (1 << 30)
 )
 
 // min heap item
-type mItem struct {
+type mItem[T any] struct {
 	row   int
-	entry *catalog.BlockEntry
+	entry T
 }
 
-type itemSet []*mItem
+type itemSet[T any] []*mItem[T]
 
-func (is itemSet) Len() int { return len(is) }
+func (is itemSet[T]) Len() int { return len(is) }
 
-func (is itemSet) Less(i, j int) bool {
+func (is itemSet[T]) Less(i, j int) bool {
 	return is[i].row < is[j].row
 }
 
-func (is itemSet) Swap(i, j int) {
+func (is itemSet[T]) Swap(i, j int) {
 	is[i], is[j] = is[j], is[i]
 }
 
-func (is *itemSet) Push(x any) {
-	item := x.(*mItem)
+func (is *itemSet[T]) Push(x any) {
+	item := x.(*mItem[T])
 	*is = append(*is, item)
 }
 
-func (is *itemSet) Pop() any {
+func (is *itemSet[T]) Pop() any {
 	old := *is
 	n := len(old)
 	item := old[n-1]
@@ -79,33 +79,33 @@ func (is *itemSet) Pop() any {
 	return item
 }
 
-func (is *itemSet) Clear() {
+func (is *itemSet[T]) Clear() {
 	old := *is
 	*is = old[:0]
 }
 
-// mergedBlkBuilder founds out blocks to be merged via maintaining a min heap holding
+// heapBuilder founds out blocks to be merged via maintaining a min heap holding
 // up to default 300 items.
-type mergedBlkBuilder struct {
-	blocks itemSet
-	cap    int
+type heapBuilder[T any] struct {
+	items itemSet[T]
+	cap   int
 }
 
-func (h *mergedBlkBuilder) reset() {
-	h.blocks.Clear()
+func (h *heapBuilder[T]) reset() {
+	h.items.Clear()
 }
 
-func (h *mergedBlkBuilder) push(item *mItem) {
-	heap.Push(&h.blocks, item)
-	if h.blocks.Len() > h.cap {
-		heap.Pop(&h.blocks)
+func (h *heapBuilder[T]) push(item *mItem[T]) {
+	heap.Push(&h.items, item)
+	if h.items.Len() > h.cap {
+		heap.Pop(&h.items)
 	}
 }
 
 // copy out the items in the heap
-func (h *mergedBlkBuilder) finish() []*catalog.BlockEntry {
-	ret := make([]*catalog.BlockEntry, h.blocks.Len())
-	for i, item := range h.blocks {
+func (h *heapBuilder[T]) finish() []T {
+	ret := make([]T, h.items.Len())
+	for i, item := range h.items {
 		ret[i] = item.entry
 	}
 	return ret
@@ -230,7 +230,7 @@ func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, deletes int, blks int
 			lastTotalRow: totalRow,
 		}
 		return false
-	} else if deletes == 0 /*no update, simple insert*/ {
+	} else if deletes == 0 /*no update, simple insert*/ && totalRow-st.lastTotalRow > 0 {
 		// quick append is happening, wait some time...
 		// it is not bad to gather 10 full blocks anyway.
 		st.ttl = ml.ttl(totalRow)
@@ -272,13 +272,14 @@ func (ml *mergeLimiter) String() string {
 type MergeTaskBuilder struct {
 	db *DB
 	*catalog.LoopProcessor
-	runCnt      int
-	tableRowCnt int
-	tableDelete int
-	tid         uint64
-	limiter     *mergeLimiter
-	segBuilder  *deletableSegBuilder
-	blkBuilder  *mergedBlkBuilder
+	runCnt           int
+	tableRowCnt      int
+	tableDelete      int
+	tid              uint64
+	limiter          *mergeLimiter
+	segBuilder       *deletableSegBuilder
+	blkBuilder       *heapBuilder[*catalog.BlockEntry]
+	sortedSegBuilder *heapBuilder[*catalog.SegmentEntry]
 }
 
 func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
@@ -293,9 +294,13 @@ func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
 			segCandids:  make([]*catalog.SegmentEntry, 0),
 			nsegCandids: make([]*catalog.SegmentEntry, 0),
 		},
-		blkBuilder: &mergedBlkBuilder{
-			blocks: make(itemSet, 0, constHeapCapacity),
-			cap:    constHeapCapacity,
+		blkBuilder: &heapBuilder[*catalog.BlockEntry]{
+			items: make(itemSet[*catalog.BlockEntry], 0, constHeapCapacity),
+			cap:   constHeapCapacity,
+		},
+		sortedSegBuilder: &heapBuilder[*catalog.SegmentEntry]{
+			items: make(itemSet[*catalog.SegmentEntry], 0, constHeapCapacity),
+			cap:   constHeapCapacity,
 		},
 	}
 
@@ -305,6 +310,49 @@ func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
 	op.PostSegmentFn = op.onPostSegment
 	op.PostTableFn = op.onPostTable
 	return op
+}
+
+func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
+	mblks []*catalog.BlockEntry, msegs []*catalog.SegmentEntry,
+) {
+	var (
+		i, totalrow int
+	)
+	for ; i < len(segs); i++ {
+		rows := segs[i].Stat.Rows - segs[i].Stat.Dels
+		if rows > s.limiter.mergeMaxRows*10 {
+			break
+		}
+		totalrow += rows
+		if totalrow > s.limiter.mergeMaxRows*20 {
+			break
+		}
+	}
+	if i < 2 {
+		return
+	}
+
+	msegs = segs[:i]
+	mblks = make([]*catalog.BlockEntry, 0, len(msegs)*constMergeMinBlks)
+	for _, seg := range msegs {
+		blkit := seg.MakeBlockIt(true)
+		for ; blkit.Valid(); blkit.Next() {
+			entry := blkit.Get().GetPayload()
+			if !entry.IsActive() {
+				continue
+			}
+			entry.RLock()
+			if entry.IsCommitted() &&
+				catalog.ActiveWithNoTxnFilter(entry.BaseEntryImpl) {
+				mblks = append(mblks, entry)
+			}
+			entry.RUnlock()
+		}
+	}
+
+	logutil.Infof("mergeblocks merge %v-%v, sorted %d rows, %d segs %d blks",
+		s.tid, s.limiter.tableName, totalrow, len(msegs), len(mblks))
+	return
 }
 
 func (s *MergeTaskBuilder) trySchedMergeTask() {
@@ -319,11 +367,20 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 
 	if strings.HasPrefix(s.limiter.tableName, "sbtest") {
 		logutil.Warnf(
-			"mergeblocks onPostTable %v-%v, totalRow %v, deleteRow %v, blks %v",
-			s.tid, s.limiter.tableName, s.tableRowCnt, s.tableDelete, len(mergedBlks))
+			"mergeblocks onPostTable %v-%v, totalRow %v, deleteRow %v, blks %v, sortedCandidates %v",
+			s.tid, s.limiter.tableName, s.tableRowCnt, s.tableDelete, len(mergedBlks), len(s.sortedSegBuilder.items))
 	}
 
 	hasMergeBlk := s.limiter.canMerge(s.tid, s.tableRowCnt, s.tableDelete, len(mergedBlks))
+	if !hasMergeBlk {
+		mblks, msegs := s.checkSortedSegs(s.sortedSegBuilder.finish())
+		if len(mblks) > 0 {
+			mergedBlks = mblks
+			mergedSegs = append(mergedSegs, msegs...)
+			hasMergeBlk = true
+		}
+	}
+
 	if !hasDelSeg && !hasMergeBlk {
 		return
 	}
@@ -361,6 +418,10 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 			logutil.Warnf("[Mergeblocks] Schedule error info=%v", err)
 		}
 	} else {
+		// reset flag of sorted
+		for _, seg := range mergedSegs {
+			seg.Stat.SameDelsStreak = 0
+		}
 		// record big merge
 		if len(scopes) > constHeapCapacity/3 {
 			s.limiter.IncActiveCount()
@@ -385,13 +446,14 @@ func (s *MergeTaskBuilder) resetForTable(entry *catalog.TableEntry) {
 	}
 	s.segBuilder.reset()
 	s.blkBuilder.reset()
+	s.sortedSegBuilder.reset()
 }
 
 func determineMaxRows(segMaxBlks, blkMaxRows int) int {
 	fullrows := segMaxBlks * blkMaxRows
 	// for first merged layer, we want at most 5 full blocks in merged segment
-	maxRows := 10 * blkMaxRows
-	if fullrows < 10000 || fullrows < maxRows { // for small config in unit test
+	maxRows := constMergeMinBlks * blkMaxRows
+	if fullrows < maxRows { // for small config in unit test
 		return fullrows
 	}
 	return maxRows
@@ -454,8 +516,27 @@ func (s *MergeTaskBuilder) onSegment(segmentEntry *catalog.SegmentEntry) (err er
 	return
 }
 
-func (s *MergeTaskBuilder) onPostSegment(segmentEntry *catalog.SegmentEntry) (err error) {
-	s.segBuilder.push(segmentEntry)
+func (s *MergeTaskBuilder) onPostSegment(seg *catalog.SegmentEntry) (err error) {
+	s.segBuilder.push(seg)
+
+	if !seg.IsSorted() {
+		return nil
+	}
+
+	seg.Stat.Rows = s.segBuilder.segRowCnt
+	if seg.Stat.Dels == s.segBuilder.segRowDel {
+		seg.Stat.SameDelsStreak++
+		if seg.Stat.SameDelsStreak > 10 {
+			s.sortedSegBuilder.push(&mItem[*catalog.SegmentEntry]{
+				row:   s.segBuilder.segRowCnt - s.segBuilder.segRowDel,
+				entry: seg,
+			})
+		}
+	} else {
+		seg.Stat.SameDelsStreak = 0
+	}
+	seg.Stat.Dels = s.segBuilder.segRowDel
+
 	return nil
 }
 
@@ -495,6 +576,6 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 	s.segBuilder.segRowDel += rows
 	s.tableRowCnt += rows
 	s.tableDelete += dels
-	s.blkBuilder.push(&mItem{row: rows - dels, entry: entry})
+	s.blkBuilder.push(&mItem[*catalog.BlockEntry]{row: rows - dels, entry: entry})
 	return nil
 }

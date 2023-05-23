@@ -191,19 +191,32 @@ func (st *stat) String() string {
 
 // mergeLimiter consider update rate and time to decide to merge or not.
 type mergeLimiter struct {
-	stats                map[uint64]*stat
-	mergeMaxRows         int
-	tableName            string
-	concurrentMergeLimit int32
-	activeMergeCount     int32
+	stats               map[uint64]*stat
+	mergeMaxRows        int
+	blkMaxRows          int
+	tableName           string
+	memAvail            int
+	activeMergeBlkCount int32
 }
 
-func (ml *mergeLimiter) IncActiveCount() {
-	atomic.AddInt32(&ml.activeMergeCount, 1)
+func (ml *mergeLimiter) IncActiveCount(n int) {
+	atomic.AddInt32(&ml.activeMergeBlkCount, int32(n))
 }
 
-func (ml *mergeLimiter) OnExecDone(_ any) {
-	atomic.AddInt32(&ml.activeMergeCount, -1)
+func (ml *mergeLimiter) OnExecDone(v any) {
+	task := v.(tasks.MScopedTask)
+	n := int32(len(task.Scopes()))
+	atomic.AddInt32(&ml.activeMergeBlkCount, -n)
+}
+
+func (ml *mergeLimiter) checkMemAvail(blks int) bool {
+	// by experience, it is assumed the merging 256 * 8192 rows costs 4 GB
+	if ml.blkMaxRows == 0 {
+		return false
+	}
+	quotaBlks := ml.memAvail / const4GBytes * 256 * 8192 / ml.blkMaxRows
+	merging := atomic.LoadInt32(&ml.activeMergeBlkCount)
+	return quotaBlks-int(merging) > blks
 }
 
 // merge immediately if it has enough rows, skip if:
@@ -211,7 +224,7 @@ func (ml *mergeLimiter) OnExecDone(_ any) {
 // 2. is actively updating, which means total rows changes obviously compared with last time
 // in other cases, wait some time to merge
 func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, deletes int, blks int) bool {
-	if atomic.LoadInt32(&ml.activeMergeCount) >= ml.concurrentMergeLimit {
+	if !ml.checkMemAvail(blks) {
 		return false
 	}
 	if totalRow > ml.mergeMaxRows {
@@ -289,8 +302,7 @@ func newMergeTaskBuiler(db *DB) *MergeTaskBuilder {
 		db:            db,
 		LoopProcessor: new(catalog.LoopProcessor),
 		limiter: &mergeLimiter{
-			stats:                make(map[uint64]*stat),
-			concurrentMergeLimit: 1,
+			stats: make(map[uint64]*stat),
 		},
 		segBuilder: &deletableSegBuilder{
 			segCandids:  make([]*catalog.SegmentEntry, 0),
@@ -384,7 +396,7 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 	hasMergeBlk := s.limiter.canMerge(s.tid, s.tableRowCnt, s.tableDelete, len(mergedBlks))
 	if !hasMergeBlk {
 		mblks, msegs := s.checkSortedSegs(s.sortedSegBuilder.finish())
-		if len(mblks) > 0 {
+		if len(mblks) > 0 && s.limiter.checkMemAvail(len(mblks)) {
 			mergedBlks = mblks
 			mergedSegs = append(mergedSegs, msegs...)
 			hasMergeBlk = true
@@ -433,12 +445,9 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 			seg.Stat.SameDelsStreak = 0
 			seg.Stat.MergeIntent = 0
 		}
-		// record big merge
-		if len(scopes) > constHeapCapacity/3 {
-			s.limiter.IncActiveCount()
-			task.AddObserver(s.limiter)
-		}
 		n := len(scopes)
+		s.limiter.IncActiveCount(n)
+		task.AddObserver(s.limiter)
 		if n > constMergeMinBlks {
 			n = constMergeMinBlks
 		}
@@ -458,6 +467,7 @@ func (s *MergeTaskBuilder) resetForTable(entry *catalog.TableEntry) {
 		s.limiter.mergeMaxRows = determineMaxRows(
 			int(schema.SegmentMaxBlocks), int(schema.BlockMaxRows))
 		s.limiter.tableName = schema.Name
+		s.limiter.blkMaxRows = int(schema.BlockMaxRows)
 	}
 	s.segBuilder.reset()
 	s.blkBuilder.reset()
@@ -487,21 +497,17 @@ func (s *MergeTaskBuilder) PreExecute() error {
 		logutil.Warnf("Mergeblocks stats: %s", s.limiter.String())
 	}
 
-	if s.runCnt%5 == 0 {
-		// fresh mem use
-		if stats, err := mem.VirtualMemory(); err == nil {
-			logutil.Warnf("Mergeblocks available mem: %dg", stats.Available/(1<<30))
-			if limit := int32(stats.Available / const4GBytes); limit != s.limiter.concurrentMergeLimit && limit > 1 {
-				s.limiter.concurrentMergeLimit = limit
-				logutil.Warnf("Mergeblocks set concurrency limit %d", limit)
-			}
-		}
+	// fresh mem use
+	if stats, err := mem.VirtualMemory(); err == nil {
+		s.limiter.memAvail = int(stats.Available)
 	}
 	return nil
 }
 func (s *MergeTaskBuilder) PostExecute() error {
-	if cnt := atomic.LoadInt32(&s.limiter.activeMergeCount); cnt > 0 {
-		logutil.Warnf("Mergeblocks current big active task: %d", cnt)
+	if cnt := atomic.LoadInt32(&s.limiter.activeMergeBlkCount); cnt > 0 {
+		logutil.Warnf(
+			"Mergeblocks avail mem: %dG, current active blk: %d",
+			s.limiter.memAvail/(1<<30), cnt)
 	}
 	logutil.Infof("mergeblocks ------------------------------------")
 	return nil

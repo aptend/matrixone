@@ -345,11 +345,13 @@ func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
 	}
 
 	// push back schedule for big gap
-	if math.Abs(float64(r1-r2)) > float64(s.limiter.mergeMaxRows) {
+	if gap := math.Abs(float64(r1 - r2)); gap > float64(s.limiter.mergeMaxRows) {
 		// bump intention
 		s1.Stat.MergeIntent++
 		s2.Stat.MergeIntent++
-		if s1.Stat.MergeIntent < 20 || s2.Stat.MergeIntent < 20 {
+		factor := gap / float64(s.limiter.mergeMaxRows)
+		if float64(s1.Stat.MergeIntent) < 20*factor ||
+			float64(s2.Stat.MergeIntent) < 20*factor {
 			return
 		}
 	}

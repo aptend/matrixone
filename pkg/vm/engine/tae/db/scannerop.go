@@ -59,7 +59,8 @@ type itemSet[T any] []*mItem[T]
 func (is itemSet[T]) Len() int { return len(is) }
 
 func (is itemSet[T]) Less(i, j int) bool {
-	return is[i].row < is[j].row
+	// max heap
+	return is[i].row > is[j].row
 }
 
 func (is itemSet[T]) Swap(i, j int) {
@@ -322,6 +323,10 @@ func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
 	s1, s2 := segs[0], segs[1]
 	r1 := s1.Stat.Rows - s1.Stat.Dels
 	r2 := s2.Stat.Rows - s2.Stat.Dels
+	logutil.Infof(
+		"mergeblocks ======== %v %v | %v %v | %v %v",
+		s1.SortHint, s2.SortHint, r1, r2, s1.Stat.MergeIntent, s2.Stat.MergeIntent,
+	)
 	// skip big segment
 	if r1 > s.limiter.mergeMaxRows*15 || r2 > s.limiter.mergeMaxRows*15 {
 		return
@@ -433,9 +438,13 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 			s.limiter.IncActiveCount()
 			task.AddObserver(s.limiter)
 		}
+		n := len(scopes)
+		if n > constMergeMinBlks {
+			n = constMergeMinBlks
+		}
 		logutil.Warnf("[Mergeblocks] Scheduled | Scopes=[%d],[%d]%s",
 			len(segScopes), len(scopes),
-			common.BlockIDArraryString(scopes[:constMergeMinBlks]))
+			common.BlockIDArraryString(scopes[:n]))
 	}
 }
 
@@ -569,7 +578,7 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 	dels := entry.GetBlockData().GetTotalDeletes()
 	entry.RLock()
 	s.segBuilder.segRowCnt += rows
-	s.segBuilder.segRowDel += rows
+	s.segBuilder.segRowDel += dels
 	if s.segBuilder.segIsSorted {
 		return
 	}

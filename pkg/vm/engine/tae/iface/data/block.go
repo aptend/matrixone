@@ -84,6 +84,7 @@ type Block interface {
 
 	GetTotalChanges() int
 	CollectChangesInRange(ctx context.Context, startTs, endTs types.TS) (*containers.BlockView, error)
+	GetTotalDeletes() int
 
 	// check wether any delete intents with prepared ts within [from, to]
 	HasDeleteIntentsPreparedIn(from, to types.TS) bool

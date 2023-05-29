@@ -18,8 +18,9 @@ import (
 	"container/heap"
 	"fmt"
 	"math"
+	"os"
 	"sort"
-	"strings"
+	"strconv"
 	"sync/atomic"
 	"time"
 
@@ -42,11 +43,24 @@ type ScannerOp interface {
 }
 
 const (
-	constMergeWaitDuration = 1 * time.Minute
-	constMergeMinBlks      = 5
-	constHeapCapacity      = 300
-	const4GBytes           = 4 * (1 << 30)
+	constMergeWaitDuration  = 1 * time.Minute
+	constMergeMinBlks       = 5
+	constHeapCapacity       = 300
+	const4GBytes            = 4 * (1 << 30)
+	constKeyMergeWaitFactor = "MO_MERGE_WAIT" // smaller value means shorter wait, cost much more io
 )
+
+func EnvOrDefaultFloat(key string, defaultValue float64) float64 {
+	val, ok := os.LookupEnv(key)
+	if !ok {
+		return defaultValue
+	}
+	i, err := strconv.ParseFloat(val, 64)
+	if err != nil {
+		return defaultValue
+	}
+	return i
+}
 
 // min heap item
 type mItem[T any] struct {
@@ -197,6 +211,7 @@ type mergeLimiter struct {
 	tableName           string
 	memAvail            int
 	activeMergeBlkCount int32
+	mergeWaitFactor     float64
 }
 
 func (ml *mergeLimiter) IncActiveCount(n int) {
@@ -219,6 +234,14 @@ func (ml *mergeLimiter) checkMemAvail(blks int) bool {
 	return quotaBlks-int(merging) > blks
 }
 
+func (ml *mergeLimiter) determineQuietSegFactor() int {
+	return int(ml.mergeWaitFactor * 3)
+}
+
+func (ml *mergeLimiter) determineGapIntentFactor(gap float64) float64 {
+	return gap / float64(ml.mergeMaxRows) * 5 * ml.mergeWaitFactor
+}
+
 // merge immediately if it has enough rows, skip if:
 // 1. has only a few rows or blocks
 // 2. is actively updating, which means total rows changes obviously compared with last time
@@ -228,7 +251,7 @@ func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, deletes int, blks int
 		return false
 	}
 	if totalRow > ml.mergeMaxRows {
-		logutil.Warnf(
+		logutil.Infof(
 			"Mergeblocks %d-%s merge right now: %d rows %d blks",
 			tid, ml.tableName, totalRow, blks)
 		delete(ml.stats, tid)
@@ -250,7 +273,7 @@ func (ml *mergeLimiter) canMerge(tid uint64, totalRow int, deletes int, blks int
 		// it is not bad to gather 10 full blocks anyway.
 		st.ttl = ml.ttl(totalRow)
 		st.lastTotalRow = totalRow
-		logutil.Warnf(
+		logutil.Infof(
 			"Mergeblocks resched table %d-%s, resched to %v",
 			tid, ml.tableName, st.ttl)
 		return false
@@ -339,8 +362,8 @@ func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
 		"mergeblocks ======== %v %v | %v %v | %v %v",
 		s1.SortHint, s2.SortHint, r1, r2, s1.Stat.MergeIntent, s2.Stat.MergeIntent,
 	)
-	// skip big segment
-	if r1 > s.limiter.mergeMaxRows*15 || r2 > s.limiter.mergeMaxRows*15 {
+	// skip big segment which is over 200 blks
+	if r1 > s.limiter.mergeMaxRows*40 || r2 > s.limiter.mergeMaxRows*40 {
 		return
 	}
 
@@ -349,9 +372,9 @@ func (s *MergeTaskBuilder) checkSortedSegs(segs []*catalog.SegmentEntry) (
 		// bump intention
 		s1.Stat.MergeIntent++
 		s2.Stat.MergeIntent++
-		factor := gap / float64(s.limiter.mergeMaxRows)
-		if float64(s1.Stat.MergeIntent) < 20*factor ||
-			float64(s2.Stat.MergeIntent) < 20*factor {
+		waitIntent := s.limiter.determineGapIntentFactor(gap)
+		if float64(s1.Stat.MergeIntent) < waitIntent ||
+			float64(s2.Stat.MergeIntent) < waitIntent {
 			return
 		}
 	}
@@ -389,12 +412,6 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 	mergedSegs := s.segBuilder.finish()
 	hasDelSeg := len(mergedSegs) > 0
 
-	if strings.HasPrefix(s.limiter.tableName, "sbtest") {
-		logutil.Warnf(
-			"mergeblocks onPostTable %v-%v, totalRow %v, deleteRow %v, blks %v, sortedCandidates %v",
-			s.tid, s.limiter.tableName, s.tableRowCnt, s.tableDelete, len(mergedBlks), len(s.sortedSegBuilder.items))
-	}
-
 	hasMergeBlk := s.limiter.canMerge(s.tid, s.tableRowCnt, s.tableDelete, len(mergedBlks))
 	if !hasMergeBlk {
 		mblks, msegs := s.checkSortedSegs(s.sortedSegBuilder.finish())
@@ -421,10 +438,11 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 		}
 		_, err := s.db.Runtime.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, segScopes, factory)
 		if err != nil {
-			logutil.Warnf("[Mergeblocks] Schedule del seg errinfo=%v", err)
+			logutil.Infof("[Mergeblocks] Schedule del seg errinfo=%v", err)
 			return
 		}
-		logutil.Warnf("[Mergeblocks] Scheduled | del %d seg", len(mergedSegs))
+		logutil.Infof("[Mergeblocks] Scheduled | %d-%s del %d seg",
+			s.tid, s.limiter.tableName, len(mergedSegs))
 		return
 	}
 
@@ -439,7 +457,7 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 	task, err := s.db.Runtime.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, scopes, factory)
 	if err != nil {
 		if err != tasks.ErrScheduleScopeConflict {
-			logutil.Warnf("[Mergeblocks] Schedule error info=%v", err)
+			logutil.Infof("[Mergeblocks] Schedule error info=%v", err)
 		}
 	} else {
 		// reset flag of sorted
@@ -453,7 +471,8 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 		if n > constMergeMinBlks {
 			n = constMergeMinBlks
 		}
-		logutil.Warnf("[Mergeblocks] Scheduled | Scopes=[%d],[%d]%s",
+		logutil.Infof("[Mergeblocks] Scheduled | %d-%s Scopes=[%d],[%d]%s",
+			s.tid, s.limiter.tableName,
 			len(segScopes), len(scopes),
 			common.BlockIDArraryString(scopes[:n]))
 	}
@@ -494,20 +513,20 @@ func (s *MergeTaskBuilder) PreExecute() error {
 		s.limiter.pruneStale()
 	}
 
-	// print stats for every 50s (default)
-	if s.runCnt%10 == 0 {
-		logutil.Warnf("Mergeblocks stats: %s", s.limiter.String())
-	}
-
 	// fresh mem use
 	if stats, err := mem.VirtualMemory(); err == nil {
 		s.limiter.memAvail = int(stats.Available)
+	}
+	if f := EnvOrDefaultFloat(constKeyMergeWaitFactor, 1.0); f < 0.1 {
+		s.limiter.mergeWaitFactor = 0.1
+	} else {
+		s.limiter.mergeWaitFactor = f
 	}
 	return nil
 }
 func (s *MergeTaskBuilder) PostExecute() error {
 	if cnt := atomic.LoadInt32(&s.limiter.activeMergeBlkCount); cnt > 0 {
-		logutil.Warnf(
+		logutil.Infof(
 			"Mergeblocks avail mem: %dG, current active blk: %d",
 			s.limiter.memAvail/(1<<30), cnt)
 	}
@@ -549,14 +568,15 @@ func (s *MergeTaskBuilder) onPostSegment(seg *catalog.SegmentEntry) (err error) 
 	seg.Stat.Rows = s.segBuilder.segRowCnt
 	if seg.Stat.Dels == s.segBuilder.segRowDel {
 		seg.Stat.SameDelsStreak++
-		if seg.Stat.SameDelsStreak > 10 {
-			s.sortedSegBuilder.push(&mItem[*catalog.SegmentEntry]{
-				row:   s.segBuilder.segRowCnt - s.segBuilder.segRowDel,
-				entry: seg,
-			})
-		}
 	} else {
 		seg.Stat.SameDelsStreak = 0
+	}
+	if seg.Stat.SameDelsStreak > s.limiter.determineQuietSegFactor() ||
+		s.segBuilder.segRowCnt-s.segBuilder.segRowDel < s.limiter.mergeMaxRows {
+		s.sortedSegBuilder.push(&mItem[*catalog.SegmentEntry]{
+			row:   s.segBuilder.segRowCnt - s.segBuilder.segRowDel,
+			entry: seg,
+		})
 	}
 	seg.Stat.Dels = s.segBuilder.segRowDel
 

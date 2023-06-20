@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
@@ -348,6 +349,7 @@ func (d *dirtyCollector) tryCompactTree(
 		seg *catalog.SegmentEntry
 		blk *catalog.BlockEntry
 	)
+	var delBlk []*catalog.BlockEntry
 	for id, dirtyTable := range tree.Tables {
 		// remove empty tables
 		if dirtyTable.Compact() {
@@ -403,6 +405,10 @@ func (d *dirtyCollector) tryCompactTree(
 						blk.GetBlockData().TryUpgrade()
 					}
 					dirtySeg.Shrink(bid)
+					if !blk.HasDropCommitted() {
+						logutil.Infof("block %v not dropped, score = 0", blk.ID.String())
+						delBlk = append(delBlk, blk)
+					}
 					continue
 				}
 				if err = interceptor.OnBlock(blk); err != nil {
@@ -412,5 +418,14 @@ func (d *dirtyCollector) tryCompactTree(
 		}
 	}
 	tree.Compact()
+	if len(delBlk) > 0 {
+		time.Sleep(2 * time.Millisecond)
+		for _, blk := range delBlk {
+			if blk.GetBlockData().RunCalibration() != 0 {
+				logutil.Infof("waiting for block %v come to live again", blk.ID.String())
+			}
+		}
+	}
+
 	return
 }

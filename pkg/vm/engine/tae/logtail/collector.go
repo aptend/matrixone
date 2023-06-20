@@ -155,7 +155,7 @@ func (d *dirtyCollector) Run() {
 func (d *dirtyCollector) ScanInRangePruned(from, to types.TS) (
 	tree *DirtyTreeEntry) {
 	tree, _ = d.ScanInRange(from, to)
-	if err := d.tryCompactTree(d.interceptor, tree.tree); err != nil {
+	if err := d.tryCompactTree(d.interceptor, tree.tree, from, to); err != nil {
 		panic(err)
 	}
 	return
@@ -318,7 +318,7 @@ func (d *dirtyCollector) cleanupStorage() {
 			toDeletes = append(toDeletes, entry)
 			return true
 		}
-		if err := d.tryCompactTree(d.interceptor, entry.tree); err != nil {
+		if err := d.tryCompactTree(d.interceptor, entry.tree, entry.start, entry.end); err != nil {
 			logutil.Warnf("error: interceptor on dirty tree: %v", err)
 		}
 		if entry.tree.IsEmpty() {
@@ -342,7 +342,7 @@ func (d *dirtyCollector) cleanupStorage() {
 // iter the tree and call interceptor to process block. flushed block, empty seg and table will be removed from the tree
 func (d *dirtyCollector) tryCompactTree(
 	interceptor DirtyEntryInterceptor,
-	tree *model.Tree) (err error) {
+	tree *model.Tree, start, end types.TS) (err error) {
 	var (
 		db  *catalog.DBEntry
 		tbl *catalog.TableEntry
@@ -406,7 +406,7 @@ func (d *dirtyCollector) tryCompactTree(
 					}
 					dirtySeg.Shrink(bid)
 					if !blk.HasDropCommitted() {
-						logutil.Infof("block %v not dropped, score = 0", blk.ID.String())
+						logutil.Infof("block %v not dropped, score = 0 @ %v ~ %v", blk.ID.String(), start.ToTimestamp().DebugString(), end.ToTimestamp().DebugString())
 						delBlk = append(delBlk, blk)
 					}
 					continue

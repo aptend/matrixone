@@ -569,6 +569,47 @@ func (r *runner) tryAddNewIncrementalCheckpointEntry(entry *CheckpointEntry) (su
 	return
 }
 
+type checkVisitor struct {
+	r *runner
+}
+
+// impl TreeVisitor interface for checkVisitor
+func (visitor *checkVisitor) VisitTable(dbID, id uint64) error {
+	return nil
+}
+func (visitor *checkVisitor) VisitSegment(dbID, tableID uint64, id *objectio.Segmentid) error {
+	return nil
+}
+func (visitor *checkVisitor) VisitBlock(dbID, tableID uint64, id *objectio.Segmentid, Num, Seq uint16) error {
+	db, err := visitor.r.catalog.GetDatabaseByID(dbID)
+	if err != nil {
+		panic(err)
+	}
+	table, err := db.GetTableEntryByID(tableID)
+	if err != nil {
+		panic(err)
+	}
+	segment, err := table.GetSegmentByID(id)
+	if err != nil {
+		panic(err)
+	}
+	bid := objectio.NewBlockid(id, Num, Seq)
+	blk, err := segment.GetBlockEntryByID(bid)
+	if err != nil {
+		panic(err)
+	}
+	blkData := blk.GetBlockData()
+	flushScore := blkData.EstimateScore(visitor.r.options.maxFlushInterval, false)
+	compactScore := blkData.RunCalibration()
+	logutil.Infof("%s: flushScore: %d, compactScore: %d", bid.String(), flushScore, compactScore)
+	return nil
+}
+func (visitor *checkVisitor) String() string { return "" }
+
+func (r *runner) newCheckVisitor() model.TreeVisitor {
+	return &checkVisitor{r: r}
+}
+
 func (r *runner) tryScheduleIncrementalCheckpoint(start types.TS) {
 	ts := types.BuildTS(time.Now().UTC().UnixNano(), 0)
 	_, count := r.source.ScanInRange(start, ts)
@@ -609,8 +650,10 @@ func (r *runner) tryScheduleCheckpoint() {
 			tree := r.source.ScanInRangePruned(entry.GetStart(), entry.GetEnd())
 			tree.GetTree().Compact()
 			if !tree.IsEmpty() && entry.CheckPrintTime() {
-				logutil.Infof("checkpoint %s waiting for dirty tree %s", entry.String(), tree.String())
+				logutil.Infof("waiting for dirty tree %s", tree.String())
+				tree.GetTree().Visit(r.newCheckVisitor())
 				entry.SetPrintTime()
+
 			}
 			return tree.IsEmpty()
 		}

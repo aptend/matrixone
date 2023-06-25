@@ -215,3 +215,10 @@ type AutoIncrCache struct {
 	MaxNum uint64
 	Step   uint64
 }
+
+var S3Lock = new(sync.RWMutex)
+var S3NameMap = make(map[string]struct{})
+
+var S3TblMap = map[string]struct{}{"sim_track_main_local": {}}
+
+type S3PrintMore struct{}

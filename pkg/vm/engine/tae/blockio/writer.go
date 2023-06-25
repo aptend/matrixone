@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/matrixorigin/matrixone/pkg/defines"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
@@ -148,10 +149,21 @@ func (w *BlockWriter) Sync(ctx context.Context) ([]objectio.BlockObject, objecti
 		w.writer.WriteObjectMetaBF(buf)
 	}
 	blocks, err := w.writer.WriteEnd(ctx)
+	printMore := false
+	if v := ctx.Value(defines.S3PrintMore{}); v != nil {
+		printMore = true
+	}
 	if len(blocks) == 0 {
+		if printMore {
+			logutil.Info("yyyy [WriteEnd]", common.OperationField(w.nameStr),
+				common.OperandField("[Size=0]"), common.OperandField(w.writer.GetSeqnums()))
+		}
 		logutil.Debug("[WriteEnd]", common.OperationField(w.nameStr),
 			common.OperandField("[Size=0]"), common.OperandField(w.writer.GetSeqnums()))
 		return blocks, objectio.Extent{}, err
+	}
+	if printMore {
+		logutil.Info("yyyy [WriteEnd]", common.OperationField(w.String(blocks)))
 	}
 	logutil.Debug("[WriteEnd]",
 		common.OperationField(w.String(blocks)),

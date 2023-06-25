@@ -39,6 +39,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 	"github.com/aws/aws-sdk-go-v2/service/sts"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
+	"github.com/matrixorigin/matrixone/pkg/defines"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/perfcounter"
 	"github.com/matrixorigin/matrixone/pkg/util/trace"
@@ -741,6 +742,11 @@ func (s *S3FS) Delete(ctx context.Context, filePaths ...string) error {
 
 	objs := make([]types.ObjectIdentifier, 0, 1000)
 	for _, filePath := range filePaths {
+		defines.S3Lock.RLock()
+		if _, ok := defines.S3NameMap[filePath]; ok {
+			logutil.Errorf("yyyy delete %s target table from s3", filePath)
+		}
+		defines.S3Lock.RUnlock()
 		path, err := ParsePathAtService(filePath, s.name)
 		if err != nil {
 			return err

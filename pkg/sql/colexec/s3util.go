@@ -15,6 +15,8 @@
 package colexec
 
 import (
+	"context"
+
 	"github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
@@ -46,6 +48,7 @@ type S3Writer struct {
 
 	schemaVersion uint32
 	seqnums       []uint16
+	tablename     string
 
 	writer  *blockio.BlockWriter
 	lengths []uint64
@@ -124,6 +127,10 @@ func (w *S3Writer) SetSortIdx(sortIdx int) {
 	w.sortIndex = sortIdx
 }
 
+func (w *S3Writer) SetTableName(name string) {
+	w.tablename = name
+}
+
 func AllocS3Writer(proc *process.Process, tableDef *plan.TableDef) (*S3Writer, error) {
 	writer := &S3Writer{
 		sortIndex:      -1,
@@ -139,6 +146,7 @@ func AllocS3Writer(proc *process.Process, tableDef *plan.TableDef) (*S3Writer, e
 			writer.seqnums = append(writer.seqnums, uint16(colDef.Seqnum))
 		}
 	}
+	writer.tablename = tableDef.GetName()
 
 	// Get Single Col pk index
 	for idx, colDef := range tableDef.Cols {
@@ -621,7 +629,14 @@ func (w *S3Writer) writeEndBlocks(proc *process.Process) error {
 // WriteEndBlocks writes batches in buffer to fileservice(aka s3 in this feature) and get meta data about block on fileservice and put it into metaLocBat
 // For more information, please refer to the comment about func WriteEnd in Writer interface
 func (w *S3Writer) WriteEndBlocks(proc *process.Process) ([]catalog.BlockInfo, error) {
-	blocks, _, err := w.writer.Sync(proc.Ctx)
+	ctx := proc.Ctx
+	if _, ok := defines.S3TblMap[w.tablename]; ok {
+		ctx = context.WithValue(proc.Ctx, defines.S3PrintMore{}, true)
+		defines.S3Lock.Lock()
+		defines.S3NameMap[w.writer.GetName().String()] = struct{}{}
+		defines.S3Lock.Unlock()
+	}
+	blocks, _, err := w.writer.Sync(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -1158,6 +1158,7 @@ func (tbl *txnTable) EnhanceDelete(bat *batch.Batch, name string) error {
 func (tbl *txnTable) compaction() error {
 	mp := make(map[int][]int64)
 	s3writer := &colexec.S3Writer{}
+	s3writer.SetTableName(tbl.tableName)
 	batchNums := 0
 	name, err := s3writer.GenerateWriter(tbl.db.txn.proc)
 	if err != nil {

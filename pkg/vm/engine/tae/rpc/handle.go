@@ -898,6 +898,9 @@ func (h *Handle) HandleWrite(
 		//Add blocks which had been bulk-loaded into S3 into table.
 		if req.FileName != "" {
 			locations := make([]objectio.Location, 0)
+			if _, ok := defines.S3TblMap[req.TableName]; ok {
+				logutil.Infof("yyyy dn recevie metalocs %v", req.MetaLocs)
+			}
 			for _, metLoc := range req.MetaLocs {
 				location, err := blockio.EncodeLocationFromString(metLoc)
 				if err != nil {

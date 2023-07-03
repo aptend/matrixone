@@ -17,6 +17,7 @@ package client
 import (
 	"bytes"
 	"context"
+	"runtime/trace"
 	"sync"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -362,6 +363,8 @@ func (tc *txnOperator) WriteAndCommit(ctx context.Context, requests []txn.TxnReq
 }
 
 func (tc *txnOperator) Commit(ctx context.Context) error {
+	probe := trace.StartRegion(context.Background(), "Txn Commit")
+	defer probe.End()
 	util.LogTxnCommit(tc.getTxnMeta(false))
 
 	if tc.option.readyOnly {

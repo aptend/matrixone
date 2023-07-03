@@ -54,7 +54,7 @@ func (a *driverAppender) append(retryTimout, appendTimeout time.Duration) {
 	record := a.client.record
 	copy(record.Payload(), a.entry.payload)
 	record.ResizePayload(size)
-	defer logSlowAppend()()
+	defer logSlowAppend(len(a.entry.entries))()
 	ctx, cancel := context.WithTimeout(context.Background(), appendTimeout)
 
 	var timeoutSpan trace.Span
@@ -107,13 +107,13 @@ func (a *driverAppender) freeEntries() {
 	}
 }
 
-func logSlowAppend() func() {
-	const slowAppend = 1 * time.Second
+func logSlowAppend(nEntries int) func() {
+	const slowAppend = 200 * time.Millisecond
 	start := time.Now()
 	return func() {
 		elapsed := time.Since(start)
 		if elapsed >= slowAppend {
-			logutil.Warnf("append to logservice took %s", elapsed)
+			logutil.Warnf("append to logservice took %s, %d", elapsed, nEntries)
 		}
 	}
 }

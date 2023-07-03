@@ -187,7 +187,7 @@ func (th *TxnHandler) NewTxn() (context.Context, TxnOperator, error) {
 	}()
 	now := time.Now()
 	defer func() {
-		if ela := time.Since(now); err == nil && ela > 800*time.Millisecond {
+		if ela := time.Since(now); err == nil && ela > 1*time.Second {
 			logutil.Infof("slow new txn. cost %v, %+v", ela, hex.EncodeToString(txnOp.Txn().ID))
 		}
 	}()

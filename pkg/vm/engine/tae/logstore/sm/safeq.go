@@ -17,8 +17,13 @@ package sm
 import (
 	"context"
 	"runtime"
+	"strconv"
+	"strings"
 	"sync"
 	"sync/atomic"
+	"time"
+
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 )
 
 const (
@@ -51,17 +56,25 @@ func NewSafeQueue(queueSize, batchSize int, onItem OnItemsCB) *safeQueue {
 	return q
 }
 
-func (q *safeQueue) Start() {
+func (q *safeQueue) Start(tags ...string) {
 	q.state.Store(Running)
 	q.wg.Add(1)
 	items := make([]any, 0, q.batchSize)
 	go func() {
+		var buf [64]byte
+		n := runtime.Stack(buf[:], false)
+		idField := strings.Fields(strings.TrimPrefix(string(buf[:n]), "goroutine "))[0]
+		id, _ := strconv.Atoi(idField)
+		logutil.Infof("Slow commit queue %v on %d", tags, id)
+		moment := time.Now()
 		defer q.wg.Done()
+		var wake, handle time.Duration
 		for {
 			select {
 			case <-q.ctx.Done():
 				return
 			case item := <-q.queue:
+				wake = time.Since(moment)
 				if q.onItemsCB == nil {
 					continue
 				}
@@ -76,9 +89,18 @@ func (q *safeQueue) Start() {
 					}
 				}
 				cnt := len(items)
+				moment = time.Now()
 				q.onItemsCB(items...)
+				handle = time.Since(moment)
+				if wake > 1*time.Second && len(tags) > 0 {
+					logutil.Infof("Slow commit queue fire %v, elapse %v, cnt %d", tags, wake, cnt)
+				}
+				if handle > 1*time.Second && len(tags) > 0 {
+					logutil.Infof("Slow commit queue onItemsCB %v, elapse %v, cnt %d", tags, handle, cnt)
+				}
 				items = items[:0]
 				q.pending.Add(-1 * int64(cnt))
+				moment = time.Now()
 			}
 		}
 	}()

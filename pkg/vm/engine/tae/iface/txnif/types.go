@@ -18,6 +18,7 @@ import (
 	"context"
 	"io"
 	"sync"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 
@@ -76,6 +77,13 @@ type TxnReader interface {
 	SameTxn(txn TxnReader) bool
 	CommitBefore(startTs types.TS) bool
 	CommitAfter(startTs types.TS) bool
+}
+
+type TxnStatsRecorder interface {
+	PhaseStart(int)
+	PhaseEnd(int) time.Duration
+	SetPhaseDuration(int, time.Time)
+	PhaseStatsString() string
 }
 
 type TxnHandle interface {
@@ -152,6 +160,7 @@ type AsyncTxn interface {
 	TxnReader
 	TxnWriter
 	TxnChanger
+	TxnStatsRecorder
 }
 
 type DeleteChain interface {

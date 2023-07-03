@@ -52,7 +52,8 @@ import (
 
 const (
 	MAX_ALLOWED_TXN_LATENCY = time.Millisecond * 300
-	MAX_TXN_COMMIT_LATENCY  = time.Minute * 2
+	MAX_LATENCY_SLOW_STATS  = 1 * time.Second
+	MAX_TXN_COMMIT_LATENCY  = time.Minute * 1
 )
 
 // TODO::GC the abandoned txn.
@@ -136,6 +137,12 @@ func (h *Handle) HandleCommit(
 		logutil.Debugf("HandleCommit start : %X",
 			string(meta.GetID()))
 	})
+	var tblId uint64
+	var tblName string
+	var reqCnt int
+	var handleCost time.Duration
+	var txn txnif.AsyncTxn
+	var commitCost time.Duration
 	defer func() {
 		if ok {
 			//delete the txn's context.
@@ -144,14 +151,24 @@ func (h *Handle) HandleCommit(
 			h.mu.Unlock()
 		}
 		common.DoIfInfoEnabled(func() {
-			if time.Since(start) > MAX_ALLOWED_TXN_LATENCY {
-				logutil.Info("Commit with long latency", zap.Duration("duration", time.Since(start)), zap.String("debug", meta.DebugString()))
+			lat := time.Since(start)
+			if lat > MAX_LATENCY_SLOW_STATS {
+				logutil.Info("Slow commit",
+					zap.Duration("total", time.Since(start)),
+					zap.String("debug", meta.DebugString()),
+					zap.Uint64("tblid", tblId),
+					zap.String("tblname", tblName),
+					zap.Int("reqCnt", reqCnt),
+					zap.Duration("handleCost", handleCost),
+					zap.Duration("commitCost", commitCost),
+					zap.String("commitStats", txn.PhaseStatsString()))
 			}
 		})
 	}()
 	//Handle precommit-write command for 1PC
-	var txn txnif.AsyncTxn
 	if ok {
+		handleStart := time.Now()
+		reqCnt = len(txnCtx.reqs)
 		for _, e := range txnCtx.reqs {
 			switch req := e.(type) {
 			case *db.CreateDatabaseReq:
@@ -190,12 +207,15 @@ func (h *Handle) HandleCommit(
 					&db.WriteResp{},
 				)
 			case *db.WriteReq:
+				tblId = req.TableID
+				tblName = req.TableName
 				err = h.HandleWrite(
 					ctx,
 					meta,
 					req,
 					&db.WriteResp{},
 				)
+
 			default:
 				panic(moerr.NewNYI(ctx, "Pls implement me"))
 			}
@@ -206,6 +226,7 @@ func (h *Handle) HandleCommit(
 				return
 			}
 		}
+		handleCost = time.Since(handleStart)
 	}
 	txn, err = h.db.GetTxnByID(meta.GetID())
 	if err != nil {
@@ -215,7 +236,9 @@ func (h *Handle) HandleCommit(
 	if txn.Is2PC() {
 		txn.SetCommitTS(types.TimestampToTS(meta.GetCommitTS()))
 	}
+	commitbegin := time.Now()
 	err = txn.Commit(ctx)
+	commitCost = time.Since(commitbegin)
 	cts = txn.GetCommitTS().ToTimestamp()
 	return
 }

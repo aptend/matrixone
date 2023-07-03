@@ -46,13 +46,13 @@ func (c *ClosedState) TryClose() bool {
 }
 
 type Queue interface {
-	Start()
+	Start(tag ...string)
 	Stop()
 	Enqueue(any) (any, error)
 }
 
 type StateMachine interface {
-	Start()
+	Start(tag ...string)
 	Stop()
 	EnqueueRecevied(any) (any, error)
 	EnqueueCheckpoint(any) (any, error)

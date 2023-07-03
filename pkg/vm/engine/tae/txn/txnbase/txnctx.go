@@ -17,6 +17,7 @@ package txnbase
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
@@ -50,7 +51,35 @@ type TxnCtx struct {
 
 	// Memo is not thread-safe
 	// It will be readonly when txn state is not txnif.TxnStateActive
-	Memo *txnif.TxnMemo
+	Memo      *txnif.TxnMemo
+	SlowStats *TxnSlowPath
+}
+
+type PathType = int
+
+const (
+	PhasePrepareBatchSched PathType = iota
+	// PhasePrepareSched
+	// PhasePrePrepare
+	// PhasePrepare
+	PhasePrepareWalBatchSched
+	// PhasePrepareWal
+	PhaseFlushWaitBatchSched
+	// PhaseFlush
+	// PhaseCommit
+	PathCnt
+)
+
+type TxnSlowPath struct {
+	starts  []time.Time
+	elapses []time.Duration
+}
+
+func NewTxnSlowPath() *TxnSlowPath {
+	return &TxnSlowPath{
+		starts:  make([]time.Time, PathCnt),
+		elapses: make([]time.Duration, PathCnt),
+	}
 }
 
 func NewTxnCtx(id []byte, start, snapshot types.TS) *TxnCtx {
@@ -65,6 +94,7 @@ func NewTxnCtx(id []byte, start, snapshot types.TS) *TxnCtx {
 		CommitTS:   txnif.UncommitTS,
 		SnapshotTS: snapshot,
 		Memo:       txnif.NewTxnMemo(),
+		SlowStats:  NewTxnSlowPath(),
 	}
 	ctx.DoneCond = *sync.NewCond(ctx)
 	return ctx
@@ -76,6 +106,40 @@ func NewEmptyTxnCtx() *TxnCtx {
 	}
 	ctx.DoneCond = *sync.NewCond(ctx)
 	return ctx
+}
+
+func (ctx *TxnCtx) PhaseStart(phase PathType) {
+	ctx.SlowStats.starts[phase] = time.Now()
+}
+func (ctx *TxnCtx) PhaseEnd(phase PathType) time.Duration {
+	ctx.SlowStats.elapses[phase] = time.Since(ctx.SlowStats.starts[phase])
+	return ctx.SlowStats.elapses[phase]
+}
+
+func (ctx *TxnCtx) SetPhaseDuration(phase PathType, d time.Time) {
+	ctx.SlowStats.elapses[phase] = d.Sub(ctx.SlowStats.starts[phase])
+}
+func (ctx *TxnCtx) PhaseStatsString() string {
+	e := ctx.SlowStats.elapses
+	// return fmt.Sprintf(
+	// 	"prepareBatchSched: %v, prepareSched: %v, prePrepare: %v, prepare: %v,"+
+	// 		"prepareWalBatchSched: %v, prepareWal: %v, flushWaitBatchSched: %v, flush: %v, applyCommit: %v",
+	// 	e[PhasePrepareBatchSched],
+	// 	e[PhasePrepareSched],
+	// 	e[PhasePrePrepare],
+	// 	e[PhasePrepare],
+	// 	e[PhasePrepareWalBatchSched],
+	// 	e[PhasePrepareWal],
+	// 	e[PhaseFlushWaitBatchSched],
+	// 	e[PhaseFlush],
+	// 	e[PhaseCommit])
+
+	return fmt.Sprintf(
+		"prepareBatchSched: %v, "+
+			"prepareWalBatchSched: %v, flushWaitBatchSched: %v",
+		e[PhasePrepareBatchSched],
+		e[PhasePrepareWalBatchSched],
+		e[PhaseFlushWaitBatchSched])
 }
 
 func (ctx *TxnCtx) IsReplay() bool { return false }

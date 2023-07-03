@@ -237,7 +237,8 @@ func (mgr *TxnManager) GetTxn(id string) txnif.AsyncTxn {
 	return mgr.IDMap[id]
 }
 
-func (mgr *TxnManager) EnqueueFlushing(op any) (err error) {
+func (mgr *TxnManager) EnqueueFlushing(op *OpTxn) (err error) {
+	op.Txn.PhaseStart(PhasePrepareWalBatchSched)
 	_, err = mgr.PreparingSM.EnqueueCheckpoint(op)
 	return
 }
@@ -252,6 +253,7 @@ func (mgr *TxnManager) heartbeat(ctx context.Context) {
 		case <-heartbeatTicker.C:
 			op := mgr.newHeartbeatOpTxn(ctx)
 			op.Txn.(*Txn).Add(1)
+			// op.Txn.PhaseStart(PhasePrepareSched)
 			_, err := mgr.PreparingSM.EnqueueRecevied(op)
 			if err != nil {
 				panic(err)
@@ -282,6 +284,8 @@ func (mgr *TxnManager) newHeartbeatOpTxn(ctx context.Context) *OpTxn {
 }
 
 func (mgr *TxnManager) OnOpTxn(op *OpTxn) (err error) {
+	// op.Txn.PhaseStart(PhasePrepareSched)
+	op.Txn.PhaseStart(PhasePrepareBatchSched)
 	_, err = mgr.PreparingSM.EnqueueRecevied(op)
 	return
 }
@@ -444,7 +448,8 @@ func (mgr *TxnManager) dequeuePreparing(items ...any) {
 	now := time.Now()
 	for _, item := range items {
 		op := item.(*OpTxn)
-
+		op.Txn.SetPhaseDuration(PhasePrepareBatchSched, now)
+		// op.Txn.PhaseEnd(PhasePrepareSched)
 		// Idempotent check
 		if state := op.Txn.GetTxnState(false); state != txnif.TxnStateActive {
 			op.Txn.WaitDone(moerr.NewTxnNotActiveNoCtx(txnif.TxnStrState(state)), false)
@@ -453,7 +458,9 @@ func (mgr *TxnManager) dequeuePreparing(items ...any) {
 
 		// Mainly do : 1. conflict check for 1PC Commit or 2PC Prepare;
 		//   		   2. push the AppendNode into the MVCCHandle of block
+		// op.Txn.PhaseStart(PhasePrePrepare)
 		mgr.onPrePrepare(op)
+		// op.Txn.PhaseEnd(PhasePrePrepare)
 
 		//Before this moment, all mvcc nodes of a txn has been pushed into the MVCCHandle.
 		//1. Allocate a timestamp , set it to txn's prepare timestamp and commit timestamp,
@@ -461,11 +468,13 @@ func (mgr *TxnManager) dequeuePreparing(items ...any) {
 		//2. Set transaction's state to Preparing or Rollbacking if op.Op is OpRollback.
 		ts := mgr.onBindPrepareTimeStamp(op)
 
+		// op.Txn.PhaseStart(PhasePrepare)
 		if op.Txn.Is2PC() {
 			mgr.onPrepare2PC(op, ts)
 		} else {
 			mgr.onPrepare1PC(op, ts)
 		}
+		// op.Txn.PhaseEnd(PhasePrepare)
 
 		if err := mgr.EnqueueFlushing(op); err != nil {
 			panic(err)
@@ -483,12 +492,17 @@ func (mgr *TxnManager) onPrepareWAL(items ...any) {
 	now := time.Now()
 	for _, item := range items {
 		op := item.(*OpTxn)
+		op.Txn.SetPhaseDuration(PhasePrepareWalBatchSched, now)
 		if op.Txn.GetError() == nil && op.Op == OpCommit || op.Op == OpPrepare {
+			// op.Txn.PhaseStart(PhasePrepareWal)
 			if err := op.Txn.PrepareWAL(); err != nil {
 				panic(err)
 			}
+			// op.Txn.PhaseEnd(PhasePrepareWal)
 			mgr.CommitListener.OnEndPrepareWAL(op.Txn)
 		}
+		// op.Txn.PhaseStart(PhaseFlush)
+		op.Txn.PhaseStart(PhaseFlushWaitBatchSched)
 		if _, err := mgr.FlushQueue.Enqueue(op); err != nil {
 			panic(err)
 		}
@@ -507,17 +521,21 @@ func (mgr *TxnManager) dequeuePrepared(items ...any) {
 	now := time.Now()
 	for _, item := range items {
 		op := item.(*OpTxn)
+		op.Txn.SetPhaseDuration(PhaseFlushWaitBatchSched, now)
 		//Notice that WaitPrepared do nothing when op is OpRollback
 		if err = op.Txn.WaitPrepared(op.ctx); err != nil {
 			// v0.6 TODO: Error handling
 			panic(err)
 		}
+		// op.Txn.PhaseEnd(PhaseFlush)
 
+		// op.Txn.PhaseStart(PhaseCommit)
 		if op.Is2PC() {
 			mgr.on2PCPrepared(op)
 		} else {
 			mgr.on1PCPrepared(op)
 		}
+		// op.Txn.PhaseEnd(PhaseCommit)
 	}
 	common.DoIfDebugEnabled(func() {
 		logutil.Debug("[dequeuePrepared]",
@@ -553,8 +571,8 @@ func (mgr *TxnManager) MinTSForTest() types.TS {
 }
 
 func (mgr *TxnManager) Start(ctx context.Context) {
-	mgr.FlushQueue.Start()
-	mgr.PreparingSM.Start()
+	mgr.FlushQueue.Start("FlushWaitingQueue")
+	mgr.PreparingSM.Start("PreparingSM")
 	mgr.wg.Add(1)
 	go mgr.heartbeat(ctx)
 }

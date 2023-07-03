@@ -42,12 +42,16 @@ func (sm *stateMachine) EnqueueCheckpoint(item any) (any, error) {
 	return sm.checkpointQueue.Enqueue(item)
 }
 
-func (sm *stateMachine) Start() {
+func (sm *stateMachine) Start(tag ...string) {
+	p := ""
+	if len(tag) > 0 {
+		p = tag[0]
+	}
 	if sm.checkpointQueue != nil {
-		sm.checkpointQueue.Start()
+		sm.checkpointQueue.Start(p, "ckpQ2")
 	}
 	if sm.receiveQueue != nil {
-		sm.receiveQueue.Start()
+		sm.receiveQueue.Start(p, "rQ1")
 	}
 }
 

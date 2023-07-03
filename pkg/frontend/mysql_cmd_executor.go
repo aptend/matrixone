@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -2982,7 +2983,7 @@ func (mce *MysqlCmdExecutor) executeStmt(requestCtx context.Context,
 
 	// only log if build time is longer than 1s
 	if time.Since(cmpBegin) > time.Second {
-		logInfof(ses.GetDebugString(), "time of Exec.Build : %s", time.Since(cmpBegin).String())
+		logInfof(ses.GetDebugString(), "time of Exec.Build : %s %s", time.Since(cmpBegin).String(), hex.EncodeToString(ses.GetTxnHandler().txnOperator.Txn().ID))
 	}
 
 	mrs = ses.GetMysqlResultSet()
@@ -3075,7 +3076,7 @@ func (mce *MysqlCmdExecutor) executeStmt(requestCtx context.Context,
 
 		// only log if run time is longer than 1s
 		if time.Since(runBegin) > time.Second {
-			logInfof(ses.GetDebugString(), "time of Exec.Run : %s", time.Since(runBegin).String())
+			logInfof(ses.GetDebugString(), "time of Exec.Run : %s %s", time.Since(runBegin).String(), hex.EncodeToString(ses.GetTxnHandler().txnOperator.Txn().ID))
 		}
 
 		/*
@@ -3153,7 +3154,7 @@ func (mce *MysqlCmdExecutor) executeStmt(requestCtx context.Context,
 
 		// only log if run time is longer than 1s
 		if time.Since(runBegin) > time.Second {
-			logInfof(ses.GetDebugString(), "time of Exec.Run : %s", time.Since(runBegin).String())
+			logInfof(ses.GetDebugString(), "time of Exec.Run : %s %s", time.Since(runBegin).String(), hex.EncodeToString(ses.GetTxnHandler().txnOperator.Txn().ID))
 		}
 
 		rspLen = cw.GetAffectedRows()
@@ -3216,7 +3217,7 @@ func (mce *MysqlCmdExecutor) executeStmt(requestCtx context.Context,
 
 		// only log if run time is longer than 1s
 		if time.Since(runBegin) > time.Second {
-			logInfof(ses.GetDebugString(), "time of Exec.Run : %s", time.Since(runBegin).String())
+			logInfof(ses.GetDebugString(), "time of Exec.Run : %s %s", time.Since(runBegin).String(), hex.EncodeToString(ses.GetTxnHandler().txnOperator.Txn().ID))
 		}
 
 		if cwft, ok := cw.(*TxnComputationWrapper); ok {

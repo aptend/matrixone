@@ -16,6 +16,7 @@ package service
 
 import (
 	"context"
+	"runtime/trace"
 	"sync"
 
 	"go.uber.org/ratelimit"
@@ -163,7 +164,9 @@ func (c *LogtailClient) Receive(ctx context.Context) (*LogtailResponse, error) {
 		}
 	}
 
+	probeRecv := trace.StartRegion(ctx, "PushModel receive")
 	prev, err := recvFunc()
+	probeRecv.End()
 	if err != nil {
 		return nil, err
 	}

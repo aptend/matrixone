@@ -31,6 +31,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
+	"github.com/matrixorigin/matrixone/pkg/util/fault"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/disttae/logtailreplay"
 	taeLogtail "github.com/matrixorigin/matrixone/pkg/vm/engine/tae/logtail"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/logtail/service"
@@ -569,6 +570,8 @@ type logTailSubscriber struct {
 	requestLock   chan bool
 	doSubscribe   func(context.Context, api.TableID) error
 	doUnSubscribe func(context.Context, api.TableID) error
+
+	faultRetry int64
 }
 
 func clientIsPreparing(context.Context, api.TableID) error {
@@ -620,6 +623,14 @@ func (s *logTailSubscriber) init(serviceAddr string) (err error) {
 		s.logTailClient = nil
 	}
 
+	iarg, _, exist := fault.TriggerFault("cn-reconnect")
+	if exist && s.faultRetry < iarg {
+		// mock connect retry
+		time.Sleep(3 * time.Second)
+		s.faultRetry++
+		logutil.Infof("[log-tail-push-client] mock connect dn error failure")
+		return moerr.NewBackendCannotConnectNoCtx()
+	}
 	stream, err := newRpcStreamToDnLogTailService(serviceAddr)
 	if err != nil {
 		return err
@@ -637,6 +648,7 @@ func (s *logTailSubscriber) init(serviceAddr string) (err error) {
 		s.requestLock = make(chan bool, 1)
 		s.ready = false
 	}
+	s.faultRetry = 0
 	return nil
 }
 

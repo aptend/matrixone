@@ -16,6 +16,7 @@ package service
 
 import (
 	"context"
+	"runtime/trace"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -26,9 +27,11 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/log"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
+	"github.com/matrixorigin/matrixone/pkg/util/fault"
 )
 
 type TableState int
@@ -185,6 +188,8 @@ type Session struct {
 	heartbeatTimer    *time.Timer
 	exactFrom         timestamp.Timestamp
 	publishInit       sync.Once
+
+	faultTag string
 }
 
 type SessionErrorNotifier interface {
@@ -217,6 +222,10 @@ func NewSession(
 		heartbeatInterval: heartbeatInterval,
 		heartbeatTimer:    time.NewTimer(heartbeatInterval),
 	}
+	_, stag, exist := fault.TriggerFault("cn-reconnect")
+	if exist {
+		ss.faultTag = stag
+	}
 
 	ss.logger.Info("initialize new session for morpc stream")
 
@@ -226,6 +235,7 @@ func NewSession(
 		var cnt int64
 		timer := time.NewTimer(100 * time.Second)
 
+		var probeSendWait *trace.Region
 		for {
 			select {
 			case <-ss.sessionCtx.Done():
@@ -240,6 +250,9 @@ func NewSession(
 				if !ok {
 					ss.logger.Info("session sender channel closed")
 					return
+				}
+				if probeSendWait != nil {
+					probeSendWait.End()
 				}
 
 				sendFunc := func() error {
@@ -265,10 +278,12 @@ func NewSession(
 
 				if err := sendFunc(); err != nil {
 					ss.notifier.NotifySessionError(ss, err)
+					probeSendWait = nil
 					return
 				}
 				cnt++
 				timer.Reset(10 * time.Second)
+				probeSendWait = trace.StartRegion(ctx, "PushModel send gap")
 			}
 		}
 	}
@@ -478,6 +493,17 @@ func (ss *Session) SendResponse(
 		ss.responses.Release(response)
 		return sendCtx.Err()
 	default:
+	}
+
+	_, stag, exist := fault.TriggerFault("cn-reconnect")
+	if exist && ss.faultTag != stag {
+		ss.faultTag = stag
+		ss.responses.Release(response)
+		ss.stream.Close()
+		err := moerr.NewStreamClosedNoCtx()
+		ss.notifier.NotifySessionError(ss, err)
+		logutil.Infof("mock log-tail close from dn")
+		return err
 	}
 
 	select {

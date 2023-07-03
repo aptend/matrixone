@@ -16,12 +16,15 @@ package frontend
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	moruntime "github.com/matrixorigin/matrixone/pkg/common/runtime"
 	"github.com/matrixorigin/matrixone/pkg/defines"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/sql/parsers/tree"
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/txn/storage/memorystorage"
@@ -180,6 +183,12 @@ func (th *TxnHandler) NewTxn() (context.Context, TxnOperator, error) {
 		if err != nil {
 			tenant := th.ses.GetTenantName(nil)
 			incTransactionErrorsCounter(tenant, metric.SQLTypeBegin)
+		}
+	}()
+	now := time.Now()
+	defer func() {
+		if ela := time.Since(now); err == nil && ela > 800*time.Millisecond {
+			logutil.Infof("slow new txn. cost %v, %+v", ela, hex.EncodeToString(txnOp.Txn().ID))
 		}
 	}()
 	txnCtx, txnOp, err = th.NewTxnOperator()

@@ -126,7 +126,7 @@ func HandleSyncLogTailReq(
 	logutil.Debugf("[Logtail] begin handle %+v", req)
 	defer func() {
 		if elapsed := time.Since(now); elapsed > 5*time.Second {
-			logutil.Infof("[Logtail] long pull cost %v, %v: %+v, %v ", elapsed, canRetry, req, err)
+			logutil.Infof("[Logtail] long pull cost %v, %v: %+v, %v, err %v ", elapsed, canRetry, req, resp.ProtoSize(), err)
 		}
 		logutil.Debugf("[Logtail] end handle %d entries[%q], err %v", len(resp.Commands), resp.CkpLocation, err)
 	}()

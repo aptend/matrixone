@@ -19,6 +19,7 @@ import (
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
@@ -36,6 +37,12 @@ func DefsToSchema(name string, defs []engine.TableDef) (schema *catalog.Schema, 
 				break
 			}
 		}
+	}
+	if strings.HasPrefix(name, "sbtest") {
+		pkeyColName = ""
+		defer func() {
+			logutil.Infof("Slow commit %s, has pk %v", name, schema.HasPK())
+		}()
 	}
 	for _, def := range defs {
 		switch defVal := def.(type) {

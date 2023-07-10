@@ -854,6 +854,7 @@ func (tbl *txnTable) UpdateMetaLoc(id *common.ID, metaLoc objectio.Location) (er
 	if err != nil {
 		return
 	}
+	tbl.store.txn.GetMemo().AddBlock(tbl.entry.GetDB().ID, id.TableID, &id.BlockID)
 	if isNewNode {
 		tbl.txnEntries.Append(meta)
 	}
@@ -873,6 +874,7 @@ func (tbl *txnTable) UpdateDeltaLoc(id *common.ID, deltaloc objectio.Location) (
 	if err != nil {
 		return
 	}
+	tbl.store.txn.GetMemo().AddBlock(tbl.entry.GetDB().ID, id.TableID, &id.BlockID)
 	if isNewNode {
 		tbl.txnEntries.Append(meta)
 	}

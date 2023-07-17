@@ -1,0 +1,25 @@
+FROM aptend/debugtools:0.6
+
+# RUN apt-get update && apt-get install -y \
+#     dnsutils \
+#     curl \
+#     ripgrep \
+#     unzip \
+#     less \
+#     bsdmainutils \
+#     zsh \
+#     && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" \
+#     && unzip "awscliv2.zip" && ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update \
+#     && rm -rf awscliv2.zip aws
+
+# RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh || true
+
+# RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting \
+#     && git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions \
+#     && git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
+
+# RUN sed "s/plugins=(git)/plugins=(git zsh-syntax-highlighting zsh-autosuggestions zsh-history-substring-search)/g" ~/.zshrc > zshtmp && mv zshtmp ~/.zshrc
+
+COPY . .

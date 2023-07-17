@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tester
+  namespace: hanfeng
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tester
+  template:
+    metadata:
+      labels:
+        app: tester
+    spec:
+      nodeSelector:
+        role: mo
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - image: aptend/debugtools:0.7
+        name: tester
+        command: ["/bin/sh", "-c"]     
+        args:
+        - sleep 604800;

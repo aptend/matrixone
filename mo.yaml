@@ -1,0 +1,84 @@
+apiVersion: core.matrixorigin.io/v1alpha1
+kind: MatrixOneCluster
+metadata:
+  name: test
+  namespace: hanfeng
+spec:
+  logService:
+    # LogService 副本数
+    replicas: 3
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      # role: mo-x86
+    pvcRetentionPolicy: Delete
+    resources:
+      requests:
+        cpu: 2
+        memory: 8Gi
+    sharedStorage:
+      s3:
+        path: hanfeng/anywaykk
+        # bucket 所在的 region
+        region: us-west-2
+        secretRef:
+          name: aws
+    volume:
+      size: 10Gi
+      # 使用 GP3
+      storageClassName: gp3
+    config: |2
+      [log]
+      level = "info"
+      format = "console"
+  dn:
+    # DN 副本数
+    replicas: 1
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      # role: mo-x86
+    resources:
+      requests:
+        cpu: 2
+        memory: 2Gi
+    cacheVolume:
+      size: 10Gi
+      storageClassName: gp3
+    config: |2
+      [log]
+      level = "info"
+      format = "console"
+      [dn.Txn.Storage]
+      backend = "TAE"
+      fileservice = "S3"
+      log-backend = "logservice"
+      [dn.Ckp]
+      flush-interval = "60s"
+      min-count = 100
+      scan-interval = "5s"
+      incremental-interval = "180s"
+      global-interval = "100000s"
+  tp:
+    # CN 副本数
+    replicas: 2
+    nodeSelector:
+      kubernetes.io/arch: amd64
+      # role: mo-x86
+    resources:
+      requests:
+        cpu: 2
+        memory: 8Gi
+    cacheVolume:
+      size: 10Gi
+      storageClassName: gp3
+    config: |2
+      [cn.Engine]
+      type = "distributed-tae"
+      [log]
+      level = "info"
+      format = "console"
+  # 使用的 image repository，在使用自己的镜像仓库时需要进行修改
+  # imageRepository: matrixorigin/matrixone
+  imageRepository: matrixorigin/matrixone-dev
+  # 使用的 image tag, 必须存在
+  # version: nightly-a30f5286
+  version: auto-test-4d7c12d

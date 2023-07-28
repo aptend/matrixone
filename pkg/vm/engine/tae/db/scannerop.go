@@ -214,13 +214,16 @@ func (ml *mergeLimiter) OnExecDone(v any) {
 }
 
 func (ml *mergeLimiter) checkMemAvail(blks int) bool {
-	// by experience, it is assumed the merging 256 * 8192 rows costs 4 GB
 	if ml.maxRowsForBlk == 0 {
 		return false
 	}
-	quotaBlks := ml.memAvail / const4GBytes * 256 * 8192 / ml.maxRowsForBlk
 	merging := atomic.LoadInt32(&ml.activeMergeBlkCount)
-	return quotaBlks-int(merging) > blks
+	return ml.calcQuotaBlks()-int(merging) > blks
+}
+
+func (ml *mergeLimiter) calcQuotaBlks() int {
+	// by experience, it is assumed the merging 256 * 8192 rows costs 4 GB
+	return ml.memAvail / const4GBytes * 256 * 8192 / ml.maxRowsForBlk
 }
 
 func (ml *mergeLimiter) determineGapIntentFactor(rowsGap float64) float64 {
@@ -432,8 +435,8 @@ func (s *MergeTaskBuilder) PreExecute() error {
 func (s *MergeTaskBuilder) PostExecute() error {
 	if cnt := atomic.LoadInt32(&s.limiter.activeMergeBlkCount); cnt > 0 {
 		logutil.Infof(
-			"Mergeblocks avail mem: %dG, current active blk: %d",
-			s.limiter.memAvail/(1<<30), cnt)
+			"Mergeblocks avail mem: %dG, quota blk: %d, current active blk: %d",
+			s.limiter.memAvail/(1<<30), s.limiter.calcQuotaBlks(), cnt)
 	}
 	logutil.Infof("mergeblocks ------------------------------------")
 	return nil

@@ -52,8 +52,30 @@ type TableEntry struct {
 	link      *common.GenericSortedDList[*SegmentEntry]
 	tableData data.Table
 	rows      atomic.Uint64
+	// used for the next flush table tail.
+	DeletedDirties []*BlockEntry
 	// fullname is format as 'tenantID-tableName', the tenantID prefix is only used 'mo_catalog' database
 	fullName string
+}
+
+type DirtyDelsSrc struct {
+	ver      atomic.Int64
+	versions map[int64][]*BlockEntry
+}
+
+func (src *DirtyDelsSrc) GetDirtyDels() (ver int64, ret [][]*BlockEntry) {
+	ver = src.ver.Load()
+	for v, list := range src.versions {
+		if v <= ver {
+			ret = append(ret, list)
+		}
+	}
+	return
+}
+
+func (src *DirtyDelsSrc) AddDirtyDels(list []*BlockEntry) {
+	ver := src.ver.Add(1)
+	src.versions[ver] = list
 }
 
 func genTblFullName(tenantID uint32, name string) string {

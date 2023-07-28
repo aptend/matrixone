@@ -43,13 +43,15 @@ type flushTableTailEntry struct {
 
 	transMappings      *BlkTransferBooking
 	ablksMetas         []*catalog.BlockEntry
-	nblksMetas         []*catalog.BlockEntry
+	delSrcMetas        []*catalog.BlockEntry
 	ablksHandles       []handle.Block
-	nblksHandles       []handle.Block
+	delSrcHandles      []handle.Block
 	createdBlkHandles  []handle.Block
 	pageIds            []*common.ID
+	nextRoundDirties   []*catalog.BlockEntry
 	createdDeletesFile string
 	createdMergeFile   string
+	dirtyLen           int
 	rt                 *dbutils.Runtime
 }
 
@@ -65,6 +67,7 @@ func NewFlushTableTailEntry(
 	createdBlkHandles []handle.Block,
 	createdDeletesFile string,
 	createdMergeFile string,
+	dirtyLen int,
 	rt *dbutils.Runtime,
 ) *flushTableTailEntry {
 
@@ -74,12 +77,13 @@ func NewFlushTableTailEntry(
 		transMappings:      mapping,
 		tableEntry:         tableEntry,
 		ablksMetas:         ablksMetas,
-		nblksMetas:         nblksMetas,
+		delSrcMetas:        nblksMetas,
 		ablksHandles:       ablksHandles,
-		nblksHandles:       nblksHandles,
+		delSrcHandles:      nblksHandles,
 		createdBlkHandles:  createdBlkHandles,
 		createdDeletesFile: createdDeletesFile,
 		createdMergeFile:   createdMergeFile,
+		dirtyLen:           dirtyLen,
 		rt:                 rt,
 	}
 	entry.addTransferPages()
@@ -142,7 +146,8 @@ func (entry *flushTableTailEntry) PrepareCommit() error {
 			}
 		}
 		found = true
-		logutil.Errorf("[FlushTabletail] task %d has write-write conflict on ablk %s trans cnt %d ", entry.taskID, blk.ID.String(), count)
+		entry.nextRoundDirties = append(entry.nextRoundDirties, blk)
+		logutil.Infof("[FlushTabletail] task %d has write-write conflict on ablk %s trans cnt %d ", entry.taskID, blk.ID.String(), count)
 	}
 	for i, delTbl := range delTbls {
 		if delTbl != nil {
@@ -151,15 +156,17 @@ func (entry *flushTableTailEntry) PrepareCommit() error {
 		}
 	}
 
-	for _, blk := range entry.nblksMetas {
+	for _, blk := range entry.delSrcMetas {
 		if blk.GetBlockData().HasDeleteIntentsPreparedIn(entry.txn.GetStartTS().Next(), types.MaxTs()) {
 			found = true
-			logutil.Errorf("[FlushTabletail] task %d has write-write conflict on nblk %s", entry.taskID, blk.ID.String())
-			// return txnif.ErrTxnWWConflict
+			logutil.Infof("[FlushTabletail] task %d has write-write conflict on nblk %s", entry.taskID, blk.ID.String())
+			if blk.HasDropCommitted() {
+				panic(fmt.Sprintf("[FlushTabletail] task %d has write-write conflict on nblk %s, but it has been dropped", entry.taskID, blk.ID.String()))
+			}
 		}
 	}
 	if found {
-		logutil.Errorf("[FlushTabletail] task %d ww (%s .. %s)", entry.taskID, entry.txn.GetStartTS().ToString(), entry.txn.GetPrepareTS().ToString())
+		logutil.Infof("[FlushTabletail] task %d ww (%s .. %s)", entry.taskID, entry.txn.GetStartTS().ToString(), entry.txn.GetPrepareTS().ToString())
 	}
 
 	return nil
@@ -167,7 +174,7 @@ func (entry *flushTableTailEntry) PrepareCommit() error {
 
 // PrepareRollback remove transfer page and written files
 func (entry *flushTableTailEntry) PrepareRollback() (err error) {
-
+	logutil.Warnf("[FlushTabletail] FT task %d rollback", entry.taskID)
 	// remove transfer page
 	for _, id := range entry.pageIds {
 		_ = entry.rt.TransferTable.DeletePage(id)
@@ -215,13 +222,22 @@ func (entry *flushTableTailEntry) ApplyCommit() (err error) {
 		blk.GetBlockData().GCInMemeoryDeletesByTS(entry.ablksHandles[i].GetDeltaPersistedTS())
 	}
 
-	for i, blk := range entry.nblksMetas {
-		blk.GetBlockData().GCInMemeoryDeletesByTS(entry.nblksHandles[i].GetDeltaPersistedTS())
+	for i, blk := range entry.delSrcMetas {
+		blk.GetBlockData().GCInMemeoryDeletesByTS(entry.delSrcHandles[i].GetDeltaPersistedTS())
 	}
 
-	entry.tableEntry.Stats.Lock()
-	defer entry.tableEntry.Stats.Unlock()
-	entry.tableEntry.Stats.LastFlush = entry.txn.GetStartTS()
+	tbl := entry.tableEntry
+	tbl.Stats.Lock()
+	defer tbl.Stats.Unlock()
+	tbl.Stats.LastFlush = entry.txn.GetStartTS()
+	// no merge tasks touch the dirties, we are good to clean all
+	if entry.dirtyLen == len(tbl.DeletedDirties) {
+		tbl.DeletedDirties = tbl.DeletedDirties[:0]
+	} else {
+		// some merge tasks touch the dirties, we need to keep those new dirties
+		tbl.DeletedDirties = tbl.DeletedDirties[entry.dirtyLen:]
+	}
+	tbl.DeletedDirties = append(tbl.DeletedDirties, entry.nextRoundDirties...)
 	return
 }
 
@@ -295,6 +311,12 @@ func NewBlkTransferBooking(size int) *BlkTransferBooking {
 	}
 	return &BlkTransferBooking{
 		Mappings: mappings,
+	}
+}
+
+func (b *BlkTransferBooking) Clean() {
+	for i := 0; i < len(b.Mappings); i++ {
+		b.Mappings[i] = make(map[int]DestPos)
 	}
 }
 

@@ -161,7 +161,7 @@ func mergeColumnWithOutSort(
 func (task *mergeBlocksTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	blks := ""
 	for _, blk := range task.mergedBlks {
-		blks = fmt.Sprintf("%s%s,", blks, blk.ID.String())
+		blks = fmt.Sprintf("%s%s,", blks, blk.ID.ShortStringEx())
 	}
 	enc.AddString("from-blks", blks)
 	segs := ""
@@ -172,18 +172,10 @@ func (task *mergeBlocksTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err er
 
 	toblks := ""
 	for _, blk := range task.createdBlks {
-		toblks = fmt.Sprintf("%s%s,", toblks, blk.ID.String())
+		toblks = fmt.Sprintf("%s%s,", toblks, blk.ID.ShortStringEx())
 	}
 	if toblks != "" {
 		enc.AddString("to-blks", toblks)
-	}
-
-	tosegs := ""
-	for _, seg := range task.createdSegs {
-		tosegs = fmt.Sprintf("%s%s,", tosegs, seg.ID.ToString())
-	}
-	if tosegs != "" {
-		enc.AddString("to-segs", tosegs)
 	}
 	return
 }
@@ -191,8 +183,6 @@ func (task *mergeBlocksTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err er
 func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 	task.rt.Throttle.AcquireCompactionQuota()
 	defer task.rt.Throttle.ReleaseCompactionQuota()
-	logutil.Info("[Start] Mergeblocks", common.OperationField(task.Name()),
-		common.OperandField(task))
 	phaseNumber := 0
 	defer func() {
 		if err != nil {
@@ -203,23 +193,12 @@ func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 		}
 	}()
 	now := time.Now()
-	var toSegEntry handle.Segment
-	if task.toSegEntry == nil {
-		if toSegEntry, err = task.rel.CreateNonAppendableSegment(false); err != nil {
-			return err
-		}
-		task.toSegEntry = toSegEntry.GetMeta().(*catalog.SegmentEntry)
-		task.toSegEntry.SetSorted()
-		task.createdSegs = append(task.createdSegs, task.toSegEntry)
-	} else {
-		panic("warning: merge to a existing segment")
-		// if toSegEntry, err = task.rel.GetSegment(task.toSegEntry.ID); err != nil {
-		// 	return
-		// }
-	}
 
 	// merge data according to the schema at startTs
 	schema := task.rel.Schema().(*catalog.Schema)
+	logutil.Info("[Start] Mergeblocks", common.OperationField(task.Name()),
+		common.OperandField(schema.Name),
+		common.OperandField(task))
 	sortVecs := make([]containers.Vector, 0)
 	rows := make([]uint32, 0)
 	skipBlks := make([]int, 0)
@@ -275,6 +254,35 @@ func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 		fromAddr = append(fromAddr, uint32(length))
 		length += vec.Length()
 		ids = append(ids, block.Fingerprint())
+	}
+
+	if length == 0 {
+		// all is deleted, nothing to merge, just delete
+		for _, compacted := range task.compacted {
+			seg := compacted.GetSegment()
+			if err = seg.SoftDeleteBlock(compacted.ID()); err != nil {
+				return err
+			}
+		}
+		for _, entry := range task.mergedSegs {
+			if err = task.rel.SoftDeleteSegment(&entry.ID); err != nil {
+				return err
+			}
+		}
+		task.transMappings.Clean()
+		return nil
+	}
+
+	var toSegEntry handle.Segment
+	if task.toSegEntry == nil {
+		if toSegEntry, err = task.rel.CreateNonAppendableSegment(false); err != nil {
+			return err
+		}
+		task.toSegEntry = toSegEntry.GetMeta().(*catalog.SegmentEntry)
+		task.toSegEntry.SetSorted()
+		task.createdSegs = append(task.createdSegs, task.toSegEntry)
+	} else {
+		panic("warning: merge to a existing segment")
 	}
 
 	to := make([]uint32, 0)
@@ -428,6 +436,7 @@ func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 	logutil.Info("[Done] Mergeblocks",
 		common.AnyField("txn-start-ts", task.txn.GetStartTS().ToString()),
 		common.OperationField(task.Name()),
+		common.OperandField(schema.Name),
 		common.OperandField(task),
 		common.DurationField(time.Since(now)))
 

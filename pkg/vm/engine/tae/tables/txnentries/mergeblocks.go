@@ -165,6 +165,10 @@ func (entry *mergeBlocksEntry) transferBlockDeletes(
 		return nil
 	}
 
+	tblEntry := dropped.GetSegment().GetTable()
+	tblEntry.Stats.Lock()
+	tblEntry.DeletedDirties = append(tblEntry.DeletedDirties, dropped)
+	tblEntry.Stats.Unlock()
 	rowid := vector.MustFixedCol[types.Rowid](bat.GetVectorByName(catalog.PhyAddrColumnName).GetDownstreamVector())
 	ts := vector.MustFixedCol[types.TS](bat.GetVectorByName(catalog.AttrCommitTs).GetDownstreamVector())
 

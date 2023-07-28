@@ -22,6 +22,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tables/txnentries"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tasks"
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 var FlushTableTailTaskFactory = func(
@@ -47,11 +48,12 @@ type flushTableTailTask struct {
 	transMappings *txnentries.BlkTransferBooking
 
 	ablksMetas        []*catalog.BlockEntry
-	nblksMetas        []*catalog.BlockEntry
+	delSrcMetas       []*catalog.BlockEntry
 	ablksHandles      []handle.Block
-	nblksHandles      []handle.Block
+	delSrcHandles     []handle.Block
 	createdBlkHandles []handle.Block
 
+	dirtyLen                 int
 	createdMergedObjectName  string
 	createdDeletesObjectName string
 
@@ -82,13 +84,14 @@ func NewFlushTableTailTask(
 		return
 	}
 	task.schema = rel.Schema().(*catalog.Schema)
-	seg, err := rel.GetSegment(&meta.GetSegment().ID)
-	if err != nil {
-		return
-	}
 
 	for _, blk := range blks {
 		task.scopes = append(task.scopes, *blk.AsCommonID())
+		var seg handle.Segment
+		seg, err = rel.GetSegment(&meta.GetSegment().ID)
+		if err != nil {
+			return
+		}
 		var hdl handle.Block
 		if hdl, err = seg.GetBlock(blk.ID); err != nil {
 			return
@@ -97,14 +100,32 @@ func NewFlushTableTailTask(
 			task.ablksMetas = append(task.ablksMetas, blk)
 			task.ablksHandles = append(task.ablksHandles, hdl)
 		} else {
-			task.nblksMetas = append(task.nblksMetas, blk)
-			task.nblksHandles = append(task.nblksHandles, hdl)
+			task.delSrcMetas = append(task.delSrcMetas, blk)
+			task.delSrcHandles = append(task.delSrcHandles, hdl)
 		}
 	}
 	task.transMappings = txnentries.NewBlkTransferBooking(len(task.ablksHandles))
 
 	task.BaseTask = tasks.NewBaseTask(task, tasks.DataCompactionTask, ctx)
 
+	tblEntry := rel.GetMeta().(*catalog.TableEntry)
+	tblEntry.Stats.RLock()
+	defer tblEntry.Stats.RUnlock()
+	task.dirtyLen = len(tblEntry.DeletedDirties)
+	for _, blk := range tblEntry.DeletedDirties {
+		task.scopes = append(task.scopes, *blk.AsCommonID())
+		var seg handle.Segment
+		seg, err = rel.GetSegment(&meta.GetSegment().ID)
+		if err != nil {
+			return
+		}
+		var hdl handle.Block
+		if hdl, err = seg.GetBlock(blk.ID); err != nil {
+			return
+		}
+		task.delSrcMetas = append(task.delSrcMetas, blk)
+		task.delSrcHandles = append(task.delSrcHandles, hdl)
+	}
 	return
 }
 
@@ -116,12 +137,35 @@ func (task *flushTableTailTask) Name() string {
 	return fmt.Sprintf("[%d]FT-%s", task.ID(), task.schema.Name)
 }
 
+func (task *flushTableTailTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	blks := ""
+	for _, blk := range task.ablksMetas {
+		blks = fmt.Sprintf("%s%s,", blks, blk.ID.ShortStringEx())
+	}
+	enc.AddString("a-blks", blks)
+	delsrc := ""
+	for _, del := range task.delSrcMetas {
+		delsrc = fmt.Sprintf("%s%s,", delsrc, del.ID.ShortStringEx())
+	}
+	enc.AddString("deletes-src", delsrc)
+
+	toblks := ""
+	for _, blk := range task.createdBlkHandles {
+		id := blk.ID()
+		toblks = fmt.Sprintf("%s%s,", toblks, id.ShortStringEx())
+	}
+	if toblks != "" {
+		enc.AddString("to-blks", toblks)
+	}
+	return
+}
+
 func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	task.rt.Throttle.AcquireCompactionQuota()
 	defer task.rt.Throttle.ReleaseCompactionQuota()
 
 	logutil.Info("[Start]", common.OperationField(task.Name()),
-		common.OperandField(len(task.ablksHandles)+len(task.nblksHandles)))
+		common.OperandField(len(task.ablksHandles)+len(task.delSrcHandles)))
 
 	phaseDesc := ""
 	defer func() {
@@ -151,7 +195,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 
 	phaseDesc = "1-write all deletes from nablks"
 	// just collect deletes, do not soft delete it, leave that to merge task.
-	deleteTask, emptyMap, err := task.flushAllDeletesFromNBlks(ctx)
+	deleteTask, emptyMap, err := task.flushAllDeletesFromDelSrc(ctx)
 	if err != nil {
 		return
 	}
@@ -183,7 +227,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	///////////////////
 
 	phaseDesc = "1-wait flushing all deletes from nablks"
-	if err = task.waitFlushAllDeletesFromNAblks(ctx, deleteTask, emptyMap); err != nil {
+	if err = task.waitFlushAllDeletesFromDelSrc(ctx, deleteTask, emptyMap); err != nil {
 		return
 	}
 
@@ -194,20 +238,21 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 		task.transMappings,
 		task.rel.GetMeta().(*catalog.TableEntry),
 		task.ablksMetas,
-		task.nblksMetas,
+		task.delSrcMetas,
 		task.ablksHandles,
-		task.nblksHandles,
+		task.delSrcHandles,
 		task.createdBlkHandles,
 		task.createdDeletesObjectName,
 		task.createdMergedObjectName,
+		task.dirtyLen,
 		task.rt,
 	)
 	task.rel.GetDB()
-	readset := make([]*common.ID, 0, len(task.ablksMetas)+len(task.nblksMetas))
+	readset := make([]*common.ID, 0, len(task.ablksMetas)+len(task.delSrcMetas))
 	for _, blk := range task.ablksMetas {
 		readset = append(readset, blk.AsCommonID())
 	}
-	for _, blk := range task.nblksMetas {
+	for _, blk := range task.delSrcMetas[:(len(task.delSrcMetas) - task.dirtyLen)] {
 		readset = append(readset, blk.AsCommonID())
 	}
 	if err = task.txn.LogTxnEntry(
@@ -221,12 +266,12 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	/////////////////////
 
 	logutil.Info("[End]", common.OperationField(task.Name()),
-		zap.Int("ablks", len(task.ablksHandles)),
+		common.AnyField("txn-start-ts", task.txn.GetStartTS().ToString()),
 		zap.Int("ablks-deletes", task.ablksDeletesCnt),
 		zap.Int("ablks-merge-rows", task.mergeRowsCnt),
-		zap.Int("nblks", len(task.nblksHandles)),
 		zap.Int("nblks-deletes", task.nblksDeletesCnt),
-		common.DurationField(time.Since(now)))
+		common.DurationField(time.Since(now)),
+		common.OperandField(task))
 
 	sleep, name, exist := fault.TriggerFault("slow_flush")
 	if exist && name == task.schema.Name {
@@ -274,7 +319,9 @@ func (task *flushTableTailTask) prepareAblkSortedData(ctx context.Context, blkid
 
 	var sortMapping []int32
 	if sortKeyPos >= 0 {
-		logutil.Infof("flushtabletail sort blk on %s", bat.Attrs[sortKeyPos])
+		if blkidx == 0 {
+			logutil.Infof("flushtabletail sort blk on %s", bat.Attrs[sortKeyPos])
+		}
 		sortMapping, err = mergesort.SortBlockColumns(bat.Vecs, sortKeyPos, task.rt.VectorPool.Transient)
 		if err != nil {
 			return
@@ -290,14 +337,6 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 	if len(task.ablksMetas) == 0 {
 		return nil
 	}
-	// create new object to hold merged blocks
-	var toSegmentEntry *catalog.SegmentEntry
-	var toSegmentHandle handle.Segment
-	if toSegmentHandle, err = task.rel.CreateNonAppendableSegment(false); err != nil {
-		return
-	}
-	toSegmentEntry = toSegmentHandle.GetMeta().(*catalog.SegmentEntry)
-	toSegmentEntry.SetSorted()
 
 	// prepare columns idx and sortKey to read sorted batch
 	schema := task.schema
@@ -341,6 +380,27 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 	for _, bat := range readedBats {
 		defer bat.Close()
 	}
+
+	if len(readedBats) == 0 {
+		//just  soft delete all ablks and return
+		for _, blk := range task.ablksHandles {
+			seg := blk.GetSegment()
+			if err = seg.SoftDeleteBlock(blk.ID()); err != nil {
+				return err
+			}
+		}
+		task.transMappings.Clean()
+		return nil
+	}
+
+	// create new object to hold merged blocks
+	var toSegmentEntry *catalog.SegmentEntry
+	var toSegmentHandle handle.Segment
+	if toSegmentHandle, err = task.rel.CreateNonAppendableSegment(false); err != nil {
+		return
+	}
+	toSegmentEntry = toSegmentHandle.GetMeta().(*catalog.SegmentEntry)
+	toSegmentEntry.SetSorted()
 
 	// prepare merge
 	// pick the sort key or first column to run first merge, determing the ordering
@@ -554,15 +614,15 @@ func (task *flushTableTailTask) waitFlushAblkForSnapshot(ctx context.Context, su
 	return nil
 }
 
-// flushAllDeletesFromNBlks collects all deletes from nblks and flush them into one block
-func (task *flushTableTailTask) flushAllDeletesFromNBlks(ctx context.Context) (subtask *flushDeletesTask, emtpyDelBlkIdx *bitmap.Bitmap, err error) {
+// flushAllDeletesFromDelSrc collects all deletes from blks and flush them into one block
+func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (subtask *flushDeletesTask, emtpyDelBlkIdx *bitmap.Bitmap, err error) {
 	var bufferBatch *containers.Batch
 	defer func() {
 		if err != nil && bufferBatch != nil {
 			bufferBatch.Close()
 		}
 	}()
-	for i, blk := range task.nblksMetas {
+	for i, blk := range task.delSrcMetas {
 		blkData := blk.GetBlockData()
 		var deletes *containers.Batch
 		if deletes, err = blkData.CollectDeleteInRange(ctx, types.TS{}, task.txn.GetStartTS(), true); err != nil {
@@ -571,16 +631,10 @@ func (task *flushTableTailTask) flushAllDeletesFromNBlks(ctx context.Context) (s
 		if deletes == nil || deletes.Length() == 0 {
 			if emtpyDelBlkIdx == nil {
 				emtpyDelBlkIdx = &bitmap.Bitmap{}
-				emtpyDelBlkIdx.InitWithSize(len(task.nblksMetas))
+				emtpyDelBlkIdx.InitWithSize(len(task.delSrcMetas))
 			}
 			emtpyDelBlkIdx.Add(uint64(i))
 			continue
-		}
-		if blkData.Rows() == deletes.Length() {
-			logutil.Infof("flushtabletail blk %s should be deleted,  its all rows are deleted", blk.ID.String())
-		}
-		if blk.HasDropCommitted() {
-			logutil.Infof("flushtabletail blk %s has been deleted, that's nice anyway", blk.ID.String())
 		}
 		if bufferBatch == nil {
 			bufferBatch = makeDeletesTempBatch(deletes, task.rt.VectorPool.Transient)
@@ -600,8 +654,8 @@ func (task *flushTableTailTask) flushAllDeletesFromNBlks(ctx context.Context) (s
 	return
 }
 
-// waitFlushAllDeletesFromNAblks waits all io tasks about flushing deletes from nblks, update locations but skip those in emtpyDelBlkIdx
-func (task *flushTableTailTask) waitFlushAllDeletesFromNAblks(ctx context.Context, subtask *flushDeletesTask, emtpyDelBlkIdx *bitmap.Bitmap) (err error) {
+// waitFlushAllDeletesFromDelSrc waits all io tasks about flushing deletes from blks, update locations but skip those in emtpyDelBlkIdx
+func (task *flushTableTailTask) waitFlushAllDeletesFromDelSrc(ctx context.Context, subtask *flushDeletesTask, emtpyDelBlkIdx *bitmap.Bitmap) (err error) {
 	if subtask == nil {
 		return
 	}
@@ -614,8 +668,8 @@ func (task *flushTableTailTask) waitFlushAllDeletesFromNAblks(ctx context.Contex
 		subtask.blocks[0].GetExtent(),
 		uint32(subtask.delta.Length()),
 		subtask.blocks[0].GetID())
-	logutil.Infof("[FlushTabletail] task %d update %s for approximate %d blks", task.ID(), deltaLoc, len(task.nblksHandles))
-	for i, hdl := range task.nblksHandles {
+	logutil.Infof("[FlushTabletail] task %d update %s for approximate %d blks", task.ID(), deltaLoc, len(task.delSrcHandles))
+	for i, hdl := range task.delSrcHandles {
 		if emtpyDelBlkIdx != nil && emtpyDelBlkIdx.Contains(uint64(i)) {
 			continue
 		}

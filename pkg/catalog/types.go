@@ -174,6 +174,7 @@ const (
 	BlockMeta_DeltaLoc        = "delta_loc"
 	BlockMeta_CommitTs        = "committs"
 	BlockMeta_SegmentID       = "segment_id"
+	BlockMeta_MemTruncPoint   = "trunc_pointt"
 	BlockMeta_TableIdx_Insert = "%!%mo__meta_tbl_index" // mark which table this metaLoc belongs to
 	BlockMeta_Type            = "%!%mo__meta_type"
 	BlockMeta_Deletes_Length  = "%!%mo__meta_deletes_length"
@@ -275,13 +276,14 @@ const (
 	MO_COLUMNS_ATT_IS_CLUSTERBY          = 21
 	MO_COLUMNS_ATT_SEQNUM_IDX            = 22
 
-	BLOCKMETA_ID_IDX         = 0
-	BLOCKMETA_ENTRYSTATE_IDX = 1
-	BLOCKMETA_SORTED_IDX     = 2
-	BLOCKMETA_METALOC_IDX    = 3
-	BLOCKMETA_DELTALOC_IDX   = 4
-	BLOCKMETA_COMMITTS_IDX   = 5
-	BLOCKMETA_SEGID_IDX      = 6
+	BLOCKMETA_ID_IDX            = 0
+	BLOCKMETA_ENTRYSTATE_IDX    = 1
+	BLOCKMETA_SORTED_IDX        = 2
+	BLOCKMETA_METALOC_IDX       = 3
+	BLOCKMETA_DELTALOC_IDX      = 4
+	BLOCKMETA_COMMITTS_IDX      = 5
+	BLOCKMETA_SEGID_IDX         = 6
+	BLOCKMETA_MemTruncPoint_IDX = 7
 
 	SKIP_ROWID_OFFSET = 1 //rowid is the 0th vector in the batch
 )
@@ -513,6 +515,7 @@ var (
 		BlockMeta_DeltaLoc,
 		BlockMeta_CommitTs,
 		BlockMeta_SegmentID,
+		BlockMeta_MemTruncPoint,
 	}
 	MoDatabaseTypes = []types.Type{
 		types.New(types.T_uint64, 0, 0),     // dat_id
@@ -597,6 +600,7 @@ var (
 		types.New(types.T_varchar, types.MaxVarcharLen, 0), // delta_loc
 		types.New(types.T_TS, 0, 0),                        // committs
 		types.New(types.T_uuid, 0, 0),                      // segment_id
+		types.New(types.T_TS, 0, 0),                        // flush_point
 	}
 
 	// used by memengine or tae

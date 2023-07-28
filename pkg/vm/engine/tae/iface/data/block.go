@@ -27,6 +27,7 @@ import (
 	"github.com/RoaringBitmap/roaring"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/dbutils"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/handle"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
@@ -114,6 +115,8 @@ type Block interface {
 	GetValue(ctx context.Context, txn txnif.AsyncTxn, readSchema any, row, col int) (any, bool, error)
 	Foreach(ctx context.Context, readSchema any, colIdx int, op func(v any, isNull bool, row int) error, sels *nulls.Bitmap) error
 	PPString(level common.PPLevel, depth int, prefix string) string
+	EstimateMemSize() int
+	GetRuntime() *dbutils.Runtime
 
 	Init() error
 	TryUpgrade() error

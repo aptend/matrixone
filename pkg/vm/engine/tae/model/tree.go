@@ -150,6 +150,7 @@ func (tree *Tree) visitSegment(visitor TreeVisitor, table *TableTree, segment *S
 		if err = visitor.VisitBlock(table.DbID, table.ID, segment.ID, id.Num, id.Seq); err != nil {
 			if moerr.IsMoErrCode(err, moerr.OkStopCurrRecur) {
 				err = nil
+				continue
 			}
 			return
 		}
@@ -162,6 +163,7 @@ func (tree *Tree) visitTable(visitor TreeVisitor, table *TableTree) (err error) 
 		if err = visitor.VisitSegment(table.DbID, table.ID, segment.ID); err != nil {
 			if moerr.IsMoErrCode(err, moerr.OkStopCurrRecur) {
 				err = nil
+				continue
 			}
 			return
 		}
@@ -177,7 +179,7 @@ func (tree *Tree) Visit(visitor TreeVisitor) (err error) {
 		if err = visitor.VisitTable(table.DbID, table.ID); err != nil {
 			if moerr.IsMoErrCode(err, moerr.OkStopCurrRecur) {
 				err = nil
-				return
+				continue
 			}
 			return
 		}

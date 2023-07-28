@@ -185,6 +185,7 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 			opts.CheckpointCfg.FlushInterval,
 			func(_ context.Context) (err error) {
 				db.Runtime.PrintVectorPoolUsage()
+				db.Runtime.TransferDelsMap.Prune(opts.TransferTableTTL)
 				transferTable.RunTTL(time.Now())
 				return
 			}),

@@ -453,6 +453,15 @@ func getOneBlockMeta(rel handle.Relation) *catalog.BlockEntry {
 	return it.GetBlock().GetMeta().(*catalog.BlockEntry)
 }
 
+func getAllBlockMetas(rel handle.Relation) (metas []*catalog.BlockEntry) {
+	it := rel.MakeBlockIt()
+	for ; it.Valid(); it.Next() {
+		blk := it.GetBlock()
+		metas = append(metas, blk.GetMeta().(*catalog.BlockEntry))
+	}
+	return
+}
+
 func checkAllColRowsByScan(t *testing.T, rel handle.Relation, expectRows int, applyDelete bool) {
 	schema := rel.Schema().(*catalog.Schema)
 	for _, def := range schema.ColDefs {

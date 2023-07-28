@@ -19,6 +19,7 @@ import (
 	"context"
 	"fmt"
 	"sync/atomic"
+	"time"
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -43,6 +44,7 @@ func tableVisibilityFn[T *TableEntry](n *common.GenericDLNode[*TableEntry], txn 
 type TableEntry struct {
 	*BaseEntryImpl[*TableMVCCNode]
 	*TableNode
+	Stats   common.TableCompactStat
 	ID      uint64
 	db      *DBEntry
 	entries map[types.Uuid]*common.GenericDLNode[*SegmentEntry]
@@ -87,6 +89,12 @@ func NewTableEntryWithTableId(db *DBEntry, schema *Schema, txnCtx txnif.AsyncTxn
 		e.tableData = dataFactory(e)
 	}
 	e.CreateWithTxnAndSchema(txnCtx, schema)
+	e.Stats.FlushGapDuration = 6 * time.Minute
+	e.Stats.FlushMemCapacity = 20 * 1024 * 1024
+	// if db.name == "tpcc_1" || strings.HasPrefix(db.name, "sbtest") {
+	// 	e.Stats.FlushMemCapacity = 1 * 1024 * 1024
+	// }
+	e.Stats.FlushTableTailEnabled = true
 	return e
 }
 

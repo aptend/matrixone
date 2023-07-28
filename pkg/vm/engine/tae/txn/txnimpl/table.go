@@ -253,9 +253,10 @@ func (tbl *txnTable) recurTransferDelete(
 	if err = tbl.RangeDelete(newID, offset, offset, handle.DT_Normal); err != nil {
 		return err
 	}
-	common.DoIfDebugEnabled(func() {
-		logutil.Debugf("depth-%d transfer delete from blk-%s row-%d to blk-%s row-%d",
+	common.DoIfInfoEnabled(func() {
+		logutil.Infof("depth-%d %s transfer delete from blk-%s row-%d to blk-%s row-%d",
 			depth,
+			tbl.schema.Name,
 			id.BlockID.String(),
 			row,
 			blockID.String(),

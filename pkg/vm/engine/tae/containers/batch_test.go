@@ -16,6 +16,8 @@ package containers
 
 import (
 	"bytes"
+	"math/rand"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -159,4 +161,21 @@ func TestBatchWithPool(t *testing.T) {
 	assert.Equal(t, 0, usedCnt)
 
 	pool.Destory()
+}
+
+func TestApproxSize(t *testing.T) {
+	defer testutils.AfterTest(t)()
+	vec := MockVector(types.T_uint8.ToType(), 1024, false, nil)
+	t.Log(vec.ApproxSize())
+	defer vec.Close()
+
+	svec := MakeVector(types.T_varchar.ToType())
+	defer svec.Close()
+	sizeCnt := 0
+	for i := 0; i < 1024; i++ {
+		l := rand.Intn(100)
+		sizeCnt += l
+		svec.Append([]byte(strings.Repeat("x", l)), false)
+	}
+	t.Log(svec.ApproxSize(), sizeCnt)
 }

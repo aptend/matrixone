@@ -69,6 +69,7 @@ type Vector interface {
 	ForeachWindow(offset, length int, op ItOp, sels *nulls.Bitmap) error
 
 	Length() int
+	ApproxSize() int
 	Allocated() int
 	GetAllocator() *mpool.MPool
 

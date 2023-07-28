@@ -1143,6 +1143,9 @@ func (catalog *Catalog) RecurLoop(processor Processor) (err error) {
 		if err = dbEntry.RecurLoop(processor); err != nil {
 			return
 		}
+		if err = processor.OnPostDatabase(dbEntry); err != nil {
+			break
+		}
 		dbIt.Next()
 	}
 	if moerr.IsMoErrCode(err, moerr.OkStopCurrRecur) {

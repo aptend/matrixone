@@ -32,7 +32,8 @@ import (
 type SegmentDataFactory = func(meta *SegmentEntry) data.Segment
 
 type SegmentEntry struct {
-	ID objectio.Segmentid
+	ID   objectio.Segmentid
+	Stat SegStat
 	*BaseEntryImpl[*MetadataMVCCNode]
 	table   *TableEntry
 	entries map[types.Blockid]*common.GenericDLNode[*BlockEntry]
@@ -40,6 +41,14 @@ type SegmentEntry struct {
 	link *common.GenericSortedDList[*BlockEntry]
 	*SegmentNode
 	segData data.Segment
+}
+
+type SegStat struct {
+	// min max etc. later
+	Rows           int
+	Dels           int
+	SameDelsStreak int
+	MergeIntent    int
 }
 
 func NewSegmentEntry(table *TableEntry, id *objectio.Segmentid, txn txnif.AsyncTxn, state EntryState, dataFactory SegmentDataFactory) *SegmentEntry {

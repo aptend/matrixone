@@ -4728,7 +4728,7 @@ func TestWatchDirty(t *testing.T) {
 	}
 	wg.Wait()
 
-	timer := time.After(10 * time.Second)
+	timer := time.After(20 * time.Second)
 	for {
 		select {
 		case <-timer:

@@ -815,6 +815,16 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 		if err != nil {
 			panic(err)
 		}
+
+		if !table.Stats.Inited {
+			table.Stats.Lock()
+			table.Stats.FlushGapDuration = r.options.maxFlushInterval * 6
+			table.Stats.FlushMemCapacity = 20 * 1024 * 1024
+			table.Stats.FlushTableTailEnabled = true
+			table.Stats.Inited = true
+			table.Stats.Unlock()
+		}
+
 		if !table.Stats.FlushTableTailEnabled {
 			return nil
 		}

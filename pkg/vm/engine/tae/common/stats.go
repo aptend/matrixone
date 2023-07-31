@@ -11,6 +11,8 @@ import (
 type TableCompactStat struct {
 	sync.RWMutex
 
+	Inited bool
+
 	// Configs
 
 	// make this table apply flush table tail policy

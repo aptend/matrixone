@@ -133,14 +133,14 @@ type deletableSegBuilder struct {
 	segHasNonDropBlk     bool
 	segRowCnt, segRowDel int
 	segIsSorted          bool
+	isCreating           bool
 	maxSegId             uint64
 	segCandids           []*catalog.SegmentEntry // appendable
 	nsegCandids          []*catalog.SegmentEntry // non-appendable
 }
 
 func (d *deletableSegBuilder) reset() {
-	d.segHasNonDropBlk = false
-	d.segIsSorted = false
+	d.resetForNewSeg()
 	d.maxSegId = 0
 	d.segCandids = d.segCandids[:0]
 	d.nsegCandids = d.nsegCandids[:0]
@@ -149,6 +149,7 @@ func (d *deletableSegBuilder) reset() {
 func (d *deletableSegBuilder) resetForNewSeg() {
 	d.segHasNonDropBlk = false
 	d.segIsSorted = false
+	d.isCreating = false
 	d.segRowCnt = 0
 	d.segRowDel = 0
 }
@@ -363,6 +364,7 @@ func (s *MergeTaskBuilder) trySchedMergeTask() {
 	for i, blk := range mergedBlks {
 		scopes[i] = *blk.AsCommonID()
 	}
+	scopes = append(scopes, segScopes...)
 
 	factory := func(ctx *tasks.Context, txn txnif.AsyncTxn) (tasks.Task, error) {
 		return jobs.NewMergeBlocksTask(ctx, txn, mergedBlks, delSegs, nil, s.db.Runtime)
@@ -460,6 +462,16 @@ func (s *MergeTaskBuilder) onSegment(segmentEntry *catalog.SegmentEntry) (err er
 	if !segmentEntry.IsActive() {
 		return moerr.GetOkStopCurrRecur()
 	}
+
+	segmentEntry.RLock()
+	defer segmentEntry.RUnlock()
+
+	// Skip uncommitted entries
+	if !segmentEntry.IsCommitted() ||
+		!catalog.ActiveWithNoTxnFilter(segmentEntry.BaseEntryImpl) {
+		return moerr.GetOkStopCurrRecur()
+	}
+
 	s.delSegBuilder.resetForNewSeg()
 	s.delSegBuilder.segIsSorted = segmentEntry.IsSorted()
 	return
@@ -468,7 +480,7 @@ func (s *MergeTaskBuilder) onSegment(segmentEntry *catalog.SegmentEntry) (err er
 func (s *MergeTaskBuilder) onPostSegment(seg *catalog.SegmentEntry) (err error) {
 	s.delSegBuilder.push(seg)
 
-	if !seg.IsSorted() {
+	if !seg.IsSorted() || s.delSegBuilder.isCreating {
 		return nil
 	}
 
@@ -525,9 +537,14 @@ func (s *MergeTaskBuilder) onBlock(entry *catalog.BlockEntry) (err error) {
 
 	// Skip uncommitted entries and appendable block
 	if !entry.IsCommitted() ||
-		!catalog.ActiveWithNoTxnFilter(entry.BaseEntryImpl) ||
-		!catalog.NonAppendableBlkFilter(entry) {
+		!catalog.ActiveWithNoTxnFilter(entry.BaseEntryImpl) {
+		// txn appending metalocs
+		s.delSegBuilder.isCreating = true
 		return
+	}
+
+	if !catalog.NonAppendableBlkFilter(entry) {
+		panic("append block in sorted segment")
 	}
 
 	// nblks in appenable segs or non-sorted non-appendable segs

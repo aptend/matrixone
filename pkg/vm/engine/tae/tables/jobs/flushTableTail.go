@@ -134,7 +134,7 @@ func (task *flushTableTailTask) Scopes() []common.ID { return task.scopes }
 
 // Name is for ScopedTask interface
 func (task *flushTableTailTask) Name() string {
-	return fmt.Sprintf("[%d]FT-%s", task.ID(), task.schema.Name)
+	return fmt.Sprintf("[%d]FT-%d-%s", task.ID(), task.rel.ID(), task.schema.Name)
 }
 
 func (task *flushTableTailTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
@@ -164,7 +164,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	task.rt.Throttle.AcquireCompactionQuota()
 	defer task.rt.Throttle.ReleaseCompactionQuota()
 
-	logutil.Info("[Start]", common.OperationField(task.Name()),
+	logutil.Info("[Start]", common.OperationField(task.Name()), common.OperandField(task),
 		common.OperandField(len(task.ablksHandles)+len(task.delSrcHandles)))
 
 	phaseDesc := ""
@@ -187,7 +187,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
-	defer releaseFlushBlkTasks(snapshotSubtasks)
+	defer releaseFlushBlkTasks(snapshotSubtasks, nil)
 
 	/////////////////////
 	//// phase seperator
@@ -310,7 +310,7 @@ func (task *flushTableTailTask) prepareAblkSortedData(ctx context.Context, blkid
 			bat.Close()
 			return
 		}
-		bat.AddVector(task.schema.ColDefs[colidx].Name, vec)
+		bat.AddVector(task.schema.ColDefs[colidx].Name, vec.TryConvertConst())
 	}
 
 	if deletes != nil {
@@ -536,7 +536,7 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 func (task *flushTableTailTask) flushAblksForSnapshot(ctx context.Context) (subtasks []*flushBlkTask, err error) {
 	defer func() {
 		if err != nil {
-			releaseFlushBlkTasks(subtasks)
+			releaseFlushBlkTasks(subtasks, err)
 		}
 	}()
 	subtasks = make([]*flushBlkTask, len(task.ablksMetas))
@@ -688,7 +688,10 @@ func makeDeletesTempBatch(template *containers.Batch, pool *containers.VectorPoo
 	return bat
 }
 
-func releaseFlushBlkTasks(subtasks []*flushBlkTask) {
+func releaseFlushBlkTasks(subtasks []*flushBlkTask, err error) {
+	if err != nil {
+		logutil.Infof("[FlushTabletail] release flush task bat because of err %v", err)
+	}
 	for _, subtask := range subtasks {
 		if subtask != nil && subtask.data != nil {
 			subtask.data.Close()

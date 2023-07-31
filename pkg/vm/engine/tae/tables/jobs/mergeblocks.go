@@ -249,7 +249,7 @@ func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 			continue
 		}
 		task.transMappings.AddSortPhaseMapping(i, rowCntBeforeApplyDelete, task.deletes[i], nil /*it is sorted, no mapping*/)
-		sortVecs = append(sortVecs, vec)
+		sortVecs = append(sortVecs, vec.TryConvertConst())
 		rows = append(rows, uint32(vec.Length()))
 		fromAddr = append(fromAddr, uint32(length))
 		length += vec.Length()
@@ -349,7 +349,7 @@ func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 		// If only one single sort key, it was processed before
 		vecs = vecs[:0]
 		for i := range task.compacted {
-			vec := views[i].Columns[def.Idx].Orphan()
+			vec := views[i].Columns[def.Idx].Orphan().TryConvertConst()
 			defer vec.Close()
 			if vec.Length() == 0 {
 				continue

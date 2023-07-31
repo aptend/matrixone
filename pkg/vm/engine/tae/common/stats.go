@@ -11,6 +11,8 @@ import (
 type TableCompactStat struct {
 	sync.RWMutex
 
+	Inited bool
+
 	// Configs
 
 	// make this table apply flush table tail policy
@@ -23,7 +25,7 @@ type TableCompactStat struct {
 
 	// Status
 
-	// start ts of last flush txn. If we are waiting for a ckp [a, b], if all dirty tables' LastFlush are greater than b,
+	// dirty end range flushed by last flush txn. If we are waiting for a ckp [a, b], if all dirty tables' LastFlush are greater than b,
 	// the checkpoint is ready to collect data and write all down.
 	LastFlush types.TS
 	// FlushDeadline is the deadline to flush table tail

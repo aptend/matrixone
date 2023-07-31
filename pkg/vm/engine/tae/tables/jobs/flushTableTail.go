@@ -26,17 +26,18 @@ import (
 )
 
 var FlushTableTailTaskFactory = func(
-	metas []*catalog.BlockEntry, rt *dbutils.Runtime,
+	metas []*catalog.BlockEntry, rt *dbutils.Runtime, endTs types.TS, /* end of dirty range*/
 ) tasks.TxnTaskFactory {
 	return func(ctx *tasks.Context, txn txnif.AsyncTxn) (tasks.Task, error) {
-		return NewFlushTableTailTask(ctx, txn, metas, rt)
+		return NewFlushTableTailTask(ctx, txn, metas, rt, endTs)
 	}
 }
 
 type flushTableTailTask struct {
 	*tasks.BaseTask
-	txn txnif.AsyncTxn
-	rt  *dbutils.Runtime
+	txn        txnif.AsyncTxn
+	rt         *dbutils.Runtime
+	dirtyEndTs types.TS
 
 	scopes []common.ID
 	schema *catalog.Schema
@@ -65,10 +66,12 @@ func NewFlushTableTailTask(
 	txn txnif.AsyncTxn,
 	blks []*catalog.BlockEntry,
 	rt *dbutils.Runtime,
+	dirtyEndTs types.TS,
 ) (task *flushTableTailTask, err error) {
 	task = &flushTableTailTask{
-		txn: txn,
-		rt:  rt,
+		txn:        txn,
+		rt:         rt,
+		dirtyEndTs: dirtyEndTs,
 	}
 	meta := blks[0]
 	dbId := meta.GetSegment().GetTable().GetDB().ID
@@ -134,7 +137,7 @@ func (task *flushTableTailTask) Scopes() []common.ID { return task.scopes }
 
 // Name is for ScopedTask interface
 func (task *flushTableTailTask) Name() string {
-	return fmt.Sprintf("[%d]FT-%s", task.ID(), task.schema.Name)
+	return fmt.Sprintf("[%d]FT-%d-%s", task.ID(), task.rel.ID(), task.schema.Name)
 }
 
 func (task *flushTableTailTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
@@ -164,7 +167,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	task.rt.Throttle.AcquireCompactionQuota()
 	defer task.rt.Throttle.ReleaseCompactionQuota()
 
-	logutil.Info("[Start]", common.OperationField(task.Name()),
+	logutil.Info("[Start]", common.OperationField(task.Name()), common.OperandField(task),
 		common.OperandField(len(task.ablksHandles)+len(task.delSrcHandles)))
 
 	phaseDesc := ""
@@ -187,7 +190,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 	if err != nil {
 		return
 	}
-	defer releaseFlushBlkTasks(snapshotSubtasks)
+	defer releaseFlushBlkTasks(snapshotSubtasks, nil)
 
 	/////////////////////
 	//// phase seperator
@@ -246,6 +249,7 @@ func (task *flushTableTailTask) Execute(ctx context.Context) (err error) {
 		task.createdMergedObjectName,
 		task.dirtyLen,
 		task.rt,
+		task.dirtyEndTs,
 	)
 	task.rel.GetDB()
 	readset := make([]*common.ID, 0, len(task.ablksMetas)+len(task.delSrcMetas))
@@ -310,7 +314,7 @@ func (task *flushTableTailTask) prepareAblkSortedData(ctx context.Context, blkid
 			bat.Close()
 			return
 		}
-		bat.AddVector(task.schema.ColDefs[colidx].Name, vec)
+		bat.AddVector(task.schema.ColDefs[colidx].Name, vec.TryConvertConst())
 	}
 
 	if deletes != nil {
@@ -536,7 +540,7 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 func (task *flushTableTailTask) flushAblksForSnapshot(ctx context.Context) (subtasks []*flushBlkTask, err error) {
 	defer func() {
 		if err != nil {
-			releaseFlushBlkTasks(subtasks)
+			releaseFlushBlkTasks(subtasks, err)
 		}
 	}()
 	subtasks = make([]*flushBlkTask, len(task.ablksMetas))
@@ -688,7 +692,16 @@ func makeDeletesTempBatch(template *containers.Batch, pool *containers.VectorPoo
 	return bat
 }
 
-func releaseFlushBlkTasks(subtasks []*flushBlkTask) {
+func releaseFlushBlkTasks(subtasks []*flushBlkTask, err error) {
+	if err != nil {
+		logutil.Infof("[FlushTabletail] release flush task bat because of err %v", err)
+		for _, subtask := range subtasks {
+			if subtask != nil {
+				// wait done, otherwise the data might be released before flush, and cause data race
+				subtask.WaitDone()
+			}
+		}
+	}
 	for _, subtask := range subtasks {
 		if subtask != nil && subtask.data != nil {
 			subtask.data.Close()

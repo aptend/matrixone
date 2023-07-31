@@ -53,6 +53,7 @@ type flushTableTailEntry struct {
 	createdMergeFile   string
 	dirtyLen           int
 	rt                 *dbutils.Runtime
+	dirtyEndTs         types.TS
 }
 
 func NewFlushTableTailEntry(
@@ -69,6 +70,7 @@ func NewFlushTableTailEntry(
 	createdMergeFile string,
 	dirtyLen int,
 	rt *dbutils.Runtime,
+	dirtyEndTs types.TS,
 ) *flushTableTailEntry {
 
 	entry := &flushTableTailEntry{
@@ -85,6 +87,7 @@ func NewFlushTableTailEntry(
 		createdMergeFile:   createdMergeFile,
 		dirtyLen:           dirtyLen,
 		rt:                 rt,
+		dirtyEndTs:         dirtyEndTs,
 	}
 	entry.addTransferPages()
 	return entry
@@ -229,7 +232,7 @@ func (entry *flushTableTailEntry) ApplyCommit() (err error) {
 	tbl := entry.tableEntry
 	tbl.Stats.Lock()
 	defer tbl.Stats.Unlock()
-	tbl.Stats.LastFlush = entry.txn.GetStartTS()
+	tbl.Stats.LastFlush = entry.dirtyEndTs
 	// no merge tasks touch the dirties, we are good to clean all
 	if entry.dirtyLen == len(tbl.DeletedDirties) {
 		tbl.DeletedDirties = tbl.DeletedDirties[:0]

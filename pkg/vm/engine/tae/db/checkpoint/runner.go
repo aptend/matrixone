@@ -732,7 +732,7 @@ func (r *runner) onWaitWaitableItems(items ...any) {
 	logutil.Debugf("Total [%d] WAL Checkpointed | [%s]", len(items), time.Since(start))
 }
 
-func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.TableTree) error {
+func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.TableTree, endTs types.TS) error {
 	metas := make([]*catalog.BlockEntry, 0, 10)
 	for _, seg := range tree.Segs {
 		segment, err := table.GetSegmentByID(seg.ID)
@@ -759,7 +759,7 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 		scopes = append(scopes, *meta.AsCommonID())
 	}
 
-	factory := jobs.FlushTableTailTaskFactory(metas, r.rt)
+	factory := jobs.FlushTableTailTaskFactory(metas, r.rt, endTs)
 	if _, err := r.rt.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, scopes, factory); err != nil {
 		logutil.Warnf("[FlushTabletail] %d-%s %v", table.ID, table.GetLastestSchema().Name, err)
 		return moerr.GetOkExpectedEOB()
@@ -815,11 +815,22 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 		if err != nil {
 			panic(err)
 		}
+
+		if !table.Stats.Inited {
+			table.Stats.Lock()
+			table.Stats.FlushGapDuration = r.options.maxFlushInterval * 6
+			table.Stats.FlushMemCapacity = 20 * 1024 * 1024
+			table.Stats.FlushTableTailEnabled = true
+			table.Stats.Inited = true
+			table.Stats.Unlock()
+		}
+
 		if !table.Stats.FlushTableTailEnabled {
 			return nil
 		}
 
 		dirtyTree := entry.GetTree().GetTable(tableID)
+		_, endTs := entry.GetTimeRange()
 
 		size := r.EstimateTableMemSize(table, dirtyTree)
 
@@ -837,7 +848,7 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 
 		if force {
 			logutil.Infof("[flushtabletail] force flush %s", table.GetLastestSchema().Name)
-			if err := r.fireFlushTabletail(table, dirtyTree); err == nil {
+			if err := r.fireFlushTabletail(table, dirtyTree, endTs); err == nil {
 				stats.ResetDeadline()
 			}
 			return moerr.GetOkStopCurrRecur()
@@ -851,7 +862,7 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 		}
 
 		if stats.FlushDeadline.Before(time.Now()) || size > stats.FlushMemCapacity {
-			if err := r.fireFlushTabletail(table, dirtyTree); err == nil {
+			if err := r.fireFlushTabletail(table, dirtyTree, endTs); err == nil {
 				stats.ResetDeadline()
 			}
 		}

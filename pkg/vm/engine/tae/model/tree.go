@@ -16,6 +16,7 @@ package model
 
 import (
 	"bytes"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"unsafe"
@@ -333,6 +334,18 @@ func (ttree *TableTree) AddBlock(id *objectio.Blockid) {
 	sid := objectio.ToSegmentId(id)
 	ttree.AddSegment(sid)
 	ttree.Segs[*sid].AddBlock(id.Offsets())
+}
+
+func (ttree *TableTree) ShortBlocksString() string {
+	buf := bytes.Buffer{}
+	for _, seg := range ttree.Segs {
+		var shortuuid [8]byte
+		hex.Encode(shortuuid[:], seg.ID[:4])
+		for id := range seg.Blks {
+			buf.WriteString(fmt.Sprintf(" %s-%d-%d", string(shortuuid[:]), id.Num, id.Seq))
+		}
+	}
+	return buf.String()
 }
 
 func (ttree *TableTree) IsEmpty() bool {

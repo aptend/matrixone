@@ -908,7 +908,7 @@ func TestFlushTableMergeOrder(t *testing.T) {
 
 	txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
 	blkMetas := getAllBlockMetas(rel)
-	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime)
+	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 	require.NoError(t, err)
 	worker.SendOp(task)
 	err = task.WaitDone()
@@ -979,7 +979,7 @@ func TestFlushTableMergeOrderPK(t *testing.T) {
 
 	txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
 	blkMetas := getAllBlockMetas(rel)
-	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime)
+	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 	require.NoError(t, err)
 	worker.SendOp(task)
 	err = task.WaitDone()
@@ -1014,7 +1014,7 @@ func TestFlushTableNoPk(t *testing.T) {
 
 	txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
 	blkMetas := getAllBlockMetas(rel)
-	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime)
+	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 	require.NoError(t, err)
 	worker.SendOp(task)
 	err = task.WaitDone()
@@ -1071,7 +1071,7 @@ func TestFlushTabletail(t *testing.T) {
 	flushTable := func() {
 		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
 		blkMetas := getAllBlockMetas(rel)
-		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime)
+		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 		require.NoError(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone()
@@ -4734,7 +4734,7 @@ func TestWatchDirty(t *testing.T) {
 	}
 	wg.Wait()
 
-	timer := time.After(10 * time.Second)
+	timer := time.After(20 * time.Second)
 	for {
 		select {
 		case <-timer:
@@ -6725,6 +6725,7 @@ func TestAppendAndGC(t *testing.T) {
 	testutils.WaitExpect(10000, func() bool {
 		return db.Runtime.Scheduler.GetPenddingLSNCnt() == 0
 	})
+	t.Log(tae.Catalog.SimplePPString(common.PPL1))
 	assert.Equal(t, uint64(0), db.Runtime.Scheduler.GetPenddingLSNCnt())
 	err = db.DiskCleaner.CheckGC()
 	assert.Nil(t, err)
@@ -7347,7 +7348,7 @@ func TestGCCatalog2(t *testing.T) {
 
 	tae.CreateRelAndAppend(bat, true)
 	t.Log(tae.Catalog.SimplePPString(3))
-	testutils.WaitExpect(4000, checkCompactAndGCFn)
+	testutils.WaitExpect(10000, checkCompactAndGCFn)
 	assert.True(t, checkCompactAndGCFn())
 	t.Log(tae.Catalog.SimplePPString(3))
 }

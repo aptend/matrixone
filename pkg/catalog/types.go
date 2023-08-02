@@ -517,6 +517,15 @@ var (
 		BlockMeta_SegmentID,
 		BlockMeta_MemTruncPoint,
 	}
+	MoTableMetaSchemaV1 = []string{
+		BlockMeta_ID,
+		BlockMeta_EntryState,
+		BlockMeta_Sorted,
+		BlockMeta_MetaLoc,
+		BlockMeta_DeltaLoc,
+		BlockMeta_CommitTs,
+		BlockMeta_SegmentID,
+	}
 	MoDatabaseTypes = []types.Type{
 		types.New(types.T_uint64, 0, 0),     // dat_id
 		types.New(types.T_varchar, 5000, 0), // datname
@@ -601,6 +610,15 @@ var (
 		types.New(types.T_TS, 0, 0),                        // committs
 		types.New(types.T_uuid, 0, 0),                      // segment_id
 		types.New(types.T_TS, 0, 0),                        // flush_point
+	}
+	MoTableMetaTypesV1 = []types.Type{
+		types.New(types.T_Blockid, 0, 0),                   // block_id
+		types.New(types.T_bool, 0, 0),                      // entry_state, true for appendable
+		types.New(types.T_bool, 0, 0),                      // sorted, true for sorted by primary key
+		types.New(types.T_varchar, types.MaxVarcharLen, 0), // meta_loc
+		types.New(types.T_varchar, types.MaxVarcharLen, 0), // delta_loc
+		types.New(types.T_TS, 0, 0),                        // committs
+		types.New(types.T_uuid, 0, 0),                      // segment_id
 	}
 
 	// used by memengine or tae

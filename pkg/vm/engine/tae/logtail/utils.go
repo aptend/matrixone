@@ -42,8 +42,9 @@ const (
 	CheckpointVersion1 uint32 = 1
 	CheckpointVersion2 uint32 = 2
 	CheckpointVersion3 uint32 = 3
+	CheckpointVersion4 uint32 = 4
 
-	CheckpointCurrentVersion = CheckpointVersion3
+	CheckpointCurrentVersion = CheckpointVersion4
 )
 
 const (
@@ -95,11 +96,15 @@ type checkpointDataItem struct {
 var checkpointDataSchemas_V1 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_V2 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_V3 [MaxIDX]*catalog.Schema
+
+// add mem_truncate point column to blk meta schema
+var checkpointDataSchemas_V4 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_Curr [MaxIDX]*catalog.Schema
 
 var checkpointDataRefer_V1 [MaxIDX]*checkpointDataItem
 var checkpointDataRefer_V2 [MaxIDX]*checkpointDataItem
 var checkpointDataRefer_V3 [MaxIDX]*checkpointDataItem
+var checkpointDataRefer_V4 [MaxIDX]*checkpointDataItem
 var checkpointDataReferVersions map[uint32][MaxIDX]*checkpointDataItem
 
 func init() {
@@ -119,15 +124,15 @@ func init() {
 		SegDNSchema,
 		DelSchema,
 		SegDNSchema,
-		BlkMetaSchema, // 15
+		BlkMetaSchema_V1, // 15
 		BlkDNSchema,
 		DelSchema,
 		BlkDNSchema,
-		BlkMetaSchema, // 19
+		BlkMetaSchema_V1, // 19
 		BlkDNSchema,
 		DelSchema,
 		BlkDNSchema,
-		BlkMetaSchema, // 23
+		BlkMetaSchema_V1, // 23
 	}
 	checkpointDataSchemas_V2 = [MaxIDX]*catalog.Schema{
 		MetaSchema,
@@ -145,17 +150,44 @@ func init() {
 		SegDNSchema,
 		DelSchema,
 		SegDNSchema,
-		BlkMetaSchema, // 15
+		BlkMetaSchema_V1, // 15
 		BlkDNSchema,
 		DelSchema,
 		BlkDNSchema,
-		BlkMetaSchema, // 19
+		BlkMetaSchema_V1, // 19
 		BlkDNSchema,
 		DelSchema,
 		BlkDNSchema,
-		BlkMetaSchema, // 23
+		BlkMetaSchema_V1, // 23
 	}
 	checkpointDataSchemas_V3 = [MaxIDX]*catalog.Schema{
+		MetaSchema,
+		catalog.SystemDBSchema,
+		TxnNodeSchema,
+		DBDelSchema, // 3
+		DBDNSchema,
+		catalog.SystemTableSchema,
+		TblDNSchema,
+		TblDelSchema, // 7
+		TblDNSchema,
+		catalog.SystemColumnSchema,
+		ColumnDelSchema,
+		SegSchema, // 11
+		SegDNSchema,
+		DelSchema,
+		SegDNSchema,
+		BlkMetaSchema_V1, // 15
+		BlkDNSchema,
+		DelSchema,
+		BlkDNSchema,
+		BlkMetaSchema_V1, // 19
+		BlkDNSchema,
+		DelSchema,
+		BlkDNSchema,
+		BlkMetaSchema_V1, // 23
+	}
+
+	checkpointDataSchemas_V4 = [MaxIDX]*catalog.Schema{
 		MetaSchema,
 		catalog.SystemDBSchema,
 		TxnNodeSchema,
@@ -182,7 +214,7 @@ func init() {
 		BlkMetaSchema, // 23
 	}
 
-	checkpointDataSchemas_Curr = checkpointDataSchemas_V3
+	checkpointDataSchemas_Curr = checkpointDataSchemas_V4
 	checkpointDataReferVersions = make(map[uint32][24]*checkpointDataItem)
 
 	for idx, schema := range checkpointDataSchemas_V1 {
@@ -209,6 +241,15 @@ func init() {
 		}
 	}
 	checkpointDataReferVersions[CheckpointVersion3] = checkpointDataRefer_V3
+	for idx, schema := range checkpointDataSchemas_V4 {
+		checkpointDataRefer_V4[idx] = &checkpointDataItem{
+			schema,
+			append(BaseTypes, schema.Types()...),
+			append(BaseAttr, schema.AllNames()...),
+		}
+	}
+
+	checkpointDataReferVersions[CheckpointVersion4] = checkpointDataRefer_V4
 }
 
 func IncrementalCheckpointDataFactory(start, end types.TS) func(c *catalog.Catalog) (*CheckpointData, error) {
@@ -465,6 +506,29 @@ func (data *CNCheckpointData) ReadFrom(
 		}
 		bat.Attrs = append(bat.Attrs, pkgcatalog.SystemRelAttr_ID)
 		bat.Vecs = append(bat.Vecs, pkVec2)
+	}
+
+	if version <= CheckpointVersion3 {
+		bat := data.bats[BLKCNMetaInsertIDX]
+		if bat == nil {
+			return
+		}
+		committs := bat.Vecs[2+pkgcatalog.BLOCKMETA_COMMITTS_IDX]
+
+		bat.Attrs = append(bat.Attrs, pkgcatalog.BlockMeta_MemTruncPoint)
+		bat.Vecs = append(bat.Vecs, committs)
+
+		bat2 := data.bats[BLKMetaInsertIDX]
+		if bat2 != nil {
+			bat2.Attrs = append(bat.Attrs, pkgcatalog.BlockMeta_MemTruncPoint)
+			bat2.Vecs = append(bat.Vecs, committs)
+		}
+
+		bat3 := data.bats[BLKDNMetaInsertIDX]
+		if bat3 != nil {
+			bat3.Attrs = append(bat.Attrs, pkgcatalog.BlockMeta_MemTruncPoint)
+			bat3.Vecs = append(bat.Vecs, committs)
+		}
 	}
 	return
 }
@@ -817,6 +881,23 @@ func (data *CheckpointData) ReadFrom(
 		bat.AddVector(pkgcatalog.SystemRelAttr_CatalogVersion, vec)
 	}
 
+	if version <= CheckpointVersion3 {
+		bat := data.bats[BLKDNMetaInsertIDX]
+		if bat == nil {
+			return
+		}
+		committs := bat.GetVectorByName(pkgcatalog.BlockMeta_CommitTs)
+		bat.AddVector(pkgcatalog.BlockMeta_MemTruncPoint, committs)
+
+		bat2 := data.bats[BLKMetaInsertIDX]
+		if bat2 != nil {
+			bat2.AddVector(pkgcatalog.BlockMeta_MemTruncPoint, committs)
+		}
+		bat3 := data.bats[BLKCNMetaInsertIDX]
+		if bat3 != nil {
+			bat3.AddVector(pkgcatalog.BlockMeta_MemTruncPoint, committs)
+		}
+	}
 	return
 }
 

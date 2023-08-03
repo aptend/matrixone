@@ -305,7 +305,7 @@ func (chain *DeleteChain) CollectDeletesInRange(
 
 // any uncommited node, return true
 // any committed node with prepare ts within [from, to], return true
-func (chain *DeleteChain) HasDeleteIntentsPreparedInLocked(from, to types.TS) (found bool) {
+func (chain *DeleteChain) HasDeleteIntentsPreparedInLocked(from, to types.TS) (found, isPersisted bool) {
 	chain.LoopChain(func(n *DeleteNode) bool {
 		if n.IsMerged() {
 			found, _ = n.PreparedIn(from, to)
@@ -316,6 +316,9 @@ func (chain *DeleteChain) HasDeleteIntentsPreparedInLocked(from, to types.TS) (f
 			return true
 		}
 
+		if n.nt == NT_Persisted {
+			isPersisted = true
+		}
 		found, _ = n.PreparedIn(from, to)
 		if n.IsAborted() {
 			found = false

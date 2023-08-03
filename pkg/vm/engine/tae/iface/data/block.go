@@ -88,7 +88,7 @@ type Block interface {
 	CollectChangesInRange(ctx context.Context, startTs, endTs types.TS) (*containers.BlockView, error)
 
 	// check wether any delete intents with prepared ts within [from, to]
-	HasDeleteIntentsPreparedIn(from, to types.TS) bool
+	HasDeleteIntentsPreparedIn(from, to types.TS) (bool, bool)
 
 	// check if all rows are committed before ts
 	// NOTE: here we assume that the block is visible to the ts

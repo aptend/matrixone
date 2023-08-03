@@ -191,7 +191,7 @@ func (node *DeleteNode) PrepareCommit() (err error) {
 	node.chain.Load().mvcc.Lock()
 	defer node.chain.Load().mvcc.Unlock()
 	if node.nt == NT_Persisted {
-		if node.chain.Load().HasDeleteIntentsPreparedInLocked(node.Start, node.Txn.GetPrepareTS()) {
+		if found, _ := node.chain.Load().HasDeleteIntentsPreparedInLocked(node.Start, node.Txn.GetPrepareTS()); found {
 			return txnif.ErrTxnNeedRetry
 		}
 	}

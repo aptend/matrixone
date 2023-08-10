@@ -69,9 +69,9 @@ func ReadByFilter(
 		if persistedByCN {
 			rows = evalDeleteRowsByTimestampForDeletesPersistedByCN(persistedDeletes, ts, info.CommitTs)
 		} else {
-			now := time.Now()
+			nowx := time.Now()
 			rows = evalDeleteRowsByTimestamp(persistedDeletes, ts, &info.BlockID)
-			bisect = time.Since(now)
+			bisect = time.Since(nowx)
 		}
 		if rows != nil {
 			deleteMask = rows

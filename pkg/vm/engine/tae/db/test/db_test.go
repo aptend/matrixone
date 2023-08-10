@@ -855,7 +855,7 @@ func TestFlushTableMergeOrder(t *testing.T) {
 	ctx := context.Background()
 
 	opts := config.WithLongScanAndCKPOpts(nil)
-	tae := newTestEngine(ctx, t, opts)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
 	defer tae.Close()
 
 	worker := ops.NewOpWorker(context.Background(), "xx")
@@ -869,7 +869,7 @@ func TestFlushTableMergeOrder(t *testing.T) {
 	schema.BlockMaxRows = 78
 	schema.SegmentMaxBlocks = 256
 	require.NoError(t, schema.Finalize(false))
-	tae.bindSchema(schema)
+	tae.BindSchema(schema)
 
 	// new bacth for aa and bb vector, and fill aa and bb with some random values
 	bat := containers.NewBatch()
@@ -893,10 +893,10 @@ func TestFlushTableMergeOrder(t *testing.T) {
 	}
 
 	defer bat.Close()
-	createRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
+	testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
 
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		it := rel.MakeBlockIt()
 		for ; it.Valid(); it.Next() {
 			blk := it.GetBlock()
@@ -906,8 +906,8 @@ func TestFlushTableMergeOrder(t *testing.T) {
 		require.NoError(t, txn.Commit(context.Background()))
 	}
 
-	txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
-	blkMetas := getAllBlockMetas(rel)
+	txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
+	blkMetas := testutil.GetAllBlockMetas(rel)
 	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 	require.NoError(t, err)
 	worker.SendOp(task)
@@ -922,7 +922,7 @@ func TestFlushTableMergeOrderPK(t *testing.T) {
 	ctx := context.Background()
 
 	opts := config.WithLongScanAndCKPOpts(nil)
-	tae := newTestEngine(ctx, t, opts)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
 	defer tae.Close()
 
 	worker := ops.NewOpWorker(context.Background(), "xx")
@@ -935,7 +935,7 @@ func TestFlushTableMergeOrderPK(t *testing.T) {
 	schema.BlockMaxRows = 78
 	schema.SegmentMaxBlocks = 256
 	require.NoError(t, schema.Finalize(false))
-	tae.bindSchema(schema)
+	tae.BindSchema(schema)
 
 	// new bacth for aa and bb vector, and fill aa and bb with some random values
 	bat := containers.NewBatch()
@@ -961,11 +961,11 @@ func TestFlushTableMergeOrderPK(t *testing.T) {
 	}
 
 	defer bat.Close()
-	createRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
+	testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
 
 	deleted := 0
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		for x := range dedup {
 			err := rel.DeleteByFilter(context.Background(), handle.NewEQFilter(int64(x+20000000)))
 			require.NoError(t, err)
@@ -977,8 +977,8 @@ func TestFlushTableMergeOrderPK(t *testing.T) {
 		require.NoError(t, txn.Commit(context.Background()))
 	}
 
-	txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
-	blkMetas := getAllBlockMetas(rel)
+	txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
+	blkMetas := testutil.GetAllBlockMetas(rel)
 	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 	require.NoError(t, err)
 	worker.SendOp(task)
@@ -986,8 +986,8 @@ func TestFlushTableMergeOrderPK(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, txn.Commit(context.Background()))
 
-	tae.restart(ctx)
-	tae.checkRowsByScan(rows-deleted, true)
+	tae.Restart(ctx)
+	tae.CheckRowsByScan(rows-deleted, true)
 }
 
 func TestFlushTableNoPk(t *testing.T) {
@@ -997,7 +997,7 @@ func TestFlushTableNoPk(t *testing.T) {
 
 	opts := config.WithLongScanAndCKPOpts(nil)
 	// db := initDB(ctx, t, opts)
-	tae := newTestEngine(ctx, t, opts)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
 	defer tae.Close()
 
 	worker := ops.NewOpWorker(context.Background(), "xx")
@@ -1007,13 +1007,13 @@ func TestFlushTableNoPk(t *testing.T) {
 	schema.Name = "table"
 	schema.BlockMaxRows = 20
 	schema.SegmentMaxBlocks = 10
-	tae.bindSchema(schema)
+	tae.BindSchema(schema)
 	bat := catalog.MockBatch(schema, 2*(int(schema.BlockMaxRows)*2+int(schema.BlockMaxRows/2)))
 	defer bat.Close()
-	createRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
+	testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
 
-	txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
-	blkMetas := getAllBlockMetas(rel)
+	txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
+	blkMetas := testutil.GetAllBlockMetas(rel)
 	task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
 	require.NoError(t, err)
 	worker.SendOp(task)
@@ -1021,8 +1021,8 @@ func TestFlushTableNoPk(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, txn.Commit(context.Background()))
 
-	tae.restart(ctx)
-	tae.checkRowsByScan(100, true)
+	tae.Restart(ctx)
+	tae.CheckRowsByScan(100, true)
 }
 
 func TestFlushTabletail(t *testing.T) {
@@ -1033,7 +1033,7 @@ func TestFlushTabletail(t *testing.T) {
 
 	opts := config.WithLongScanAndCKPOpts(nil)
 	// db := initDB(ctx, t, opts)
-	tae := newTestEngine(ctx, t, opts)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
 	defer tae.Close()
 
 	worker := ops.NewOpWorker(context.Background(), "xx")
@@ -1049,10 +1049,10 @@ func TestFlushTabletail(t *testing.T) {
 
 	defer bat.Close()
 	defer bat2.Close()
-	createRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
+	testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
 
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(1))))
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(19)))) // ab0 has 2
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(21)))) // ab1 has 1
@@ -1064,14 +1064,14 @@ func TestFlushTabletail(t *testing.T) {
 	var commitDeleteAfterFlush txnif.AsyncTxn
 	{
 		var rel handle.Relation
-		commitDeleteAfterFlush, rel = getDefaultRelation(t, tae.DB, schema.Name)
+		commitDeleteAfterFlush, rel = testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(42)))) // expect to transfer to nablk1
 	}
 
 	flushTable := func() {
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
-		blkMetas := getAllBlockMetas(rel)
-		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
+		blkMetas := testutil.GetAllBlockMetas(rel)
+		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.Runtime, types.MaxTs())
 		require.NoError(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone()
@@ -1083,7 +1083,7 @@ func TestFlushTabletail(t *testing.T) {
 
 	{
 		require.NoError(t, commitDeleteAfterFlush.Commit(context.Background()))
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		_, _, err := rel.GetByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(42)))
 		require.True(t, moerr.IsMoErrCode(err, moerr.ErrNotFound))
 
@@ -1091,7 +1091,7 @@ func TestFlushTabletail(t *testing.T) {
 		require.NoError(t, txn.Commit(context.Background()))
 	}
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(15))))
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(20)))) // nab0 has 2
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(27)))) // nab1 has 2
@@ -1103,7 +1103,7 @@ func TestFlushTabletail(t *testing.T) {
 	flushTable()
 
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat.Vecs[2].Get(10)))) // nab0 has 2+1, nab1 has 2
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat2.Vecs[2].Get(44))))
 		require.NoError(t, rel.DeleteByFilter(context.Background(), handle.NewEQFilter(bat2.Vecs[2].Get(45)))) // nab5 has 2
@@ -1113,7 +1113,7 @@ func TestFlushTabletail(t *testing.T) {
 	flushTable()
 
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		it := rel.MakeBlockIt()
 		// 6 nablks has 87 rows
 		dels := []int{3, 2, 0, 0, 0, 2}
@@ -1136,11 +1136,11 @@ func TestFlushTabletail(t *testing.T) {
 		require.NoError(t, txn.Commit(context.Background()))
 	}
 
-	t.Log(tae.DB.Catalog.SimplePPString(common.PPL2))
+	t.Log(tae.Catalog.SimplePPString(common.PPL2))
 
-	tae.restart(ctx)
+	tae.Restart(ctx)
 	{
-		txn, rel := getDefaultRelation(t, tae.DB, schema.Name)
+		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		it := rel.MakeBlockIt()
 		// 6 nablks has 87 rows
 		dels := []int{3, 2, 0, 0, 0, 2}
@@ -8294,7 +8294,7 @@ func TestEstimateMemSize(t *testing.T) {
 	ctx := context.Background()
 
 	opts := config.WithLongScanAndCKPOpts(nil)
-	tae := newTestEngine(ctx, t, opts)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
 	defer tae.Close()
 	schema := catalog.MockSchemaAll(2, 1)
 	schema.BlockMaxRows = 50
@@ -8302,11 +8302,11 @@ func TestEstimateMemSize(t *testing.T) {
 
 	schema50rowSize := 0
 	{
-		tae.bindSchema(schema)
+		tae.BindSchema(schema)
 		bat := catalog.MockBatch(schema, 50)
-		createRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
-		txn, rel := tae.getRelation()
-		blk := getOneBlockMeta(rel)
+		testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
+		txn, rel := tae.GetRelation()
+		blk := testutil.GetOneBlockMeta(rel)
 		size1 := blk.GetBlockData().EstimateMemSize()
 		schema50rowSize = size1
 
@@ -8325,11 +8325,11 @@ func TestEstimateMemSize(t *testing.T) {
 	}
 
 	{
-		tae.bindSchema(schemaBig)
+		tae.BindSchema(schemaBig)
 		bat := catalog.MockBatch(schemaBig, 50)
-		createRelationAndAppend(t, 0, tae.DB, "db", schemaBig, bat, false)
-		txn, rel := tae.getRelation()
-		blk := getOneBlockMeta(rel)
+		testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schemaBig, bat, false)
+		txn, rel := tae.GetRelation()
+		blk := testutil.GetOneBlockMeta(rel)
 		size1 := blk.GetBlockData().EstimateMemSize()
 
 		err := rel.DeleteByPhyAddrKey(*objectio.NewRowid(&blk.ID, 1))

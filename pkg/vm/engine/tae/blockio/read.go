@@ -228,23 +228,9 @@ func BlockReadInner(
 		}
 	}
 
-	// read block data from storage specified by meta location
-	if loaded, rowidPos, loadedDeleteMask, err = readBlockData(
-		ctx, columns, colTypes, info, ts, fs, mp, vp,
-	); err != nil {
-		return
-	}
-
-	if deleteMask == nil && loadedDeleteMask != nil {
-		deleteMask = loadedDeleteMask
-	} else if deleteMask != nil && loadedDeleteMask != nil {
-		deleteMask.Merge(loadedDeleteMask)
-	} else if deleteMask == nil && loadedDeleteMask == nil {
+	if deleteMask == nil {
 		deleteMask = nulls.NewWithSize(len(inputDeleteRows))
-	} // else deleteMask != nil && loadedDeleteMask == nil { nothing to do }
-
-	// assemble result batch for return
-	result = batch.NewWithSize(len(loaded.Vecs))
+	}
 
 	// merge deletes from input
 	// deletes from storage + deletes from input
@@ -263,6 +249,25 @@ func BlockReadInner(
 			}
 		}
 
+		if len(sels) == 0 {
+			result := batch.NewWithSize(len(colTypes))
+			for i, typ := range colTypes {
+				if vp == nil {
+					result.Vecs[i] = vector.NewVec(typ)
+				} else {
+					result.Vecs[i] = vp.GetVector(typ)
+				}
+			}
+			return result, nil
+		}
+
+		// if len(selectRows) > 0, this is a non-appendable blk, loadedDelete must be nil
+		if loaded, rowidPos, _, err = readBlockData(
+			ctx, columns, colTypes, info, ts, fs, mp, vp,
+		); err != nil {
+			return
+		}
+
 		// build rowid column if needed
 		if rowidPos >= 0 {
 			if loaded.Vecs[rowidPos], err = buildRowidColumn(
@@ -271,6 +276,8 @@ func BlockReadInner(
 				return
 			}
 		}
+
+		result = batch.NewWithSize(len(loaded.Vecs))
 
 		// assemble result batch only with selected rows
 		for i, col := range loaded.Vecs {
@@ -298,6 +305,18 @@ func BlockReadInner(
 		return
 	}
 
+	// read block data from storage specified by meta location
+	if loaded, rowidPos, loadedDeleteMask, err = readBlockData(
+		ctx, columns, colTypes, info, ts, fs, mp, vp,
+	); err != nil {
+		return
+	}
+
+	if loadedDeleteMask != nil {
+		deleteMask.Merge(loadedDeleteMask)
+	}
+
+	result = batch.NewWithSize(len(loaded.Vecs))
 	// Note: it always goes here if no filter or the block is not sorted
 
 	// transform delete mask to deleted rows

@@ -17,6 +17,7 @@ package blockio
 import (
 	"context"
 	"math"
+	"runtime/trace"
 	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/container/nulls"
@@ -52,38 +53,7 @@ func ReadByFilter(
 	if err != nil {
 		return
 	}
-	var deleteMask *nulls.Nulls
-
-	// merge persisted deletes
-	if !info.DeltaLocation().IsEmpty() {
-		now := time.Now()
-		var persistedDeletes *batch.Batch
-		var persistedByCN bool
-		// load from storage
-		if persistedDeletes, persistedByCN, err = ReadBlockDelete(ctx, info.DeltaLocation(), fs); err != nil {
-			return
-		}
-		readcost := time.Since(now)
-		var rows *nulls.Nulls
-		var bisect time.Duration
-		if persistedByCN {
-			rows = evalDeleteRowsByTimestampForDeletesPersistedByCN(persistedDeletes, ts, info.CommitTs)
-		} else {
-			nowx := time.Now()
-			rows = evalDeleteRowsByTimestamp(persistedDeletes, ts, &info.BlockID)
-			bisect = time.Since(nowx)
-		}
-		if rows != nil {
-			deleteMask = rows
-		}
-		readtotal := time.Since(now)
-		RecordReadDel(readtotal, readcost, bisect)
-	}
-
-	if deleteMask == nil {
-		deleteMask = nulls.NewWithSize(len(inputDeletes))
-	}
-
+	deleteMask := nulls.NewWithSize(len(inputDeletes))
 	// merge input deletes
 	for _, row := range inputDeletes {
 		deleteMask.Add(uint64(row))
@@ -218,60 +188,11 @@ func BlockReadInner(
 	vp engine.VectorPool,
 ) (result *batch.Batch, err error) {
 	var (
-		rowidPos    int
-		deletedRows []int64
-		deleteMask  nulls.Bitmap
-		loaded      *batch.Batch
+		rowidPos                     int
+		deletedRows                  []int64
+		deleteMask, loadedDeleteMask *nulls.Bitmap
+		loaded                       *batch.Batch
 	)
-
-	// read block data from storage specified by meta location
-	if loaded, rowidPos, deleteMask, err = readBlockData(
-		ctx, columns, colTypes, info, ts, fs, mp, vp,
-	); err != nil {
-		return
-	}
-
-	// assemble result batch for return
-	result = batch.NewWithSize(len(loaded.Vecs))
-
-	if len(selectRows) > 0 {
-		// NOTE: it always goes here if there is a filter and the block is sorted
-		// and there are selected rows after applying the filter and delete mask
-
-		// build rowid column if needed
-		if rowidPos >= 0 {
-			if loaded.Vecs[rowidPos], err = buildRowidColumn(
-				info, selectRows, mp, vp,
-			); err != nil {
-				return
-			}
-		}
-
-		// assemble result batch only with selected rows
-		for i, col := range loaded.Vecs {
-			typ := *col.GetType()
-			if typ.Oid == types.T_Rowid {
-				result.Vecs[i] = col
-				continue
-			}
-			if vp == nil {
-				result.Vecs[i] = vector.NewVec(typ)
-			} else {
-				result.Vecs[i] = vp.GetVector(typ)
-			}
-			if err = result.Vecs[i].Union(col, selectRows, mp); err != nil {
-				break
-			}
-		}
-		if err != nil {
-			for _, col := range result.Vecs {
-				if col != nil {
-					col.Free(mp)
-				}
-			}
-		}
-		return
-	}
 
 	// read deletes from storage specified by delta location
 	if !info.DeltaLocation().IsEmpty() {
@@ -296,8 +217,7 @@ func BlockReadInner(
 		}
 
 		// merge delete rows
-		deleteMask.Merge(rows)
-
+		deleteMask = rows
 		readtotal := time.Since(now)
 		RecordReadDel(readtotal, readcost, bisect)
 
@@ -308,10 +228,74 @@ func BlockReadInner(
 		}
 	}
 
+	// read block data from storage specified by meta location
+	if loaded, rowidPos, loadedDeleteMask, err = readBlockData(
+		ctx, columns, colTypes, info, ts, fs, mp, vp,
+	); err != nil {
+		return
+	}
+
+	if deleteMask == nil && loadedDeleteMask != nil {
+		deleteMask = loadedDeleteMask
+	} else if deleteMask != nil && loadedDeleteMask != nil {
+		deleteMask.Merge(loadedDeleteMask)
+	} else if deleteMask == nil && loadedDeleteMask == nil {
+		deleteMask = nulls.NewWithSize(len(inputDeleteRows))
+	} // else deleteMask != nil && loadedDeleteMask == nil { nothing to do }
+
+	// assemble result batch for return
+	result = batch.NewWithSize(len(loaded.Vecs))
+
 	// merge deletes from input
 	// deletes from storage + deletes from input
 	for _, row := range inputDeleteRows {
 		deleteMask.Add(uint64(row))
+	}
+
+	if len(selectRows) > 0 {
+		// NOTE: it always goes here if there is a filter and the block is sorted
+		// and there are selected rows after applying the filter and delete mask
+
+		sels := make([]int32, 0, len(selectRows))
+		for _, sel := range selectRows {
+			if !deleteMask.Contains(uint64(sel)) {
+				sels = append(sels, sel)
+			}
+		}
+
+		// build rowid column if needed
+		if rowidPos >= 0 {
+			if loaded.Vecs[rowidPos], err = buildRowidColumn(
+				info, sels, mp, vp,
+			); err != nil {
+				return
+			}
+		}
+
+		// assemble result batch only with selected rows
+		for i, col := range loaded.Vecs {
+			typ := *col.GetType()
+			if typ.Oid == types.T_Rowid {
+				result.Vecs[i] = col
+				continue
+			}
+			if vp == nil {
+				result.Vecs[i] = vector.NewVec(typ)
+			} else {
+				result.Vecs[i] = vp.GetVector(typ)
+			}
+			if err = result.Vecs[i].Union(col, sels, mp); err != nil {
+				break
+			}
+		}
+		if err != nil {
+			for _, col := range result.Vecs {
+				if col != nil {
+					col.Free(mp)
+				}
+			}
+		}
+		return
 	}
 
 	// Note: it always goes here if no filter or the block is not sorted
@@ -436,7 +420,7 @@ func readBlockData(
 	fs fileservice.FileService,
 	m *mpool.MPool,
 	vp engine.VectorPool,
-) (bat *batch.Batch, rowidPos int, deleteMask nulls.Bitmap, err error) {
+) (bat *batch.Batch, rowidPos int, deleteMask *nulls.Bitmap, err error) {
 	rowidPos, idxes, typs := getRowsIdIndex(colIndexes, colTypes)
 
 	readColumns := func(cols []uint16) (result *batch.Batch, loaded *batch.Batch, err error) {
@@ -462,7 +446,7 @@ func readBlockData(
 		return
 	}
 
-	readABlkColumns := func(cols []uint16) (result *batch.Batch, deletes nulls.Bitmap, err error) {
+	readABlkColumns := func(cols []uint16) (result *batch.Batch, deletes *nulls.Bitmap, err error) {
 		var loaded *batch.Batch
 		// appendable block should be filtered by committs
 		cols = append(cols, objectio.SEQNUM_COMMITTS, objectio.SEQNUM_ABORT) // committs, aborted
@@ -477,6 +461,9 @@ func readBlockData(
 		commits := vector.MustFixedCol[types.TS](loaded.Vecs[len(loaded.Vecs)-2])
 		for i := 0; i < len(commits); i++ {
 			if aborts[i] || commits[i].Greater(ts) {
+				if deletes == nil {
+					deletes = nulls.NewWithSize(1)
+				}
 				deletes.Add(uint64(i))
 			}
 		}
@@ -496,6 +483,8 @@ func readBlockData(
 }
 
 func ReadBlockDelete(ctx context.Context, deltaloc objectio.Location, fs fileservice.FileService) (bat *batch.Batch, isPersistedByCN bool, err error) {
+	r := trace.StartRegion(ctx, "ReadBlockDelete")
+	defer r.End()
 	isPersistedByCN, err = persistedByCN(ctx, deltaloc, fs)
 	if err != nil {
 		return

@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/matrixorigin/matrixone/pkg/compress"
@@ -481,6 +482,11 @@ func (w *objectWriterV1) Sync(ctx context.Context, items ...WriteOptions) error 
 	// if a compact task is rollbacked, it may leave a written file in fs
 	// here we just delete it and write again
 	err := w.object.fs.Write(ctx, w.buffer.GetData())
+	defer func() {
+		if strings.HasPrefix(w.object.name, "query_result_meta") {
+			logutil.Infof("yyyyy objectio write %s, err %v", w.object.name, err)
+		}
+	}()
 	if moerr.IsMoErrCode(err, moerr.ErrFileAlreadyExists) {
 		if err = w.object.fs.Delete(ctx, w.fileName); err != nil {
 			return err

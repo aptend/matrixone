@@ -22,6 +22,7 @@ import (
 	"os"
 	pathpkg "path"
 	"path/filepath"
+	"runtime/debug"
 	"sort"
 	"strings"
 	"sync"
@@ -599,6 +600,13 @@ func (l *LocalFS) Delete(ctx context.Context, filePaths ...string) error {
 	case <-ctx.Done():
 		return ctx.Err()
 	default:
+	}
+
+	for _, s := range filePaths {
+		if strings.HasPrefix(s, "query_result_meta") {
+			logutil.Infof("yyyyyy delete %s", s)
+			debug.PrintStack()
+		}
 	}
 
 	ctx, span := trace.Start(ctx, "LocalFS.Delete")

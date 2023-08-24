@@ -483,7 +483,7 @@ func (w *objectWriterV1) Sync(ctx context.Context, items ...WriteOptions) error 
 	// here we just delete it and write again
 	err := w.object.fs.Write(ctx, w.buffer.GetData())
 	defer func() {
-		if strings.HasPrefix(w.object.name, "query_result_meta") {
+		if strings.Contains(w.object.name, "query_result_meta") {
 			logutil.Infof("yyyyy objectio write %s, err %v", w.object.name, err)
 		}
 	}()

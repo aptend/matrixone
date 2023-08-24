@@ -603,7 +603,7 @@ func (l *LocalFS) Delete(ctx context.Context, filePaths ...string) error {
 	}
 
 	for _, s := range filePaths {
-		if strings.HasPrefix(s, "query_result_meta") {
+		if strings.Contains(s, "query_result_meta") {
 			logutil.Infof("yyyyyy delete %s", s)
 			debug.PrintStack()
 		}

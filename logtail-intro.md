@@ -1,3 +1,6 @@
+
+> Logtail 是 CN(Computation Node) 与 TN(Transaction Node) 之间的一种日志同步协议，是 CN 和 TN 协同工作的基础。 本文将介绍 logtail 协议的基本定位，协议内容和产生过程，也会提及一些遇到的挑战和问题，希望能从宏观层面介绍 logtail，以及它在 MatrixOne 架构中的位置和作用。
+
 早前的 TAE 分析文章(TAE-MatrixOne云原生事务与分析引擎)提到 TN 目前拥有三个职责：
 1. 处理提交的事务
 2. 为 CN 提供 Logtail 服务

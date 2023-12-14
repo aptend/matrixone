@@ -360,6 +360,8 @@ func (txn *Transaction) RollbackLastStatement(ctx context.Context) error {
 			}
 			txn.writes[i].bat.Clean(txn.engine.mp)
 		}
+		logutil.Infof("yyyy rollback %v, lwrites %v, end %v, stats %v, statid %v",
+			txn.op.Txn().DebugString(), len(txn.writes), end, txn.statements, txn.statementID)
 		txn.writes = txn.writes[:end]
 		txn.statements = txn.statements[:txn.statementID]
 	}

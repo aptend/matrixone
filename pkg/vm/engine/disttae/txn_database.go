@@ -425,6 +425,12 @@ func (db *txnDatabase) Create(ctx context.Context, name string, defs []engine.Ta
 	//create table t1(a int); //t1 does not exist. t1 can be created again.
 	//	t1 needs be deleted from deleteTableMap
 	db.txn.deletedTableMap.Delete(key)
+	if strings.Contains(name, "sbtest") {
+		x := make([]Entry, 0)
+		x = db.txn.getTableWrites(catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID, x)
+		logutil.Infof("yyyy Transaction.Create %v, create table %q cnt %v / %v, stats %v, statid %v", db.txn.op.Txn().DebugString(), name, len(x), len(db.txn.writes), len(db.txn.statements), db.txn.statementID)
+	}
+
 	return nil
 }
 

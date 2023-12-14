@@ -28,6 +28,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/defines"
 	"github.com/matrixorigin/matrixone/pkg/incrservice"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/lock"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
@@ -543,6 +544,7 @@ func (s *Scope) CreateTable(c *Compile) error {
 			zap.String("databaseName", c.db),
 			zap.String("tableName", qry.GetTableDef().GetName()),
 			zap.String("txnID", c.proc.TxnOperator.Txn().DebugString()),
+			zap.String("sql", c.sql),
 		)
 	}
 
@@ -604,6 +606,7 @@ func (s *Scope) CreateTable(c *Compile) error {
 				getLogger().Info("createTable",
 					zap.String("databaseName", c.db),
 					zap.String("tableName", qry.GetTableDef().GetName()),
+					zap.String("txnID", c.proc.TxnOperator.Txn().DebugString()),
 					zap.Error(err),
 				)
 				return err
@@ -612,6 +615,7 @@ func (s *Scope) CreateTable(c *Compile) error {
 			getLogger().Info("createTable",
 				zap.String("databaseName", c.db),
 				zap.String("tableName", qry.GetTableDef().GetName()),
+				zap.String("txnID", c.proc.TxnOperator.Txn().DebugString()),
 				zap.Error(err),
 			)
 			return moerr.NewTableAlreadyExists(c.ctx, tblName)
@@ -638,6 +642,7 @@ func (s *Scope) CreateTable(c *Compile) error {
 		getLogger().Info("createTable",
 			zap.String("databaseName", c.db),
 			zap.String("tableName", qry.GetTableDef().GetName()),
+			zap.String("txnID", c.proc.TxnOperator.Txn().DebugString()),
 			zap.Error(err),
 		)
 		return err
@@ -647,6 +652,7 @@ func (s *Scope) CreateTable(c *Compile) error {
 		getLogger().Info("createTable",
 			zap.String("databaseName", c.db),
 			zap.String("tableName", qry.GetTableDef().GetName()),
+			zap.String("txnID", c.proc.TxnOperator.Txn().DebugString()),
 			zap.Error(err),
 		)
 		return err
@@ -838,6 +844,9 @@ func (s *Scope) CreateTable(c *Compile) error {
 			return err
 		}
 		err = c.runSql(insertSQL)
+		if strings.Contains(qry.GetTableDef().GetName(), "sbtest") && insertSQL != "" {
+			logutil.Infof("yyyyy insert %s, err %v", insertSQL, err)
+		}
 		if err != nil {
 			getLogger().Info("createTable",
 				zap.String("databaseName", c.db),

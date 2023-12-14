@@ -433,6 +433,7 @@ func (c *Compile) Run(_ uint64) (*util2.RunResult, error) {
 			return nil, e
 		}
 
+		logutil.Infof("yyyyy txn %v rerun %s due to %v", c.proc.TxnOperator.Txn().DebugString(), c.sql, err)
 		// FIXME: the current retry method is quite bad, the overhead is relatively large, and needs to be
 		// improved to refresh expression in the future.
 		cc = New(c.addr, c.db, c.sql, c.tenant, c.uid, c.proc.Ctx, c.e, c.proc, c.stmt, c.isInternal, c.cnLabel, c.startAt)
@@ -480,8 +481,14 @@ func (c *Compile) ifNeedRerun(err error) bool {
 	return false
 }
 
+var onceRetry atomic.Bool
+
 // run once
 func (c *Compile) runOnce() error {
+	if !onceRetry.Load() && strings.Contains(c.sql, "insert into mo_catalog.mo_indexes") && strings.Contains(c.sql, "'id'") {
+		onceRetry.Store(true)
+		return moerr.NewTxnNeedRetry(c.ctx)
+	}
 	var wg sync.WaitGroup
 
 	err := c.lockMetaTables()
@@ -4069,6 +4076,7 @@ func (c *Compile) fatalLog(retry int, err error) {
 	if err == nil {
 		return
 	}
+	logutil.Infof("yyyyy txn %v err %v", c.proc.TxnOperator.Txn().DebugString(), err)
 	v, ok := moruntime.ProcessLevelRuntime().
 		GetGlobalVariables(moruntime.EnableCheckInvalidRCErrors)
 	if !ok || !v.(bool) {

@@ -24,6 +24,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/pb/txn"
@@ -675,6 +676,13 @@ func (txn *Transaction) Commit(ctx context.Context) ([]txn.TxnRequest, error) {
 	}
 	if err := txn.dumpBatchLocked(0); err != nil {
 		return nil, err
+	}
+	if txn.rollbackCount > 0 {
+		x := make([]Entry, 0)
+		x = txn.getTableWrites(catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID, x)
+		logutil.Infof("yyyy Transaction.Commit %v, create table cnt %v / %v, %v, %v",
+			txn.op.Txn().DebugString(), len(x), len(txn.writes),
+			txn.statementID, txn.statements)
 	}
 	reqs, err := genWriteReqs(ctx, txn.writes, txn.op.Txn().DebugString())
 	if err != nil {

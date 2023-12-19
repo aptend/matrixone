@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -636,4 +637,37 @@ func parseTableTarget(address string, ac *db.AccessInfo, db *db.DB) (*catalog.Ta
 		txn.Commit(context.Background())
 		return tbl, nil
 	}
+}
+
+type objectVisitor struct {
+	catalog.Processor
+	scanned int
+	db, tbl int
+	candidates []
+	
+}
+
+
+func newObjectVisitor() *objectVisitor {
+	return &objectVisitor{
+		
+	}
+}
+
+
+
+func (o *objectVisitor) OnDataBase(db *catalog.DBEntry) error {
+	if !db.IsActive() {
+		return moerr.GetOkStopCurrRecur()
+	}
+	o.db++
+}
+func (o *objectVisitor) OnTable(table *catalog.TableEntry) {
+	if !db.IsActive() {
+		return moerr.GetOkStopCurrRecur()
+	}
+	o.tbl++
+
+	stat, _ := table.ObjectStats(common.PPL0)
+
 }

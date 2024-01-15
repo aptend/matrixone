@@ -19,7 +19,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/matrixorigin/matrixone/pkg/container/nulls"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
@@ -36,12 +35,10 @@ type mergeBlocksEntry struct {
 	txn           txnif.AsyncTxn
 	relation      handle.Relation
 	droppedObjs   []*catalog.ObjectEntry
-	deletes       []*nulls.Bitmap
 	createdObjs   []*catalog.ObjectEntry
 	droppedBlks   []*catalog.BlockEntry
 	createdBlks   []*catalog.BlockEntry
 	transMappings *BlkTransferBooking
-	skippedBlks   []int
 
 	rt *dbutils.Runtime
 }
@@ -52,8 +49,6 @@ func NewMergeBlocksEntry(
 	droppedObjs, createdObjs []*catalog.ObjectEntry,
 	droppedBlks, createdBlks []*catalog.BlockEntry,
 	transMappings *BlkTransferBooking,
-	deletes []*nulls.Bitmap,
-	skipBlks []int,
 	rt *dbutils.Runtime,
 ) *mergeBlocksEntry {
 	return &mergeBlocksEntry{
@@ -64,8 +59,6 @@ func NewMergeBlocksEntry(
 		createdBlks:   createdBlks,
 		droppedBlks:   droppedBlks,
 		transMappings: transMappings,
-		deletes:       deletes,
-		skippedBlks:   skipBlks,
 		rt:            rt,
 	}
 }
@@ -116,15 +109,6 @@ func (entry *mergeBlocksEntry) MakeCommand(csn uint32) (cmd txnif.TxnCmd, err er
 
 func (entry *mergeBlocksEntry) Set1PC()     {}
 func (entry *mergeBlocksEntry) Is1PC() bool { return false }
-
-func (entry *mergeBlocksEntry) isSkipped(fromPos int) bool {
-	for _, offset := range entry.skippedBlks {
-		if offset == fromPos {
-			return true
-		}
-	}
-	return false
-}
 
 func (entry *mergeBlocksEntry) transferBlockDeletes(
 	dropped *catalog.BlockEntry,
@@ -208,13 +192,9 @@ func (entry *mergeBlocksEntry) PrepareCommit() (err error) {
 	ids := make([]*common.ID, 0)
 
 	for idx, dropped := range entry.droppedBlks {
-		if entry.isSkipped(idx) {
-			if len(entry.transMappings.Mappings[idx]) != 0 {
-				panic("empty block do not match")
-			}
+		if len(entry.transMappings.Mappings[idx]) == 0 {
 			continue
 		}
-
 		if err = entry.transferBlockDeletes(
 			dropped,
 			blks,

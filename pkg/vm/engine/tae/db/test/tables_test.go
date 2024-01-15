@@ -497,11 +497,10 @@ func TestMergeBlocks1(t *testing.T) {
 			assert.Nil(t, txn.Commit(context.Background()))
 		}
 		start := time.Now()
-		factory := jobs.MergeBlocksIntoObjectTaskFctory(blks, nil, db.Runtime)
 		// err = task.WaitDone()
 		// assert.Nil(t, err)
 		{
-			task, err := factory(nil, txn)
+			task, err := jobs.NewMergeBlocksTask(nil, txn, blks, nil, nil, db.Runtime)
 			assert.Nil(t, err)
 			err = task.OnExec(context.Background())
 			assert.Nil(t, err)

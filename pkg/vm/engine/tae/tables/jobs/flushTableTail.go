@@ -438,7 +438,7 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 	// create new object to hold merged blocks
 	var toObjectEntry *catalog.ObjectEntry
 	var toObjectHandle handle.Object
-	if toObjectHandle, err = task.rel.CreateNonAppendableObject(false); err != nil {
+	if toObjectHandle, err = task.rel.CreateNonAppendableObject(false, nil); err != nil {
 		return
 	}
 	toObjectEntry = toObjectHandle.GetMeta().(*catalog.ObjectEntry)

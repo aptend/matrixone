@@ -495,7 +495,7 @@ func TestCreateObject(t *testing.T) {
 	assert.Nil(t, err)
 	rel, err := db.CreateRelation(schema)
 	assert.Nil(t, err)
-	_, err = rel.CreateNonAppendableObject(false)
+	_, err = rel.CreateNonAppendableObject(false, nil)
 	assert.Nil(t, err)
 	assert.Nil(t, txn.Commit(context.Background()))
 
@@ -620,7 +620,7 @@ func TestCompactBlock1(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, 2, changes.DeleteMask.GetCardinality())
 
-		obj, err = rel.CreateNonAppendableObject(false)
+		obj, err = rel.CreateNonAppendableObject(false, nil)
 		assert.NoError(t, err)
 		destBlock, err := obj.CreateNonAppendableBlock(nil)
 		assert.Nil(t, err)
@@ -3077,6 +3077,16 @@ func TestMergeblocks2(t *testing.T) {
 	_ = rel.Append(context.Background(), bats[1])
 	assert.Nil(t, txn.Commit(context.Background()))
 
+	// flush to nblk
+	{
+		txn, rel := tae.GetRelation()
+		blkMetas := testutil.GetAllBlockMetas(rel)
+		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
+		require.NoError(t, err)
+		require.NoError(t, task.OnExec(context.Background()))
+		require.NoError(t, txn.Commit(context.Background()))
+	}
+
 	{
 		v := testutil.GetSingleSortKeyValue(bat, schema, 1)
 		filter := handle.NewEQFilter(v)
@@ -3167,16 +3177,28 @@ func TestMergeEmptyBlocks(t *testing.T) {
 
 	tae.CreateRelAndAppend(bats[0], true)
 
+	// flush to nblk
+	{
+		txn, rel := tae.GetRelation()
+		blkMetas := testutil.GetAllBlockMetas(rel)
+		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
+		require.NoError(t, err)
+		require.NoError(t, task.OnExec(context.Background()))
+		require.NoError(t, txn.Commit(context.Background()))
+	}
+
 	assert.NoError(t, tae.DeleteAll(true))
 
-	txn, rel := tae.GetRelation()
-	assert.NoError(t, rel.Append(context.Background(), bats[1]))
-	assert.NoError(t, txn.Commit(context.Background()))
+	{
+		txn, rel := tae.GetRelation()
+		assert.NoError(t, rel.Append(context.Background(), bats[1]))
+		assert.NoError(t, txn.Commit(context.Background()))
+	}
 
 	{
 		t.Log("************merge************")
 
-		txn, rel = tae.GetRelation()
+		txn, rel := tae.GetRelation()
 
 		objIt := rel.MakeObjectIt()
 		obj := objIt.GetObject().GetMeta().(*catalog.ObjectEntry)
@@ -3200,7 +3222,7 @@ func TestMergeEmptyBlocks(t *testing.T) {
 			v := testutil.GetSingleSortKeyValue(bat, schema, 4)
 			filter := handle.NewEQFilter(v)
 			txn2, rel := tae.GetRelation()
-			_ = rel.DeleteByFilter(context.Background(), filter)
+			require.NoError(t, rel.DeleteByFilter(context.Background(), filter))
 			assert.Nil(t, txn2.Commit(context.Background()))
 		}
 		err = txn.Commit(context.Background())
@@ -5505,6 +5527,17 @@ func TestMergeBlocks3(t *testing.T) {
 	bat := catalog.MockBatch(schema, 100)
 	defer bat.Close()
 	tae.CreateRelAndAppend(bat, true)
+
+	// flush to nblk
+	{
+		txn, rel := tae.GetRelation()
+		blkMetas := testutil.GetAllBlockMetas(rel)
+		task, err := jobs.NewFlushTableTailTask(tasks.WaitableCtx, txn, blkMetas, tae.DB.Runtime, types.MaxTs())
+		require.NoError(t, err)
+		require.NoError(t, task.OnExec(context.Background()))
+		require.NoError(t, txn.Commit(context.Background()))
+	}
+
 	filter5 := handle.NewEQFilter(bat.Vecs[3].Get(15))
 	filter9 := handle.NewEQFilter(bat.Vecs[3].Get(19))
 	filter8 := handle.NewEQFilter(bat.Vecs[3].Get(18))
@@ -5590,7 +5623,6 @@ func TestMergeBlocks3(t *testing.T) {
 		testutil.CheckAllColRowsByScan(t, rel, 86, true)
 		require.NoError(t, txn.Commit(context.Background()))
 	}
-
 }
 
 func TestCompactEmptyBlock(t *testing.T) {
@@ -5812,6 +5844,7 @@ func TestMergeMemsize(t *testing.T) {
 			// metas[30], metas[27], metas[25], metas[21], metas[22],
 			// metas[39], metas[37], metas[35], metas[31], metas[32],
 		}
+
 		task, err := jobs.NewMergeBlocksTask(nil, txn, mergeMetas, nil, nil, tae.Runtime)
 		require.NoError(t, err)
 

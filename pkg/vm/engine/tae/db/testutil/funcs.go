@@ -347,7 +347,7 @@ func MergeBlocks(t *testing.T, tenantID uint32, e *db.DB, dbName string, schema 
 			it.Next()
 		}
 		objsToMerge := []*catalog.ObjectEntry{objHandle.GetMeta().(*catalog.ObjectEntry)}
-		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, nil, e.Runtime)
+		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, e.Runtime)
 		if skipConflict && err != nil {
 			_ = txn.Rollback(context.Background())
 			continue

@@ -38,7 +38,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/mergesort"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tables/txnentries"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tasks"
-	"go.uber.org/zap/zapcore"
 )
 
 // CompactObjectTaskFactory merge non-appendable blocks of an appendable-Object
@@ -49,7 +48,7 @@ var CompactObjectTaskFactory = func(
 	return func(ctx *tasks.Context, txn txnif.AsyncTxn) (tasks.Task, error) {
 		mergedObjs := make([]*catalog.ObjectEntry, 1)
 		mergedObjs[0] = mergedBlks[0].GetObject()
-		return NewMergeBlocksTask(ctx, txn, mergedBlks, mergedObjs, nil, rt)
+		return NewMergeBlocksTask(ctx, txn, mergedBlks, mergedObjs, rt)
 	}
 }
 
@@ -57,19 +56,18 @@ type mergeBlocksTask struct {
 	*tasks.BaseTask
 	txn         txnif.AsyncTxn
 	rt          *dbutils.Runtime
-	toObjEntry  *catalog.ObjectEntry
 	mergedObjs  []*catalog.ObjectEntry
 	mergedBlks  []*catalog.BlockEntry
 	createdBlks []*catalog.BlockEntry
-	commitEntry *mergesort.MergeCommitEntry
 	compacted   []handle.Block
+	commitEntry *mergesort.MergeCommitEntry
 	rel         handle.Relation
 	did, tid    uint64
 }
 
 func NewMergeBlocksTask(
 	ctx *tasks.Context, txn txnif.AsyncTxn,
-	mergedBlks []*catalog.BlockEntry, mergedObjs []*catalog.ObjectEntry, toObjEntry *catalog.ObjectEntry,
+	mergedBlks []*catalog.BlockEntry, mergedObjs []*catalog.ObjectEntry,
 	rt *dbutils.Runtime,
 ) (task *mergeBlocksTask, err error) {
 	task = &mergeBlocksTask{
@@ -79,7 +77,6 @@ func NewMergeBlocksTask(
 		mergedObjs:  mergedObjs,
 		createdBlks: make([]*catalog.BlockEntry, 0),
 		compacted:   make([]handle.Block, 0),
-		toObjEntry:  toObjEntry,
 	}
 	task.did = mergedBlks[0].GetObject().GetTable().GetDB().ID
 	database, err := txn.GetDatabaseByID(task.did)
@@ -104,23 +101,6 @@ func NewMergeBlocksTask(
 		task.compacted = append(task.compacted, blk)
 	}
 	task.BaseTask = tasks.NewBaseTask(task, tasks.DataCompactionTask, ctx)
-	return
-}
-
-func (task *mergeBlocksTask) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
-	objs := ""
-	for _, obj := range task.mergedObjs {
-		objs = fmt.Sprintf("%s%s,", objs, common.ShortObjId(obj.ID))
-	}
-	enc.AddString("from-objs", objs)
-
-	toblks := ""
-	for _, blk := range task.createdBlks {
-		toblks = fmt.Sprintf("%s%s,", toblks, blk.ID.ShortStringEx())
-	}
-	if toblks != "" {
-		enc.AddString("to-blks", toblks)
-	}
 	return
 }
 
@@ -207,8 +187,6 @@ func (task *mergeBlocksTask) PrepareNewWriterFunc() func() *blockio.BlockWriter 
 		}
 		seqnums = append(seqnums, def.SeqNum)
 	}
-	fs := task.mergedBlks[0].GetBlockData().GetFs().Service
-
 	sortkeyIsPK := false
 	sortkeyPos := -1
 
@@ -218,7 +196,7 @@ func (task *mergeBlocksTask) PrepareNewWriterFunc() func() *blockio.BlockWriter 
 	} else if schema.HasSortKey() {
 		sortkeyPos = schema.GetSingleSortKeyIdx()
 	}
-	return mergesort.GetMustNewWriter(fs, schema.Version, seqnums, sortkeyPos, sortkeyIsPK)
+	return mergesort.GetMustNewWriter(task.rt.Fs.Service, schema.Version, seqnums, sortkeyPos, sortkeyIsPK)
 }
 
 func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {

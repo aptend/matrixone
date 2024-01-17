@@ -500,7 +500,7 @@ func TestMergeBlocks1(t *testing.T) {
 		// err = task.WaitDone()
 		// assert.Nil(t, err)
 		{
-			task, err := jobs.NewMergeBlocksTask(nil, txn, blks, nil, nil, db.Runtime)
+			task, err := jobs.NewMergeBlocksTask(nil, txn, blks, nil, db.Runtime)
 			assert.Nil(t, err)
 			err = task.OnExec(context.Background())
 			assert.Nil(t, err)

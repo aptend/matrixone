@@ -1374,7 +1374,7 @@ func TestCompactBlock2(t *testing.T) {
 
 		// new nablk-2 18 rows
 		meta := blk.GetMeta().(*catalog.BlockEntry)
-		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, nil, db.Runtime)
+		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
 		assert.Nil(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone(ctx)
@@ -1415,7 +1415,7 @@ func TestCompactBlock2(t *testing.T) {
 
 		// this compaction create a nablk-3 having same data with the nablk-2
 		meta := blk.GetMeta().(*catalog.BlockEntry)
-		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, nil, db.Runtime)
+		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
 		assert.Nil(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone(ctx)
@@ -1461,7 +1461,7 @@ func TestCompactBlock2(t *testing.T) {
 
 		// new nablk-4 16 rows
 		meta := blk.GetMeta().(*catalog.BlockEntry)
-		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, nil, db.Runtime)
+		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
 		assert.NoError(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone(ctx)
@@ -3119,7 +3119,7 @@ func TestMergeblocks2(t *testing.T) {
 			it.Next()
 		}
 		objsToMerge := []*catalog.ObjectEntry{objHandle.GetMeta().(*catalog.ObjectEntry)}
-		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, nil, tae.Runtime)
+		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, tae.Runtime)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
 		assert.NoError(t, err)
@@ -3213,7 +3213,7 @@ func TestMergeEmptyBlocks(t *testing.T) {
 			it.Next()
 		}
 		objsToMerge := []*catalog.ObjectEntry{objHandle.GetMeta().(*catalog.ObjectEntry)}
-		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, nil, tae.Runtime)
+		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, tae.Runtime)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
 		assert.NoError(t, err)
@@ -5121,7 +5121,7 @@ func TestCompactDeltaBlk(t *testing.T) {
 		assert.NoError(t, err)
 		err = task2.OnExec(context.Background())
 		assert.NoError(t, err)
-		task, err := jobs.NewMergeBlocksTask(nil, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, nil, tae.DB.Runtime)
+		task, err := jobs.NewMergeBlocksTask(nil, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, tae.DB.Runtime)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
 		assert.NoError(t, err)
@@ -5591,7 +5591,7 @@ func TestMergeBlocks3(t *testing.T) {
 			metas = append(metas, meta)
 		}
 		objsToMerge := []*catalog.ObjectEntry{obj1}
-		task, err := jobs.NewMergeBlocksTask(nil, mergetxn, metas, objsToMerge, nil, tae.Runtime)
+		task, err := jobs.NewMergeBlocksTask(nil, mergetxn, metas, objsToMerge, tae.Runtime)
 		require.NoError(t, err)
 		require.NoError(t, task.OnExec(context.Background()))
 
@@ -5845,7 +5845,7 @@ func TestMergeMemsize(t *testing.T) {
 			// metas[39], metas[37], metas[35], metas[31], metas[32],
 		}
 
-		task, err := jobs.NewMergeBlocksTask(nil, txn, mergeMetas, nil, nil, tae.Runtime)
+		task, err := jobs.NewMergeBlocksTask(nil, txn, mergeMetas, nil, tae.Runtime)
 		require.NoError(t, err)
 
 		dbutils.PrintMemStats()

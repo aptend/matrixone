@@ -22,6 +22,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/dbutils"
@@ -38,7 +39,7 @@ type mergeBlocksEntry struct {
 	createdObjs   []*catalog.ObjectEntry
 	droppedBlks   []*catalog.BlockEntry
 	createdBlks   []*catalog.BlockEntry
-	transMappings *BlkTransferBooking
+	transMappings *api.BlkTransferBooking
 
 	rt *dbutils.Runtime
 }
@@ -48,7 +49,7 @@ func NewMergeBlocksEntry(
 	relation handle.Relation,
 	droppedObjs, createdObjs []*catalog.ObjectEntry,
 	droppedBlks, createdBlks []*catalog.BlockEntry,
-	transMappings *BlkTransferBooking,
+	transMappings *api.BlkTransferBooking,
 	rt *dbutils.Runtime,
 ) *mergeBlocksEntry {
 	return &mergeBlocksEntry{
@@ -116,7 +117,7 @@ func (entry *mergeBlocksEntry) transferBlockDeletes(
 	delTbls []*model.TransDels,
 	blkidx int) (err error) {
 
-	mapping := entry.transMappings.Mappings[blkidx]
+	mapping := entry.transMappings.Mappings[blkidx].M
 	if len(mapping) == 0 {
 		panic("cannot tranfer empty block")
 	}
@@ -155,14 +156,14 @@ func (entry *mergeBlocksEntry) transferBlockDeletes(
 	count := len(rowid)
 	for i := 0; i < count; i++ {
 		row := rowid[i].GetRowOffset()
-		destpos, ok := mapping[int(row)]
+		destpos, ok := mapping[int32(row)]
 		if !ok {
 			panic(fmt.Sprintf("%s find no transfer mapping for row %d", dropped.ID.String(), row))
 		}
 		if delTbls[destpos.Idx] == nil {
 			delTbls[destpos.Idx] = model.NewTransDels(entry.txn.GetPrepareTS())
 		}
-		delTbls[destpos.Idx].Mapping[destpos.Row] = ts[i]
+		delTbls[destpos.Idx].Mapping[int(destpos.Row)] = ts[i]
 		if err = blks[destpos.Idx].RangeDelete(
 			uint32(destpos.Row), uint32(destpos.Row), handle.DT_MergeCompact, common.MergeAllocator,
 		); err != nil {
@@ -192,7 +193,7 @@ func (entry *mergeBlocksEntry) PrepareCommit() (err error) {
 	ids := make([]*common.ID, 0)
 
 	for idx, dropped := range entry.droppedBlks {
-		if len(entry.transMappings.Mappings[idx]) == 0 {
+		if len(entry.transMappings.Mappings[idx].M) == 0 {
 			continue
 		}
 		if err = entry.transferBlockDeletes(

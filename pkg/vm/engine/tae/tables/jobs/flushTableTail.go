@@ -20,6 +20,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 
 	"github.com/matrixorigin/matrixone/pkg/common/bitmap"
@@ -66,7 +67,7 @@ type flushTableTailTask struct {
 	dbid uint64
 
 	// record the row mapping from deleted blocks to created blocks
-	transMappings *txnentries.BlkTransferBooking
+	transMappings *api.BlkTransferBooking
 
 	ablksMetas        []*catalog.BlockEntry
 	delSrcMetas       []*catalog.BlockEntry
@@ -127,7 +128,7 @@ func NewFlushTableTailTask(
 			task.delSrcHandles = append(task.delSrcHandles, hdl)
 		}
 	}
-	task.transMappings = txnentries.NewBlkTransferBooking(len(task.ablksHandles))
+	task.transMappings = api.NewBlkTransferBooking(len(task.ablksHandles))
 
 	task.BaseTask = tasks.NewBaseTask(task, tasks.DataCompactionTask, ctx)
 

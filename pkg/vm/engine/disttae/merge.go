@@ -76,7 +76,6 @@ func (t *CNMergeTask) PrepareNewWriterFunc() func() *blockio.BlockWriter {
 }
 
 func (t *CNMergeTask) readAllData() ([]*batch.Batch, []*nulls.Nulls, error) {
-	// TODO: release batch if error? but seems no mpool used in LoadColumns, leave it up to Golang GC?
 	var cnt uint32
 	for _, t := range t.targets {
 		cnt += t.BlkCnt()

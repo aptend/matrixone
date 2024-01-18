@@ -28,9 +28,9 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/blockio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tables/txnentries"
 	"go.uber.org/zap"
 )
 
@@ -54,11 +54,11 @@ type MergeCommitEntry struct {
 	StartTs            types.TS
 	MergedObjs         []objectio.ObjectStats // deleted
 	CreatedObjectStats []objectio.ObjectStats // created
-	Booking            *txnentries.BlkTransferBooking
+	Booking            *api.BlkTransferBooking
 }
 
 func (e *MergeCommitEntry) InitTransfermapping(blkcnt int) {
-	e.Booking = txnentries.NewBlkTransferBooking(blkcnt)
+	e.Booking = api.NewBlkTransferBooking(blkcnt)
 }
 
 type MergeTicket struct {

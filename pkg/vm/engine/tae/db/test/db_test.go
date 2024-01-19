@@ -5538,10 +5538,10 @@ func TestMergeBlocks3(t *testing.T) {
 		require.NoError(t, txn.Commit(context.Background()))
 	}
 
-	filter5 := handle.NewEQFilter(bat.Vecs[3].Get(15))
-	filter9 := handle.NewEQFilter(bat.Vecs[3].Get(19))
-	filter8 := handle.NewEQFilter(bat.Vecs[3].Get(18))
-	filter7 := handle.NewEQFilter(bat.Vecs[3].Get(17))
+	filter15 := handle.NewEQFilter(bat.Vecs[3].Get(15))
+	filter19 := handle.NewEQFilter(bat.Vecs[3].Get(19))
+	filter18 := handle.NewEQFilter(bat.Vecs[3].Get(18))
+	filter17 := handle.NewEQFilter(bat.Vecs[3].Get(17))
 	// delete all rows in first blk in obj1 and the 5th,9th rows in blk2
 	{
 		txn, rel := tae.GetRelation()
@@ -5562,8 +5562,8 @@ func TestMergeBlocks3(t *testing.T) {
 		err = rel.DeleteByPhyAddrKeys(view.GetData(), pkView.GetData())
 		require.NoError(t, err)
 
-		require.NoError(t, rel.DeleteByFilter(context.Background(), filter5))
-		require.NoError(t, rel.DeleteByFilter(context.Background(), filter9))
+		require.NoError(t, rel.DeleteByFilter(context.Background(), filter15))
+		require.NoError(t, rel.DeleteByFilter(context.Background(), filter19))
 		require.NoError(t, txn.Commit(context.Background()))
 	}
 
@@ -5572,7 +5572,7 @@ func TestMergeBlocks3(t *testing.T) {
 	// 3. delete 8th row in blk2 and commit that after merging, test transfer
 	{
 		del8txn, rel8 := tae.GetRelation()
-		valrow8, null, err := rel8.GetValueByFilter(context.Background(), filter8, schema.GetColIdx(catalog.PhyAddrColumnName))
+		valrow8, null, err := rel8.GetValueByFilter(context.Background(), filter18, schema.GetColIdx(catalog.PhyAddrColumnName))
 		require.NoError(t, err)
 		require.False(t, null)
 
@@ -5596,7 +5596,7 @@ func TestMergeBlocks3(t *testing.T) {
 		require.NoError(t, task.OnExec(context.Background()))
 
 		// delete del7 after starting merge txn
-		require.NoError(t, rel7.DeleteByFilter(context.Background(), filter7))
+		require.NoError(t, rel7.DeleteByFilter(context.Background(), filter17))
 		require.NoError(t, del7txn.Commit(context.Background()))
 
 		// commit merge, and it will carry del7 to the new block
@@ -5611,13 +5611,13 @@ func TestMergeBlocks3(t *testing.T) {
 	{
 		var err error
 		txn, rel := tae.GetRelation()
-		_, _, err = rel.GetValueByFilter(context.Background(), filter5, 3)
+		_, _, err = rel.GetValueByFilter(context.Background(), filter15, 3)
 		assert.True(t, moerr.IsMoErrCode(err, moerr.ErrNotFound))
-		_, _, err = rel.GetValueByFilter(context.Background(), filter7, 3)
+		_, _, err = rel.GetValueByFilter(context.Background(), filter17, 3)
 		assert.True(t, moerr.IsMoErrCode(err, moerr.ErrNotFound))
-		_, _, err = rel.GetValueByFilter(context.Background(), filter8, 3)
+		_, _, err = rel.GetValueByFilter(context.Background(), filter18, 3)
 		assert.True(t, moerr.IsMoErrCode(err, moerr.ErrNotFound))
-		_, _, err = rel.GetValueByFilter(context.Background(), filter9, 3)
+		_, _, err = rel.GetValueByFilter(context.Background(), filter19, 3)
 		assert.True(t, moerr.IsMoErrCode(err, moerr.ErrNotFound))
 
 		testutil.CheckAllColRowsByScan(t, rel, 86, true)

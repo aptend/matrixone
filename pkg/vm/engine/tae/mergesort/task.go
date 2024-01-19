@@ -170,6 +170,7 @@ func DoMergeAndWrite(
 		logutil.Info("[Done] Mergeblocks due to all deleted",
 			zap.String("table", commitEntry.Tablename),
 			zap.String("txn-start-ts", commitEntry.StartTs.ToString()))
+		commitEntry.Booking.Clean()
 		return
 	}
 
@@ -234,12 +235,15 @@ func DoMergeAndWrite(
 		}
 		tempVecs = tempVecs[:0]
 
-		for _, bat := range batches {
+		for k, bat := range batches {
 			vec := bat.Vecs[i]
-			if vec.Length() == 0 {
+			if vec.Length() == 0 || (dels[k] != nil && vec.Length() == dels[k].GetCardinality()) {
 				continue
 			}
 			tempVecs = append(tempVecs, vec)
+		}
+		if len(toSortVecs) != len(tempVecs) {
+			panic("mismatch length")
 		}
 
 		outvecs, release := getRetVecs(len(toLayout), tempVecs[0].GetType(), mergehost)
@@ -274,9 +278,10 @@ func DoMergeAndWrite(
 	// no tomestone actually
 	cobjstats := writer.GetObjectStats()[:objectio.SchemaTombstone]
 	commitEntry.CreatedObjectStats = cobjstats
-	cobj := fmt.Sprintf("%s(%v)",
+	cobj := fmt.Sprintf("%s(%v)Rows(%v)",
 		common.ShortObjId(*cobjstats[0].ObjectName().ObjectId()),
-		cobjstats[0].BlkCnt())
+		cobjstats[0].BlkCnt(),
+		cobjstats[0].Rows())
 	logutil.Info("[Done] Mergeblocks",
 		zap.String("table", commitEntry.Tablename),
 		zap.String("txn-start-ts", commitEntry.StartTs.ToString()),

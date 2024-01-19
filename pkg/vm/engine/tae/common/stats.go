@@ -491,10 +491,8 @@ func HumanReadableBytes(bytes int) string {
 }
 
 func ShortObjId(x types.Objectid) string {
-	var shortuuid [13]byte
-	shortuuid[8] = '-'
-	hex.Encode(shortuuid[:8], x[:4])
-	hex.Encode(shortuuid[9:], x[4:6])
+	var shortuuid [12]byte
+	hex.Encode(shortuuid[:], x[10:16])
 	return string(shortuuid[:])
 }
 

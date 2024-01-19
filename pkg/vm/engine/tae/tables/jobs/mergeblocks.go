@@ -40,24 +40,11 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tasks"
 )
 
-// CompactObjectTaskFactory merge non-appendable blocks of an appendable-Object
-// into a new non-appendable Object.
-var CompactObjectTaskFactory = func(
-	mergedBlks []*catalog.BlockEntry, rt *dbutils.Runtime,
-) tasks.TxnTaskFactory {
-	return func(ctx *tasks.Context, txn txnif.AsyncTxn) (tasks.Task, error) {
-		mergedObjs := make([]*catalog.ObjectEntry, 1)
-		mergedObjs[0] = mergedBlks[0].GetObject()
-		return NewMergeBlocksTask(ctx, txn, mergedBlks, mergedObjs, rt)
-	}
-}
-
 type mergeBlocksTask struct {
 	*tasks.BaseTask
 	txn         txnif.AsyncTxn
 	rt          *dbutils.Runtime
 	mergedObjs  []*catalog.ObjectEntry
-	mergedBlks  []*catalog.BlockEntry
 	createdBlks []*catalog.BlockEntry
 	compacted   []handle.Block
 	commitEntry *mergesort.MergeCommitEntry
@@ -65,40 +52,46 @@ type mergeBlocksTask struct {
 	did, tid    uint64
 }
 
-func NewMergeBlocksTask(
+func NewMergeObjectsTask(
 	ctx *tasks.Context, txn txnif.AsyncTxn,
-	mergedBlks []*catalog.BlockEntry, mergedObjs []*catalog.ObjectEntry,
+	mergedObjs []*catalog.ObjectEntry,
 	rt *dbutils.Runtime,
 ) (task *mergeBlocksTask, err error) {
+	if len(mergedObjs) == 0 {
+		panic("empty mergedObjs")
+	}
 	task = &mergeBlocksTask{
 		txn:         txn,
 		rt:          rt,
-		mergedBlks:  mergedBlks,
 		mergedObjs:  mergedObjs,
 		createdBlks: make([]*catalog.BlockEntry, 0),
 		compacted:   make([]handle.Block, 0),
 	}
-	task.did = mergedBlks[0].GetObject().GetTable().GetDB().ID
+
+	task.did = mergedObjs[0].GetTable().GetDB().ID
 	database, err := txn.GetDatabaseByID(task.did)
 	if err != nil {
 		return
 	}
-	task.tid = mergedBlks[0].GetObject().GetTable().ID
+	task.tid = mergedObjs[0].GetTable().ID
 	task.rel, err = database.GetRelationByID(task.tid)
 	if err != nil {
 		return
 	}
-	for _, meta := range mergedBlks {
-		obj, err := task.rel.GetObject(&meta.GetObject().ID)
+	for _, meta := range mergedObjs {
+		obj, err := task.rel.GetObject(&meta.ID)
 		if err != nil {
 			return nil, err
 		}
 		defer obj.Close()
-		blk, err := obj.GetBlock(meta.ID)
+		it := obj.MakeBlockIt()
+		for ; it.Valid(); it.Next() {
+			blk := it.GetBlock()
+			task.compacted = append(task.compacted, blk)
+		}
 		if err != nil {
 			return nil, err
 		}
-		task.compacted = append(task.compacted, blk)
 	}
 	task.BaseTask = tasks.NewBaseTask(task, tasks.DataCompactionTask, ctx)
 	return

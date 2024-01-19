@@ -1374,7 +1374,7 @@ func TestCompactBlock2(t *testing.T) {
 
 		// new nablk-2 18 rows
 		meta := blk.GetMeta().(*catalog.BlockEntry)
-		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
+		task, err := jobs.NewMergeObjectsTask(tasks.WaitableCtx, txn, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
 		assert.Nil(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone(ctx)
@@ -1415,7 +1415,7 @@ func TestCompactBlock2(t *testing.T) {
 
 		// this compaction create a nablk-3 having same data with the nablk-2
 		meta := blk.GetMeta().(*catalog.BlockEntry)
-		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
+		task, err := jobs.NewMergeObjectsTask(tasks.WaitableCtx, txn, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
 		assert.Nil(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone(ctx)
@@ -1461,7 +1461,7 @@ func TestCompactBlock2(t *testing.T) {
 
 		// new nablk-4 16 rows
 		meta := blk.GetMeta().(*catalog.BlockEntry)
-		task, err := jobs.NewMergeBlocksTask(tasks.WaitableCtx, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
+		task, err := jobs.NewMergeObjectsTask(tasks.WaitableCtx, txn, []*catalog.ObjectEntry{meta.GetObject()}, db.Runtime)
 		assert.NoError(t, err)
 		worker.SendOp(task)
 		err = task.WaitDone(ctx)
@@ -3111,15 +3111,8 @@ func TestMergeblocks2(t *testing.T) {
 		objHandle, err := rel.GetObject(&obj.ID)
 		assert.NoError(t, err)
 
-		var metas []*catalog.BlockEntry
-		it := objHandle.MakeBlockIt()
-		for it.Valid() {
-			meta := it.GetBlock().GetMeta().(*catalog.BlockEntry)
-			metas = append(metas, meta)
-			it.Next()
-		}
 		objsToMerge := []*catalog.ObjectEntry{objHandle.GetMeta().(*catalog.ObjectEntry)}
-		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, tae.Runtime)
+		task, err := jobs.NewMergeObjectsTask(nil, txn, objsToMerge, tae.Runtime)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
 		assert.NoError(t, err)
@@ -3205,15 +3198,8 @@ func TestMergeEmptyBlocks(t *testing.T) {
 		objHandle, err := rel.GetObject(&obj.ID)
 		assert.NoError(t, err)
 
-		var metas []*catalog.BlockEntry
-		it := objHandle.MakeBlockIt()
-		for it.Valid() {
-			meta := it.GetBlock().GetMeta().(*catalog.BlockEntry)
-			metas = append(metas, meta)
-			it.Next()
-		}
 		objsToMerge := []*catalog.ObjectEntry{objHandle.GetMeta().(*catalog.ObjectEntry)}
-		task, err := jobs.NewMergeBlocksTask(nil, txn, metas, objsToMerge, tae.Runtime)
+		task, err := jobs.NewMergeObjectsTask(nil, txn, objsToMerge, tae.Runtime)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
 		assert.NoError(t, err)
@@ -5121,7 +5107,7 @@ func TestCompactDeltaBlk(t *testing.T) {
 		assert.NoError(t, err)
 		err = task2.OnExec(context.Background())
 		assert.NoError(t, err)
-		task, err := jobs.NewMergeBlocksTask(nil, txn, []*catalog.BlockEntry{meta}, []*catalog.ObjectEntry{meta.GetObject()}, tae.DB.Runtime)
+		task, err := jobs.NewMergeObjectsTask(nil, txn, []*catalog.ObjectEntry{meta.GetObject()}, tae.DB.Runtime)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
 		assert.NoError(t, err)
@@ -5582,16 +5568,10 @@ func TestMergeBlocks3(t *testing.T) {
 		// merge first Object
 		objit := relm.MakeObjectIt()
 		obj1 := objit.GetObject().GetMeta().(*catalog.ObjectEntry)
-		objHandle, err := relm.GetObject(&obj1.ID)
 		require.NoError(t, err)
-		metas := make([]*catalog.BlockEntry, 0, 10)
-		it := objHandle.MakeBlockIt()
-		for ; it.Valid(); it.Next() {
-			meta := it.GetBlock().GetMeta().(*catalog.BlockEntry)
-			metas = append(metas, meta)
-		}
+
 		objsToMerge := []*catalog.ObjectEntry{obj1}
-		task, err := jobs.NewMergeBlocksTask(nil, mergetxn, metas, objsToMerge, tae.Runtime)
+		task, err := jobs.NewMergeObjectsTask(nil, mergetxn, objsToMerge, tae.Runtime)
 		require.NoError(t, err)
 		require.NoError(t, task.OnExec(context.Background()))
 
@@ -5827,25 +5807,28 @@ func TestMergeMemsize(t *testing.T) {
 	}
 	statsVec.Close()
 
-	// t.Log(tae.Catalog.SimplePPString(common.PPL1))
-	var metas []*catalog.BlockEntry
+	t.Log(tae.Catalog.SimplePPString(common.PPL1))
+	var metas []*catalog.ObjectEntry
 	{
 		txn, rel := tae.GetRelation()
-		metas = testutil.GetAllBlockMetas(rel)
+		it := rel.MakeObjectIt()
+		blkcnt := 0
+		for ; it.Valid(); it.Next() {
+			obj := it.GetObject()
+			defer obj.Close()
+			meta := it.GetObject().GetMeta().(*catalog.ObjectEntry)
+			stat := meta.GetObjectStats()
+			blkcnt += int(stat.BlkCnt())
+			metas = append(metas, meta)
+
+		}
 		txn.Commit(ctx)
-		require.Equal(t, batCnt, len(metas))
+		require.Equal(t, batCnt, blkcnt)
 	}
 
 	{
 		txn, _ := tae.StartTxn(nil)
-		mergeMetas := []*catalog.BlockEntry{
-			metas[10], metas[7], metas[5], metas[1], metas[2],
-			// metas[20], metas[17], metas[15], metas[11], metas[12],
-			// metas[30], metas[27], metas[25], metas[21], metas[22],
-			// metas[39], metas[37], metas[35], metas[31], metas[32],
-		}
-
-		task, err := jobs.NewMergeBlocksTask(nil, txn, mergeMetas, nil, tae.Runtime)
+		task, err := jobs.NewMergeObjectsTask(nil, txn, metas, tae.Runtime)
 		require.NoError(t, err)
 
 		dbutils.PrintMemStats()

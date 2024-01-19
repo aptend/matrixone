@@ -192,6 +192,10 @@ func (entry *mergeBlocksEntry) PrepareCommit() (err error) {
 
 	ids := make([]*common.ID, 0)
 
+	if len(entry.droppedBlks) != len(entry.transMappings.Mappings) {
+		panic(fmt.Sprintf("bad length %v != %v", len(entry.droppedBlks), len(entry.transMappings.Mappings)))
+	}
+
 	for idx, dropped := range entry.droppedBlks {
 		if len(entry.transMappings.Mappings[idx].M) == 0 {
 			continue

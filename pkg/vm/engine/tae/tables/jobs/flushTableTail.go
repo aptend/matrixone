@@ -128,7 +128,7 @@ func NewFlushTableTailTask(
 			task.delSrcHandles = append(task.delSrcHandles, hdl)
 		}
 	}
-	task.transMappings = api.NewBlkTransferBooking(len(task.ablksHandles))
+	task.transMappings = mergesort.NewBlkTransferBooking(len(task.ablksHandles))
 
 	task.BaseTask = tasks.NewBaseTask(task, tasks.DataCompactionTask, ctx)
 
@@ -361,7 +361,7 @@ func (task *flushTableTailTask) prepareAblkSortedData(ctx context.Context, blkid
 			return
 		}
 	}
-	task.transMappings.AddSortPhaseMapping(blkidx, rowCntBeforeApplyDelete, deletes, sortMapping)
+	mergesort.AddSortPhaseMapping(task.transMappings, blkidx, rowCntBeforeApplyDelete, deletes, sortMapping)
 	return
 }
 
@@ -432,7 +432,7 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 				return err
 			}
 		}
-		task.transMappings.Clean()
+		mergesort.CleanTransMapping(task.transMappings)
 		return nil
 	}
 
@@ -498,14 +498,14 @@ func (task *flushTableTailTask) mergeAblks(ctx context.Context) (err error) {
 
 		// modify sortidx and mapping
 		orderedVecs = mergesort.MergeColumn(sortVecs, sortedIdx, mapping, fromLayout, toLayout, task.rt.VectorPool.Transient)
-		task.transMappings.UpdateMappingAfterMerge(mapping, fromLayout, toLayout)
+		mergesort.UpdateMappingAfterMerge(task.transMappings, mapping, fromLayout, toLayout)
 		// free mapping, which is never used again
 		common.MergeAllocator.Free(mappingNode)
 	} else {
 		// just do reshape
 		orderedVecs = mergesort.ReshapeColumn(sortVecs, fromLayout, toLayout, task.rt.VectorPool.Transient)
 		// UpdateMappingAfterMerge will handle the nil mapping
-		task.transMappings.UpdateMappingAfterMerge(nil, fromLayout, toLayout)
+		mergesort.UpdateMappingAfterMerge(task.transMappings, nil, fromLayout, toLayout)
 	}
 	for _, vec := range orderedVecs {
 		defer vec.Close()

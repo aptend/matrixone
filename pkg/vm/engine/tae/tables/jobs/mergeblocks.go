@@ -236,13 +236,11 @@ func HandleMergeEntryInTxn(txn txnif.AsyncTxn, entry *mergesort.MergeCommitEntry
 		return nil, err
 	}
 
-	var (
-		mergedObjs  []*catalog.ObjectEntry
-		createdObjs []*catalog.ObjectEntry
-		mergedBlks  []*catalog.BlockEntry
-		createdBlks []*catalog.BlockEntry
-		ids         []*common.ID
-	)
+	mergedObjs := make([]*catalog.ObjectEntry, 0, len(entry.MergedObjs))
+	createdObjs := make([]*catalog.ObjectEntry, 0, len(entry.CreatedObjectStats))
+	mergedBlks := make([]*catalog.BlockEntry, 0, len(entry.MergedObjs)*2)
+	createdBlks := make([]*catalog.BlockEntry, 0, len(entry.CreatedObjectStats)*2)
+	ids := make([]*common.ID, 0, len(entry.MergedObjs)*2)
 
 	// drop merged blocks and objects
 	for _, drop := range entry.MergedObjs {

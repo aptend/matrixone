@@ -216,7 +216,7 @@ func DoMergeAndWrite(
 
 	// prepare multiple batch
 	attrs := batches[0].Attrs
-	var writtenBatches []*batch.Batch
+	writtenBatches := make([]*batch.Batch, 0, len(sortedVecs))
 	for _, vec := range sortedVecs {
 		b := batch.New(true, attrs)
 		b.SetRowCount(vec.Length())

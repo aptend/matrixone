@@ -19,10 +19,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/matrixorigin/matrixone/pkg/container/nulls"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/dbutils"
@@ -36,12 +36,10 @@ type mergeBlocksEntry struct {
 	txn           txnif.AsyncTxn
 	relation      handle.Relation
 	droppedObjs   []*catalog.ObjectEntry
-	deletes       []*nulls.Bitmap
 	createdObjs   []*catalog.ObjectEntry
 	droppedBlks   []*catalog.BlockEntry
 	createdBlks   []*catalog.BlockEntry
-	transMappings *BlkTransferBooking
-	skippedBlks   []int
+	transMappings *api.BlkTransferBooking
 
 	rt *dbutils.Runtime
 }
@@ -51,9 +49,7 @@ func NewMergeBlocksEntry(
 	relation handle.Relation,
 	droppedObjs, createdObjs []*catalog.ObjectEntry,
 	droppedBlks, createdBlks []*catalog.BlockEntry,
-	transMappings *BlkTransferBooking,
-	deletes []*nulls.Bitmap,
-	skipBlks []int,
+	transMappings *api.BlkTransferBooking,
 	rt *dbutils.Runtime,
 ) *mergeBlocksEntry {
 	return &mergeBlocksEntry{
@@ -64,8 +60,6 @@ func NewMergeBlocksEntry(
 		createdBlks:   createdBlks,
 		droppedBlks:   droppedBlks,
 		transMappings: transMappings,
-		deletes:       deletes,
-		skippedBlks:   skipBlks,
 		rt:            rt,
 	}
 }
@@ -117,22 +111,13 @@ func (entry *mergeBlocksEntry) MakeCommand(csn uint32) (cmd txnif.TxnCmd, err er
 func (entry *mergeBlocksEntry) Set1PC()     {}
 func (entry *mergeBlocksEntry) Is1PC() bool { return false }
 
-func (entry *mergeBlocksEntry) isSkipped(fromPos int) bool {
-	for _, offset := range entry.skippedBlks {
-		if offset == fromPos {
-			return true
-		}
-	}
-	return false
-}
-
 func (entry *mergeBlocksEntry) transferBlockDeletes(
 	dropped *catalog.BlockEntry,
 	blks []handle.Block,
 	delTbls []*model.TransDels,
 	blkidx int) (err error) {
 
-	mapping := entry.transMappings.Mappings[blkidx]
+	mapping := entry.transMappings.Mappings[blkidx].M
 	if len(mapping) == 0 {
 		panic("cannot tranfer empty block")
 	}
@@ -171,14 +156,14 @@ func (entry *mergeBlocksEntry) transferBlockDeletes(
 	count := len(rowid)
 	for i := 0; i < count; i++ {
 		row := rowid[i].GetRowOffset()
-		destpos, ok := mapping[int(row)]
+		destpos, ok := mapping[int32(row)]
 		if !ok {
 			panic(fmt.Sprintf("%s find no transfer mapping for row %d", dropped.ID.String(), row))
 		}
 		if delTbls[destpos.Idx] == nil {
 			delTbls[destpos.Idx] = model.NewTransDels(entry.txn.GetPrepareTS())
 		}
-		delTbls[destpos.Idx].Mapping[destpos.Row] = ts[i]
+		delTbls[destpos.Idx].Mapping[int(destpos.Row)] = ts[i]
 		if err = blks[destpos.Idx].RangeDelete(
 			uint32(destpos.Row), uint32(destpos.Row), handle.DT_MergeCompact, common.MergeAllocator,
 		); err != nil {
@@ -207,14 +192,14 @@ func (entry *mergeBlocksEntry) PrepareCommit() (err error) {
 
 	ids := make([]*common.ID, 0)
 
+	if len(entry.droppedBlks) != len(entry.transMappings.Mappings) {
+		panic(fmt.Sprintf("bad length %v != %v", len(entry.droppedBlks), len(entry.transMappings.Mappings)))
+	}
+
 	for idx, dropped := range entry.droppedBlks {
-		if entry.isSkipped(idx) {
-			if len(entry.transMappings.Mappings[idx]) != 0 {
-				panic("empty block do not match")
-			}
+		if len(entry.transMappings.Mappings[idx].M) == 0 {
 			continue
 		}
-
 		if err = entry.transferBlockDeletes(
 			dropped,
 			blks,

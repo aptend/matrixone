@@ -20,6 +20,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/nulls"
@@ -146,11 +147,7 @@ func DoMergeAndWrite(
 	for i := range batches {
 		rowCntBeforeApplyDelete := batches[i].RowCount()
 		del := dels[i]
-		if del != nil {
-			if del.Count() == rowCntBeforeApplyDelete {
-				continue // this block is all deleted, do not merge
-			}
-
+		if del != nil && del.Count() > 0 {
 			// dup vector before apply delete. old b will be freed in releaseF
 			newb, err := batches[i].Dup(mpool)
 			if err != nil {
@@ -159,6 +156,10 @@ func DoMergeAndWrite(
 			defer newb.Clean(mpool) // whoever create new vector, should clean it
 			batches[i] = newb
 			batches[i].AntiShrink(del.ToI64Arrary())
+			// skip empty batch
+			if batches[i].RowCount() == 0 {
+				continue
+			}
 		}
 		AddSortPhaseMapping(commitEntry.Booking, i, rowCntBeforeApplyDelete, del, nil)
 		fromLayout = append(fromLayout, uint32(batches[i].RowCount()))
@@ -235,19 +236,22 @@ func DoMergeAndWrite(
 		}
 		tempVecs = tempVecs[:0]
 
-		for k, bat := range batches {
-			vec := bat.Vecs[i]
-			if vec.Length() == 0 || (dels[k] != nil && vec.Length() == dels[k].GetCardinality()) {
+		for _, bat := range batches {
+			if bat.RowCount() == 0 {
 				continue
 			}
-			tempVecs = append(tempVecs, vec)
+			tempVecs = append(tempVecs, bat.Vecs[i])
 		}
 		if len(toSortVecs) != len(tempVecs) {
-			panic("mismatch length")
+			return moerr.NewInternalError(ctx, "tosort mismatch length %v %v", len(toSortVecs), len(tempVecs))
 		}
 
 		outvecs, release := getRetVecs(len(toLayout), tempVecs[0].GetType(), mergehost)
 		defer release()
+
+		if len(sortedVecs) != len(outvecs) {
+			return moerr.NewInternalError(ctx, "written mismatch length %v %v", len(sortedVecs), len(outvecs))
+		}
 
 		if hasSortKey {
 			Multiplex(tempVecs, outvecs, sortedIdx, fromLayout, toLayout, mpool)

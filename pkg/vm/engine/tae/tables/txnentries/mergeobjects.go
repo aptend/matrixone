@@ -31,7 +31,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/model"
 )
 
-type mergeBlocksEntry struct {
+type mergeObjectsEntry struct {
 	sync.RWMutex
 	txn           txnif.AsyncTxn
 	relation      handle.Relation
@@ -44,15 +44,15 @@ type mergeBlocksEntry struct {
 	rt *dbutils.Runtime
 }
 
-func NewMergeBlocksEntry(
+func NewMergeObjectsEntry(
 	txn txnif.AsyncTxn,
 	relation handle.Relation,
 	droppedObjs, createdObjs []*catalog.ObjectEntry,
 	droppedBlks, createdBlks []*catalog.BlockEntry,
 	transMappings *api.BlkTransferBooking,
 	rt *dbutils.Runtime,
-) *mergeBlocksEntry {
-	return &mergeBlocksEntry{
+) *mergeObjectsEntry {
+	return &mergeObjectsEntry{
 		txn:           txn,
 		relation:      relation,
 		createdObjs:   createdObjs,
@@ -64,20 +64,20 @@ func NewMergeBlocksEntry(
 	}
 }
 
-func (entry *mergeBlocksEntry) PrepareRollback() (err error) {
+func (entry *mergeObjectsEntry) PrepareRollback() (err error) {
 	// TODO: remove block file? (should be scheduled and executed async)
 	return
 }
-func (entry *mergeBlocksEntry) ApplyRollback() (err error) {
+func (entry *mergeObjectsEntry) ApplyRollback() (err error) {
 	//TODO::?
 	return
 }
 
-func (entry *mergeBlocksEntry) ApplyCommit() (err error) {
+func (entry *mergeObjectsEntry) ApplyCommit() (err error) {
 	return
 }
 
-func (entry *mergeBlocksEntry) MakeCommand(csn uint32) (cmd txnif.TxnCmd, err error) {
+func (entry *mergeObjectsEntry) MakeCommand(csn uint32) (cmd txnif.TxnCmd, err error) {
 	droppedObjs := make([]*common.ID, 0)
 	for _, blk := range entry.droppedObjs {
 		id := blk.AsCommonID()
@@ -108,10 +108,10 @@ func (entry *mergeBlocksEntry) MakeCommand(csn uint32) (cmd txnif.TxnCmd, err er
 	return
 }
 
-func (entry *mergeBlocksEntry) Set1PC()     {}
-func (entry *mergeBlocksEntry) Is1PC() bool { return false }
+func (entry *mergeObjectsEntry) Set1PC()     {}
+func (entry *mergeObjectsEntry) Is1PC() bool { return false }
 
-func (entry *mergeBlocksEntry) transferBlockDeletes(
+func (entry *mergeObjectsEntry) transferBlockDeletes(
 	dropped *catalog.BlockEntry,
 	blks []handle.Block,
 	delTbls []*model.TransDels,
@@ -173,7 +173,7 @@ func (entry *mergeBlocksEntry) transferBlockDeletes(
 	return
 }
 
-func (entry *mergeBlocksEntry) PrepareCommit() (err error) {
+func (entry *mergeObjectsEntry) PrepareCommit() (err error) {
 	blks := make([]handle.Block, len(entry.createdBlks))
 	delTbls := make([]*model.TransDels, len(entry.createdBlks))
 	for i, meta := range entry.createdBlks {

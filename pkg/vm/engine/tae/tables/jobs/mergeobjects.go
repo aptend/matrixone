@@ -40,7 +40,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tasks"
 )
 
-type mergeBlocksTask struct {
+type mergeObjectsTask struct {
 	*tasks.BaseTask
 	txn         txnif.AsyncTxn
 	rt          *dbutils.Runtime
@@ -56,11 +56,11 @@ func NewMergeObjectsTask(
 	ctx *tasks.Context, txn txnif.AsyncTxn,
 	mergedObjs []*catalog.ObjectEntry,
 	rt *dbutils.Runtime,
-) (task *mergeBlocksTask, err error) {
+) (task *mergeObjectsTask, err error) {
 	if len(mergedObjs) == 0 {
 		panic("empty mergedObjs")
 	}
-	task = &mergeBlocksTask{
+	task = &mergeObjectsTask{
 		txn:         txn,
 		rt:          rt,
 		mergedObjs:  mergedObjs,
@@ -98,16 +98,16 @@ func NewMergeObjectsTask(
 }
 
 // impl DisposableVecPool
-func (task *mergeBlocksTask) GetVector(typ *types.Type) (*vector.Vector, func()) {
+func (task *mergeObjectsTask) GetVector(typ *types.Type) (*vector.Vector, func()) {
 	v := task.rt.VectorPool.Transient.GetVector(typ)
 	return v.GetDownstreamVector(), v.Close
 }
 
-func (task *mergeBlocksTask) GetMPool() *mpool.MPool {
+func (task *mergeObjectsTask) GetMPool() *mpool.MPool {
 	return task.rt.VectorPool.Transient.MPool()
 }
 
-func (task *mergeBlocksTask) PrepareData() ([]*batch.Batch, []*nulls.Nulls, func(), error) {
+func (task *mergeObjectsTask) PrepareData() ([]*batch.Batch, []*nulls.Nulls, func(), error) {
 	var err error
 	views := make([]*containers.BlockView, len(task.compacted))
 	releaseF := func() {
@@ -156,7 +156,7 @@ func (task *mergeBlocksTask) PrepareData() ([]*batch.Batch, []*nulls.Nulls, func
 	return batches, dels, releaseF, nil
 }
 
-func (task *mergeBlocksTask) PrepareCommitEntry() *mergesort.MergeCommitEntry {
+func (task *mergeObjectsTask) PrepareCommitEntry() *mergesort.MergeCommitEntry {
 	schema := task.rel.Schema().(*catalog.Schema)
 	commitEntry := &mergesort.MergeCommitEntry{}
 	commitEntry.DbID = task.did
@@ -171,7 +171,7 @@ func (task *mergeBlocksTask) PrepareCommitEntry() *mergesort.MergeCommitEntry {
 	return commitEntry
 }
 
-func (task *mergeBlocksTask) PrepareNewWriterFunc() func() *blockio.BlockWriter {
+func (task *mergeObjectsTask) PrepareNewWriterFunc() func() *blockio.BlockWriter {
 	schema := task.rel.Schema().(*catalog.Schema)
 	seqnums := make([]uint16, 0, len(schema.ColDefs)-1)
 	for _, def := range schema.ColDefs {
@@ -192,7 +192,7 @@ func (task *mergeBlocksTask) PrepareNewWriterFunc() func() *blockio.BlockWriter 
 	return mergesort.GetMustNewWriter(task.rt.Fs.Service, schema.Version, seqnums, sortkeyPos, sortkeyIsPK)
 }
 
-func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
+func (task *mergeObjectsTask) Execute(ctx context.Context) (err error) {
 	phaseNumber := 0
 	defer func() {
 		if err != nil {
@@ -222,7 +222,7 @@ func (task *mergeBlocksTask) Execute(ctx context.Context) (err error) {
 	return nil
 }
 
-func (task *mergeBlocksTask) GetCreatedBlocks() []*catalog.BlockEntry {
+func (task *mergeObjectsTask) GetCreatedBlocks() []*catalog.BlockEntry {
 	return task.createdBlks
 }
 
@@ -308,7 +308,7 @@ func HandleMergeEntryInTxn(txn txnif.AsyncTxn, entry *mergesort.MergeCommitEntry
 		}
 	}
 
-	txnEntry := txnentries.NewMergeBlocksEntry(
+	txnEntry := txnentries.NewMergeObjectsEntry(
 		txn,
 		rel,
 		mergedObjs,

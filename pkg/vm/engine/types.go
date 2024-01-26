@@ -26,6 +26,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
@@ -641,6 +642,8 @@ type Relation interface {
 	// If not sure, returns true
 	// Initially added for implementing locking rows by primary keys
 	PrimaryKeysMayBeModified(ctx context.Context, from types.TS, to types.TS, keyVector *vector.Vector) (bool, error)
+
+	MergeObjects(ctx context.Context, objstats []objectio.ObjectStats) (*api.MergeCommitEntry, error)
 }
 
 type Reader interface {

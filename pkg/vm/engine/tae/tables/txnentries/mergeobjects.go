@@ -65,7 +65,8 @@ func NewMergeObjectsEntry(
 }
 
 func (entry *mergeObjectsEntry) PrepareRollback() (err error) {
-	// TODO: remove block file? (should be scheduled and executed async)
+	// TODO: remove created object file async
+
 	return
 }
 func (entry *mergeObjectsEntry) ApplyRollback() (err error) {

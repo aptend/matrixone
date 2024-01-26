@@ -17,13 +17,16 @@ package memoryengine
 import (
 	"context"
 	"fmt"
+
 	"github.com/matrixorigin/matrixone/pkg/catalog"
+	"github.com/matrixorigin/matrixone/pkg/objectio"
 	plan2 "github.com/matrixorigin/matrixone/pkg/sql/plan"
 	"github.com/matrixorigin/matrixone/pkg/sql/util"
 
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
@@ -530,4 +533,8 @@ func (t *Table) GetColumMetadataScanInfo(ctx context.Context, name string) ([]*p
 
 func (t *Table) PrimaryKeysMayBeModified(ctx context.Context, from types.TS, to types.TS, keyVector *vector.Vector) (bool, error) {
 	return true, nil
+}
+
+func (t *Table) MergeObjects(ctx context.Context, objstats []objectio.ObjectStats) (*api.MergeCommitEntry, error) {
+	return nil, nil
 }

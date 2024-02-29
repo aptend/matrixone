@@ -236,9 +236,9 @@ func (tbl *txnTable) recurTransferDelete(
 	rowID, ok := page.Transfer(row)
 	if !ok {
 		err := moerr.NewTxnWWConflictNoCtx()
-		msg := fmt.Sprintf("table-%d blk-%d delete row-%d depth-%d",
+		msg := fmt.Sprintf("table-%d blk-%v delete row-%d depth-%d",
 			id.TableID,
-			id.BlockID,
+			id.BlockID.String(),
 			row,
 			depth)
 		logutil.Warnf("[ts=%s]TransferDeleteNode: %v",

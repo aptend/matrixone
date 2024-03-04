@@ -291,8 +291,9 @@ func ReadAllBlocksWithMeta(
 	for blk := uint32(0); blk < meta.BlockCount(); blk++ {
 		for _, seqnum := range cols {
 			blkmeta := meta.GetBlockMeta(blk)
-			if seqnum > blkmeta.GetMaxSeqnum() || blkmeta.ColumnMeta(seqnum).DataType() == 0 {
+			if blkmeta.ColumnMeta(seqnum).DataType() == 0 {
 				// prefetch, do not generate
+				logutil.Infof("inputseq:%v maxnormalseq:%v colcnt:%v", seqnum, blkmeta.GetMaxSeqnum(), blkmeta.GetColumnCount())
 				panic("ReadAllBlocksWithMeta expect no schema changes")
 			}
 			col := blkmeta.ColumnMeta(seqnum)

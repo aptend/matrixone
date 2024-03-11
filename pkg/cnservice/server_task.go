@@ -404,7 +404,7 @@ func (s *service) registerExecutorsLocked() {
 	s.task.runner.RegisterExecutor(task.TaskCode_MergeTablet,
 		func(ctx context.Context, task task.Task) error {
 			metadata := task.GetMetadata()
-			var mergeTask *api.MergeTaskEntry
+			var mergeTask api.MergeTaskEntry
 			err := mergeTask.Unmarshal(metadata.Context)
 			if err != nil {
 				return err

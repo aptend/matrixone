@@ -36,7 +36,6 @@ var (
 
 	taskMap = map[string]int32{
 		"storageusage": int32(taskpb.TaskCode_MetricStorageUsage),
-		"merge":        int32(taskpb.TaskCode_MergeTablet),
 	}
 )
 

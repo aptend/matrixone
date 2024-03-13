@@ -89,7 +89,7 @@ func handleMerge(
 	var dataBuilder strings.Builder
 	for _, o := range createdObjs {
 		stat := objectio.ObjectStats(o)
-		detail := fmt.Sprintf("%v, rows %v, blks %v, osize %v, csize %v",
+		detail := fmt.Sprintf("%v, rows %v, blks %v, osize %v, csize %v\n",
 			stat.ObjectName().String(), stat.Rows(), stat.BlkCnt(),
 			common.HumanReadableBytes(int(stat.OriginSize())),
 			common.HumanReadableBytes(int(stat.Size())))

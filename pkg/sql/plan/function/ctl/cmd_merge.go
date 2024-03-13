@@ -15,14 +15,14 @@
 package ctl
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
-	"github.com/matrixorigin/matrixone/pkg/pb/api"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
 )
 
@@ -59,45 +59,44 @@ func parseArg(parameter string) (db, tbl string, targets []objectio.ObjectStats,
 	return
 }
 
-func handleMerge() handleFunc {
-	return GetTNHandlerFunc(
-		api.OpCode_OpCommitMerge,
-		func(_ string) ([]uint64, error) {
-			return nil, nil
-		},
-		func(tnShardID uint64, parameter string, proc *process.Process) ([]byte, error) {
-			txnOp := proc.TxnOperator
-			if proc.TxnOperator == nil {
-				return nil, moerr.NewInternalError(proc.Ctx, "handleFlush: txn operator is nil")
-			}
+func handleMerge(
+	proc *process.Process,
+	st serviceType,
+	parameter string,
+	sender requestSender) (Result, error) {
+	txnOp := proc.TxnOperator
+	if proc.TxnOperator == nil {
+		return Result{}, moerr.NewInternalError(proc.Ctx, "handleFlush: txn operator is nil")
+	}
 
-			db, tbl, targets, err := parseArg(parameter)
-			if err != nil {
-				return nil, err
-			}
-			database, err := proc.SessionInfo.StorageEngine.Database(proc.Ctx, db, txnOp)
-			if err != nil {
-				return nil, err
-			}
-			rel, err := database.Relation(proc.Ctx, tbl, nil)
-			if err != nil {
-				return nil, err
-			}
-			entry, err := rel.MergeObjects(proc.Ctx, targets)
-			if err != nil {
-				return nil, err
-			}
-			payload, err := entry.MarshalBinary()
-			if err != nil {
-				return nil, err
-			}
-			return payload, nil
-		},
-		func(data []byte) (any, error) {
-			resp := &db.InspectResp{}
-			if err := types.Decode(data, resp); err != nil {
-				return nil, err
-			}
-			return resp, nil
-		})
+	db, tbl, targets, err := parseArg(parameter)
+	if err != nil {
+		return Result{}, err
+	}
+	database, err := proc.SessionInfo.StorageEngine.Database(proc.Ctx, db, txnOp)
+	if err != nil {
+		return Result{}, err
+	}
+	rel, err := database.Relation(proc.Ctx, tbl, nil)
+	if err != nil {
+		return Result{}, err
+	}
+	createdObjs, err := rel.MergeObjects(proc.Ctx, targets)
+	if err != nil {
+		return Result{}, err
+	}
+
+	var dataBuilder strings.Builder
+	for _, o := range createdObjs {
+		stat := objectio.ObjectStats(o)
+		detail := fmt.Sprintf("%v, rows %v, blks %v, osize %v, csize %v",
+			stat.ObjectName().String(), stat.Rows(), stat.BlkCnt(),
+			common.HumanReadableBytes(int(stat.OriginSize())),
+			common.HumanReadableBytes(int(stat.Size())))
+		dataBuilder.WriteString(detail)
+	}
+	return Result{
+		Method: MergeObjectsMethod,
+		Data:   dataBuilder.String(),
+	}, nil
 }

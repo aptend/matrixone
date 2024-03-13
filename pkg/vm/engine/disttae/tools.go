@@ -823,7 +823,7 @@ func genWriteReqs(ctx context.Context, writes []Entry, op client.TxnOperator) ([
 		}
 
 		//SKIP update/delete on mo_columns
-		//The TN does not counsume the update/delete on mo_columns.
+		//The TN does not consume the update/delete on mo_columns.
 		//there are update/delete entries on mo_columns just after one on mo_tables.
 		//case 1: (DELETE,MO_TABLES),(UPDATE/DELETE,MO_COLUMNS),(UPDATE/DELETE,MO_COLUMNS),...
 		//there is none update/delete entries on mo_columns just after one on mo_tables.
@@ -833,7 +833,7 @@ func genWriteReqs(ctx context.Context, writes []Entry, op client.TxnOperator) ([
 			e.tableId == catalog.MO_COLUMNS_ID {
 			continue
 		}
-		if e.bat == nil || e.bat.IsEmpty() {
+		if e.typ != MERGEOBJECT && (e.bat == nil || e.bat.IsEmpty()) {
 			continue
 		}
 		if e.tableId == catalog.MO_TABLES_ID && (e.typ == INSERT || e.typ == INSERT_TXN) {
@@ -888,6 +888,9 @@ func genWriteReqs(ctx context.Context, writes []Entry, op client.TxnOperator) ([
 }
 
 func toPBEntry(e Entry) (*api.Entry, error) {
+	if e.typ == MERGEOBJECT {
+		return toPEMergeEntry(e), nil
+	}
 	var ebat *batch.Batch
 
 	if e.typ == INSERT {
@@ -944,6 +947,21 @@ func toPBEntry(e Entry) (*api.Entry, error) {
 		FileName:     e.fileName,
 		PkCheckByTn:  int32(e.pkChkByTN),
 	}, nil
+}
+
+func toPEMergeEntry(e Entry) *api.Entry {
+	return &api.Entry{
+		EntryType:  api.Entry_MergeObject,
+		TableId:    e.tableId,
+		DatabaseId: e.databaseId,
+		TableName:  e.tableName,
+		MergeInfo: &api.MergeInfo{
+			StartTs:     e.mergeInfo.StartTs,
+			MergedObjs:  e.mergeInfo.MergedObjs,
+			CreatedObjs: e.mergeInfo.CreatedObjs,
+			Booking:     e.mergeInfo.Booking,
+		},
+	}
 }
 
 func toPBBatch(bat *batch.Batch) (*api.Batch, error) {

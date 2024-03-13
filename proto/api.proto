@@ -39,7 +39,6 @@ enum OpCode {
     OpBackup        = 2006;
     OpTraceSpan     = 2007;
     OpStorageUsage  = 2008;
-    OpCommitMerge   = 2009;
 }
 
 // TNPingRequest ping request
@@ -218,6 +217,7 @@ message Entry {
         Update = 2;
         Alter = 3;
         SpecialDelete = 4;
+        MergeObject = 5;
     }
     EntryType entry_type = 1;
     uint64 table_id      = 2;
@@ -228,6 +228,7 @@ message Entry {
     Batch bat            = 7;
     // whether TN do the PK uniqueness check against txn's workspace or not.
     int32 pk_check_by_tn = 8;
+    MergeInfo merge_info = 9;
 };
 
 // There are two kinds of checkpoint: delta checkpoint and base checkpoint,
@@ -399,4 +400,11 @@ message MergeTaskEntry {
     // ObjectStats
     repeated bytes to_merge_objs = 5;
     uint64 estimated_mem_usage = 6;
+}
+
+message MergeInfo {
+    timestamp.Timestamp start_ts = 1[(gogoproto.nullable) = false];
+    repeated bytes merged_objs = 2;
+    repeated bytes created_objs = 3;
+    BlkTransferBooking booking = 4;
 }

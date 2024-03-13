@@ -26,7 +26,6 @@ var (
 		OpCode_OpAddFaultPoint: "AddFaultPoint",
 		OpCode_OpBackup:        "Backup",
 		OpCode_OpTraceSpan:     "TraceSpan",
-		OpCode_OpCommitMerge:   "CommitMerge",
 	}
 )
 

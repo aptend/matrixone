@@ -250,6 +250,12 @@ func (h *Handle) handleRequests(
 				&db.WriteResp{},
 			)
 			write++
+		case *api.MergeCommitEntry:
+			err = h.handleCommitMerge(
+				ctx,
+				txn,
+				req,
+				&db.InspectResp{})
 		default:
 			err = moerr.NewNotSupported(ctx, "unknown txn request type: %T", req)
 		}
@@ -369,17 +375,12 @@ func (h *Handle) HandleGetLogTail(
 	return
 }
 
-func (h *Handle) HandleCommitMerge(
+func (h *Handle) handleCommitMerge(
 	ctx context.Context,
-	meta txn.TxnMeta,
+	txn txnif.AsyncTxn,
 	req *api.MergeCommitEntry,
-	resp *db.InspectResp) (cb func(), err error) {
+	resp *db.InspectResp) (err error) {
 
-	txn, err := h.db.GetOrCreateTxnWithMeta(nil, meta.GetID(),
-		types.TimestampToTS(meta.GetSnapshotTS()))
-	if err != nil {
-		return
-	}
 	ids := make([]objectio.ObjectId, 0, len(req.MergedObjs))
 	for _, o := range req.MergedObjs {
 		stat := objectio.ObjectStats(o)
@@ -387,28 +388,18 @@ func (h *Handle) HandleCommitMerge(
 	}
 	merge.ActiveCNObj.RemoveActiveCNObj(ids)
 	_, err = jobs.HandleMergeEntryInTxn(txn, req, h.db.Runtime)
-	if err != nil {
-		return
-	}
-	err = txn.Commit(ctx)
-	if err != nil {
-		txn.Rollback(ctx)
-		resp.Message = err.Error()
-	} else {
-		b := &bytes.Buffer{}
-		b.WriteString("merged success\n")
+	if err == nil {
 		for _, o := range req.CreatedObjs {
 			stat := objectio.ObjectStats(o)
-			b.WriteString(fmt.Sprintf("%v, rows %v, blks %v, osize %v, csize %v",
-				stat.ObjectName().String(), stat.Rows(), stat.BlkCnt(),
-				common.HumanReadableBytes(int(stat.OriginSize())),
-				common.HumanReadableBytes(int(stat.Size())),
-			))
-			b.WriteByte('\n')
+			logutil.Infof("[Mergeblocks] merged committed: %s",
+				fmt.Sprintf("%v, rows %v, blks %v, osize %v, csize %v",
+					stat.ObjectName().String(), stat.Rows(), stat.BlkCnt(),
+					common.HumanReadableBytes(int(stat.OriginSize())),
+					common.HumanReadableBytes(int(stat.Size()))),
+			)
 		}
-		resp.Message = b.String()
 	}
-	return nil, err
+	return err
 }
 
 func (h *Handle) HandleFlushTable(
@@ -727,40 +718,56 @@ func (h *Handle) HandlePreCommitWrite(
 				}
 			}
 		case *api.Entry:
-			//Handle DML
 			pe := e.(*api.Entry)
-			moBat, err := batch.ProtoBatchToBatch(pe.GetBat())
-			if err != nil {
-				panic(err)
-			}
-			req := &db.WriteReq{
-				Type:         db.EntryType(pe.EntryType),
-				DatabaseId:   pe.GetDatabaseId(),
-				TableID:      pe.GetTableId(),
-				DatabaseName: pe.GetDatabaseName(),
-				TableName:    pe.GetTableName(),
-				FileName:     pe.GetFileName(),
-				Batch:        moBat,
-				PkCheck:      db.PKCheckType(pe.GetPkCheckByTn()),
-			}
-			if req.FileName != "" {
-				rows := catalog.GenRows(req.Batch)
-				for _, row := range rows {
-					if req.Type == db.EntryInsert {
-						//req.Blks[i] = row[catalog.BLOCKMETA_ID_ON_FS_IDX].(uint64)
-						//req.MetaLocs[i] = string(row[catalog.BLOCKMETA_METALOC_ON_FS_IDX].([]byte))
-						req.MetaLocs = append(req.MetaLocs,
-							string(row[0].([]byte)))
-					} else {
-						//req.DeltaLocs[i] = string(row[0].([]byte))
-						req.DeltaLocs = append(req.DeltaLocs,
-							string(row[0].([]byte)))
+			if pe.EntryType == api.Entry_MergeObject {
+				req := &api.MergeCommitEntry{
+					DbId:        pe.DatabaseId,
+					TblId:       pe.TableId,
+					TableName:   pe.TableName,
+					StartTs:     pe.MergeInfo.StartTs,
+					MergedObjs:  pe.MergeInfo.MergedObjs,
+					CreatedObjs: pe.MergeInfo.CreatedObjs,
+					Booking:     pe.MergeInfo.Booking,
+				}
+				err := h.CacheTxnRequest(ctx, meta, req, nil)
+				if err != nil {
+					return err
+				}
+			} else {
+				//Handle DML
+				moBat, err := batch.ProtoBatchToBatch(pe.GetBat())
+				if err != nil {
+					panic(err)
+				}
+				req := &db.WriteReq{
+					Type:         db.EntryType(pe.EntryType),
+					DatabaseId:   pe.GetDatabaseId(),
+					TableID:      pe.GetTableId(),
+					DatabaseName: pe.GetDatabaseName(),
+					TableName:    pe.GetTableName(),
+					FileName:     pe.GetFileName(),
+					Batch:        moBat,
+					PkCheck:      db.PKCheckType(pe.GetPkCheckByTn()),
+				}
+				if req.FileName != "" {
+					rows := catalog.GenRows(req.Batch)
+					for _, row := range rows {
+						if req.Type == db.EntryInsert {
+							//req.Blks[i] = row[catalog.BLOCKMETA_ID_ON_FS_IDX].(uint64)
+							//req.MetaLocs[i] = string(row[catalog.BLOCKMETA_METALOC_ON_FS_IDX].([]byte))
+							req.MetaLocs = append(req.MetaLocs,
+								string(row[0].([]byte)))
+						} else {
+							//req.DeltaLocs[i] = string(row[0].([]byte))
+							req.DeltaLocs = append(req.DeltaLocs,
+								string(row[0].([]byte)))
+						}
 					}
 				}
-			}
-			if err = h.CacheTxnRequest(ctx, meta, req,
-				new(db.WriteResp)); err != nil {
-				return err
+				if err = h.CacheTxnRequest(ctx, meta, req,
+					new(db.WriteResp)); err != nil {
+					return err
+				}
 			}
 		default:
 			return moerr.NewNYI(ctx, "pre commit write type: %T", cmds)

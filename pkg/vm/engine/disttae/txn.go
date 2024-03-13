@@ -19,22 +19,22 @@ import (
 	"math"
 	"time"
 
-	"github.com/matrixorigin/matrixone/pkg/common/moerr"
-	"github.com/matrixorigin/matrixone/pkg/logutil"
-	"github.com/matrixorigin/matrixone/pkg/pb/plan"
-	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
-
 	"github.com/matrixorigin/matrixone/pkg/catalog"
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
+	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/pb/txn"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
+	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/disttae/cache"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 )
 
 //func (txn *Transaction) getObjInfos(
@@ -600,6 +600,33 @@ func (txn *Transaction) WriteFile(
 	return txn.WriteFileLocked(
 		typ, accountId, databaseId, tableId,
 		databaseName, tableName, fileName, bat, tnStore)
+}
+
+func (txn *Transaction) WriteMergeEntry(
+	databaseId,
+	tableId uint64,
+	tableName string,
+	startTs timestamp.Timestamp,
+	mergedObjs [][]byte,
+	createdObjs [][]byte,
+	booking *api.BlkTransferBooking,
+	tnStore DNStore) {
+	txn.Lock()
+	defer txn.Unlock()
+	txn.readOnly.Store(false)
+	txn.writes = append(txn.writes, Entry{
+		typ:        MERGEOBJECT,
+		tableId:    tableId,
+		databaseId: databaseId,
+		tableName:  tableName,
+		tnStore:    tnStore,
+		mergeInfo: mergeInfo{
+			StartTs:     startTs,
+			MergedObjs:  mergedObjs,
+			CreatedObjs: createdObjs,
+			Booking:     booking,
+		},
+	})
 }
 
 func (txn *Transaction) deleteBatch(bat *batch.Batch,

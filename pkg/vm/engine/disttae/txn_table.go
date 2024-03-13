@@ -2353,7 +2353,7 @@ func (tbl *txnTable) newPkFilter(pkExpr, constExpr *plan.Expr) (*plan.Expr, erro
 	return plan2.BindFuncExprImplByPlanExpr(tbl.proc.Load().Ctx, "=", []*plan.Expr{pkExpr, constExpr})
 }
 
-func (tbl *txnTable) MergeObjects(ctx context.Context, objstats []objectio.ObjectStats) (*api.MergeCommitEntry, error) {
+func (tbl *txnTable) MergeObjects(ctx context.Context, objstats []objectio.ObjectStats) ([][]byte, error) {
 	snapshot := types.TimestampToTS(tbl.db.txn.op.SnapshotTS())
 	state, err := tbl.getPartitionState(ctx)
 	if err != nil {
@@ -2394,7 +2394,17 @@ func (tbl *txnTable) MergeObjects(ctx context.Context, objstats []objectio.Objec
 	if err != nil {
 		return nil, err
 	}
-
+	commitEntry := taskHost.commitEntry
+	tbl.db.txn.WriteMergeEntry(
+		commitEntry.DbId,
+		commitEntry.TblId,
+		commitEntry.TableName,
+		commitEntry.StartTs,
+		commitEntry.MergedObjs,
+		commitEntry.CreatedObjs,
+		commitEntry.Booking,
+		tbl.db.txn.tnStores[0],
+	)
 	// commit this to tn
-	return taskHost.commitEntry, nil
+	return commitEntry.CreatedObjs, nil
 }

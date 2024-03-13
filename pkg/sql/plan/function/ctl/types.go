@@ -70,7 +70,7 @@ var (
 		UseSnapshotMethod:   handleUseSnapshotTS,
 		GetSnapshotMethod:   handleGetSnapshotTS,
 		CheckpointMethod:    handleCheckpoint(),
-		MergeObjectsMethod:  handleMerge(),
+		MergeObjectsMethod:  handleMerge,
 		ForceGCMethod:       handleCNGC,
 		InspectMethod:       handleInspectTN(),
 		LabelMethod:         handleSetLabel,

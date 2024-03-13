@@ -77,13 +77,6 @@ type Handler interface {
 		resp *apipb.SyncLogTailResp,
 	) (func(), error)
 
-	HandleCommitMerge(
-		ctx context.Context,
-		meta txn.TxnMeta,
-		req *apipb.MergeCommitEntry,
-		resp *db.InspectResp,
-	) (func(), error)
-
 	HandleForceCheckpoint(
 		ctx context.Context,
 		meta txn.TxnMeta,

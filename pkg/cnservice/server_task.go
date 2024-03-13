@@ -419,7 +419,7 @@ func (s *service) registerExecutorsLocked() {
 			}
 			sql := fmt.Sprintf("select mo_ctl('DN', 'MERGEOBJECTS', '%s.%s %s')",
 				mergeTask.DbName, mergeTask.TableName, strings.Join(objs, ","))
-			ctx, cancel := context.WithTimeout(ctx, time.Minute)
+			ctx, cancel := context.WithTimeout(ctx, 10*time.Minute)
 			defer cancel()
 			_, err = s.sqlExecutor.Exec(ctx, sql, executor.Options{})
 			return err

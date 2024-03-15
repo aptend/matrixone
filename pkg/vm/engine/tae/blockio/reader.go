@@ -228,6 +228,56 @@ func (r *BlockReader) LoadOneSubColumns(
 	return
 }
 
+func (r *BlockReader) LoadDeleteAllColumns(
+	ctx context.Context,
+	idxs []uint16,
+	m *mpool.MPool,
+) ([]*batch.Batch, func(), error) {
+	meta, err := r.reader.ReadAllMeta(ctx, m)
+	if err != nil {
+		return nil, nil, err
+	}
+	dataMeta := meta.MustTombstoneMeta()
+	if dataMeta.BlockHeader().MetaLocation().End() == 0 {
+		return nil, nil, nil
+	}
+	block := dataMeta.GetBlockMeta(0)
+	if len(idxs) == 0 {
+		idxs = make([]uint16, block.GetColumnCount())
+		for i := range idxs {
+			idxs[i] = uint16(i)
+		}
+	}
+
+	bats := make([]*batch.Batch, 0)
+
+	ioVectors, err := r.reader.ReadDeleteAll(ctx, idxs, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer func() {
+		if err != nil {
+			if ioVectors != nil {
+				objectio.ReleaseIOVector(ioVectors)
+			}
+		}
+	}()
+	for y := 0; y < int(dataMeta.BlockCount()); y++ {
+		bat := batch.NewWithSize(len(idxs))
+		var obj any
+		for i := range idxs {
+			obj, err = objectio.Decode(ioVectors.Entries[y*len(idxs)+i].CachedData.Bytes())
+			if err != nil {
+				return nil, nil, err
+			}
+			bat.Vecs[i] = obj.(*vector.Vector)
+			bat.SetRowCount(bat.Vecs[i].Length())
+		}
+		bats = append(bats, bat)
+	}
+	return bats, func() { objectio.ReleaseIOVector(ioVectors) }, nil
+}
+
 func (r *BlockReader) LoadAllColumns(
 	ctx context.Context,
 	idxs []uint16,

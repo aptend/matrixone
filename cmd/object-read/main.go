@@ -77,7 +77,7 @@ func TestNewObjectReader1() {
 		return
 	}
 	// dedicated deltaloc 读取 rowid, ts, pk
-	bats, clear, err := reader.LoadAllColumns(ctx, []uint16{0, 1, 2}, common.DefaultAllocator)
+	bats, clear, err := reader.LoadDeleteAllColumns(ctx, []uint16{0, 1, 2}, common.DefaultAllocator)
 	defer clear()
 	if err != nil {
 		logutil.Infof("load all columns failed: %v", err)

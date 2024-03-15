@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/defines"
@@ -84,19 +86,22 @@ func TestNewObjectReader1() {
 		return
 	}
 
-	for _, bat := range bats[:1] {
+	for _, bat := range bats {
 		for _, vec := range bat.Vecs {
-			logutil.Infof("vec is %v", vec.GetType())
+			logutil.Infof("vec is %v, len %v", vec.GetType(), vec.Length())
 		}
-		for i := 2600; i < bat.Vecs[0].Length(); i++ {
-			//ts.Unmarshal(bats[0].Vecs[1].GetRawBytesAt(i))
+		for i := 0; i < bat.Vecs[0].Length(); i++ {
+			// for i := 0; i < 10; i++ {
 			rowid := types.Rowid(bat.Vecs[0].GetRawBytesAt(i))
 			committs := types.TS(bat.Vecs[1].GetRawBytesAt(i))
 			t, _, _, _ := types.DecodeTuple(bat.Vecs[2].GetRawBytesAt(i))
 			pkstr := t.ErrString(nil)
-			logutil.Infof("line %v: num is %v-%v, cmmit is %v", i, rowid, committs, pkstr)
+			if strings.HasPrefix(rowid.String(), "018e3c0c-3ed7-737b-befe-dbe524aac512-0-2") {
+				fmt.Printf("line %v: rowid %v, ts %v, pkstr is %v\n", i, rowid.String(), committs.ToString(), pkstr)
+			}
+			// logutil.Infof("line %v: num is %v-%v, pkstr is %v", i, rowid.String(), committs.ToString(), pkstr)
+
 		}
-		//logutil.Infof("bats[0].Vecs[1].String() is %v", bat.Vecs[2].String())
 	}
 }
 

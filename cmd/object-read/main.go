@@ -58,6 +58,49 @@ func TestNewObjectReader2() {
 	}
 }
 
+func TestNewObjectReader1() {
+	ctx := context.Background()
+	name := "018e3c0c-6ead-775a-8e65-faef3d690efa_00000"
+
+	fsDir := "/Users/aptend/code/matrixone"
+	c := fileservice.Config{
+		Name:    defines.LocalFileServiceName,
+		Backend: "DISK",
+		DataDir: fsDir,
+	}
+	service, err := fileservice.NewFileService(ctx, c, nil)
+	if err != nil {
+		return
+	}
+	reader, err := blockio.NewFileReader(service, name)
+	if err != nil {
+		return
+	}
+	// dedicated deltaloc 读取 rowid, ts, pk
+	bats, clear, err := reader.LoadAllColumns(ctx, []uint16{0, 1, 2}, common.DefaultAllocator)
+	defer clear()
+	if err != nil {
+		logutil.Infof("load all columns failed: %v", err)
+		return
+	}
+
+	for _, bat := range bats[:1] {
+		for _, vec := range bat.Vecs {
+			logutil.Infof("vec is %v", vec.GetType())
+		}
+		for i := 2600; i < bat.Vecs[0].Length(); i++ {
+			//ts.Unmarshal(bats[0].Vecs[1].GetRawBytesAt(i))
+			rowid := types.Rowid(bat.Vecs[0].GetRawBytesAt(i))
+			committs := types.TS(bat.Vecs[1].GetRawBytesAt(i))
+			t, _, _, _ := types.DecodeTuple(bat.Vecs[2].GetRawBytesAt(i))
+			pkstr := t.ErrString(nil)
+			logutil.Infof("line %v: num is %v-%v, cmmit is %v", i, rowid, committs, pkstr)
+		}
+		//logutil.Infof("bats[0].Vecs[1].String() is %v", bat.Vecs[2].String())
+	}
+}
+
 func main() {
-	TestNewObjectReader2()
+	// TestNewObjectReader2()
+	TestNewObjectReader1()
 }

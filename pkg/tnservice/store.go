@@ -78,7 +78,7 @@ func WithLogServiceClientFactory(factory func(metadata.TNShard) (logservice.Clie
 	}
 }
 
-// WithTaskStorageFactory setup the special task strorage factory
+// WithTaskStorageFactory setup the special task storage factory
 func WithTaskStorageFactory(factory taskservice.TaskStorageFactory) Option {
 	return func(s *store) {
 		s.task.storageFactory = factory

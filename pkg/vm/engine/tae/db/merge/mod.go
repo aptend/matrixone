@@ -15,6 +15,7 @@
 package merge
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"strconv"
@@ -23,6 +24,7 @@ import (
 	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
+	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	taskpb "github.com/matrixorigin/matrixone/pkg/pb/task"
@@ -83,19 +85,68 @@ const (
 	TaskHostDN
 )
 
+type activeEntry struct {
+	tid      uint64
+	insertAt time.Time
+}
+
 var ActiveCNObj ActiveCNObjMap = ActiveCNObjMap{
-	o: make(map[objectio.ObjectId]struct{}),
+	o: make(map[objectio.ObjectId]activeEntry),
 }
 
 type ActiveCNObjMap struct {
 	sync.Mutex
-	o map[objectio.ObjectId]struct{}
+	o map[objectio.ObjectId]activeEntry
+}
+
+func (e *ActiveCNObjMap) Prune(id uint64, ago time.Duration) {
+	e.Lock()
+	defer e.Unlock()
+	now := time.Now()
+	if ago == 0 {
+		for k, v := range e.o {
+			if v.tid == id {
+				delete(e.o, k)
+			}
+		}
+		return
+	}
+
+	if id == 0 && ago > 1*time.Second {
+		for k, v := range e.o {
+			if now.Sub(v.insertAt) > ago {
+				delete(e.o, k)
+			}
+		}
+		return
+	}
+	for k, v := range e.o {
+		if v.tid == id && now.Sub(v.insertAt) > ago {
+			delete(e.o, k)
+		}
+	}
+}
+
+func (e *ActiveCNObjMap) String() string {
+	e.Lock()
+	defer e.Unlock()
+
+	b := &bytes.Buffer{}
+	now := time.Now()
+	for k, v := range e.o {
+		b.WriteString(fmt.Sprintf(" id: %v, table: %v, insertAt: %s ago\n",
+			k.String(), v.tid, now.Sub(v.insertAt).String()))
+	}
+	return b.String()
 }
 
 func (e *ActiveCNObjMap) AddActiveCNObj(entries []*catalog.ObjectEntry) {
 	e.Lock()
 	for _, entry := range entries {
-		e.o[entry.ID] = struct{}{}
+		e.o[entry.ID] = activeEntry{
+			entry.GetTable().ID,
+			time.Now(),
+		}
 	}
 	e.Unlock()
 }
@@ -119,6 +170,27 @@ func (e *ActiveCNObjMap) CheckOverlapOnCNActive(entries []*catalog.ObjectEntry) 
 	return false
 }
 
+func CleanUpUselessFiles(entry *api.MergeCommitEntry, fs fileservice.FileService) {
+	if entry == nil {
+		return
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
+	defer cancel()
+	if len(entry.BookingLoc) != 0 {
+		loc := objectio.Location(entry.BookingLoc)
+		_ = fs.Delete(ctx, loc.Name().String())
+	}
+	if len(entry.CreatedObjs) != 0 {
+		for _, obj := range entry.CreatedObjs {
+			if len(obj) == 0 {
+				continue
+			}
+			s := objectio.ObjectStats(obj)
+			_ = fs.Delete(ctx, s.ObjectName().String())
+		}
+	}
+}
+
 const (
 	constMergeMinBlks       = 5
 	constMergeExpansionRate = 6
@@ -132,4 +204,19 @@ type Policy interface {
 	ResetForTable(*catalog.TableEntry)
 	SetConfig(*catalog.TableEntry, func() txnif.AsyncTxn, any)
 	GetConfig(*catalog.TableEntry) any
+}
+
+func NewUpdatePolicyReq(c *BasicPolicyConfig) *api.AlterTableReq {
+	return &api.AlterTableReq{
+		Kind: api.AlterKind_UpdatePolicy,
+		Operation: &api.AlterTableReq_UpdatePolicy{
+			UpdatePolicy: &api.AlterTablePolicy{
+				MinRowsQuailifed: uint32(c.ObjectMinRows),
+				MaxObjOnerun:     uint32(c.MergeMaxOneRun),
+				MaxRowsMergedObj: uint32(c.MaxRowsMergedObj),
+				MinCnMergeSize:   uint64(c.MinCNMergeSize),
+				Hints:            c.MergeHints,
+			},
+		},
+	}
 }

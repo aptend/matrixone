@@ -20,10 +20,13 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/merge"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 // parameter should be "DbName.TableName obj1,obj2,obj3..."
@@ -65,29 +68,47 @@ func handleMerge() handleFunc {
 		func(_ string) ([]uint64, error) {
 			return nil, nil
 		},
-		func(tnShardID uint64, parameter string, proc *process.Process) ([]byte, error) {
+		func(tnShardID uint64, parameter string, proc *process.Process) (payload []byte, err error) {
 			txnOp := proc.TxnOperator
 			if proc.TxnOperator == nil {
 				return nil, moerr.NewInternalError(proc.Ctx, "handleFlush: txn operator is nil")
 			}
-
 			db, tbl, targets, err := parseArg(parameter)
 			if err != nil {
 				return nil, err
 			}
+			defer func() {
+				if err != nil {
+					logutil.Error("mergeblocks err on cn",
+						zap.String("err", err.Error()), zap.String("parameter", parameter))
+					e := &api.MergeCommitEntry{
+						StartTs: txnOp.SnapshotTS(),
+						Err:     err.Error(),
+					}
+					for _, o := range targets {
+						e.MergedObjs = append(e.MergedObjs, o.Clone().Marshal())
+					}
+					// No matter success or not, we should return the merge result to DN
+					payload, _ = e.MarshalBinary()
+					err = nil
+				}
+			}()
 			database, err := proc.SessionInfo.StorageEngine.Database(proc.Ctx, db, txnOp)
 			if err != nil {
+				logutil.Errorf("mergeblocks err on cn, db %s, err %s", db, err.Error())
 				return nil, err
 			}
 			rel, err := database.Relation(proc.Ctx, tbl, nil)
 			if err != nil {
+				logutil.Errorf("mergeblocks err on cn, table %s, err %s", db, err.Error())
 				return nil, err
 			}
 			entry, err := rel.MergeObjects(proc.Ctx, targets)
 			if err != nil {
+				merge.CleanUpUselessFiles(entry, proc.FileService)
 				return nil, err
 			}
-			payload, err := entry.MarshalBinary()
+			payload, err = entry.MarshalBinary()
 			if err != nil {
 				return nil, err
 			}

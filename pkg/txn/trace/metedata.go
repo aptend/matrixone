@@ -44,6 +44,8 @@ var (
 	txnUpdateSnapshotEvent       = "update-snapshot"
 	txnExecuteEvent              = "execute"
 	txnUpdateSnapshotReasonEvent = "update-snapshot-reason"
+	txnNoConflictChanged         = "no-conflict-changed"
+	txnConflictChanged           = "conflict-changed"
 
 	entryApplyEvent         = "apply"
 	entryCommitEvent        = "commit"
@@ -285,4 +287,40 @@ func (e actionEvent) toCSVRecord(
 		e.err = e.err[:100]
 	}
 	records[8] = e.err
+}
+
+type statement struct {
+	ts    int64
+	txnID []byte
+	sql   string
+	cost  int64
+}
+
+func newStatement(
+	txnID []byte,
+	sql string,
+	cost time.Duration) statement {
+	return statement{
+		ts:    time.Now().UnixNano(),
+		txnID: txnID,
+		sql:   sql,
+		cost:  cost.Microseconds(),
+	}
+}
+
+func (e statement) toCSVRecord(
+	cn string,
+	buf *buffer,
+	records []string) {
+	records[0] = buf.writeInt(e.ts)
+	records[1] = buf.writeHex(e.txnID)
+	records[2] = e.sql
+	records[3] = buf.writeInt(e.cost)
+}
+
+func truncateSQL(sql string) string {
+	if len(sql) > 1000 {
+		return sql[:1000]
+	}
+	return sql
 }

@@ -99,7 +99,8 @@ func (e *TestEngine) Restart(ctx context.Context) {
 			min := e.DB.TxnMgr.MinTSForTest()
 			ckp := item.(*checkpoint.CheckpointEntry)
 			//logutil.Infof("min: %v, checkpoint: %v", min.ToString(), checkpoint.GetStart().ToString())
-			return !ckp.GetEnd().GreaterEq(min)
+			end := ckp.GetEnd()
+			return !end.GreaterEq(&min)
 		})
 	assert.NoError(e.t, err)
 }
@@ -208,7 +209,7 @@ func (e *TestEngine) TryAppend(bat *containers.Batch) {
 }
 func (e *TestEngine) DeleteAll(skipConflict bool) error {
 	txn, rel := e.GetRelation()
-	schema := rel.GetMeta().(*catalog.TableEntry).GetLastestSchema()
+	schema := rel.GetMeta().(*catalog.TableEntry).GetLastestSchemaLocked()
 	pkName := schema.GetPrimaryKey().Name
 	it := rel.MakeBlockIt()
 	for it.Valid() {
@@ -355,7 +356,8 @@ func InitTestDBWithDir(
 			min := db.TxnMgr.MinTSForTest()
 			ckp := item.(*checkpoint.CheckpointEntry)
 			//logutil.Infof("min: %v, checkpoint: %v", min.ToString(), checkpoint.GetStart().ToString())
-			return !ckp.GetEnd().GreaterEq(min)
+			end := ckp.GetEnd()
+			return !end.GreaterEq(&min)
 		})
 	return db
 }
@@ -374,7 +376,8 @@ func InitTestDB(
 			min := db.TxnMgr.MinTSForTest()
 			ckp := item.(*checkpoint.CheckpointEntry)
 			//logutil.Infof("min: %v, checkpoint: %v", min.ToString(), checkpoint.GetStart().ToString())
-			return !ckp.GetEnd().GreaterEq(min)
+			end := ckp.GetEnd()
+			return !end.GreaterEq(&min)
 		})
 	return db
 }

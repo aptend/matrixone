@@ -183,7 +183,7 @@ func (c *catalogArg) FromCommand(cmd *cobra.Command) (err error) {
 func (c *catalogArg) String() string {
 	t := "*"
 	if c.tbl != nil {
-		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchema().Name)
+		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchemaLocked().Name)
 	}
 	f := "nil"
 	if c.outfile != nil {
@@ -259,7 +259,7 @@ func (c *objStatArg) FromCommand(cmd *cobra.Command) (err error) {
 func (c *objStatArg) String() string {
 	t := "*"
 	if c.tbl != nil {
-		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchema().Name)
+		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchemaLocked().Name)
 	}
 	return t
 }
@@ -473,7 +473,7 @@ func (c *infoArg) FromCommand(cmd *cobra.Command) (err error) {
 func (c *infoArg) String() string {
 	t := "*"
 	if c.tbl != nil {
-		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchema().Name)
+		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchemaLocked().Name)
 	}
 
 	if c.blk != nil {
@@ -587,7 +587,7 @@ func (c *manuallyMergeArg) FromCommand(cmd *cobra.Command) (err error) {
 func (c *manuallyMergeArg) String() string {
 	t := "*"
 	if c.tbl != nil {
-		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchema().Name)
+		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchemaLocked().Name)
 	}
 
 	b := &bytes.Buffer{}
@@ -605,7 +605,7 @@ func (c *manuallyMergeArg) Run() error {
 	}
 	c.ctx.resp.Payload = []byte(fmt.Sprintf(
 		"success. see more to run select mo_ctl('dn', 'inspect', 'object -t %s.%s')\\G",
-		c.tbl.GetDB().GetName(), c.tbl.GetLastestSchema().Name,
+		c.tbl.GetDB().GetName(), c.tbl.GetLastestSchemaLocked().Name,
 	))
 	return nil
 }
@@ -659,7 +659,7 @@ func (c *mergePolicyArg) FromCommand(cmd *cobra.Command) (err error) {
 func (c *mergePolicyArg) String() string {
 	t := "*"
 	if c.tbl != nil {
-		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchema().Name)
+		t = fmt.Sprintf("%d-%s", c.tbl.ID, c.tbl.GetLastestSchemaLocked().Name)
 	}
 	return fmt.Sprintf(
 		"(%s) maxMergeObjN: %v, minRowsQualified: %v, cnSize: %vMB, hints: %v",
@@ -721,7 +721,7 @@ func (c *RenameColArg) PrepareCommand() *cobra.Command {
 }
 
 func (c *RenameColArg) String() string {
-	return fmt.Sprintf("rename col: %v, %v,%v,%v", c.tbl.GetLastestSchema().Name, c.oldName, c.newName, c.seq)
+	return fmt.Sprintf("rename col: %v, %v,%v,%v", c.tbl.GetLastestSchemaLocked().Name, c.oldName, c.newName, c.seq)
 }
 
 func (c *RenameColArg) Run() (err error) {
@@ -735,7 +735,7 @@ func (c *RenameColArg) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	tblHdl, err := dbHdl.GetRelationByName(c.tbl.GetLastestSchema().Name)
+	tblHdl, err := dbHdl.GetRelationByName(c.tbl.GetLastestSchemaLocked().Name)
 	if err != nil {
 		return err
 	}
@@ -1235,8 +1235,12 @@ func storageUsageTransfer(c *storageUsageHistoryArg) (err error) {
 }
 
 func storageUsageEliminateErrors(c *storageUsageHistoryArg) (err error) {
-	cnt := logtail.EliminateErrorsOnCache(c.ctx.db.Catalog)
-
+	entries := c.ctx.db.BGCheckpointRunner.GetAllCheckpoints()
+	if len(entries) == 0 {
+		return moerr.NewNotSupportedNoCtx("please execute this cmd after at least one checkpoint has been generated")
+	}
+	end := entries[len(entries)-1].GetEnd()
+	cnt := logtail.EliminateErrorsOnCache(c.ctx.db.Catalog, end)
 	c.ctx.out.Write([]byte(fmt.Sprintf("%d tables backed to the track. ", cnt)))
 
 	return nil

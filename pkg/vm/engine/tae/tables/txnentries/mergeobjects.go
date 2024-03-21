@@ -78,7 +78,7 @@ func (entry *mergeObjectsEntry) prepareTransferPage() {
 			panic("cannot tranfer empty block")
 		}
 		tblEntry := blk.GetObject().GetTable()
-		isTransient := !tblEntry.GetLastestSchema().HasPK()
+		isTransient := !tblEntry.GetLastestSchemaLocked().HasPK()
 		id := blk.AsCommonID()
 		page := model.NewTransferHashPage(id, time.Now(), isTransient)
 		for srcRow, dst := range mapping {
@@ -154,9 +154,10 @@ func (entry *mergeObjectsEntry) transferBlockDeletes(
 	dataBlock := dropped.GetBlockData()
 	tblEntry := dropped.GetObject().GetTable()
 
+	startTS := entry.txn.GetStartTS()
 	bat, err := dataBlock.CollectDeleteInRange(
 		entry.txn.GetContext(),
-		entry.txn.GetStartTS().Next(),
+		startTS.Next(),
 		entry.txn.GetPrepareTS(),
 		false,
 		common.MergeAllocator,

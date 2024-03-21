@@ -22,6 +22,7 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+	"unsafe"
 
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/txn/clock"
@@ -37,27 +38,29 @@ func (ts TS) Logical() uint32 {
 	return DecodeUint32(ts[:4])
 }
 
-func (ts TS) IsEmpty() bool {
+func (ts *TS) IsEmpty() bool {
 	p := DecodeInt64(ts[4:12])
 	if p != 0 {
 		return false
 	}
 	return DecodeInt64(ts[:4]) == 0
 }
-func (ts TS) Equal(rhs TS) bool {
-	return ts == rhs
+func (ts *TS) Equal(rhs *TS) bool {
+	return *ts == *rhs
 }
 
 // Compare physical first then logical.
-func (ts TS) Compare(rhs TS) int {
-	p1, p2 := DecodeInt64(ts[4:12]), DecodeInt64(rhs[4:12])
+func (ts *TS) Compare(rhs *TS) int {
+	p1 := *(*int64)(unsafe.Pointer(&ts[4]))
+	p2 := *(*int64)(unsafe.Pointer(&rhs[4]))
 	if p1 < p2 {
 		return -1
 	}
 	if p1 > p2 {
 		return 1
 	}
-	l1, l2 := DecodeUint32(ts[:4]), DecodeUint32(rhs[:4])
+	l1 := *(*uint32)(unsafe.Pointer(ts))
+	l2 := *(*uint32)(unsafe.Pointer(rhs))
 	if l1 < l2 {
 		return -1
 	}
@@ -67,16 +70,16 @@ func (ts TS) Compare(rhs TS) int {
 	return 1
 }
 
-func (ts TS) Less(rhs TS) bool {
+func (ts *TS) Less(rhs *TS) bool {
 	return ts.Compare(rhs) < 0
 }
-func (ts TS) LessEq(rhs TS) bool {
+func (ts *TS) LessEq(rhs *TS) bool {
 	return ts.Compare(rhs) <= 0
 }
-func (ts TS) Greater(rhs TS) bool {
+func (ts *TS) Greater(rhs *TS) bool {
 	return ts.Compare(rhs) > 0
 }
-func (ts TS) GreaterEq(rhs TS) bool {
+func (ts *TS) GreaterEq(rhs *TS) bool {
 	return ts.Compare(rhs) >= 0
 }
 
@@ -97,6 +100,11 @@ func BuildTS(p int64, l uint32) (ret TS) {
 	return
 }
 
+func BuildTSForTest(p int64, l uint32) *TS {
+	ts := BuildTS(p, l)
+	return &ts
+}
+
 func MaxTs() TS {
 	return BuildTS(math.MaxInt64, math.MaxUint32)
 }
@@ -110,17 +118,14 @@ func (ts TS) Prev() TS {
 	return BuildTS(p, l-1)
 }
 
-func (ts TS) Next() TS {
-	ret := ts
+func (ts *TS) Next() TS {
 	p, l := DecodeInt64(ts[4:12]), DecodeUint32(ts[:4])
 	if l == math.MaxUint32 {
 		p += 1
-		copy(ret[4:12], EncodeInt64(&p))
-		return ret
+	} else {
+		l += 1
 	}
-	l += 1
-	copy(ret[:4], EncodeUint32(&l))
-	return ret
+	return BuildTS(p, l)
 }
 
 func (ts TS) ToString() string {

@@ -74,7 +74,7 @@ func (o *customConfigProvider) GetConfig(tbl *catalog.TableEntry) *BasicPolicyCo
 	defer o.Unlock()
 	p, ok := o.configs[tbl.ID]
 	if !ok {
-		extra := tbl.GetLastestSchema().Extra
+		extra := tbl.GetLastestSchemaLocked().Extra
 		if extra.MaxObjOnerun != 0 || extra.MinRowsQuailifed != 0 {
 			cnSize := extra.MinCnMergeSize
 			if cnSize == 0 {
@@ -196,7 +196,7 @@ func (o *Basic) SetConfig(tbl *catalog.TableEntry, f func() txnif.AsyncTxn, c an
 		ctx,
 		NewUpdatePolicyReq(cfg),
 	)
-	logutil.Infof("mergeblocks set %v-%v config: %v", tbl.ID, tbl.GetLastestSchema().Name, cfg)
+	logutil.Infof("mergeblocks set %v-%v config: %v", tbl.ID, tbl.GetLastestSchemaLocked().Name, cfg)
 	txn.Commit(ctx)
 	o.configProvider.InvalidCache(tbl)
 }
@@ -221,7 +221,7 @@ func (o *Basic) Revise(cpu, mem int64) ([]*catalog.ObjectEntry, TaskHostKind) {
 
 	osize, _, _ := estimateMergeConsume(objs)
 	if osize > o.config.MinCNMergeSize {
-		objs = o.controlMem(objs, common.Const1GBytes*5)
+		objs = o.controlMem(objs, common.RuntimeCNMergeMemControl.Load())
 		objs = o.optimize(objs)
 		return objs, TaskHostCN
 	}
@@ -283,36 +283,34 @@ func (o *Basic) controlMem(objs []*catalog.ObjectEntry, mem int64) []*catalog.Ob
 	if mem > constMaxMemCap {
 		mem = constMaxMemCap
 	}
-	memPop := false
+
 	needPopout := func(ss []*catalog.ObjectEntry) bool {
 		osize, esize, _ := estimateMergeConsume(ss)
 		if esize > int(2*mem/3) {
-			memPop = true
 			return true
 		}
 
 		if len(ss) <= 2 {
 			return false
 		}
+		// make object averaged size
 		return osize > 120*common.Const1MBytes
 	}
-	popCnt := 0
 	for needPopout(objs) {
 		objs = objs[:len(objs)-1]
-		popCnt++
 	}
-	if popCnt > 0 && memPop {
-		logutil.Infof(
-			"mergeblocks skip %d-%s pop %d out of %d objects due to %s mem cap",
-			o.id, o.schema.Name, popCnt, len(objs)+popCnt, common.HumanReadableBytes(int(mem)),
-		)
-	}
+	// if popCnt > 0 && memPop {
+	// 	logutil.Infof(
+	// 		"mergeblocks skip %d-%s pop %d out of %d objects due to %s mem cap",
+	// 		o.id, o.schema.Name, popCnt, len(objs)+popCnt, common.HumanReadableBytes(int(mem)),
+	// 	)
+	// }
 	return objs
 }
 
 func (o *Basic) ResetForTable(entry *catalog.TableEntry) {
 	o.id = entry.ID
-	o.schema = entry.GetLastestSchema()
+	o.schema = entry.GetLastestSchemaLocked()
 	o.hist = entry.Stats.GetLastMerge()
 	o.objHeap.reset()
 

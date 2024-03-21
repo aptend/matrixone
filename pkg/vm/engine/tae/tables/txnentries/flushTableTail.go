@@ -95,7 +95,7 @@ func NewFlushTableTailEntry(
 
 // add transfer pages for dropped ablocks
 func (entry *flushTableTailEntry) addTransferPages() {
-	isTransient := !entry.tableEntry.GetLastestSchema().HasPK()
+	isTransient := !entry.tableEntry.GetLastestSchemaLocked().HasPK()
 	for i, mcontainer := range entry.transMappings.Mappings {
 		m := mcontainer.M
 		if len(m) == 0 {
@@ -124,9 +124,10 @@ func (entry *flushTableTailEntry) PrepareCommit() error {
 			continue
 		}
 		dataBlock := blk.GetBlockData()
+		startTS := entry.txn.GetStartTS()
 		bat, err := dataBlock.CollectDeleteInRange(
 			entry.txn.GetContext(),
-			entry.txn.GetStartTS().Next(),
+			startTS.Next(),
 			entry.txn.GetPrepareTS(),
 			false,
 			common.MergeAllocator,

@@ -72,7 +72,7 @@ func NewAddColumnReq(did, tid uint64, name string, typ *plan.Type, insertAt int3
 			&AlterTableAddColumn{
 				Column: &plan.ColDef{
 					Name: name,
-					Typ:  typ,
+					Typ:  *typ,
 					Default: &plan.Default{
 						NullAbility:  true,
 						Expr:         nil,

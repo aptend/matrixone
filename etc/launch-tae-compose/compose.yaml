@@ -8,12 +8,14 @@ x-mo-common: &mo-common
       context: ../../
       dockerfile: ./optools/images/Dockerfile
       args:
-        GOPROXY: "https://proxy.golang.org,direct"
+        GOPROXY: "https://goproxy.cn"
     image: matrixorigin/matrixone:latest
     volumes:
       - ../../etc/launch-tae-compose/config:/config
       - ../../test:/test
       - ../../docker-compose-log:/log
+      - /root/mo-load-data:/root/mo-load-data
+      - /root/mo-ssb:/root/mo-ssb
     restart: on-failure
     tty: true
 

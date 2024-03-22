@@ -183,6 +183,7 @@ func (s *sqlStore) Allocate(
 					if err != nil {
 						return err
 					}
+					time.Sleep(90 * time.Second)
 					getLogger().Fatal("BUG: read incr record invalid",
 						zap.String("fetch-sql", fetchSQL),
 						zap.Any("account", accountId),
@@ -219,6 +220,7 @@ func (s *sqlStore) Allocate(
 					if err != nil {
 						return err
 					}
+					time.Sleep(90 * time.Second)
 					getLogger().Fatal("BUG: update incr record returns invalid affected rows",
 						zap.String("update-sql", sql),
 						zap.Any("account", accountId),
@@ -227,6 +229,7 @@ func (s *sqlStore) Allocate(
 						zap.Uint64("affected-rows", res.AffectedRows),
 						zap.String("select-all", selectAll),
 						zap.Duration("cost", time.Since(start)),
+						zap.String("txnid", txnOp.Txn().DebugString()),
 						zap.Bool("ctx-done", ctxDone()))
 				}
 				res.Close()

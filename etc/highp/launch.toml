@@ -1,0 +1,12 @@
+logservices = [
+    "./etc/highp/log.toml",
+]
+
+tnservices = [
+    "./etc/highp/tn.toml"
+]
+
+cnservices = [
+    "./etc/highp/cn.toml"
+]
+

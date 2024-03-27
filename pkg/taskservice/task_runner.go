@@ -138,6 +138,8 @@ type taskRunner struct {
 	runningTasks struct {
 		sync.RWMutex
 		m map[uint64]runningTask
+
+		completedTasks map[uint64]struct{}
 	}
 
 	retryTasks struct {
@@ -188,6 +190,7 @@ func NewTaskRunner(runnerID string, service TaskService, claimFn func(string) bo
 	r.waitTasksC = make(chan runningTask, r.options.maxWaitTasks)
 	r.doneC = make(chan runningTask, r.options.maxWaitTasks)
 	r.runningTasks.m = make(map[uint64]runningTask)
+	r.runningTasks.completedTasks = make(map[uint64]struct{})
 	r.pendingTaskHandle = make(chan TaskHandler, 20)
 	r.daemonTasks.m = make(map[uint64]*daemonTask)
 	return r
@@ -344,15 +347,21 @@ func (r *taskRunner) doFetch() ([]task.AsyncTask, error) {
 		return nil, err
 	}
 	newTasks := tasks[:0]
-	r.runningTasks.RLock()
+	r.runningTasks.Lock()
 	for _, t := range tasks {
 		if _, ok := r.runningTasks.m[t.ID]; !ok {
-			r.logger.Info("new task fetched",
-				zap.String("task", t.DebugString()))
-			newTasks = append(newTasks, t)
+			if _, ok := r.runningTasks.completedTasks[t.ID]; !ok {
+				r.logger.Info("new task fetched",
+					zap.String("task", t.DebugString()))
+				newTasks = append(newTasks, t)
+			}
 		}
 	}
-	r.runningTasks.RUnlock()
+	for k := range r.runningTasks.completedTasks {
+		delete(r.runningTasks.completedTasks, k)
+	}
+	r.runningTasks.Unlock()
+
 	if len(newTasks) == 0 {
 		return nil, nil
 	}
@@ -604,6 +613,7 @@ func (r *taskRunner) removeRunningTask(id uint64) {
 	r.runningTasks.Lock()
 	defer r.runningTasks.Unlock()
 	delete(r.runningTasks.m, id)
+	r.runningTasks.completedTasks[id] = struct{}{}
 	r.logger.Info("task removed", zap.Uint64("task-id", id))
 }
 

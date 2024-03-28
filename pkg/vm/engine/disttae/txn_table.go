@@ -2469,11 +2469,14 @@ func (tbl *txnTable) transferDeletes(
 							i)
 						rowids[i] = newId
 						beTransfered++
+					} else {
+						logutil.Infof("yyyyyy rowid %v not found", rowid.BorrowBlockID().String())
 					}
 				}
 			}
 			if beTransfered != toTransfer {
-				return moerr.NewInternalErrorNoCtx("transfer deletes failed")
+				logutil.Infof("yyyyyy transfer deletes for table %s: delete %v ; created %v", tbl.tableName, deleteObjs, createObjs)
+				return moerr.NewInternalErrorNoCtx("transfer deletes failed, want %d, get %d", toTransfer, beTransfered)
 			}
 		}
 	}

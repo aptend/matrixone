@@ -57,6 +57,10 @@ func (s *ObjectNameShort) Num() uint16 {
 	return types.DecodeUint16(s[SegmentIdSize:])
 }
 
+func (s ObjectNameShort) String() string {
+	return fmt.Sprintf("%s-%d", s.Segmentid().ToString(), s.Num())
+}
+
 func (s *ObjectNameShort) Equal(o []byte) bool {
 	return bytes.Equal(s[:], o)
 }

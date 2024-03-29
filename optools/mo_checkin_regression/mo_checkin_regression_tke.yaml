@@ -32,22 +32,11 @@ spec:
       memoryCacheSize: 512Mi
       diskCacheSize: 100Gi
     config: |
-      [dn.Txn.Storage]
-      backend = "TAE"
-      log-backend = "logservice"
-      [dn.Ckp]
-      flush-interval = "60s"
-      min-count = 100
-      scan-interval = "5s"
-      incremental-interval = "60s"
-      global-interval = "100000s"
-      [dn.LogtailServer]
-      rpc-max-message-size = "16KiB"
-      rpc-payload-copy-buffer-size = "16KiB"
-      rpc-enable-checksum = true
-      logtail-collect-interval = "2ms"
-      logtail-response-send-timeout = "10s"
-      max-logtail-fetch-failure = 5
+      [tn.Merge]
+      offload-all = true
+      offload-exceed = "100mb"
+      offload-mem-hint = "6gb"
+      offload-when-standalone = true
       [observability]
       metricUpdateStorageUsageInterval = "15m"
       enableStmtMerge = true

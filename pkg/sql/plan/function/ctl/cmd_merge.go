@@ -23,6 +23,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/merge"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
@@ -77,13 +78,25 @@ func handleMerge() handleFunc {
 			if err != nil {
 				return nil, err
 			}
+			var database engine.Database
+			var rel engine.Relation
 			defer func() {
 				if err != nil {
 					logutil.Error("mergeblocks err on cn",
 						zap.String("err", err.Error()), zap.String("parameter", parameter))
+					var did, tid uint64
+					if database != nil {
+						did, _ = strconv.ParseUint(database.GetDatabaseId(proc.Ctx), 10, 64)
+					}
+					if rel != nil {
+						tid = rel.GetTableID(proc.Ctx)
+					}
 					e := &api.MergeCommitEntry{
-						StartTs: txnOp.SnapshotTS(),
-						Err:     err.Error(),
+						StartTs:   txnOp.SnapshotTS(),
+						DbId:      did,
+						TblId:     tid,
+						TableName: tbl,
+						Err:       err.Error(),
 					}
 					for _, o := range targets {
 						e.MergedObjs = append(e.MergedObjs, o.Clone().Marshal())
@@ -93,14 +106,12 @@ func handleMerge() handleFunc {
 					err = nil
 				}
 			}()
-			database, err := proc.SessionInfo.StorageEngine.Database(proc.Ctx, db, txnOp)
+			database, err = proc.SessionInfo.StorageEngine.Database(proc.Ctx, db, txnOp)
 			if err != nil {
-				logutil.Errorf("mergeblocks err on cn, db %s, err %s", db, err.Error())
 				return nil, err
 			}
-			rel, err := database.Relation(proc.Ctx, tbl, nil)
+			rel, err = database.Relation(proc.Ctx, tbl, nil)
 			if err != nil {
-				logutil.Errorf("mergeblocks err on cn, table %s, err %s", db, err.Error())
 				return nil, err
 			}
 			entry, err := rel.MergeObjects(proc.Ctx, targets)

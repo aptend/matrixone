@@ -32,7 +32,7 @@ const (
 	DefaultMaxRowsObj            = 8192 * 500
 	DefaultMinCNMergeSize        = 100  // MB
 	DefaultCNMergeMemControlHint = 8192 // MB
-	DefaultMaxMergeObjN          = 2
+	DefaultMaxMergeObjN          = 4
 
 	Const1GBytes = 1 << 30
 	Const1MBytes = 1 << 20

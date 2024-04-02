@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"slices"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -133,10 +134,31 @@ func (e *ActiveCNObjMap) String() string {
 
 	b := &bytes.Buffer{}
 	now := time.Now()
-	for k, v := range e.o {
-		b.WriteString(fmt.Sprintf(" id: %v, table: %v, insertAt: %s ago\n",
-			k.String(), v.tid, now.Sub(v.insertAt).String()))
+	type t struct {
+		id  objectio.ObjectId
+		tid uint64
+		at  time.Time
 	}
+	list := make([]*t, 0, len(e.o))
+
+	for k, v := range e.o {
+		list = append(list, &t{k, v.tid, v.insertAt})
+	}
+	slices.SortFunc(list, func(i, j *t) int {
+		if i.tid < j.tid {
+			return -1
+		} else if i.tid == j.tid {
+			return 0
+		} else {
+			return 1
+		}
+	})
+
+	for _, v := range list {
+		b.WriteString(fmt.Sprintf(" id: %v, table: %v, insertAt: %s ago\n",
+			v.id.String(), v.tid, now.Sub(v.at).String()))
+	}
+
 	return b.String()
 }
 

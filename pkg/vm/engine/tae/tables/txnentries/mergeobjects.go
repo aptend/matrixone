@@ -42,8 +42,11 @@ type mergeObjectsEntry struct {
 	totalCreatedBlkCnt int
 	transMappings      *api.BlkTransferBooking
 
-	rt      *dbutils.Runtime
-	pageIds []*common.ID
+	rt                   *dbutils.Runtime
+	pageIds              []*common.ID
+	delTbls              []*model.TransDels
+	collectTs            types.TS
+	transCntBeforeCommit int
 }
 
 func NewMergeObjectsEntry(
@@ -69,6 +72,10 @@ func NewMergeObjectsEntry(
 		transMappings:      transMappings,
 		rt:                 rt,
 	}
+
+	entry.delTbls = make([]*model.TransDels, totalCreatedBlkCnt)
+	entry.collectTs = rt.Now()
+
 	entry.prepareTransferPage()
 	return entry
 }
@@ -198,6 +205,29 @@ func (entry *mergeObjectsEntry) transferBlockDeletes(
 		); err != nil {
 			return err
 		}
+	}
+	return
+}
+
+func (entry *mergeObjectsEntry) collectDelsAndTransfer(from, to types.TS) (transCnt int, err error) {
+	if len(entry.createdBlkCnt) == 0 {
+		return
+	}
+	created, err := entry.relation.GetObject(&entry.createdObjs[0].ID)
+	if err != nil {
+		return
+	}
+
+	blksOffset := 0
+	for _, dropped := range entry.droppedObjs {
+		for iblk := 0; iblk < dropped.BlockCnt(); iblk++ {
+			if entry.transMappings.Mappings[blksOffset+iblk].M == nil {
+				continue
+			}
+
+			// handle blk transfer
+		}
+		blksOffset += dropped.BlockCnt()
 	}
 	return
 }

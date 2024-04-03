@@ -207,7 +207,7 @@ func (r *taskRunner) adjust() {
 		r.options.fetchInterval = time.Second * 10
 	}
 	if r.options.fetchTimeout == 0 {
-		r.options.fetchTimeout = time.Second * 10
+		r.options.fetchTimeout = time.Second * 30
 	}
 	if r.options.heartbeatInterval == 0 {
 		r.options.heartbeatInterval = time.Second * 5
@@ -351,15 +351,11 @@ func (r *taskRunner) doFetch() ([]task.AsyncTask, error) {
 	for _, t := range tasks {
 		if _, ok := r.runningTasks.m[t.ID]; !ok {
 			if _, ok := r.runningTasks.completedTasks[t.ID]; !ok {
-				r.logger.Info("new task fetched",
-					zap.String("task", t.DebugString()))
 				newTasks = append(newTasks, t)
 			}
 		}
 	}
-	for k := range r.runningTasks.completedTasks {
-		delete(r.runningTasks.completedTasks, k)
-	}
+	clear(r.runningTasks.completedTasks)
 	r.runningTasks.Unlock()
 
 	if len(newTasks) == 0 {
@@ -449,14 +445,8 @@ func (r *taskRunner) runTask(ctx context.Context, rt runningTask) {
 
 func (r *taskRunner) run(rt runningTask) {
 	err := r.stopper.RunTask(func(ctx context.Context) {
-		start := time.Now()
-		r.logger.Debug("task start execute",
+		r.logger.Info("start to execute task",
 			zap.String("task", rt.task.DebugString()))
-		defer func() {
-			r.logger.Debug("task execute completed",
-				zap.String("task", rt.task.DebugString()),
-				zap.Duration("cost", time.Since(start)))
-		}()
 
 		if executor, err := r.getExecutor(rt.task.Metadata.Executor); err != nil {
 			r.taskExecResult(rt, err, false)
@@ -477,7 +467,7 @@ func (r *taskRunner) taskExecResult(rt runningTask, err error, mayRetry bool) {
 			Code: task.ResultCode_Success,
 		}
 	} else {
-		r.logger.Error("run task failed",
+		r.logger.Error("failed to execute task",
 			zap.String("task", rt.task.DebugString()),
 			zap.Error(err))
 		rt.task.ExecuteResult = &task.ExecuteResult{
@@ -597,7 +587,10 @@ func (r *taskRunner) doHeartbeat(ctx context.Context) {
 	r.runningTasks.RUnlock()
 
 	for _, rt := range tasks {
-		if err := r.service.Heartbeat(ctx, rt.task); err != nil {
+		ctx, cancel := context.WithTimeout(ctx, r.options.heartbeatTimeout)
+		err := r.service.Heartbeat(ctx, rt.task)
+		cancel()
+		if err != nil {
 			if moerr.IsMoErrCode(err, moerr.ErrInvalidTask) {
 				r.removeRunningTask(rt.task.ID)
 				rt.cancel()
@@ -614,7 +607,6 @@ func (r *taskRunner) removeRunningTask(id uint64) {
 	defer r.runningTasks.Unlock()
 	delete(r.runningTasks.m, id)
 	r.runningTasks.completedTasks[id] = struct{}{}
-	r.logger.Info("task removed", zap.Uint64("task-id", id))
 }
 
 func (r *taskRunner) getExecutor(code task.TaskCode) (TaskExecutor, error) {

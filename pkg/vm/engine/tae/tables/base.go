@@ -19,9 +19,11 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
+	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 
 	"github.com/RoaringBitmap/roaring"
 	"github.com/matrixorigin/matrixone/pkg/common/bitmap"
@@ -818,6 +820,10 @@ func (blk *baseObject) HasDeleteIntentsPreparedIn(from, to types.TS) (found, isP
 	return mvcc.HasDeleteIntentsPreparedIn(from, to)
 }
 func (blk *baseObject) HasDeleteIntentsPreparedInByBlock(blkID uint16, from, to types.TS) (found, isPersist bool) {
+	inst := time.Now()
+	defer func() {
+		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
+	}()
 	blk.RLock()
 	defer blk.RUnlock()
 	mvcc := blk.tryGetMVCC()

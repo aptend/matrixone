@@ -33,6 +33,16 @@ var (
 	TaskCommitMergeObjectsDurationHistogram = taskShortDurationHistogram.WithLabelValues("commit_merge_objects")
 	GetObjectStatsDurationHistogram         = taskShortDurationHistogram.WithLabelValues("get_object_stats")
 
+	TaskFlushCost1 = taskShortDurationHistogram.WithLabelValues("flush_cost1")
+	TaskFlushCost2 = taskShortDurationHistogram.WithLabelValues("flush_cost2")
+	TaskFlushCost3 = taskShortDurationHistogram.WithLabelValues("flush_cost3")
+	TaskFlushCost4 = taskShortDurationHistogram.WithLabelValues("flush_cost4")
+	TaskFlushCost5 = taskShortDurationHistogram.WithLabelValues("flush_cost5")
+	TaskFlushCost6 = taskShortDurationHistogram.WithLabelValues("flush_cost6")
+	TaskFlushCost7 = taskShortDurationHistogram.WithLabelValues("flush_cost7")
+	TaskFlushCost8 = taskShortDurationHistogram.WithLabelValues("flush_cost8")
+	// TaskFlushCost9 = taskShortDurationHistogram.WithLabelValues("flush_cost9")
+
 	// storage usage / show accounts metrics
 	TaskGCkpCollectUsageDurationHistogram          = taskShortDurationHistogram.WithLabelValues("gckp_collect_usage")
 	TaskICkpCollectUsageDurationHistogram          = taskShortDurationHistogram.WithLabelValues("ickp_collect_usage")

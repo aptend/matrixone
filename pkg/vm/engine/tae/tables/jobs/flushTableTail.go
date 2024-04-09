@@ -576,7 +576,6 @@ func (task *flushTableTailTask) mergeAObjs(ctx context.Context) (err error) {
 			defer vec.Close()
 		}
 	}
-
 	// write!
 	name := objectio.BuildObjectNameWithObjectID(&toObjectEntry.ID)
 	writer, err := blockio.NewBlockWriterNew(task.rt.Fs.Service, name, schema.Version, seqnums)
@@ -707,29 +706,36 @@ func (task *flushTableTailTask) waitFlushAObjForSnapshot(ctx context.Context, su
 
 // flushAllDeletesFromDelSrc collects all deletes from objs and flush them into one obj
 func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (subtask *flushDeletesTask, emtpyDelObjIdx []*bitmap.Bitmap, err error) {
+	inst := time.Now()
 	var bufferBatch *containers.Batch
 	defer func() {
+		v2.TaskFlushCost1.Observe(time.Since(inst).Seconds())
 		if err != nil && bufferBatch != nil {
 			bufferBatch.Close()
 		}
 	}()
 	emtpyDelObjIdx = make([]*bitmap.Bitmap, len(task.delSrcMetas))
+	var totalBlk, skipNonDirty int
 	for i, obj := range task.delSrcMetas {
 		objData := obj.GetObjectData()
 		var deletes *containers.Batch
 		emptyDelObjs := &bitmap.Bitmap{}
 		emptyDelObjs.InitWithSize(int64(obj.BlockCnt()))
 		for j := 0; j < obj.BlockCnt(); j++ {
+			totalBlk++
 			found, _ := objData.HasDeleteIntentsPreparedInByBlock(uint16(j), types.TS{}, task.txn.GetStartTS())
 			if !found {
+				skipNonDirty++
 				emptyDelObjs.Add(uint64(j))
 				continue
 			}
+			inst1 := time.Now()
 			if deletes, err = objData.CollectDeleteInRangeByBlock(
 				ctx, uint16(j), types.TS{}, task.txn.GetStartTS(), true, common.MergeAllocator,
 			); err != nil {
 				return
 			}
+			v2.TaskFlushCost3.Observe(time.Since(inst1).Seconds())
 			if deletes == nil || deletes.Length() == 0 {
 				emptyDelObjs.Add(uint64(j))
 				continue
@@ -745,11 +751,18 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 	}
 	if bufferBatch != nil {
 		// make sure every batch in deltaloc object is sorted by rowid
+		inst1 := time.Now()
 		mergesort.SortBlockColumns(bufferBatch.Vecs, 0, task.rt.VectorPool.Transient)
 		subtask = NewFlushDeletesTask(tasks.WaitableCtx, task.rt.Fs, bufferBatch)
+		v2.TaskFlushCost4.Observe(time.Since(inst1).Seconds())
 		if err = task.rt.Scheduler.Schedule(subtask); err != nil {
 			return
 		}
+	}
+	if dur := time.Since(inst); dur > 15*time.Second {
+		logutil.Infof("[FlushTabletail] yyyy task %d collect %d deletes from %d blocks, skip %d non-dirty blocks, cost %v",
+			task.ID(), task.nObjDeletesCnt, totalBlk, skipNonDirty, dur,
+		)
 	}
 	return
 }

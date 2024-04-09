@@ -687,7 +687,9 @@ func (task *flushTableTailTask) waitFlushAblkForSnapshot(ctx context.Context, su
 // flushAllDeletesFromDelSrc collects all deletes from blks and flush them into one block
 func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (subtask *flushDeletesTask, emtpyDelBlkIdx *bitmap.Bitmap, err error) {
 	var bufferBatch *containers.Batch
+	inst := time.Now()
 	defer func() {
+		v2.TaskFlushCost1.Observe(time.Since(inst).Seconds())
 		if err != nil && bufferBatch != nil {
 			bufferBatch.Close()
 		}
@@ -695,11 +697,13 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 	for i, blk := range task.delSrcMetas {
 		blkData := blk.GetBlockData()
 		var deletes *containers.Batch
+		inst1 := time.Now()
 		if deletes, err = blkData.CollectDeleteInRange(
 			ctx, types.TS{}, task.txn.GetStartTS(), true, common.MergeAllocator,
 		); err != nil {
 			return
 		}
+		v2.TaskFlushCost2.Observe(time.Since(inst1).Seconds())
 		if deletes == nil || deletes.Length() == 0 {
 			if emtpyDelBlkIdx == nil {
 				emtpyDelBlkIdx = &bitmap.Bitmap{}
@@ -723,6 +727,7 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 			return
 		}
 	}
+	logutil.Infof("[FlushTabletail] task %d collect %d deletes from %d blks, cost %v", task.ID(), task.nblksDeletesCnt, len(task.delSrcHandles), time.Since(inst).Seconds())
 	return
 }
 

@@ -31,6 +31,9 @@ var (
 	TaskFlushTableTailDurationHistogram = taskShortDurationHistogram.WithLabelValues("flush_table_tail")
 	GetObjectStatsDurationHistogram     = taskShortDurationHistogram.WithLabelValues("get_object_stats")
 
+	TaskFlushCost1 = taskShortDurationHistogram.WithLabelValues("flush_cost1")
+	TaskFlushCost2 = taskShortDurationHistogram.WithLabelValues("flush_cost3")
+
 	// storage usage / show accounts metrics
 	TaskGCkpCollectUsageDurationHistogram          = taskShortDurationHistogram.WithLabelValues("gckp_collect_usage")
 	TaskICkpCollectUsageDurationHistogram          = taskShortDurationHistogram.WithLabelValues("ickp_collect_usage")

@@ -16,9 +16,11 @@ package tables
 
 import (
 	"context"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/dbutils"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index/indexwrapper"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/model"
@@ -113,7 +115,14 @@ func LoadPersistedDeletes(
 	location objectio.Location,
 	mp *mpool.MPool,
 ) (bat *containers.Batch, isPersistedByCN bool, err error) {
+	inst := time.Now()
 	movbat, isPersistedByCN, err := blockio.ReadBlockDelete(ctx, location, fs.Service)
+	if val := ctx.Value("FlushDels"); val != nil {
+		common.LoadDelsLock.Lock()
+		common.LoadDelsMap[location.String()]++
+		common.LoadDelsLock.Unlock()
+		v2.TaskFlushCost4.Observe(time.Since(inst).Seconds())
+	}
 	if err != nil {
 		return
 	}

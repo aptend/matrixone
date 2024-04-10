@@ -694,6 +694,7 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 			bufferBatch.Close()
 		}
 	}()
+	ctx = context.WithValue(ctx, "FlushDels", "xx")
 	for i, blk := range task.delSrcMetas {
 		blkData := blk.GetBlockData()
 		var deletes *containers.Batch
@@ -703,7 +704,7 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 		); err != nil {
 			return
 		}
-		v2.TaskFlushCost2.Observe(time.Since(inst1).Seconds())
+		v2.TaskFlushCost3.Observe(time.Since(inst1).Seconds())
 		if deletes == nil || deletes.Length() == 0 {
 			if emtpyDelBlkIdx == nil {
 				emtpyDelBlkIdx = &bitmap.Bitmap{}

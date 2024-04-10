@@ -103,6 +103,7 @@ func PrintMemStats() {
 	var memstats runtime.MemStats
 	runtime.ReadMemStats(&memstats)
 	logutil.Infof("HeapInfo:%s", FormatMemStats(memstats))
+	logutil.Infof("LoadInfo:%v", common.LoadDelsMap)
 	// stats, _ := mem.VirtualMemory()
 	// logutil.Infof("osMemInfo:%s", stats)
 }

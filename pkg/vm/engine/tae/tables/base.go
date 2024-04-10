@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/RoaringBitmap/roaring"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -27,6 +28,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/blockio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
@@ -315,6 +317,7 @@ func (blk *baseBlock) foreachPersistedDeletesCommittedInRange(
 	if deletes == nil || err != nil {
 		return
 	}
+	inst := time.Now()
 	if persistedByCN {
 		if deltalocCommitTS.Equal(txnif.UncommitTS) {
 			return
@@ -348,6 +351,9 @@ func (blk *baseBlock) foreachPersistedDeletesCommittedInRange(
 				loopOp(i, rowIdVec)
 			}
 		}
+	}
+	if val := ctx.Value("FlushDels"); val != nil {
+		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
 	}
 	if postOp != nil {
 		postOp(deletes)

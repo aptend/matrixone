@@ -25,6 +25,9 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 )
 
+var LoadDelsLock sync.RWMutex
+var LoadDelsMap = make(map[string]int)
+
 const (
 	DefaultNotLoadMoreThan  = 4096
 	DefaultMinRowsQualified = 40960

@@ -295,6 +295,7 @@ func (blk *baseObject) loadPersistedDeletes(
 	blkID uint16,
 	mp *mpool.MPool,
 ) (bat *containers.Batch, persistedByCN bool, deltalocCommitTS types.TS, err error) {
+	inst := time.Now()
 	mvcc := blk.tryGetMVCC()
 	if mvcc == nil {
 		return
@@ -304,6 +305,9 @@ func (blk *baseObject) loadPersistedDeletes(
 		return
 	}
 	pkName := blk.meta.GetSchema().GetPrimaryKey().Name
+	if ctx.Value("FlushDels") != nil {
+		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
+	}
 	bat, persistedByCN, err = LoadPersistedDeletes(
 		ctx,
 		pkName,
@@ -499,7 +503,6 @@ func (blk *baseObject) foreachPersistedDeletes(
 	defer deletes.Close()
 	if enable {
 		v2.TaskFlushCost5.Observe(time.Since(inst).Seconds())
-		inst = time.Now()
 	}
 	if persistedByCN {
 		if !visible {
@@ -532,15 +535,8 @@ func (blk *baseObject) foreachPersistedDeletes(
 			}
 		}
 	}
-	if enable {
-		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
-		inst = time.Now()
-	}
 	if postOp != nil {
 		postOp(deletes)
-	}
-	if enable {
-		v2.TaskFlushCost6.Observe(time.Since(inst).Seconds())
 	}
 	return
 }

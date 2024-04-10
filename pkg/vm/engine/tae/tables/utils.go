@@ -124,13 +124,15 @@ func LoadPersistedDeletes(
 	location objectio.Location,
 	mp *mpool.MPool,
 ) (bat *containers.Batch, isPersistedByCN bool, err error) {
+	enable := ctx.Value("FlushDels") != nil
 	inst := time.Now()
 	movbat, isPersistedByCN, release, err := blockio.ReadBlockDelete(ctx, location, fs.Service)
-	if val := ctx.Value("FlushDels"); val != nil {
+	if enable {
+		v2.TaskFlushCost4.Observe(time.Since(inst).Seconds())
 		common.LoadDelsLock.Lock()
 		common.LoadDelsMap[location.String()]++
 		common.LoadDelsLock.Unlock()
-		v2.TaskFlushCost4.Observe(time.Since(inst).Seconds())
+		inst = time.Now()
 	}
 	if err != nil {
 		return
@@ -151,6 +153,9 @@ func LoadPersistedDeletes(
 			bat.AddVector(colNames[i], vec.CloneWindow(0, vec.Length()))
 			vec.Close()
 		}
+	}
+	if enable {
+		v2.TaskFlushCost6.Observe(time.Since(inst).Seconds())
 	}
 	return
 }

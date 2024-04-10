@@ -714,6 +714,7 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 			bufferBatch.Close()
 		}
 	}()
+	ctx = context.WithValue(ctx, "FlushDels", "xx")
 	emtpyDelObjIdx = make([]*bitmap.Bitmap, len(task.delSrcMetas))
 	var totalBlk, skipNonDirty int
 	for i, obj := range task.delSrcMetas {
@@ -751,10 +752,8 @@ func (task *flushTableTailTask) flushAllDeletesFromDelSrc(ctx context.Context) (
 	}
 	if bufferBatch != nil {
 		// make sure every batch in deltaloc object is sorted by rowid
-		inst1 := time.Now()
 		mergesort.SortBlockColumns(bufferBatch.Vecs, 0, task.rt.VectorPool.Transient)
 		subtask = NewFlushDeletesTask(tasks.WaitableCtx, task.rt.Fs, bufferBatch)
-		v2.TaskFlushCost4.Observe(time.Since(inst1).Seconds())
 		if err = task.rt.Scheduler.Schedule(subtask); err != nil {
 			return
 		}

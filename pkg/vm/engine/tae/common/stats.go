@@ -27,6 +27,9 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
+var LoadDelsLock sync.RWMutex
+var LoadDelsMap = make(map[string]int)
+
 const (
 	DefaultMinRowsQualified = 40960
 	DefaultMaxRowsObj       = 8192 * 500

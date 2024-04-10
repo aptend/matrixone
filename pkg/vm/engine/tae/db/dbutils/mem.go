@@ -131,4 +131,7 @@ func PrintMemStats() {
 
 	prevHeapInuse = memstats.HeapInuse
 	logutil.Infof("HeapInfo:%s", FormatMemStats(memstats))
+	logutil.Infof("LoadInfo:%d, %v", len(common.LoadDelsMap), common.LoadDelsMap)
+	// stats, _ := mem.VirtualMemory()
+	// logutil.Infof("osMemInfo:%s", stats)
 }

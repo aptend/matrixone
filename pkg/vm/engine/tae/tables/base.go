@@ -33,6 +33,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/blockio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
@@ -488,6 +489,7 @@ func (blk *baseObject) foreachPersistedDeletes(
 		return
 	}
 	defer deletes.Close()
+	inst := time.Now()
 	if persistedByCN {
 		if !visible {
 			return
@@ -518,6 +520,9 @@ func (blk *baseObject) foreachPersistedDeletes(
 				loopOp(i, rowIdVec)
 			}
 		}
+	}
+	if val := ctx.Value("FlushDels"); val != nil {
+		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
 	}
 	if postOp != nil {
 		postOp(deletes)
@@ -820,10 +825,6 @@ func (blk *baseObject) HasDeleteIntentsPreparedIn(from, to types.TS) (found, isP
 	return mvcc.HasDeleteIntentsPreparedIn(from, to)
 }
 func (blk *baseObject) HasDeleteIntentsPreparedInByBlock(blkID uint16, from, to types.TS) (found, isPersist bool) {
-	inst := time.Now()
-	defer func() {
-		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
-	}()
 	blk.RLock()
 	defer blk.RUnlock()
 	mvcc := blk.tryGetMVCC()

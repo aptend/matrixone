@@ -23,7 +23,6 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
-	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 
 	"github.com/RoaringBitmap/roaring"
 	"github.com/matrixorigin/matrixone/pkg/common/bitmap"

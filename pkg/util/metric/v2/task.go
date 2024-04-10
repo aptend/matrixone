@@ -41,7 +41,7 @@ var (
 	TaskFlushCost6 = taskShortDurationHistogram.WithLabelValues("flush_cost6")
 	TaskFlushCost7 = taskShortDurationHistogram.WithLabelValues("flush_cost7")
 	TaskFlushCost8 = taskShortDurationHistogram.WithLabelValues("flush_cost8")
-	// TaskFlushCost9 = taskShortDurationHistogram.WithLabelValues("flush_cost9")
+	TaskFlushCost9 = taskShortDurationHistogram.WithLabelValues("flush_cost9")
 
 	// storage usage / show accounts metrics
 	TaskGCkpCollectUsageDurationHistogram          = taskShortDurationHistogram.WithLabelValues("gckp_collect_usage")

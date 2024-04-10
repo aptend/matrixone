@@ -482,13 +482,25 @@ func (blk *baseObject) foreachPersistedDeletes(
 	postOp func(*containers.Batch),
 	mp *mpool.MPool,
 ) (err error) {
+	enable := ctx.Value("FlushDels") != nil
+	if enable {
+		inst0 := time.Now()
+		defer func() {
+			v2.TaskFlushCost7.Observe(time.Since(inst0).Seconds())
+		}()
+	}
+
+	inst := time.Now()
 	// commitTS of deltalocation is the commitTS of deletes persisted by CN batches
 	deletes, persistedByCN, deltalocCommitTS, visible, err := loadFn()
 	if deletes == nil || err != nil {
 		return
 	}
 	defer deletes.Close()
-	inst := time.Now()
+	if enable {
+		v2.TaskFlushCost5.Observe(time.Since(inst).Seconds())
+		inst = time.Now()
+	}
 	if persistedByCN {
 		if !visible {
 			return
@@ -520,11 +532,15 @@ func (blk *baseObject) foreachPersistedDeletes(
 			}
 		}
 	}
-	if val := ctx.Value("FlushDels"); val != nil {
+	if enable {
 		v2.TaskFlushCost2.Observe(time.Since(inst).Seconds())
+		inst = time.Now()
 	}
 	if postOp != nil {
 		postOp(deletes)
+	}
+	if enable {
+		v2.TaskFlushCost6.Observe(time.Since(inst).Seconds())
 	}
 	return
 }
@@ -899,6 +915,8 @@ func (blk *baseObject) CollectDeleteInRangeByBlock(
 	start, end types.TS,
 	withAborted bool,
 	mp *mpool.MPool) (*containers.Batch, error) {
+	enable := ctx.Value("FlushDels") != nil
+	inst := time.Now()
 	deletes, minTS, _, err := blk.inMemoryCollectDeleteInRange(
 		ctx,
 		blkID,
@@ -907,6 +925,10 @@ func (blk *baseObject) CollectDeleteInRangeByBlock(
 		withAborted,
 		mp,
 	)
+	if enable {
+		v2.TaskFlushCost8.Observe(time.Since(inst).Seconds())
+		inst = time.Now()
+	}
 	if err != nil {
 		if deletes != nil {
 			deletes.Close()
@@ -926,6 +948,9 @@ func (blk *baseObject) CollectDeleteInRangeByBlock(
 		withAborted,
 		mp,
 	)
+	if enable {
+		v2.TaskFlushCost9.Observe(time.Since(inst).Seconds())
+	}
 	if err != nil {
 		if deletes != nil {
 			deletes.Close()

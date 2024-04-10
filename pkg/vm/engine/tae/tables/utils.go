@@ -130,7 +130,7 @@ func LoadPersistedDeletes(
 	if enable {
 		v2.TaskFlushCost4.Observe(time.Since(inst).Seconds())
 		common.LoadDelsLock.Lock()
-		common.LoadDelsMap[location.String()]++
+		common.LoadDelsMap[fmt.Sprintf("%v_%v", location.Name().ObjectId().ShortStringEx(), location.Rows())]++
 		common.LoadDelsLock.Unlock()
 		inst = time.Now()
 	}

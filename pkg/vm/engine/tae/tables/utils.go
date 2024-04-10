@@ -16,6 +16,7 @@ package tables
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
@@ -123,7 +124,7 @@ func LoadPersistedDeletes(
 	fs *objectio.ObjectFS,
 	location objectio.Location,
 	mp *mpool.MPool,
-) (bat *containers.Batch, isPersistedByCN bool, err error) {
+) (bat *containers.Batch, isPersistedByCN bool, release func(), err error) {
 	enable := ctx.Value("FlushDels") != nil
 	inst := time.Now()
 	movbat, isPersistedByCN, release, err := blockio.ReadBlockDelete(ctx, location, fs.Service)
@@ -137,21 +138,16 @@ func LoadPersistedDeletes(
 	if err != nil {
 		return
 	}
-	defer release()
 	bat = containers.NewBatch()
 	if isPersistedByCN {
 		colNames := []string{catalog.PhyAddrColumnName, catalog.AttrPKVal}
 		for i := 0; i < 2; i++ {
-			vec := containers.ToTNVector(movbat.Vecs[i], mp)
-			bat.AddVector(colNames[i], vec.CloneWindow(0, vec.Length()))
-			vec.Close()
+			bat.AddVector(colNames[i], containers.ToTNVector(movbat.Vecs[i], mp))
 		}
 	} else {
 		colNames := []string{catalog.PhyAddrColumnName, catalog.AttrCommitTs, catalog.AttrPKVal, catalog.AttrAborted}
 		for i := 0; i < 4; i++ {
-			vec := containers.ToTNVector(movbat.Vecs[i], mp)
-			bat.AddVector(colNames[i], vec.CloneWindow(0, vec.Length()))
-			vec.Close()
+			bat.AddVector(colNames[i], containers.ToTNVector(movbat.Vecs[i], mp))
 		}
 	}
 	if enable {

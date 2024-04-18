@@ -16,7 +16,7 @@ package objectio
 
 import (
 	"bytes"
-	"hash/fnv"
+	"crypto/sha256"
 	"unsafe"
 
 	"github.com/google/uuid"
@@ -155,9 +155,9 @@ func HackBytes2Rowid(bs []byte) Rowid {
 	if size := len(bs); size <= types.RowidSize {
 		copy(rowid[:size], bs[:size])
 	} else {
-		hasher := fnv.New128()
-		hasher.Write(bs)
-		hasher.Sum(rowid[:0])
+		s := sha256.New224()
+		s.Write(bs)
+		s.Sum(rowid[:0])
 	}
 	return rowid
 }

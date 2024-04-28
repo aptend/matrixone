@@ -4,14 +4,148 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
+	"github.com/matrixorigin/matrixone/pkg/common/mpool"
+	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/defines"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
+	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/util/toml"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/blockio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 )
+
+func TestDecode3() (err error) {
+	ctx := context.Background()
+	name := "018f236b-5193-7ffd-8d48-6f11b26cfe51_00000"
+	fsDir := "/Users/aptend/code/matrixone"
+	mp, _ := mpool.NewMPool("test", 0, mpool.NoFixed)
+	memCache := toml.ByteSize(1024)
+	c := fileservice.Config{
+		Name:    defines.LocalFileServiceName,
+		Backend: "DISK",
+		DataDir: fsDir,
+		Cache: fileservice.CacheConfig{
+			MemoryCapacity: &memCache,
+		},
+	}
+
+	service, err := fileservice.NewFileService(ctx, c, nil)
+	if err != nil {
+		return
+	}
+
+	uid, _ := types.ParseUuid("018f236b-5193-7ffd-8d48-6f11b26cfe51")
+	sid := objectio.Segmentid(uid)
+	objectName := objectio.BuildObjectName(&sid, 0)
+
+	reader, err := blockio.NewFileReader(service, name)
+	if err != nil {
+		return
+	}
+
+	objmeta, err := reader.GetObjectReader().ReadAllMeta(ctx, mp)
+	if err != nil {
+		return
+	}
+
+	meta := objmeta.MustDataMeta()
+	extend := reader.GetObjectReader().GetMetaExtent()
+	rows := int(meta.BlockHeader().Rows())
+	infos := make([]objectio.BlockInfo, 0, meta.BlockCount())
+	for i := 0; i < int(meta.BlockCount()); i++ {
+		blockid := objectio.BuildObjectBlockid(objectName, uint16(i))
+		brows := 8192
+		if rows < 8192 {
+			brows = rows
+		}
+		rows -= 8192
+		loc := objectio.BuildLocation(objectName, *extend, uint32(brows), uint16(i))
+		info := objectio.BlockInfo{
+			BlockID:    *blockid,
+			SegmentID:  objectName.SegmentId(),
+			EntryState: false,
+			Sorted:     true,
+			MetaLoc:    objectio.ObjectLocation(loc),
+		}
+		infos = append(infos, info)
+	}
+
+	// 读取数据
+	typs := []types.Type{
+		types.T_uuid.ToType(),
+		types.T_uuid.ToType(),
+		types.T_uuid.ToType(),
+		types.T_varchar.ToType(),
+		types.T_int64.ToType(),
+		types.T_varchar.ToType(), // user
+		types.T_varchar.ToType(), // host
+		types.T_varchar.ToType(), // database
+		types.T_text.ToType(),    // stmt
+		types.T_text.ToType(),    // stmt tag
+		types.T_text.ToType(),    // stmt fg
+		types.T_uuid.ToType(),
+		types.T_varchar.ToType(),            // nodetype
+		types.T_datetime.ToTypeWithScale(6), // request-at
+		types.T_datetime.ToTypeWithScale(6), //
+		types.T_uint64.ToType(),
+		types.T_varchar.ToType(),
+		types.T_text.ToType(), // error
+		types.T_text.ToType(), // exec-plan
+		types.T_int64.ToType(),
+		types.T_int64.ToType(),
+		types.T_text.ToType(),
+		types.T_varchar.ToType(),
+		types.T_varchar.ToType(),
+		types.T_text.ToType(), // source type
+		types.T_int64.ToType(),
+		types.T_int64.ToType(), // result-cnt
+	}
+	cols := []uint16{}
+	for i := 0; i < 27; i++ {
+		// if i == 18 {
+		// 	continue
+		// }
+		cols = append(cols, uint16(i))
+	}
+	// logutil.Infof("cols %v len len ", cols, len(typs), len(cols))
+
+	read := func() {
+		batches := []*batch.Batch{}
+		inst := time.Now()
+		for _, info := range infos {
+			ins := time.Now()
+			var bat *batch.Batch
+			bat, err = blockio.BlockRead(
+				ctx,
+				&info,
+				nil,
+				cols,
+				typs,
+				types.BuildTS(1714286188916223690, 0).ToTimestamp(),
+				nil,
+				nil,
+				nil,
+				service,
+				mp,
+				nil,
+				fileservice.Policy(0))
+			if err != nil {
+				return
+			}
+			logutil.Infof("read blk batch cost %v", time.Since(ins))
+			batches = append(batches, bat)
+		}
+		logutil.Infof("read %v batch cost %v", len(batches), time.Since(inst))
+	}
+
+	read()
+
+	return
+}
 
 func TestNewObjectReader2() {
 	ctx := context.Background()
@@ -107,5 +241,9 @@ func TestNewObjectReader1() {
 
 func main() {
 	// TestNewObjectReader2()
-	TestNewObjectReader1()
+	// TestNewObjectReader1()
+	err := TestDecode3()
+	if err != nil {
+		fmt.Println(err)
+	}
 }

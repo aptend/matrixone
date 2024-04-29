@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"os"
@@ -426,6 +427,18 @@ func (l *LocalFS) ReadCache(ctx context.Context, vector *IOVector) (err error) {
 }
 
 func (l *LocalFS) read(ctx context.Context, vector *IOVector, bytesCounter *atomic.Int64) (err error) {
+	inst1 := time.Now()
+	var cost, exec_plan_cost time.Duration
+	defer func() {
+		total := time.Since(inst1)
+		fmt.Printf(
+			"underlying read cost %v, decompress %.2f%%(%v where exec_plan took %.2f%%)\n",
+			total,
+			float64(cost)/float64(total)*100,
+			cost,
+			float64(exec_plan_cost)/float64(cost)*100,
+		)
+	}()
 	if vector.allDone() {
 		// all cache hit
 		return nil
@@ -596,9 +609,16 @@ func (l *LocalFS) read(ctx context.Context, vector *IOVector, bytesCounter *atom
 				}
 			}
 
+			inst := time.Now()
 			if err = entry.setCachedData(); err != nil {
 				return err
 			}
+			setCachedCost := time.Since(inst)
+			if i == 18 {
+				exec_plan_cost = setCachedCost
+			}
+			cost += setCachedCost
+			// logutil.Infof("tocachedata %d cost %v", i, setCachedCost)
 
 			vector.Entries[i] = entry
 

@@ -21,9 +21,9 @@ import (
 func TestDecode3() (err error) {
 	ctx := context.Background()
 	name := "018f236b-5193-7ffd-8d48-6f11b26cfe51_00000"
-	fsDir := "/Users/aptend/code/matrixone"
+	fsDir := "/data2/hanfeng/matrixone"
 	mp, _ := mpool.NewMPool("test", 0, mpool.NoFixed)
-	memCache := toml.ByteSize(1024)
+	memCache := toml.ByteSize(1 << 20)
 	c := fileservice.Config{
 		Name:    defines.LocalFileServiceName,
 		Backend: "DISK",
@@ -53,6 +53,7 @@ func TestDecode3() (err error) {
 	}
 
 	meta := objmeta.MustDataMeta()
+	stat := fmt.Sprintf("%v blks, %v rows", meta.BlockCount(), meta.BlockHeader().Rows())
 	extend := reader.GetObjectReader().GetMetaExtent()
 	rows := int(meta.BlockHeader().Rows())
 	infos := make([]objectio.BlockInfo, 0, meta.BlockCount())
@@ -73,8 +74,6 @@ func TestDecode3() (err error) {
 		}
 		infos = append(infos, info)
 	}
-
-	// 读取数据
 	typs := []types.Type{
 		types.T_uuid.ToType(),
 		types.T_uuid.ToType(),
@@ -136,10 +135,10 @@ func TestDecode3() (err error) {
 			if err != nil {
 				return
 			}
-			logutil.Infof("read blk batch cost %v", time.Since(ins))
+			fmt.Printf("  read blk batch cost %v\n----\n", time.Since(ins))
 			batches = append(batches, bat)
 		}
-		logutil.Infof("read %v batch cost %v", len(batches), time.Since(inst))
+		logutil.Infof("%s: read %v batch cost %v", stat, len(batches), time.Since(inst))
 	}
 
 	read()

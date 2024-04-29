@@ -16,6 +16,7 @@ package blockio
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"time"
 
@@ -345,6 +346,7 @@ func BlockReadInner(
 		}
 	}
 
+	inst := time.Now()
 	// assemble result batch
 	for i, col := range loaded.Vecs {
 		typ := *col.GetType()
@@ -371,6 +373,7 @@ func BlockReadInner(
 			result.Vecs[i].Shrink(deletedRows, true)
 		}
 	}
+	fmt.Printf(" assemble(copy) result %v\n", time.Since(inst))
 
 	// if any error happens, free the result batch allocated
 	if err != nil {
@@ -501,7 +504,9 @@ func readBlockData(
 	if info.EntryState {
 		bat, deleteMask, err = readABlkColumns(idxes)
 	} else {
+		inst := time.Now()
 		bat, _, err = readColumns(idxes)
+		fmt.Printf(" readBlockData %v\n", time.Since(inst))
 	}
 
 	return

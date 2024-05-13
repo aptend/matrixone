@@ -70,7 +70,8 @@ func (e *MergeExecutor) RefreshMemInfo() {
 	if stats, err := mem.VirtualMemory(); err == nil {
 		e.memAvail = int(stats.Available)
 		if e.memSpare == 0 {
-			e.memSpare = int(float32(stats.Total) * 0.1)
+			// e.memSpare = int(float32(stats.Total) * 0.1)
+			e.memSpare = 11 * common.Const1GBytes // fixed in the load case
 		}
 	}
 	if percents, err := cpu.Percent(0, false); err == nil {

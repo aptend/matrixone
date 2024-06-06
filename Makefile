@@ -147,7 +147,7 @@ mo-debug: config cgo
 # produced executable is 10x slower and consumes much more memory
 .PHONY: debug
 debug: override BUILD_NAME := debug-binary
-debug: override RACE_OPT := -race
+# debug: override RACE_OPT := -race
 debug: override DEBUG_OPT := -gcflags=all="-N -l"
 debug: override CGO_DEBUG_OPT := debug
 debug: build

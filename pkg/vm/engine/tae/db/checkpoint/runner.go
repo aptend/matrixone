@@ -880,8 +880,9 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 	// freeze all append
 	scopes := make([]common.ID, 0, len(metas))
 	for _, meta := range metas {
-		if !meta.GetObjectData().PrepareCompact() {
-			logutil.Infof("[FlushTabletail] %d-%s / %s false prepareCompact ", table.ID, table.GetLastestSchemaLocked().Name, meta.ID.String())
+		ok, reason := meta.GetObjectData().PrepareCompactInfo()
+		if !ok {
+			logutil.Infof("[FlushTabletail] %d-%s / (appendable %v)%s false prepareCompact, reason %v ", table.ID, table.GetLastestSchemaLocked().Name, meta.IsAppendable(), meta.ID.String(), reason)
 			return moerr.GetOkExpectedEOB()
 		}
 		scopes = append(scopes, *meta.AsCommonID())

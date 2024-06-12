@@ -16,7 +16,6 @@ package tables
 
 import (
 	"context"
-	"fmt"
 	"sync"
 	"sync/atomic"
 
@@ -86,25 +85,36 @@ func (obj *aobject) IsAppendable() bool {
 }
 
 func (obj *aobject) PrepareCompactInfo() (result bool, reason string) {
-	if n := obj.RefCount(); n > 0 {
-		reason = fmt.Sprintf("entering refcount %d", n)
-		return
-	}
-	obj.FreezeAppend()
-	if !obj.meta.PrepareCompact() || !obj.appendMVCC.PrepareCompact() {
-		if !obj.meta.PrepareCompact() {
-			reason = "meta preparecomp false"
-		} else {
-			reason = "mvcc preparecomp false"
-		}
-		return
+	if obj.RefCount() > 0 {
+		return false, "begin refcount > 0"
 	}
 
-	if n := obj.RefCount(); n != 0 {
-		reason = fmt.Sprintf("ending refcount %d", n)
-		return
+	// see more notes in flushtabletail.go
+	obj.freezelock.Lock()
+	obj.FreezeAppend()
+	obj.freezelock.Unlock()
+
+	obj.meta.RLock()
+	defer obj.meta.RUnlock()
+	droppedCommitted := obj.meta.HasDropCommittedLocked()
+
+	if droppedCommitted {
+		if !obj.meta.PrepareCompactLocked() {
+			return false, "dropped meta check false"
+		}
+	} else {
+		if !obj.meta.PrepareCompactLocked() {
+			return false, "meta check false"
+		}
+		if !obj.appendMVCC.PrepareCompactLocked() /* all appends are committed */ {
+			return false, "not all appends are committed"
+		}
 	}
-	return obj.RefCount() == 0, reason
+	if obj.RefCount() == 0 {
+		return true, ""
+	} else {
+		return false, "end refcount > 0"
+	}
 }
 
 func (obj *aobject) PrepareCompact() bool {

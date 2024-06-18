@@ -219,39 +219,43 @@ func tableItemLess(a, b *TableItem) bool {
 	if a.Name > b.Name {
 		return false
 	}
-	if a.Ts.Equal(b.Ts) {
-		/*
-			The TN use the table id to distinguish different tables.
-			For operation on mo_tables, the rowid is the serialized bytes of the table id.
-			So, the rowid is unique for each table in mo_tables. We can use it to sort the items.
-			To be clear, the comparation a.Id < b.Id does not means the table a.Id is created before the table b.Id.
-			We just use it to reserve the items yielded by the truncate on same table multiple times in one txn.
 
-			CORNER CASE:
+	// Let's think about how to arrange items for the same name table.
+	// how many types of items does a table have?
+	// 1. create table (deleted=false, ts=t1, tid=x1, rowid=r1)
+	// 2. drop table (deleted=true, ts=t2, tid=x1, rowid=r1)
+	// 3. truncate
+	//    1. drop table (delete=true, ts=t1, tid=x1， rowid=r1)
+	//    2. create table (delete=false, ts=t1, tid=x2, rowid=r2)
+	// 4. alter table
+	//    1. delete table row (delete=true, ts=t1，tid=x1, rowid=r1)
+	//    2. create table row (delete=false, ts=t1, tid=x1, rowid=r2)
+	//
+	// Note: What logtail in mo_tables/mo_columns will CN receive is exactly dependent on what CN sends to TN.
+	// No matter how many ddl operations happened in one txn, it will eventually generate at most a pair of delete and insert batch.
+	// --- example1:
+	// begin;
+	// truncate table t1; (drop x1, create t1 with tid x2)
+	// truncate table t1; (drop x2, create t1 with tid x3)
+	// alter table t1 comment 'new comment1'; (as x3 is created in the txn, adjust its create batch with new comment1)
+	// alter table t1 comment 'new comment1'; (as x3 is created in the txn, adjust its create batch again)
+	// commit;
+	// --- TN received requests to drop x1 and create x3
+	// --- TN replayed logtail as:
+	// drop table t1 (delete=true, ts=t1, tid=x1, rowid=r1)
+	// create table t1 (delete=false, ts=t1, tid=x3, rowid=r2, comment='new comment2')
+	//
+	// Order rule:
+	// 1. By timestamp descending (order by txn)
+	// 2. By delete flag, delete is behind of insert (check the last status in the txn)
+	//
+	// Given the order of the items, it is simple to lookup a table by name:
+	// 1. Find the first item with the same name, if it is not deleted, return found, not found otherwise.
 
-			create table t1(a int); //table id x.
-			begin;
-			truncate t1;//table id x changed to x1
-			truncate t1;//table id x1 changed to x2
-			truncate t1;//table id x2 changed to x3
-			commit;//catalog.insertTable(table id x1,x2,x3). catalog.deleteTable(table id x,x1,x2)
-
-			In above case, the TN does not keep the order of multiple insertTable (or deleteTable).
-			That is ,it may generate the insertTable order like: x3,x2,x1.
-			In previous design without sort on the table id, the item x3,x2 will be overwritten by the x1.
-			Then the item x3 will be lost. The TN will not know the table x3. It is wrong!
-			With sort on the table id, the item x3,x2,x1 will be reserved.
-		*/
-		// the logtail is unordered, so we need to sort the items by table id.
-		// the larger table id is created later.
-		if a.Id > b.Id {
+	if a.Ts.Equal(b.Ts) { // happen in the same txn. it is a delete and a insert.
+		if !a.deleted && b.deleted {
 			return true
 		}
-		if a.Id < b.Id {
-			return false
-		}
-		// for the same table id, the delete item is head.
-		return a.deleted
 	}
 	return a.Ts.Greater(b.Ts)
 }

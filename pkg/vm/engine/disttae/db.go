@@ -28,8 +28,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/logtail"
 
 	"github.com/matrixorigin/matrixone/pkg/catalog"
-	"github.com/matrixorigin/matrixone/pkg/container/batch"
-	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 )
 
@@ -47,151 +45,116 @@ func (e *Engine) init(ctx context.Context) error {
 	defer put.Put()
 
 	{
-		e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID}] = logtailreplay.NewPartition()
-	}
-
-	{
-		e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID}] = logtailreplay.NewPartition()
-	}
-
-	{
-		e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}] = logtailreplay.NewPartition()
+		e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID}] = logtailreplay.NewPartition(1)
+		e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID}] = logtailreplay.NewPartition(2)
+		e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}] = logtailreplay.NewPartition(3)
 	}
 
 	{ // mo_catalog
 		part := e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID}]
-		bat, err := genCreateDatabaseTuple("", 0, 0, 0, catalog.MO_CATALOG, catalog.MO_CATALOG_ID, "", m)
+		bat, err := genCreateDatabaseTuple("", 0, 0, 0, catalog.MO_CATALOG, catalog.MO_CATALOG_ID, "", m, packer)
 		if err != nil {
 			return err
 		}
-		ibat, err := genInsertBatch(bat, m)
+		ibat, err := fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
 		state, done := part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_DATABASE_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertDatabase(bat)
 		bat.Clean(m)
 	}
 
-	{ // mo_database
-		part := e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID}]
-		cols, err := genColumns(0, catalog.MO_DATABASE, catalog.MO_CATALOG, catalog.MO_DATABASE_ID,
-			catalog.MO_CATALOG_ID, catalog.MoDatabaseTableDefs)
-		if err != nil {
-			return err
-		}
+	{ // init mo_database table
+
+		var part *logtailreplay.Partition
+
+		// insert into mo_tables partition
 		tbl := new(txnTable)
 		tbl.relKind = catalog.SystemOrdinaryRel
-		bat, err := genCreateTableTuple(tbl, "", 0, 0, 0,
+		bat, err := genCreateTableTuple(tbl, 0, 0, 0,
 			catalog.MO_DATABASE, catalog.MO_DATABASE_ID,
-			catalog.MO_CATALOG_ID, catalog.MO_CATALOG, types.Rowid{}, false, m)
+			catalog.MO_CATALOG_ID, catalog.MO_CATALOG, m, packer)
 		if err != nil {
 			return err
 		}
-		ibat, err := genInsertBatch(bat, m)
+		ibat, err := fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
+
+		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID}]
 		state, done := part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF+catalog.MO_TABLES_REL_ID_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_TABLES_CPKEY_IDX, packer)
 		done()
-		e.catalog.InsertTable(bat)
+		e.catalog.InsertTable(bat) // cache
 		bat.Clean(m)
 
-		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
-		bat = batch.NewWithSize(len(catalog.MoColumnsSchema))
-		bat.Attrs = append(bat.Attrs, catalog.MoColumnsSchema...)
-		bat.SetRowCount(len(cols))
-		for _, col := range cols {
-			bat0, err := genCreateColumnTuple(col, types.Rowid{}, false, m)
-			if err != nil {
-				return err
-			}
-			if bat.Vecs[0] == nil {
-				for i, vec := range bat0.Vecs {
-					bat.Vecs[i] = vector.NewVec(*vec.GetType())
-				}
-			}
-			for i, vec := range bat0.Vecs {
-				if err := bat.Vecs[i].UnionOne(vec, 0, m); err != nil {
-					bat.Clean(m)
-					bat0.Clean(m)
-					return err
-				}
-			}
-			bat0.Clean(m)
+		// insert into mo_columns partition
+		cols, err := genColumnsFromDefs(0, catalog.MO_DATABASE, catalog.MO_CATALOG,
+			catalog.MO_DATABASE_ID, catalog.MO_CATALOG_ID, catalog.MoDatabaseTableDefs)
+		if err != nil {
+			return err
 		}
-		ibat, err = genInsertBatch(bat, m)
+
+		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
+		bat, err = genCreateColumnTuples(cols, m, packer)
+		if err != nil {
+			return err
+		}
+		ibat, err = fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
 		state, done = part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF+catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertColumns(bat)
 		bat.Clean(m)
 	}
 
-	{ // mo_tables
+	{ // init mo_tables table
 		part := e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID}]
-		cols, err := genColumns(0, catalog.MO_TABLES, catalog.MO_CATALOG, catalog.MO_TABLES_ID,
-			catalog.MO_CATALOG_ID, catalog.MoTablesTableDefs)
+		cols, err := genColumnsFromDefs(0, catalog.MO_TABLES, catalog.MO_CATALOG,
+			catalog.MO_TABLES_ID, catalog.MO_CATALOG_ID, catalog.MoTablesTableDefs)
 		if err != nil {
 			return err
 		}
 		tbl := new(txnTable)
 		tbl.relKind = catalog.SystemOrdinaryRel
-		bat, err := genCreateTableTuple(tbl, "", 0, 0, 0, catalog.MO_TABLES, catalog.MO_TABLES_ID,
-			catalog.MO_CATALOG_ID, catalog.MO_CATALOG, types.Rowid{}, false, m)
+		bat, err := genCreateTableTuple(tbl, 0, 0, 0, catalog.MO_TABLES, catalog.MO_TABLES_ID,
+			catalog.MO_CATALOG_ID, catalog.MO_CATALOG, m, packer)
 		if err != nil {
 			return err
 		}
-		ibat, err := genInsertBatch(bat, m)
+		ibat, err := fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
 		state, done := part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF+catalog.MO_TABLES_REL_ID_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_TABLES_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertTable(bat)
 		bat.Clean(m)
 
 		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
-		bat = batch.NewWithSize(len(catalog.MoColumnsSchema))
-		bat.Attrs = append(bat.Attrs, catalog.MoColumnsSchema...)
-		bat.SetRowCount(len(cols))
-		for _, col := range cols {
-			bat0, err := genCreateColumnTuple(col, types.Rowid{}, false, m)
-			if err != nil {
-				return err
-			}
-			if bat.Vecs[0] == nil {
-				for i, vec := range bat0.Vecs {
-					bat.Vecs[i] = vector.NewVec(*vec.GetType())
-				}
-			}
-			for i, vec := range bat0.Vecs {
-				if err := bat.Vecs[i].UnionOne(vec, 0, m); err != nil {
-					bat.Clean(m)
-					bat0.Clean(m)
-					return err
-				}
-			}
-			bat0.Clean(m)
+		bat, err = genCreateColumnTuples(cols, m, packer)
+		if err != nil {
+			return err
 		}
-		ibat, err = genInsertBatch(bat, m)
+		ibat, err = fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
 		state, done = part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF+catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertColumns(bat)
 		bat.Clean(m)
@@ -199,59 +162,41 @@ func (e *Engine) init(ctx context.Context) error {
 
 	{ // mo_columns
 		part := e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID}]
-		cols, err := genColumns(0, catalog.MO_COLUMNS, catalog.MO_CATALOG, catalog.MO_COLUMNS_ID,
+		cols, err := genColumnsFromDefs(0, catalog.MO_COLUMNS, catalog.MO_CATALOG, catalog.MO_COLUMNS_ID,
 			catalog.MO_CATALOG_ID, catalog.MoColumnsTableDefs)
 		if err != nil {
 			return err
 		}
 		tbl := new(txnTable)
 		tbl.relKind = catalog.SystemOrdinaryRel
-		bat, err := genCreateTableTuple(tbl, "", 0, 0, 0, catalog.MO_COLUMNS, catalog.MO_COLUMNS_ID,
-			catalog.MO_CATALOG_ID, catalog.MO_CATALOG, types.Rowid{}, false, m)
+		bat, err := genCreateTableTuple(tbl, 0, 0, 0, catalog.MO_COLUMNS, catalog.MO_COLUMNS_ID,
+			catalog.MO_CATALOG_ID, catalog.MO_CATALOG, m, packer)
 		if err != nil {
 			return err
 		}
-		ibat, err := genInsertBatch(bat, m)
+		ibat, err := fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
 		state, done := part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF+catalog.MO_TABLES_REL_ID_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_TABLES_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertTable(bat)
 		bat.Clean(m)
 
 		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
-		bat = batch.NewWithSize(len(catalog.MoColumnsSchema))
-		bat.Attrs = append(bat.Attrs, catalog.MoColumnsSchema...)
-		bat.SetRowCount(len(cols))
-		for _, col := range cols {
-			bat0, err := genCreateColumnTuple(col, types.Rowid{}, false, m)
-			if err != nil {
-				return err
-			}
-			if bat.Vecs[0] == nil {
-				for i, vec := range bat0.Vecs {
-					bat.Vecs[i] = vector.NewVec(*vec.GetType())
-				}
-			}
-			for i, vec := range bat0.Vecs {
-				if err := bat.Vecs[i].UnionOne(vec, 0, m); err != nil {
-					bat.Clean(m)
-					bat0.Clean(m)
-					return err
-				}
-			}
-			bat0.Clean(m)
+		bat, err = genCreateColumnTuples(cols, m, packer)
+		if err != nil {
+			return err
 		}
-		ibat, err = genInsertBatch(bat, m)
+		ibat, err = fillRandomRowidAndZeroTs(bat, m)
 		if err != nil {
 			bat.Clean(m)
 			return err
 		}
 		state, done = part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, MO_PRIMARY_OFF+catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertColumns(bat)
 		bat.Clean(m)
@@ -424,7 +369,7 @@ func (e *Engine) getOrCreateSnapPart(
 	}
 
 	//new snapshot partition and apply checkpoints into it.
-	snap := logtailreplay.NewPartition()
+	snap := logtailreplay.NewPartition(tbl.tableId)
 	//TODO::if tableId is mo_tables, or mo_colunms, or mo_database,
 	//      we should init the partition,ref to engine.init
 	ckps, err := checkpoint.ListSnapshotCheckpoint(ctx, e.fs, ts, tbl.tableId, nil)
@@ -500,7 +445,7 @@ func (e *Engine) getOrCreateLatestPart(
 	defer e.Unlock()
 	partition, ok := e.partitions[[2]uint64{databaseId, tableId}]
 	if !ok { // create a new table
-		partition = logtailreplay.NewPartition()
+		partition = logtailreplay.NewPartition(tableId)
 		e.partitions[[2]uint64{databaseId, tableId}] = partition
 	}
 	return partition

@@ -123,6 +123,10 @@ func (arg *Argument) Call(proc *process.Process) (vm.CallResult, error) {
 			continue
 		}
 
+		// if slices.Contains(arg.Attrs, "datname") || slices.Contains(arg.Attrs, "relname") {
+		// 	logutil.Infof("yyyyy scan read %v with %v", arg.Attrs, common.MoBatchToString(bat, 10))
+		// }
+
 		trace.GetService().TxnRead(
 			proc.TxnOperator,
 			proc.TxnOperator.Txn().SnapshotTS,

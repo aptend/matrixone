@@ -35,6 +35,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/options"
 )
 
 func i82bool(v int8) bool {
@@ -140,13 +141,16 @@ type Schema struct {
 }
 
 func NewEmptySchema(name string) *Schema {
-	return &Schema{
+	schema := &Schema{
 		Name:      name,
 		ColDefs:   make([]*ColDef, 0),
 		NameMap:   make(map[string]int),
 		SeqnumMap: make(map[uint16]int),
 		Extra:     &apipb.SchemaExtra{},
 	}
+	schema.BlockMaxRows = options.DefaultBlockMaxRows
+	schema.ObjectMaxBlocks = options.DefaultBlocksPerObject
+	return schema
 }
 
 func (s *Schema) Clone() *Schema {
@@ -315,7 +319,6 @@ func (s *Schema) getFakePrimaryKey() *ColDef {
 	idx, ok := s.NameMap[pkgcatalog.FakePrimaryKeyColName]
 	if !ok {
 		// should just call logutil.Fatal
-		logutil.Debugf("fake primary key not existed: %v", s.String())
 		panic("fake primary key not existed")
 	}
 	return s.ColDefs[idx]

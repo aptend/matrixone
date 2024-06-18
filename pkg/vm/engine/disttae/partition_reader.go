@@ -83,7 +83,7 @@ func (p *PartitionReader) prepare() error {
 
 		p.table.getTxn().forEachTableWrites(p.table.db.databaseId, p.table.tableId,
 			txnOffset, func(entry Entry) {
-				if entry.typ == INSERT || entry.typ == INSERT_TXN {
+				if entry.typ == INSERT {
 					if entry.bat == nil || entry.bat.IsEmpty() {
 						return
 					}
@@ -95,16 +95,6 @@ func (p *PartitionReader) prepare() error {
 				}
 				//entry.typ == DELETE
 				if entry.bat.GetVector(0).GetType().Oid == types.T_Rowid {
-					/*
-						CASE:
-						create table t1(a int);
-						begin;
-						truncate t1; //txnDatabase.Truncate will DELETE mo_tables
-						show tables; // t1 must be shown
-					*/
-					if entry.isGeneratedByTruncate() {
-						return
-					}
 					//deletes in txn.Write maybe comes from PartitionState.Rows ,
 					// PartitionReader need to skip them.
 					vs := vector.MustFixedCol[types.Rowid](entry.bat.GetVector(0))
@@ -178,7 +168,10 @@ func (p *PartitionReader) Read(
 			}
 		}
 
-		logutil.Debugf("read %v with %v", colNames, p.seqnumMp)
+		// if slices.Contains(colNames, "relname") && slices.Contains(colNames, "__mo_rowid") {
+		// 	logutil.Infof("yyyyy txn read %v with %v",
+		// 		colNames, common.MoBatchToString(result, 20))
+		// }
 		//		CORNER CASE:
 		//		if some rowIds[j] is in p.deletes above, then some rows has been filtered.
 		//		the bat.RowCount() is not always the right value for the result batch b.
@@ -260,6 +253,10 @@ func (p *PartitionReader) Read(
 				"partition reader[snapshot: partitionState.rows]",
 				result))
 		}
+		// if slices.Contains(colNames, "relname") && slices.Contains(colNames, "__mo_rowid") {
+		// 	logutil.Infof("yyyyy part read %v with %v",
+		// 		colNames, common.MoBatchToString(result, 20))
+		// }
 		return result, nil
 	}
 }

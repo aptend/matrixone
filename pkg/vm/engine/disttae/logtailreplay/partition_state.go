@@ -39,6 +39,7 @@ import (
 
 type PartitionState struct {
 	// also modify the Copy method if adding fields
+	tid uint64
 
 	// data
 	rows *btree.BTreeG[RowEntry] // use value type to avoid locking on elements
@@ -276,11 +277,12 @@ func (b ObjectIndexByTSEntry) Less(than ObjectIndexByTSEntry) bool {
 	return false
 }
 
-func NewPartitionState(noData bool) *PartitionState {
+func NewPartitionState(noData bool, tid uint64) *PartitionState {
 	opts := btree.Options{
 		Degree: 64,
 	}
 	return &PartitionState{
+		tid:             tid,
 		noData:          noData,
 		rows:            btree.NewBTreeGOptions((RowEntry).Less, opts),
 		dataObjects:     btree.NewBTreeGOptions((ObjectEntry).Less, opts),
@@ -294,6 +296,7 @@ func NewPartitionState(noData bool) *PartitionState {
 
 func (p *PartitionState) Copy() *PartitionState {
 	state := PartitionState{
+		tid:             p.tid,
 		rows:            p.rows.Copy(),
 		dataObjects:     p.dataObjects.Copy(),
 		blockDeltas:     p.blockDeltas.Copy(),
@@ -421,6 +424,9 @@ func (p *PartitionState) HandleObjectInsert(ctx context.Context, bat *api.Batch,
 		var objEntry ObjectEntry
 
 		objEntry.ObjectStats = objectio.ObjectStats(statsVec.GetBytesAt(idx))
+		if p.tid <= 3 {
+			logutil.Infof("table %d objmeta yyyy %v, state %v", p.tid, objEntry.ObjectStats.String(), stateCol[idx])
+		}
 		if objEntry.ObjectStats.BlkCnt() == 0 || objEntry.ObjectStats.Rows() == 0 {
 			logutil.Errorf("skip empty object stats when HandleObjectInsert, %s\n", objEntry.String())
 			continue
@@ -727,6 +733,12 @@ func (p *PartitionState) HandleMetadataInsert(
 
 	var numInserted, numDeleted int64
 	for i, blockID := range blockIDVector {
+		if p.tid <= 3 {
+			logutil.Infof("table %d blkmeta yyyy %v, %v, meta %v, delta %v",
+				p.tid, blockID.String(), entryStateVector[i],
+				objectio.Location(metaLocationVector.GetBytesAt(i)).String(),
+				objectio.Location(deltaLocationVector.GetBytesAt(i)).String())
+		}
 		p.shared.Lock()
 		if t := commitTimeVector[i]; t.Greater(&p.shared.lastFlushTimestamp) {
 			p.shared.lastFlushTimestamp = t

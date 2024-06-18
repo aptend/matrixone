@@ -196,31 +196,6 @@ func NewStandaloneObject(table *TableEntry, ts types.TS) *ObjectEntry {
 	return e
 }
 
-func NewSysObjectEntry(table *TableEntry, id types.Uuid) *ObjectEntry {
-	e := &ObjectEntry{
-		BaseEntryImpl: NewBaseEntry(
-			func() *ObjectMVCCNode { return &ObjectMVCCNode{*objectio.NewObjectStats()} }),
-		table: table,
-		ObjectNode: &ObjectNode{
-			state: ES_Appendable,
-		},
-	}
-	e.CreateWithTS(types.SystemDBTS, &ObjectMVCCNode{*objectio.NewObjectStats()})
-	var bid types.Blockid
-	schema := table.GetLastestSchemaLocked()
-	if schema.Name == SystemTableSchema.Name {
-		bid = SystemBlock_Table_ID
-	} else if schema.Name == SystemDBSchema.Name {
-		bid = SystemBlock_DB_ID
-	} else if schema.Name == SystemColumnSchema.Name {
-		bid = SystemBlock_Columns_ID
-	} else {
-		panic("not supported")
-	}
-	e.ID = *bid.Object()
-	return e
-}
-
 func (entry *ObjectEntry) GetLocation() objectio.Location {
 	entry.RLock()
 	defer entry.RUnlock()
@@ -260,7 +235,6 @@ func (entry *ObjectEntry) CheckAndLoad() error {
 			v2.GetObjectStatsDurationHistogram.Observe(time.Since(ins).Seconds())
 		}()
 		_, err := entry.LoadObjectInfoForLastNode()
-		// logutil.Infof("yyyyyy loaded %v %v", common.ShortObjId(entry.ID), err)
 		return err
 	}
 	return nil

@@ -16,6 +16,7 @@ package disttae
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 	"strings"
 	"sync"
@@ -45,6 +46,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/util"
 	"github.com/matrixorigin/matrixone/pkg/util/errutil"
+	"github.com/matrixorigin/matrixone/pkg/util/executor"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/util/stack"
 	"github.com/matrixorigin/matrixone/pkg/version"
@@ -153,23 +155,19 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 		return err
 	}
 
+	var packer *types.Packer
+	put := e.packerPool.Get(&packer)
+	defer put.Put()
 	bat, err := genCreateDatabaseTuple(sql, accountId, userId, roleId,
-		name, databaseId, typ, txn.proc.Mp())
+		name, databaseId, typ, txn.proc.Mp(), packer)
 	if err != nil {
 		return err
 	}
-	vec := vector.NewVec(types.T_Rowid.ToType())
-	rowId := txn.genRowId()
-	if err := vector.AppendFixed(vec, rowId, false, txn.proc.Mp()); err != nil {
-		vec.Free(txn.proc.Mp())
-		return err
-	}
-
-	bat.Vecs = append([]*vector.Vector{vec}, bat.Vecs...)
-	bat.Attrs = append([]string{catalog.Row_ID}, bat.Attrs...)
+	var rowidVec *vector.Vector
 	// non-io operations do not need to pass context
-	if err = txn.WriteBatch(INSERT, 0, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
-		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0], -1, true, false); err != nil {
+	note := noteForCreate(uint64(accountId), name)
+	if rowidVec, err = txn.WriteBatch(INSERT, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
+		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0]); err != nil {
 		bat.Clean(txn.proc.Mp())
 		return err
 	}
@@ -179,10 +177,63 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 		op:           op,
 		databaseId:   databaseId,
 		databaseName: name,
-		rowId:        rowId,
+		rowId:        vector.GetFixedAt[types.Rowid](rowidVec, 0),
 	})
 
 	txn.deletedDatabaseMap.Delete(key)
+	return nil
+}
+
+func execReadSql(ctx context.Context, op client.TxnOperator, sql string) (executor.Result, error) {
+	// copy from compile.go runSqlWithResult
+	v, ok := moruntime.ProcessLevelRuntime().GetGlobalVariables(moruntime.InternalSQLExecutor)
+	if !ok {
+		panic("missing lock service")
+	}
+	exec := v.(executor.SQLExecutor)
+	proc := op.GetWorkspace().(*Transaction).proc
+	opts := executor.Options{}.
+		WithDisableIncrStatement().
+		WithTxn(op).
+		WithTimeZone(proc.SessionInfo.TimeZone)
+	return exec.Exec(ctx, sql, opts)
+}
+
+func (e *Engine) freshDatabaseCacheFromStorage(
+	ctx context.Context,
+	accountID uint32,
+	name string, op client.TxnOperator) error {
+
+	sql := fmt.Sprintf(catalog.MoDatabaseAllQueryFormat, accountID, name)
+	res, err := execReadSql(ctx, op, sql)
+	if err != nil {
+		return err
+	}
+	defer res.Close()
+	if len(res.Batches) != 1 { // not found
+		return nil
+	}
+	if row := res.Batches[0].RowCount(); row != 1 {
+		panic(fmt.Sprintf("freshDatabaseCacheFromStorage failed: table result row cnt: %v, sql : %s", row, sql))
+	}
+	bat := res.Batches[0]
+
+	// TODO(aptend): add craetedTs as column
+	ts := types.TimestampToTS(op.SnapshotTS())
+	m := op.GetWorkspace().(*Transaction).proc.GetMPool()
+	tsvec := vector.NewVec(types.T_TS.ToType())
+	if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+		tsvec.Free(m)
+		return err
+	}
+	defer tsvec.Free(m)
+	vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+	oldvecs := bat.Vecs
+	bat.Vecs = vecs
+	e.catalog.InsertDatabase(bat)
+
+	// restore to free
+	bat.Vecs = oldvecs
 	return nil
 }
 
@@ -236,7 +287,13 @@ func (e *Engine) Database(ctx context.Context, name string,
 	}
 
 	if ok := catalog.GetDatabase(item); !ok {
-		return nil, moerr.GetOkExpectedEOB()
+		// read batch from storage
+		if err := e.freshDatabaseCacheFromStorage(ctx, accountId, name, op); err != nil {
+			return nil, err
+		}
+		if ok := catalog.GetDatabase(item); !ok {
+			return nil, moerr.GetOkExpectedEOB()
+		}
 	}
 
 	return &txnDatabase{
@@ -522,7 +579,6 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 		database := val.(*txnDatabase)
 		databaseId = database.databaseId
 		rowId = database.rowId
-		//return nil
 	} else {
 		item := &cache.DatabaseItem{
 			Name:      name,
@@ -532,15 +588,8 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 		if ok = e.getLatestCatalogCache().GetDatabase(item); !ok {
 			return moerr.GetOkExpectedEOB()
 		}
-
 		databaseId = item.Id
 		rowId = item.Rowid
-		//db = &txnDatabase{
-		//	op:           op,
-		//	databaseName: name,
-		//	databaseId:   item.Id,
-		//	rowId:        item.Rowid,
-		//}
 	}
 
 	dbNew := &txnDatabase{
@@ -559,18 +608,26 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 			return err
 		}
 	}
-	bat, err := genDropDatabaseTuple(rowId, databaseId, name, txn.proc.Mp())
+
+	var packer *types.Packer
+	put := e.packerPool.Get(&packer)
+	defer put.Put()
+	bat, err := genDropDatabaseTuple(rowId, accountId, databaseId, name, txn.proc.Mp(), packer)
 	if err != nil {
 		return err
 	}
-	// non-io operations do not need to pass context
-	if err := txn.WriteBatch(DELETE, 0, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
-		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0], -1, true, false); err != nil {
+	dbNew.getTxn().deletedDatabaseMap.Store(key, databaseId)
+	bat = txn.deleteBatch(bat, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID)
+	if bat.RowCount() == 0 {
+		return nil
+	}
+	note := noteForDrop(uint64(accountId), name)
+	if _, err := txn.WriteBatch(DELETE, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
+		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0]); err != nil {
 		bat.Clean(txn.proc.Mp())
 		return err
 	}
 
-	dbNew.getTxn().deletedDatabaseMap.Store(key, databaseId)
 	return nil
 }
 

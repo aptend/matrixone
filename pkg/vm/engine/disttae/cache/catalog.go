@@ -219,105 +219,22 @@ func (cc *CatalogCache) Databases(accountId uint32, ts timestamp.Timestamp) []st
 
 func (cc *CatalogCache) GetTable(tbl *TableItem) bool {
 	var find bool
-	var ts timestamp.Timestamp
-	/**
-	In push mode.
-	It is necessary to distinguish the case create table/drop table
-	from truncate table.
 
-	CORNER CASE 1:
-	begin;
-	create table t1(a int);//table id x. catalog.insertTable(table id x)
-	insert into t1 values (1);
-	drop table t1; //same table id x. catalog.deleteTable(table id x)
-	commit;
-
-	CORNER CASE 2:
-	create table t1(a int); //table id x.
-	begin;
-	insert into t1 values (1);
-	-- @session:id=1{
-	truncate table t1;//insert table id y, then delete table id x. catalog.insertTable(table id y). catalog.deleteTable(table id x)
-	-- @session}
-	commit;
-
-	CORNER CASE 3:
-	create table t1(a int); //table id x.
-	begin;
-	truncate t1;//table id x changed to x1
-	truncate t1;//table id x1 changed to x2
-	truncate t1;//table id x2 changed to x3
-	commit;//catalog.insertTable(table id x1,x2,x3). catalog.deleteTable(table id x,x1,x2)
-
-	To be clear that the TableItem in catalogCache is sorted by the table id.
-	*/
-	var tableId uint64
-	deleted := make(map[uint64]bool)
-	inserted := make(map[uint64]*TableItem)
-	tbl.Id = math.MaxUint64
+	// refer to the comment in tableItemLess for the reason of using this way
 	cc.tables.data.Ascend(tbl, func(item *TableItem) bool {
-		if item.deleted && item.AccountId == tbl.AccountId &&
-			item.DatabaseId == tbl.DatabaseId && item.Name == tbl.Name {
-			if !ts.IsEmpty() {
-				//if it is the truncate operation, we collect deleteTable together.
-				if item.Ts.Equal(ts) {
-					deleted[item.Id] = true
-					return true
-				} else {
-					return false
-				}
-			}
-			ts = item.Ts
-			tableId = item.Id
-			deleted[item.Id] = true
-			return true
-		}
-		if !item.deleted && item.AccountId == tbl.AccountId &&
-			item.DatabaseId == tbl.DatabaseId && item.Name == tbl.Name &&
-			(ts.IsEmpty() || ts.Equal(item.Ts) && tableId != item.Id) {
-			//if it is the truncate operation, we collect insertTable together first.
-			if !ts.IsEmpty() && ts.Equal(item.Ts) && tableId != item.Id {
-				inserted[item.Id] = item
-				return true
-			} else {
-				find = true
-				copyTableItem(tbl, item)
-				return false
-			}
-		}
-		if find {
+		if item.Name != tbl.Name {
 			return false
+		}
+
+		// we just find once
+		if !item.deleted {
+			find = true
+			copyTableItem(tbl, item)
 		}
 		return false
 	})
 
-	if find {
-		return true
-	}
-
-	//handle truncate operation independently
-	//remove deleted item from inserted item
-	for rowid := range deleted {
-		delete(inserted, rowid)
-	}
-
-	//if there is no inserted item, it means that the table is deleted.
-	if len(inserted) == 0 {
-		return false
-	}
-
-	//if there is more than one inserted item, it means that it is wrong
-	if len(inserted) > 1 {
-		panic(fmt.Sprintf("account %d database %d has multiple tables %s",
-			tbl.AccountId, tbl.DatabaseId, tbl.Name))
-	}
-
-	//get item
-	for _, item := range inserted {
-		copyTableItem(tbl, item)
-	}
-
-	return true
+	return find
 }
 
 func (cc *CatalogCache) GetDatabase(db *DatabaseItem) bool {
@@ -596,8 +513,7 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 		}
 		key.Id = k.Id
 		item, _ := cc.tables.data.Get(key)
-		defs := make([]engine.TableDef, 0, len(cols))
-		defs = append(defs, genTableDefOfComment(item.Comment))
+		coldefs := make([]engine.TableDef, 0, len(cols))
 		item.Rowids = make([]types.Rowid, len(cols))
 		for i, col := range cols {
 			if col.constraintType == catalog.SystemColPKConstraint {
@@ -607,11 +523,10 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 			if col.isClusterBy == 1 {
 				item.ClusterByIdx = i
 			}
-			defs = append(defs, genTableDefOfColumn(col))
+			coldefs = append(coldefs, genTableDefOfColumn(col))
 			copy(item.Rowids[i][:], col.rowid[:])
 		}
-		item.Defs = defs
-		item.TableDef = getTableDef(item, defs)
+		item.TableDef, item.Defs = getTableDef(item, coldefs)
 	}
 }
 
@@ -634,12 +549,6 @@ func (cc *CatalogCache) InsertDatabase(bat *batch.Batch) {
 		copy(item.Rowid[:], rowids[i][:])
 		cc.databases.data.Set(item)
 		cc.databases.rowidIndex.Set(item)
-	}
-}
-
-func genTableDefOfComment(comment string) engine.TableDef {
-	return &engine.CommentDef{
-		Comment: comment,
 	}
 }
 
@@ -676,44 +585,6 @@ func genTableDefOfColumn(col column) engine.TableDef {
 	return &engine.AttributeDef{Attr: attr}
 }
 
-/*
-// getTableDef only return all cols and their index.
-func getTableDef(name string, defs []engine.TableDef) *plan.TableDef {
-	var cols []*plan.ColDef
-
-	i := int32(0)
-	name2index := make(map[string]int32)
-	for _, def := range defs {
-		if attr, ok := def.(*engine.AttributeDef); ok {
-			name2index[attr.Attr.Name] = i
-			cols = append(cols, &plan.ColDef{
-				ColId: attr.Attr.ID,
-				Name:  attr.Attr.Name,
-				Typ: &plan.Type{
-					Id:         int32(attr.Attr.Type.Oid),
-					Width:      attr.Attr.Type.Width,
-					Scale:      attr.Attr.Type.Scale,
-					AutoIncr:   attr.Attr.AutoIncrement,
-					Enumvalues: attr.Attr.EnumVlaues,
-				},
-				Primary:  attr.Attr.Primary,
-				Default:  attr.Attr.Default,
-				OnUpdate: attr.Attr.OnUpdate,
-				Comment:  attr.Attr.Comment,
-				Hidden:   attr.Attr.IsHidden,
-				Seqnum:   uint32(attr.Attr.Seqnum),
-			})
-			i++
-		}
-	}
-	return &plan.TableDef{
-		Name:          name,
-		Cols:          cols,
-		Name2ColIndex: name2index,
-	}
-}
-*/
-
 // GetSchemaVersion returns the version of table
 func (cc *CatalogCache) GetSchemaVersion(name TableKey) *TableVersion {
 	return cc.tables.tableGuard.getSchemaVersion(name)
@@ -724,7 +595,7 @@ func (c *tableCache) addTableItem(item *TableItem) {
 	c.data.Set(item)
 }
 
-func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) *plan.TableDef {
+func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) (*plan.TableDef, []engine.TableDef) {
 	var clusterByDef *plan.ClusterByDef
 	var cols []*plan.ColDef
 	var defs []*plan.TableDef_DefType
@@ -737,6 +608,8 @@ func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) *plan.TableDef {
 	var primarykey *plan.PrimaryKeyDef
 	var indexes []*plan.IndexDef
 	var refChildTbls []uint64
+
+	tableDef := make([]engine.TableDef, 0)
 
 	i := int32(0)
 	name2index := make(map[string]int32)
@@ -777,31 +650,42 @@ func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) *plan.TableDef {
 			Key:   catalog.SystemRelAttr_Comment,
 			Value: tblItem.Comment,
 		})
+
+		tableDef = append(tableDef, &engine.CommentDef{Comment: tblItem.Comment})
 	}
 
 	if tblItem.Partitioned > 0 {
 		p := &plan.PartitionByDef{}
 		err := p.UnMarshalPartitionInfo(([]byte)(tblItem.Partition))
 		if err != nil {
-			//panic(fmt.Sprintf("cannot unmarshal partition metadata information: %s", err))
-			return nil
+			logutil.Errorf("cannot unmarshal partition metadata information: %v-%v-%v", tblItem.AccountId, tblItem.Id, tblItem.Name)
+			return nil, nil
 		}
 		partitionInfo = p
+
+		tableDef = append(tableDef, &engine.PartitionDef{
+			Partitioned: tblItem.Partitioned,
+			Partition:   tblItem.Partition,
+		})
 	}
 
 	if tblItem.ViewDef != "" {
 		viewSql = &plan.ViewDef{
 			View: tblItem.ViewDef,
 		}
+
+		tableDef = append(tableDef, &engine.ViewDef{View: tblItem.ViewDef})
 	}
 
 	if len(tblItem.Constraint) > 0 {
 		c := &engine.ConstraintDef{}
 		err := c.UnmarshalBinary(tblItem.Constraint)
 		if err != nil {
-			//panic(fmt.Sprintf("cannot unmarshal table constraint information: %s", err))
-			return nil
+			logutil.Errorf("cannot unmarshal table constraint information: %v-%v-%v", tblItem.AccountId, tblItem.Id, tblItem.Name)
+			return nil, nil
 		}
+
+		tableDef = append(tableDef, c)
 		for _, ct := range c.Cts {
 			switch k := ct.(type) {
 			case *engine.IndexDef:
@@ -824,14 +708,27 @@ func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) *plan.TableDef {
 	})
 	TableType = tblItem.Kind
 
+	props := &engine.PropertiesDef{}
+	props.Properties = append(props.Properties, engine.Property{
+		Key:   catalog.SystemRelAttr_Kind,
+		Value: TableType,
+	})
+
 	if tblItem.CreateSql != "" {
 		properties = append(properties, &plan.Property{
 			Key:   catalog.SystemRelAttr_CreateSQL,
 			Value: tblItem.CreateSql,
 		})
 		Createsql = tblItem.CreateSql
+
+		props.Properties = append(props.Properties, engine.Property{
+			Key:   catalog.SystemRelAttr_CreateSQL,
+			Value: Createsql,
+		})
 	}
 
+	tableDef = append(tableDef, props)
+	tableDef = append(tableDef, coldefs...)
 	if len(properties) > 0 {
 		defs = append(defs, &plan.TableDef_DefType{
 			Def: &plan.TableDef_DefType_Properties{
@@ -865,5 +762,5 @@ func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) *plan.TableDef {
 		ClusterBy:     clusterByDef,
 		Indexes:       indexes,
 		Version:       tblItem.Version,
-	}
+	}, tableDef
 }

@@ -15,21 +15,26 @@
 package disttae
 
 import (
+	"bytes"
 	"context"
+	"fmt"
 	"runtime/debug"
 	"strconv"
 	"strings"
 
 	"go.uber.org/zap"
 
+	"github.com/matrixorigin/matrixone/pkg/catalog"
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
+	"github.com/matrixorigin/matrixone/pkg/common/mpool"
+	moruntime "github.com/matrixorigin/matrixone/pkg/common/runtime"
+	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/defines"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	txn2 "github.com/matrixorigin/matrixone/pkg/pb/txn"
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
-
-	"github.com/matrixorigin/matrixone/pkg/catalog"
-	"github.com/matrixorigin/matrixone/pkg/common/moerr"
-	"github.com/matrixorigin/matrixone/pkg/container/types"
-	"github.com/matrixorigin/matrixone/pkg/defines"
+	"github.com/matrixorigin/matrixone/pkg/util/executor"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/disttae/cache"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
@@ -45,50 +50,39 @@ func (db *txnDatabase) getEng() *Engine {
 	return db.op.GetWorkspace().(*Transaction).engine
 }
 
+func (db *txnDatabase) GetDatabaseId(ctx context.Context) string {
+	return strconv.FormatUint(db.databaseId, 10)
+}
+
+func (db *txnDatabase) GetCreateSql(ctx context.Context) string {
+	return db.databaseCreateSql
+}
+
+func (db *txnDatabase) IsSubscription(ctx context.Context) bool {
+	return db.databaseType == catalog.SystemDBTypeSubscription
+}
+
 func (db *txnDatabase) Relations(ctx context.Context) ([]string, error) {
-	var rels []string
-	//first get all delete tables
-	deleteTables := make(map[string]any)
-	db.getTxn().deletedTableMap.Range(func(k, _ any) bool {
-		key := k.(tableKey)
-		if key.databaseId == db.databaseId {
-			deleteTables[key.name] = nil
-		}
-		return true
-	})
-	db.getTxn().createMap.Range(func(k, _ any) bool {
-		key := k.(tableKey)
-		if key.databaseId == db.databaseId {
-			//if the table is deleted, do not save it.
-			if _, exist := deleteTables[key.name]; !exist {
-				rels = append(rels, key.name)
-			}
-		}
-		return true
-	})
-	accountId, err := defines.GetAccountId(ctx)
+	aid, err := defines.GetAccountId(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var catache *cache.CatalogCache
-	if !db.op.IsSnapOp() {
-		catache = db.getTxn().engine.getLatestCatalogCache()
-	} else {
-		catache, err = db.getTxn().engine.getOrCreateSnapCatalogCache(
-			ctx,
-			types.TimestampToTS(db.op.SnapshotTS()))
-		if err != nil {
-			return nil, err
+	sql := fmt.Sprintf(catalog.MoTablesInDBQueryFormat, aid, db.databaseName)
+
+	res, err := execReadSql(ctx, db.op, sql)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Close()
+
+	var rels []string
+	for _, b := range res.Batches {
+		for i, v := 0, b.Vecs[0]; i < v.Length(); i++ {
+			rels = append(rels, v.GetStringAt(i))
 		}
 	}
-	tbls, _ := catache.Tables(
-		accountId, db.databaseId, db.op.SnapshotTS())
-	for _, tbl := range tbls {
-		//if the table is deleted, do not save it.
-		if _, exist := deleteTables[tbl]; !exist {
-			rels = append(rels, tbl)
-		}
-	}
+	logutil.Infof("yyyyy Relations return %v", rels)
 	return rels, nil
 }
 
@@ -164,31 +158,10 @@ func (db *txnDatabase) Relation(ctx context.Context, name string, proc any) (eng
 	if txn.op.Status() == txn2.TxnStatus_Aborted {
 		return nil, moerr.NewTxnClosedNoCtx(txn.op.Txn().ID)
 	}
-	accountId, err := defines.GetAccountId(ctx)
-	if err != nil {
-		return nil, err
-	}
-	key := genTableKey(accountId, name, db.databaseId)
-	// check the table is deleted or not
-	if _, exist := db.getTxn().deletedTableMap.Load(key); exist {
-		return nil, moerr.NewParseError(ctx, "table %q does not exist", name)
-	}
 
-	p := db.getTxn().proc
+	p := txn.proc
 	if proc != nil {
 		p = proc.(*process.Process)
-	}
-
-	rel := db.getTxn().getCachedTable(ctx, key)
-	if rel != nil {
-		rel.proc.Store(p)
-		return rel, nil
-	}
-
-	// get relation from the txn created tables cache: created by this txn
-	if v, ok := db.getTxn().createMap.Load(key); ok {
-		v.(*txnTable).proc.Store(p)
-		return v.(*txnTable), nil
 	}
 
 	// special tables
@@ -207,6 +180,29 @@ func (db *txnDatabase) Relation(ctx context.Context, name string, proc any) (eng
 			defs := catalog.MoColumnsTableDefs
 			return db.openSysTable(p, id, name, defs), nil
 		}
+	}
+
+	accountId, err := defines.GetAccountId(ctx)
+	if err != nil {
+		return nil, err
+	}
+	key := genTableKey(accountId, name, db.databaseId)
+
+	// check the table is deleted or not
+	if _, exist := db.getTxn().deletedTableMap.Load(key); exist {
+		return nil, moerr.NewParseError(ctx, "table %q does not exist", name)
+	}
+
+	// get relation from the txn created tables cache: created by this txn
+	if v, ok := db.getTxn().createMap.Load(key); ok {
+		v.(*txnTable).proc.Store(p)
+		return v.(*txnTable), nil
+	}
+
+	rel := db.getTxn().getCachedTable(ctx, key)
+	if rel != nil {
+		rel.proc.Store(p)
+		return rel, nil
 	}
 
 	item, err := db.getTableItem(
@@ -230,42 +226,43 @@ func (db *txnDatabase) Relation(ctx context.Context, name string, proc any) (eng
 }
 
 func (db *txnDatabase) Delete(ctx context.Context, name string) error {
+	_, err := db.deleteTable(ctx, name, false, false)
+	return err
+}
+
+func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bool, useAlterNote bool) ([]engine.TableDef, error) {
+	// useAlterNote means that the no table is really deleted, just for alter table
 	var id uint64
 	var rowid types.Rowid
 	var rowids []types.Rowid
+	var colPKs [][]byte
+	var defs []engine.TableDef
 	if db.op.IsSnapOp() {
-		return moerr.NewInternalErrorNoCtx("delete table in snapshot transaction")
+		return nil, moerr.NewInternalErrorNoCtx("delete table in snapshot transaction")
 	}
 	accountId, err := defines.GetAccountId(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	txn := db.getTxn()
+	var packer *types.Packer
+	put := txn.engine.packerPool.Get(&packer)
+	defer put.Put()
+
+	// 1. Get columns from TableDelf
 	k := genTableKey(accountId, name, db.databaseId)
-	if v, ok := db.getTxn().createMap.Load(k); ok {
-		db.getTxn().createMap.Delete(k)
+	if v, ok := txn.createMap.Load(k); ok {
+		txn.createMap.Delete(k)
 		table := v.(*txnTable)
 		id = table.tableId
-		rowid = table.rowid
-		rowids = table.rowids
-		/*
-			Even if the created table in the createMap, there is an
-			INSERT entry in the CN workspace. We need add a DELETE
-			entry in the CN workspace to tell the TN to delete the
-			table.
-			CORNER CASE
-			begin;
-			create table t1;
-			drop table t1;
-			commit;
-			If we do not add DELETE entry in workspace, there is
-			a table t1 there after commit.
-		*/
-	} else if v, ok := db.getTxn().tableCache.tableMap.Load(k); ok {
+		defs = table.defs
+		colPKs = getColPks(accountId, db.databaseName, name, table.tableDef.Cols, packer)
+	} else if v, ok := txn.tableCache.tableMap.Load(k); ok {
+		txn.tableCache.tableMap.Delete(k)
 		table := v.(*txnTable)
 		id = table.tableId
-		db.getTxn().tableCache.tableMap.Delete(k)
-		rowid = table.rowid
-		rowids = table.rowids
+		defs = table.defs
+		colPKs = getColPks(accountId, db.databaseName, name, table.tableDef.Cols, packer)
 	} else {
 		item := &cache.TableItem{
 			Name:       name,
@@ -273,54 +270,94 @@ func (db *txnDatabase) Delete(ctx context.Context, name string) error {
 			AccountId:  accountId,
 			Ts:         db.op.SnapshotTS(),
 		}
-		if ok := db.getTxn().engine.getLatestCatalogCache().GetTable(item); !ok {
-			return moerr.GetOkExpectedEOB()
+		if ok := txn.engine.getLatestCatalogCache().GetTable(item); !ok {
+			// It is assumed that the table is in the catalog cache, because it has passed the check of plan building
+			panic("delete table failed")
 		}
 		id = item.Id
-		rowid = item.Rowid
-		rowids = item.Rowids
+		defs = item.Defs
+		colPKs = getColPks(accountId, db.databaseName, name, item.TableDef.Cols, packer)
 	}
-	bat, err := genDropTableTuple(rowid, id, db.databaseId,
-		name, db.databaseName, db.getTxn().proc.Mp())
+
+	res, err := execReadSql(ctx, db.op, fmt.Sprintf(catalog.MoTablesRowidQueryFormat, accountId, db.databaseName, name))
 	if err != nil {
-		return err
+		return nil, err
+	}
+	if len(res.Batches) != 1 || res.Batches[0].Vecs[0].Length() != 1 {
+		panic("delete table failed: query failed")
+	}
+	rowid = vector.GetFixedAt[types.Rowid](res.Batches[0].Vecs[0], 0)
+
+	res, err = execReadSql(ctx, db.op, fmt.Sprintf(catalog.MoColumnsRowidsQueryFormat, accountId, db.databaseName, name, id))
+	if len(res.Batches) != 1 {
+		panic("delete table column failed: query failed")
+	}
+	for i, v := 0, res.Batches[0].Vecs[0]; i < v.Length(); i++ {
+		rowids = append(rowids, vector.GetFixedAt[types.Rowid](v, i))
 	}
 
-	for _, store := range db.getTxn().tnStores {
-		if err := db.getTxn().WriteBatch(
-			DELETE, 0, catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID,
-			catalog.MO_CATALOG, catalog.MO_TABLES, bat, store, -1, false, false); err != nil {
-			bat.Clean(db.getTxn().proc.Mp())
-			return err
-		}
+	if len(rowids) != len(colPKs) {
+		return nil, moerr.NewInternalErrorNoCtx("delete table failed %v, %v", len(rowids), len(colPKs))
 	}
 
-	//Add writeBatch(delete,mo_columns) to filter table in mo_columns.
-	//Every row in writeBatch(delete,mo_columns) needs rowid
-	for _, rid := range rowids {
-		bat, err = genDropColumnTuple(rid, db.getTxn().proc.Mp())
+	buf := &bytes.Buffer{}
+	for _, r := range rowids {
+		buf.WriteString(r.BorrowBlockID().ShortStringEx())
+		buf.WriteRune(',')
+	}
+	logutil.Infof("yyyyy delete rowid %s, %s", rowid.BorrowBlockID().ShortStringEx(), buf.String())
+
+	{ // delete the row from mo_tables
+
+		bat, err := genDropTableTuple(rowid, accountId, id, db.databaseId,
+			name, db.databaseName, txn.proc.Mp(), packer)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		for _, store := range db.getTxn().tnStores {
-			if err = db.getTxn().WriteBatch(
-				DELETE, 0, catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID,
-				catalog.MO_CATALOG, catalog.MO_COLUMNS, bat, store, -1, false, false); err != nil {
-				bat.Clean(db.getTxn().proc.Mp())
-				return err
+		if bat = txn.deleteBatch(bat, catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID); bat.RowCount() > 0 {
+			// the deleted table is not created by this txn
+			note := noteForDrop(id, name)
+			if useAlterNote {
+				note = noteForAlterDel(id, name)
+			}
+			if _, err := txn.WriteBatch(
+				DELETE, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID,
+				catalog.MO_CATALOG, catalog.MO_TABLES, bat, txn.tnStores[0]); err != nil {
+				bat.Clean(txn.proc.Mp())
+				return nil, err
+			}
+		} else if !forAlter {
+			// An insert batch for mo_tables is cancelled, the dml on this table should be eliminated?
+			// The answer for forAlter as true is NO, because later a table with the same tableId will be created.
+			// The answer for forAlter as false is YES, because the table is really deleted, which is triggered by delete & truncate
+			txn.tablesInVain = append(txn.tablesInVain, id)
+		}
+	}
+
+	{ // delete rows from mo_columns
+		bat, err := genDropColumnTuples(rowids, colPKs, txn.proc.Mp())
+		if err != nil {
+			return nil, err
+		}
+
+		if bat = txn.deleteBatch(bat, catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID); bat.RowCount() > 0 {
+			note := noteForDrop(id, name)
+			if useAlterNote {
+				note = noteForAlterDel(id, name)
+			}
+			if _, err = txn.WriteBatch(
+				DELETE, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID,
+				catalog.MO_CATALOG, catalog.MO_COLUMNS, bat, txn.tnStores[0]); err != nil {
+				bat.Clean(txn.proc.Mp())
+				return nil, err
 			}
 		}
 	}
-
-	db.getTxn().deletedTableMap.Store(k, id)
-	return nil
+	txn.deletedTableMap.Store(k, id)
+	return defs, nil
 }
 
 func (db *txnDatabase) Truncate(ctx context.Context, name string) (uint64, error) {
-	var oldId uint64
-	var rowid types.Rowid
-	var v any
-	var ok bool
 	if db.op.IsSnapOp() {
 		return 0, moerr.NewInternalErrorNoCtx("truncate table in snapshot transaction")
 	}
@@ -328,62 +365,34 @@ func (db *txnDatabase) Truncate(ctx context.Context, name string) (uint64, error
 	if err != nil {
 		return 0, err
 	}
-	accountId, err := defines.GetAccountId(ctx)
+
+	defs, err := db.deleteTable(ctx, name, false, false)
 	if err != nil {
 		return 0, err
-	}
-	k := genTableKey(accountId, name, db.databaseId)
-	v, ok = db.getTxn().createMap.Load(k)
-	if !ok {
-		v, ok = db.getTxn().tableCache.tableMap.Load(k)
 	}
 
-	if ok {
-		txnTable := v.(*txnTable)
-		oldId = txnTable.tableId
-		txnTable.reset(newId)
-		rowid = txnTable.rowid
-	} else {
-		item := &cache.TableItem{
-			Name:       name,
-			DatabaseId: db.databaseId,
-			AccountId:  accountId,
-			Ts:         db.op.SnapshotTS(),
-		}
-		if ok := db.getTxn().engine.getLatestCatalogCache().GetTable(item); !ok {
-			return 0, moerr.GetOkExpectedEOB()
-		}
-		oldId = item.Id
-		rowid = item.Rowid
-	}
-	bat, err := genTruncateTableTuple(rowid, newId, db.databaseId,
-		genMetaTableName(oldId)+name, db.databaseName, db.getTxn().proc.Mp())
-	if err != nil {
+	if err := db.createWithID(ctx, name, newId, defs, false); err != nil {
 		return 0, err
 	}
-	for _, store := range db.getTxn().tnStores {
-		if err := db.getTxn().WriteBatch(DELETE, 0, catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID,
-			catalog.MO_CATALOG, catalog.MO_TABLES, bat, store, -1, false, true); err != nil {
-			bat.Clean(db.getTxn().proc.Mp())
-			return 0, err
-		}
-	}
+
 	return newId, nil
 }
 
-func (db *txnDatabase) GetDatabaseId(ctx context.Context) string {
-	return strconv.FormatUint(db.databaseId, 10)
-}
-
-func (db *txnDatabase) GetCreateSql(ctx context.Context) string {
-	return db.databaseCreateSql
-}
-
-func (db *txnDatabase) IsSubscription(ctx context.Context) bool {
-	return db.databaseType == catalog.SystemDBTypeSubscription
-}
-
 func (db *txnDatabase) Create(ctx context.Context, name string, defs []engine.TableDef) error {
+	if db.op.IsSnapOp() {
+		return moerr.NewInternalErrorNoCtx("create table in snapshot transaction")
+	}
+	tableId, err := db.getTxn().allocateID(ctx)
+	if err != nil {
+		return err
+	}
+	return db.createWithID(ctx, name, tableId, defs, false)
+}
+
+func (db *txnDatabase) createWithID(
+	ctx context.Context,
+	name string, tableId uint64, defs []engine.TableDef, useAlterNote bool,
+) error {
 	if db.op.IsSnapOp() {
 		return moerr.NewInternalErrorNoCtx("create table in snapshot transaction")
 	}
@@ -391,31 +400,40 @@ func (db *txnDatabase) Create(ctx context.Context, name string, defs []engine.Ta
 	if err != nil {
 		return err
 	}
-	tableId, err := db.getTxn().allocateID(ctx)
+	m := db.getTxn().proc.Mp()
+
+	// 1. inspect and **modify** defs, and construct columns
+	cols, err := genColumnsFromDefs(accountId, name, db.databaseName, tableId, db.databaseId, defs)
 	if err != nil {
 		return err
 	}
 	tbl := new(txnTable)
-	tbl.accountId = accountId
-	tbl.rowid = types.DecodeFixed[types.Rowid](types.EncodeSlice([]uint64{tableId}))
-	tbl.comment = getTableComment(defs)
-	{
-		for _, def := range defs { // copy from tae
+
+	{ // prepare table information
+		// 2.1 prepare basic table information
+		tbl.db = db
+		tbl.tableName = name
+		tbl.tableId = tableId
+		tbl.accountId = accountId
+		tbl.rowid = types.DecodeFixed[types.Rowid](types.EncodeSlice([]uint64{tableId}))
+		for _, def := range defs {
 			switch defVal := def.(type) {
 			case *engine.PropertiesDef:
 				for _, property := range defVal.Properties {
 					switch strings.ToLower(property.Key) {
-					case catalog.SystemRelAttr_Comment: // Watch priority over commentDef
+					case catalog.SystemRelAttr_Comment:
 						tbl.comment = property.Value
 					case catalog.SystemRelAttr_Kind:
 						tbl.relKind = property.Value
 					case catalog.SystemRelAttr_CreateSQL:
-						tbl.createSql = property.Value // I don't trust this information.
+						tbl.createSql = property.Value
 					default:
 					}
 				}
 			case *engine.ViewDef:
 				tbl.viewdef = defVal.View
+			case *engine.CommentDef:
+				tbl.comment = defVal.Comment
 			case *engine.PartitionDef:
 				tbl.partitioned = defVal.Partitioned
 				tbl.partition = defVal.Partition
@@ -426,60 +444,72 @@ func (db *txnDatabase) Create(ctx context.Context, name string, defs []engine.Ta
 				}
 			}
 		}
+		// 2.2 prepare columns related information
+		tbl.primaryIdx = -1
+		tbl.primarySeqnum = -1
+		tbl.clusterByIdx = -1
+		for i, col := range cols {
+			if col.constraintType == catalog.SystemColPKConstraint {
+				tbl.primaryIdx = i
+				tbl.primarySeqnum = i
+			}
+			if col.isClusterBy == 1 {
+				tbl.clusterByIdx = i
+			}
+		}
+
+		// 2.3 prepare holistic table def
+		tbl.defs = defs
+		tbl.GetTableDef(ctx) // generate tbl.tableDef
 	}
-	cols, err := genColumns(accountId, name, db.databaseName, tableId, db.databaseId, defs)
-	if err != nil {
-		return err
-	}
-	{
-		sql := getSql(ctx)
+
+	var packer *types.Packer
+	put := db.getEng().packerPool.Get(&packer)
+	defer put.Put()
+	{ // 3. Write create table batch, update tbl.rowiod
+
+		db := tbl.db
 		bat, err := genCreateTableTuple(
-			tbl, sql, accountId, userId, roleId, name,
-			tableId, db.databaseId, db.databaseName,
-			tbl.rowid, true, db.getTxn().proc.Mp())
+			tbl, accountId, userId, roleId,
+			tbl.tableName, tbl.tableId, db.databaseId, db.databaseName, m, packer)
 		if err != nil {
 			return err
 		}
-		for _, store := range db.getTxn().tnStores {
-			if err := db.getTxn().WriteBatch(INSERT, 0, catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID,
-				catalog.MO_CATALOG, catalog.MO_TABLES, bat, store, -1, true, false); err != nil {
-				bat.Clean(db.getTxn().proc.Mp())
-				return err
-			}
+		note := noteForCreate(tbl.tableId, tbl.tableName)
+		if useAlterNote {
+			note = noteForAlterIns(tbl.tableId, tbl.tableName)
 		}
+		rowidVec, err := db.getTxn().WriteBatch(INSERT, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_TABLES_ID,
+			catalog.MO_CATALOG, catalog.MO_TABLES, bat, db.getTxn().tnStores[0])
+		if err != nil {
+			bat.Clean(m)
+			return err
+		}
+		tbl.rowid = vector.GetFixedAt[types.Rowid](rowidVec, 0)
 	}
-	tbl.primaryIdx = -1
-	tbl.primarySeqnum = -1
-	tbl.clusterByIdx = -1
-	tbl.rowids = make([]types.Rowid, len(cols))
-	for i, col := range cols {
-		tbl.rowids[i] = db.getTxn().genRowId()
-		bat, err := genCreateColumnTuple(col, tbl.rowids[i], true,
-			db.getTxn().proc.Mp())
+
+	{ // 4. Write create column batch
+		bat, err := genCreateColumnTuples(cols, m, packer)
 		if err != nil {
 			return err
 		}
-		for _, store := range db.getTxn().tnStores {
-			if err := db.getTxn().WriteBatch(
-				INSERT, 0, catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID,
-				catalog.MO_CATALOG, catalog.MO_COLUMNS, bat, store, -1, true, false); err != nil {
-				bat.Clean(db.getTxn().proc.Mp())
-				return err
-			}
+		note := noteForCreate(tbl.tableId, tbl.tableName)
+		if useAlterNote {
+			note = noteForAlterIns(tbl.tableId, tbl.tableName)
 		}
-		if col.constraintType == catalog.SystemColPKConstraint {
-			tbl.primaryIdx = i
-			tbl.primarySeqnum = i
+		rowidVec, err := db.getTxn().WriteBatch(
+			INSERT, note, 0, catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID,
+			catalog.MO_CATALOG, catalog.MO_COLUMNS, bat, db.getTxn().tnStores[0])
+		if err != nil {
+			bat.Clean(m)
+			return err
 		}
-		if col.isClusterBy == 1 {
-			tbl.clusterByIdx = i
+		for i := 0; i < rowidVec.Length(); i++ {
+			tbl.rowids = append(tbl.rowids, vector.GetFixedAt[types.Rowid](rowidVec, i))
 		}
 	}
-	tbl.db = db
-	tbl.defs = defs
-	tbl.tableName = name
-	tbl.tableId = tableId
-	tbl.GetTableDef(ctx)
+
+	// 5. handle map cache
 	key := genTableKey(accountId, name, db.databaseId)
 	db.getTxn().addCreateTable(key, tbl)
 	//CORNER CASE
@@ -495,6 +525,7 @@ func (db *txnDatabase) Create(ctx context.Context, name string, defs []engine.Ta
 
 func (db *txnDatabase) openSysTable(p *process.Process, id uint64, name string,
 	defs []engine.TableDef) engine.Relation {
+	item := db.getEng().getLatestCatalogCache().GetTableById(db.databaseId, id)
 	tbl := &txnTable{
 		//AccountID for mo_tables, mo_database, mo_columns is always 0.
 		accountId:     0,
@@ -502,8 +533,8 @@ func (db *txnDatabase) openSysTable(p *process.Process, id uint64, name string,
 		tableId:       id,
 		tableName:     name,
 		defs:          defs,
-		primaryIdx:    0,
-		primarySeqnum: db.getEng().getLatestCatalogCache().GetTableById(db.databaseId, id).PrimarySeqnum,
+		primaryIdx:    item.PrimaryIdx,
+		primarySeqnum: item.PrimarySeqnum,
 		clusterByIdx:  -1,
 	}
 	switch name {
@@ -517,6 +548,90 @@ func (db *txnDatabase) openSysTable(p *process.Process, id uint64, name string,
 	tbl.GetTableDef(context.TODO())
 	tbl.proc.Store(p)
 	return tbl
+}
+
+func (db *txnDatabase) freshTableCacheFromStorage(
+	ctx context.Context,
+	accountID uint32,
+	name string, m *mpool.MPool) error {
+	// copy from compile.go runSqlWithResult
+	v, ok := moruntime.ProcessLevelRuntime().GetGlobalVariables(moruntime.InternalSQLExecutor)
+	if !ok {
+		panic("missing lock service")
+	}
+	exec := v.(executor.SQLExecutor)
+	opts := executor.Options{}.
+		WithDisableIncrStatement().
+		WithTxn(db.op).
+		WithTimeZone(db.getTxn().proc.SessionInfo.TimeZone)
+
+	ts := types.TimestampToTS(db.op.SnapshotTS())
+	tblid := uint64(0)
+	// fresh table
+	{
+		tblSql := fmt.Sprintf(catalog.MoTablesAllQueryFormat, accountID, db.databaseName, name)
+		res, err := exec.Exec(ctx, tblSql, opts)
+		if err != nil {
+			// logutil.Errorf("yyyy fresshTableCacheFromStorage read tbl failed: %v, sql: %s", err, tblSql)
+			return err
+		}
+		defer res.Close()
+		if len(res.Batches) != 1 {
+			return nil
+		}
+		if row := res.Batches[0].RowCount(); row != 1 {
+			panic(fmt.Sprintf("freshTableCacheFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
+		}
+		bat := res.Batches[0]
+
+		tsvec := vector.NewVec(types.T_TS.ToType())
+		if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+			tsvec.Free(m)
+			return err
+		}
+		defer tsvec.Free(m)
+		vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+		oldvecs := bat.Vecs
+		bat.Vecs = vecs
+		ids := vector.MustFixedCol[uint64](bat.GetVector(catalog.MO_TABLES_REL_ID_IDX + cache.MO_OFF))
+		tblid = ids[0]
+		db.getEng().catalog.InsertTable(bat)
+
+		// restore to free
+		bat.Vecs = oldvecs
+	}
+
+	{
+		// fresh columns
+		colSql := fmt.Sprintf(catalog.MoColumnsAllQueryFormat, accountID, db.databaseName, name, tblid)
+
+		res, err := exec.Exec(ctx, colSql, opts)
+		if err != nil {
+			logutil.Errorf("yyyy freshTableCacheFromStorage read cols failed: %v, sql: %s", err, colSql)
+			return err
+		}
+		defer res.Close()
+		if len(res.Batches) != 1 {
+			return moerr.NewParseError(ctx, "columns of table %q does not exist, cnt: %v, sql:%v", name, len(res.Batches), colSql)
+		}
+		bat := res.Batches[0]
+		tsvec := vector.NewVec(types.T_TS.ToType())
+		for i := 0; i < bat.RowCount(); i++ {
+			if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+				tsvec.Free(m)
+				return err
+			}
+		}
+		defer tsvec.Free(m)
+		vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+		oldvecs := bat.Vecs
+		bat.Vecs = vecs
+		db.getEng().catalog.InsertColumns(bat)
+
+		// retore to free
+		bat.Vecs = oldvecs
+	}
+	return nil
 }
 
 func (db *txnDatabase) getTableItem(
@@ -542,15 +657,17 @@ func (db *txnDatabase) getTableItem(
 	}
 
 	if ok := c.GetTable(&item); !ok {
-		logutil.Debugf("txnDatabase.Relation table %q(acc %d db %d) does not exist",
-			name,
-			accountID,
-			db.databaseId)
-		if strings.Contains(name, "_copy_") {
-			stackInfo := debug.Stack()
-			logutil.Error(moerr.NewParseError(context.Background(), "table %q does not exists", name).Error(), zap.String("Stack Trace", string(stackInfo)))
+		if err := db.freshTableCacheFromStorage(ctx, accountID, name, db.getTxn().proc.Mp()); err != nil {
+			return cache.TableItem{}, err
 		}
-		return cache.TableItem{}, moerr.NewParseError(ctx, "table %q does not exist", name)
+
+		if ok := c.GetTable(&item); !ok {
+			if strings.Contains(name, "_copy_") {
+				stackInfo := debug.Stack()
+				logutil.Error(moerr.NewParseError(context.Background(), "table %q does not exists", name).Error(), zap.String("Stack Trace", string(stackInfo)))
+			}
+			return cache.TableItem{}, moerr.NewParseError(ctx, "table %q does not exist", name)
+		}
 	}
 	return item, nil
 }

@@ -16,6 +16,7 @@ package disttae
 
 import (
 	"context"
+	"encoding/hex"
 	"fmt"
 	"strings"
 	"sync"
@@ -1507,32 +1508,20 @@ func hackConsumeLogtail(
 	switch lt.Table.TbId {
 
 	case catalog.MO_TABLES_ID:
-		primarySeqnum = catalog.MO_TABLES_CATALOG_VERSION_IDX + 1
+		primarySeqnum = catalog.MO_TABLES_CPKEY_IDX
 		for i := 0; i < len(lt.Commands); i++ {
-			if lt.Commands[i].EntryType == api.Entry_Insert {
+			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
 				bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				accounts := vector.MustFixedCol[uint32](bat.GetVector(catalog.MO_TABLES_ACCOUNT_ID_IDX + 2))
-				names := bat.GetVector(catalog.MO_TABLES_REL_NAME_IDX + 2)
-				databases := bat.GetVector(catalog.MO_TABLES_RELDATABASE_IDX + 2)
-				vec := vector.NewVec(types.New(types.T_varchar, 0, 0))
-				for i, acc := range accounts {
-					packer.EncodeUint32(acc)
-					packer.EncodeStringType(names.GetBytesAt(i))
-					packer.EncodeStringType(databases.GetBytesAt(i))
-					if err := vector.AppendBytes(vec, packer.Bytes(), false, engine.mp); err != nil {
-						panic(err)
+				rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
+				if lt.Commands[i].EntryType == api.Entry_Insert {
+					for i, row := range rowid {
+						logutil.Infof("yyyyy insert table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(i)))
 					}
-					packer.Reset()
+				} else {
+					for i, row := range rowid {
+						logutil.Infof("yyyyy delete table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
+					}
 				}
-				hackVec, _ := vector.VectorToProtoVector(vec)
-				lt.Commands[i].Bat.Vecs = append(lt.Commands[i].Bat.Vecs, hackVec)
-				vec.Free(engine.mp)
-			}
-			if lt.Commands[i].EntryType == api.Entry_Delete {
-				continue
-			}
-			if lt.Commands[i].EntryType == api.Entry_SpecialDelete {
-				lt.Commands[i].EntryType = api.Entry_Delete
 			}
 			if err := consumeEntry(ctx, primarySeqnum,
 				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
@@ -1543,30 +1532,20 @@ func hackConsumeLogtail(
 		return nil
 
 	case catalog.MO_DATABASE_ID:
-		primarySeqnum = catalog.MO_DATABASE_DAT_TYPE_IDX + 1
+		primarySeqnum = catalog.MO_DATABASE_CPKEY_IDX
 		for i := 0; i < len(lt.Commands); i++ {
-			if lt.Commands[i].EntryType == api.Entry_Insert {
+			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
 				bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				accounts := vector.MustFixedCol[uint32](bat.GetVector(catalog.MO_DATABASE_ACCOUNT_ID_IDX + 2))
-				names := bat.GetVector(catalog.MO_DATABASE_DAT_NAME_IDX + 2)
-				vec := vector.NewVec(types.New(types.T_varchar, 0, 0))
-				for i, acc := range accounts {
-					packer.EncodeUint32(acc)
-					packer.EncodeStringType(names.GetBytesAt(i))
-					if err := vector.AppendBytes(vec, packer.Bytes(), false, engine.mp); err != nil {
-						panic(err)
+				rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
+				if lt.Commands[i].EntryType == api.Entry_Insert {
+					for i, row := range rowid {
+						logutil.Infof("yyyyy insert cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_DATABASE_CPKEY_IDX].GetBytesAt(i)))
 					}
-					packer.Reset()
+				} else {
+					for i, row := range rowid {
+						logutil.Infof("yyyyy delete cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
+					}
 				}
-				hackVec, _ := vector.VectorToProtoVector(vec)
-				lt.Commands[i].Bat.Vecs = append(lt.Commands[i].Bat.Vecs, hackVec)
-				vec.Free(engine.mp)
-			}
-			if lt.Commands[i].EntryType == api.Entry_Delete {
-				continue
-			}
-			if lt.Commands[i].EntryType == api.Entry_SpecialDelete {
-				lt.Commands[i].EntryType = api.Entry_Delete
 			}
 			if err := consumeEntry(ctx, primarySeqnum,
 				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {

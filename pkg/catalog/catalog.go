@@ -23,7 +23,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
-	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
@@ -36,74 +35,106 @@ const (
 )
 
 func init() {
-	MoDatabaseTableDefs = make([]engine.TableDef, len(MoDatabaseSchema))
-	for i, name := range MoDatabaseSchema {
-		MoDatabaseTableDefs[i] = newAttributeDef(name, MoDatabaseTypes[i], i == 0)
+	{
+		// mo_database
+		dbCpkPos := len(MoDatabaseSchema) - 1 // cpk is the last column
+		MoDatabaseTableDefs = make([]engine.TableDef, len(MoDatabaseSchema))
+		for i, name := range MoDatabaseSchema {
+			MoDatabaseTableDefs[i] = newAttributeDef(name, MoDatabaseTypes[i], i == dbCpkPos)
+		}
+		def := &engine.ConstraintDef{
+			Cts: []engine.Constraint{
+				&engine.PrimaryKeyDef{
+					Pkey: &plan.PrimaryKeyDef{
+						Cols:        []uint64{uint64(dbCpkPos)},
+						PkeyColId:   0,
+						PkeyColName: SystemDBAttr_CPKey,
+						Names:       []string{SystemDBAttr_AccID, SystemDBAttr_Name},
+						CompPkeyCol: &plan.ColDef{
+							ColId:   uint64(dbCpkPos),
+							Name:    SystemDBAttr_CPKey,
+							Hidden:  true,
+							Typ:     plan.Type{Id: int32(types.T_varchar), Scale: 65536},
+							Default: &plan.Default{},
+							Seqnum:  uint32(dbCpkPos),
+						},
+					},
+				},
+			},
+		}
+		MoDatabaseConstraint, _ = def.MarshalBinary()
+		MoDatabaseTableDefs = append(MoDatabaseTableDefs, def)
 	}
-	MoTablesTableDefs = make([]engine.TableDef, len(MoTablesSchema))
-	for i, name := range MoTablesSchema {
-		MoTablesTableDefs[i] = newAttributeDef(name, MoTablesTypes[i], i == 0)
+
+	{
+		// mo_tables
+		tblCpkPos := len(MoTablesSchema) - 1
+		MoTablesTableDefs = make([]engine.TableDef, len(MoTablesSchema))
+		for i, name := range MoTablesSchema {
+			MoTablesTableDefs[i] = newAttributeDef(name, MoTablesTypes[i], i == tblCpkPos)
+		}
+		def := &engine.ConstraintDef{
+			Cts: []engine.Constraint{
+				&engine.PrimaryKeyDef{
+					Pkey: &plan.PrimaryKeyDef{
+						Cols:        []uint64{uint64(tblCpkPos)},
+						PkeyColId:   0,
+						PkeyColName: SystemRelAttr_CPKey,
+						Names:       []string{SystemRelAttr_AccID, SystemRelAttr_DBName, SystemRelAttr_Name},
+						CompPkeyCol: &plan.ColDef{
+							ColId:   uint64(tblCpkPos),
+							Name:    SystemRelAttr_CPKey,
+							Hidden:  true,
+							Typ:     plan.Type{Id: int32(types.T_varchar), Scale: 65536},
+							Default: &plan.Default{},
+							Seqnum:  uint32(tblCpkPos),
+						},
+					},
+				},
+			},
+		}
+		MoTableConstraint, _ = def.MarshalBinary()
+		MoTablesTableDefs = append(MoTablesTableDefs, def)
 	}
-	MoColumnsTableDefs = make([]engine.TableDef, len(MoColumnsSchema))
-	for i, name := range MoColumnsSchema {
-		MoColumnsTableDefs[i] = newAttributeDef(name, MoColumnsTypes[i], i == 0)
+
+	{
+		// mo_columns
+		MoColumnsTableDefs = make([]engine.TableDef, len(MoColumnsSchema))
+		for i, name := range MoColumnsSchema {
+			MoColumnsTableDefs[i] = newAttributeDef(name, MoColumnsTypes[i], i == 0)
+		}
+		def := &engine.ConstraintDef{
+			Cts: []engine.Constraint{
+				&engine.PrimaryKeyDef{
+					Pkey: &plan.PrimaryKeyDef{
+						Cols:        []uint64{0},
+						PkeyColId:   0,
+						PkeyColName: SystemColAttr_UniqName,
+						Names:       []string{SystemColAttr_UniqName},
+					},
+				},
+			},
+		}
+		MoColumnConstraint, _ = def.MarshalBinary()
+		MoColumnsTableDefs = append(MoColumnsTableDefs, def)
 	}
+
 	MoTableMetaDefs = make([]engine.TableDef, len(MoTableMetaSchema))
 	for i, name := range MoTableMetaSchema {
 		MoTableMetaDefs[i] = newAttributeDef(name, MoTableMetaTypes[i], i == 0)
 	}
 
-	def := &engine.ConstraintDef{
-		Cts: []engine.Constraint{
-			&engine.PrimaryKeyDef{
-				Pkey: &plan.PrimaryKeyDef{
-					Cols:        []uint64{0},
-					PkeyColId:   0,
-					PkeyColName: SystemDBAttr_ID,
-					Names:       []string{SystemDBAttr_ID},
-				},
-			},
-		},
-	}
-	MoDatabaseConstraint, _ = def.MarshalBinary()
-
-	def = &engine.ConstraintDef{
-		Cts: []engine.Constraint{
-			&engine.PrimaryKeyDef{
-				Pkey: &plan.PrimaryKeyDef{
-					Cols:        []uint64{0},
-					PkeyColId:   0,
-					PkeyColName: SystemRelAttr_ID,
-					Names:       []string{SystemRelAttr_ID},
-				},
-			},
-		},
-	}
-	MoTableConstraint, _ = def.MarshalBinary()
-
-	def = &engine.ConstraintDef{
-		Cts: []engine.Constraint{
-			&engine.PrimaryKeyDef{
-				Pkey: &plan.PrimaryKeyDef{
-					Cols:        []uint64{0},
-					PkeyColId:   0,
-					PkeyColName: SystemColAttr_UniqName,
-					Names:       []string{SystemColAttr_UniqName},
-				},
-			},
-		},
-	}
-	MoColumnConstraint, _ = def.MarshalBinary()
 }
 
 func newAttributeDef(name string, typ types.Type, isPrimary bool) engine.TableDef {
 	return &engine.AttributeDef{
 		Attr: engine.Attribute{
-			Type:    typ,
-			Name:    name,
-			Primary: isPrimary,
-			Alg:     compress.Lz4,
-			Default: &plan.Default{NullAbility: true},
+			Type:     typ,
+			Name:     name,
+			Primary:  isPrimary,
+			Alg:      compress.Lz4,
+			Default:  &plan.Default{NullAbility: true},
+			IsHidden: name == CPrimaryKeyColName,
 		},
 	}
 }
@@ -114,47 +145,153 @@ func ParseEntryList(es []*api.Entry) (any, []*api.Entry, error) {
 		return nil, nil, nil
 	}
 	e := es[0]
-	if e.DatabaseId != MO_CATALOG_ID {
-		return e, es[1:], nil
-	}
-	switch e.TableId {
-	case MO_DATABASE_ID:
+	if e.DatabaseId == MO_CATALOG_ID && e.TableId == MO_DATABASE_ID {
 		bat, err := batch.ProtoBatchToBatch(e.Bat)
 		if err != nil {
 			return nil, nil, err
 		}
 		if e.EntryType == api.Entry_Insert {
-			return genCreateDatabases(GenRows(bat)), es[1:], nil
+			return &CreateDatabaseReq{
+				Bat:  bat,
+				Cmds: genCreateDatabases(GenRows(bat)),
+			}, es[1:], nil
+		} else {
+			return &DropDatabaseReq{
+				Bat:  bat,
+				Cmds: genDropDatabases(GenRows(bat)),
+			}, es[1:], nil
 		}
-		return genDropDatabases(GenRows(bat)), es[1:], nil
-	case MO_TABLES_ID:
+	}
+
+	if e.DatabaseId == MO_CATALOG_ID && e.TableId == MO_TABLES_ID {
+		if e.TableName == "alter" {
+			bat, err := batch.ProtoBatchToBatch(e.Bat)
+			if err != nil {
+				return nil, nil, err
+			}
+			if bat.RowCount() != 1 {
+				panic("bad alter table batch size")
+			}
+			colBat, err := getColumnBatch(es[1])
+
+			if err != nil {
+				return nil, nil, err
+			}
+			if e.EntryType == api.Entry_Insert {
+				return &CreateTableReq{
+					TableBat:  bat,
+					ColumnBat: []*batch.Batch{colBat},
+				}, es[2:], nil
+			} else {
+				return &DropTableReq{
+					TableBat:  bat,
+					ColumnBat: []*batch.Batch{colBat},
+				}, es[2:], nil
+			}
+		}
+		if e.EntryType == api.Entry_Insert {
+			return parseCreateTable(es)
+		} else if e.EntryType == api.Entry_Delete {
+			return parseDeleteTable(es)
+		} else {
+			panic(fmt.Sprintf("bad mo_tables entry type %d", e.EntryType))
+		}
+	}
+
+	if e.DatabaseId == MO_CATALOG_ID && e.TableId == MO_COLUMNS_ID {
+		panic("bad write format")
+	}
+	if e.EntryType == api.Entry_Alter {
 		bat, err := batch.ProtoBatchToBatch(e.Bat)
 		if err != nil {
 			return nil, nil, err
 		}
-		if e.EntryType == api.Entry_Delete {
-			return genDropOrTruncateTables(GenRows(bat)), es[1:], nil
-		} else if e.EntryType == api.Entry_Update {
-			return genUpdateConstraint(GenRows(bat)), es[1:], nil
-		} else if e.EntryType == api.Entry_Alter {
-			e, err := genUpdateAltertable(GenRows(bat))
-			if err != nil {
-				return nil, nil, err
-			}
-			return e, es[1:], nil
-		}
-		cmds := genCreateTables(GenRows(bat))
-		idx := 0
-		for i := range cmds {
-			// fill columns
-			if err = fillCreateTable(&idx, &cmds[i], es); err != nil {
-				return nil, nil, err
-			}
-		}
-		return cmds, es[idx+1:], nil
-	default:
-		return e, es[1:], nil
+		return genUpdateAltertable(GenRows(bat)), es[1:], nil
 	}
+	return e, es[1:], nil
+}
+
+func parseDeleteTable(es []*api.Entry) (any, []*api.Entry, error) {
+	bat, err := batch.ProtoBatchToBatch(es[0].Bat)
+	if err != nil {
+		return nil, nil, err
+	}
+	cmds := genDropTables(GenRows(bat))
+	colBatch := make([]*batch.Batch, 0, len(cmds))
+	for i := 0; i < len(cmds); i++ {
+		cbat, err := getColumnBatch(es[i+1])
+		if err != nil {
+			return nil, nil, err
+		}
+		colBatch = append(colBatch, cbat)
+	}
+	req := &DropTableReq{
+		Cmds:      cmds,
+		TableBat:  bat,
+		ColumnBat: colBatch,
+	}
+
+	return req, es[len(cmds)+1:], nil
+}
+
+func parseCreateTable(es []*api.Entry) (any, []*api.Entry, error) {
+	bat, err := batch.ProtoBatchToBatch(es[0].Bat)
+	if err != nil {
+		return nil, nil, err
+	}
+	cmds := genCreateTables(GenRows(bat))
+
+	colBatch := make([]*batch.Batch, 0, len(cmds))
+	for i := 0; i < len(cmds); i++ {
+		cbat, err := collectInsertColBatch(es[i+1], &cmds[i])
+		if err != nil {
+			return nil, nil, err
+		}
+		colBatch = append(colBatch, cbat)
+	}
+	req := &CreateTableReq{
+		Cmds:      cmds,
+		TableBat:  bat,
+		ColumnBat: colBatch,
+	}
+
+	return req, es[len(cmds)+1:], nil
+}
+
+func getColumnBatch(e *api.Entry) (*batch.Batch, error) {
+	if e.DatabaseId != MO_CATALOG_ID || e.TableId != MO_COLUMNS_ID {
+		// return nil, moerr.NewInternalErrorNoCtx("mismatched column batch")
+		panic("mismatched column batch")
+	}
+	bat, err := batch.ProtoBatchToBatch(e.Bat)
+	if err != nil {
+		return nil, err
+	}
+	return bat, nil
+}
+
+func collectInsertColBatch(e *api.Entry, cmd *CreateTable) (*batch.Batch, error) {
+	bat, err := getColumnBatch(e)
+	if err != nil {
+		return nil, err
+	}
+	rows := GenRows(bat)
+	for _, row := range rows {
+		if ctid := row[MO_COLUMNS_ATT_RELNAME_ID_IDX].(uint64); ctid != cmd.TableId {
+			// return nil, moerr.NewInternalErrorNoCtx("mismatched column id %d -- %d", ctid, cmd.TableId)
+			panic(fmt.Sprintf("mismatched column id %d -- %d", ctid, cmd.TableId))
+		}
+		def, err := genTableDefs(row)
+		if def.(*engine.AttributeDef).Attr.Name == Row_ID {
+			// skip rowid for TN, who generate rowid column automatically
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		cmd.Defs = append(cmd.Defs, def)
+	}
+	return bat, nil
 }
 
 func genCreateDatabases(rows [][]any) []CreateDatabase {
@@ -239,79 +376,29 @@ func genCreateTables(rows [][]any) []CreateTable {
 	return cmds
 }
 
-func genUpdateConstraint(rows [][]any) []*api.AlterTableReq {
-	reqs := make([]*api.AlterTableReq, len(rows))
-	for i, row := range rows {
-		did := row[MO_TABLES_RELDATABASE_ID_IDX].(uint64)
-		tid := row[MO_TABLES_REL_ID_IDX].(uint64)
-		cstr := row[MO_TABLES_UPDATE_CONSTRAINT].([]byte)
-		reqs[i] = api.NewUpdateConstraintReq(did, tid, string(cstr))
-	}
-	return reqs
-}
-
-func genUpdateAltertable(rows [][]any) ([]*api.AlterTableReq, error) {
+func genUpdateAltertable(rows [][]any) []*api.AlterTableReq {
 	cmds := make([]*api.AlterTableReq, len(rows))
 	for i, row := range rows {
 		req := &api.AlterTableReq{}
 		err := req.Unmarshal(row[MO_TABLES_ALTER_TABLE].([]byte))
 		if err != nil {
-			return nil, err
+			panic("alter table unmarshal failed")
 		}
 		cmds[i] = req
-	}
-	return cmds, nil
-}
-
-func genDropOrTruncateTables(rows [][]any) []DropOrTruncateTable {
-	cmds := make([]DropOrTruncateTable, len(rows))
-	for i, row := range rows {
-		name := string(row[SKIP_ROWID_OFFSET+MO_TABLES_REL_NAME_IDX].([]byte))
-		if id, tblName, ok := isTruncate(name); ok {
-			if id == 0 {
-				logutil.Infof("truncate table %s: %v-%v-%v", name, id, tblName, ok)
-			}
-			cmds[i].Id = id
-			cmds[i].Name = tblName
-			cmds[i].NewId = row[SKIP_ROWID_OFFSET+MO_TABLES_REL_ID_IDX].(uint64)
-			cmds[i].DatabaseId = row[SKIP_ROWID_OFFSET+MO_TABLES_RELDATABASE_ID_IDX].(uint64)
-			cmds[i].DatabaseName = string(row[SKIP_ROWID_OFFSET+MO_TABLES_RELDATABASE_IDX].([]byte))
-		} else {
-			cmds[i].IsDrop = true
-			cmds[i].Id = row[SKIP_ROWID_OFFSET+MO_TABLES_REL_ID_IDX].(uint64)
-			cmds[i].Name = name
-			cmds[i].DatabaseId = row[SKIP_ROWID_OFFSET+MO_TABLES_RELDATABASE_ID_IDX].(uint64)
-			cmds[i].DatabaseName = string(row[SKIP_ROWID_OFFSET+MO_TABLES_RELDATABASE_IDX].([]byte))
-		}
 	}
 	return cmds
 }
 
-func fillCreateTable(idx *int, cmd *CreateTable, es []*api.Entry) error {
-	for i, e := range es {
-		// to find tabledef, only need to detect the insertion of mo_columns
-		if e.TableId != MO_COLUMNS_ID || e.EntryType != api.Entry_Insert {
-			continue
-		}
-		bat, err := batch.ProtoBatchToBatch(e.Bat)
-		if err != nil {
-			return err
-		}
-		rows := GenRows(bat)
-		for _, row := range rows {
-			if row[MO_COLUMNS_ATT_RELNAME_ID_IDX].(uint64) == cmd.TableId {
-				def, err := genTableDefs(row)
-				if err != nil {
-					return err
-				}
-				cmd.Defs = append(cmd.Defs, def)
-				if i > *idx {
-					*idx = i
-				}
-			}
-		}
+func genDropTables(rows [][]any) []DropTable {
+	cmds := make([]DropTable, len(rows))
+	for i, row := range rows {
+		cmds[i].IsDrop = true
+		cmds[i].Id = row[SKIP_ROWID_OFFSET+MO_TABLES_REL_ID_IDX].(uint64)
+		cmds[i].Name = string(row[SKIP_ROWID_OFFSET+MO_TABLES_REL_NAME_IDX].([]byte))
+		cmds[i].DatabaseId = row[SKIP_ROWID_OFFSET+MO_TABLES_RELDATABASE_ID_IDX].(uint64)
+		cmds[i].DatabaseName = string(row[SKIP_ROWID_OFFSET+MO_TABLES_RELDATABASE_IDX].([]byte))
 	}
-	return nil
+	return cmds
 }
 
 func genTableDefs(row []any) (engine.TableDef, error) {

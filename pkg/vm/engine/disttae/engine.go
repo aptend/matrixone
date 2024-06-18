@@ -153,23 +153,19 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 		return err
 	}
 
+	var packer *types.Packer
+	put := e.packerPool.Get(&packer)
+	defer put.Put()
 	bat, err := genCreateDatabaseTuple(sql, accountId, userId, roleId,
-		name, databaseId, typ, txn.proc.Mp())
+		name, databaseId, typ, txn.proc.Mp(), packer)
 	if err != nil {
 		return err
 	}
-	vec := vector.NewVec(types.T_Rowid.ToType())
-	rowId := txn.genRowId()
-	if err := vector.AppendFixed(vec, rowId, false, txn.proc.Mp()); err != nil {
-		vec.Free(txn.proc.Mp())
-		return err
-	}
-
-	bat.Vecs = append([]*vector.Vector{vec}, bat.Vecs...)
-	bat.Attrs = append([]string{catalog.Row_ID}, bat.Attrs...)
+	var rowidVec *vector.Vector
 	// non-io operations do not need to pass context
-	if err = txn.WriteBatch(INSERT, 0, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
-		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0], -1, true, false); err != nil {
+	note := noteForCreate(uint64(accountId), name)
+	if rowidVec, err = txn.WriteBatch(INSERT, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
+		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0]); err != nil {
 		bat.Clean(txn.proc.Mp())
 		return err
 	}
@@ -179,7 +175,7 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 		op:           op,
 		databaseId:   databaseId,
 		databaseName: name,
-		rowId:        rowId,
+		rowId:        vector.GetFixedAt[types.Rowid](rowidVec, 0),
 	})
 
 	txn.deletedDatabaseMap.Delete(key)
@@ -522,7 +518,6 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 		database := val.(*txnDatabase)
 		databaseId = database.databaseId
 		rowId = database.rowId
-		//return nil
 	} else {
 		item := &cache.DatabaseItem{
 			Name:      name,
@@ -532,15 +527,8 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 		if ok = e.getLatestCatalogCache().GetDatabase(item); !ok {
 			return moerr.GetOkExpectedEOB()
 		}
-
 		databaseId = item.Id
 		rowId = item.Rowid
-		//db = &txnDatabase{
-		//	op:           op,
-		//	databaseName: name,
-		//	databaseId:   item.Id,
-		//	rowId:        item.Rowid,
-		//}
 	}
 
 	dbNew := &txnDatabase{
@@ -559,18 +547,26 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 			return err
 		}
 	}
-	bat, err := genDropDatabaseTuple(rowId, databaseId, name, txn.proc.Mp())
+
+	var packer *types.Packer
+	put := e.packerPool.Get(&packer)
+	defer put.Put()
+	bat, err := genDropDatabaseTuple(rowId, accountId, databaseId, name, txn.proc.Mp(), packer)
 	if err != nil {
 		return err
 	}
-	// non-io operations do not need to pass context
-	if err := txn.WriteBatch(DELETE, 0, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
-		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0], -1, true, false); err != nil {
+	dbNew.getTxn().deletedDatabaseMap.Store(key, databaseId)
+	bat = txn.deleteBatch(bat, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID)
+	if bat.RowCount() == 0 {
+		return nil
+	}
+	note := noteForDrop(uint64(accountId), name)
+	if _, err := txn.WriteBatch(DELETE, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
+		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0]); err != nil {
 		bat.Clean(txn.proc.Mp())
 		return err
 	}
 
-	dbNew.getTxn().deletedDatabaseMap.Store(key, databaseId)
 	return nil
 }
 

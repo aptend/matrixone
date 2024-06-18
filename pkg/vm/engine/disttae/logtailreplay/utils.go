@@ -21,7 +21,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 )
 
-var metaTableMatchRegexp = regexp.MustCompile(`\_\d+\_(meta|seg)`)
+var metaTableMatchRegexp = regexp.MustCompile(`\_\d+\_(meta|obj)`)
 var blkTableMatchRegexp = regexp.MustCompile(`\_\d+\_meta`)
 var objTableMatchRegexp = regexp.MustCompile(`\_\d+\_obj`)
 

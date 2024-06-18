@@ -694,7 +694,7 @@ func (s *Scope) AlterTableInplace(c *Compile) error {
 
 	var addColIdx int
 	var dropColIdx int
-	constraint := make([][]byte, 0)
+	reqs := make([]*api.AlterTableReq, 0)
 	for _, kind := range alterKinds {
 		var req *api.AlterTableReq
 		switch kind {
@@ -721,14 +721,10 @@ func (s *Scope) AlterTableInplace(c *Compile) error {
 			req = api.NewAddPartitionReq(rel.GetDBID(c.ctx), rel.GetTableID(c.ctx), changePartitionDef)
 		default:
 		}
-		tmp, err := req.Marshal()
-		if err != nil {
-			return err
-		}
-		constraint = append(constraint, tmp)
+		reqs = append(reqs, req)
 	}
 
-	err = rel.AlterTable(c.ctx, newCt, constraint)
+	err = rel.AlterTable(c.ctx, newCt, reqs)
 	if err != nil {
 		return err
 	}

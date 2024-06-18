@@ -34,7 +34,7 @@ func CreateRelation(
 	name string,
 	id uint64,
 	defs []engine.TableDef) (err error) {
-	schema, err := DefsToSchema(name, defs)
+	schema, err := catalog.DefsToSchema(name, defs)
 	if err != nil {
 		return
 	}
@@ -46,7 +46,7 @@ func CreateRelation(
 
 func TableDefs(rel handle.Relation) ([]engine.TableDef, error) {
 	schema := rel.Schema().(*catalog.Schema)
-	return SchemaToDefs(schema)
+	return catalog.SchemaToDefs(schema)
 }
 
 func TableNamesOfDB(db handle.Database) ([]string, error) {

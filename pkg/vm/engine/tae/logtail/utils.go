@@ -501,7 +501,7 @@ func registerCheckpointDataReferVersion(version uint32, schemas []*catalog.Schem
 		checkpointDataRefer[idx] = &checkpointDataItem{
 			schema,
 			append(BaseTypes, schema.Types()...),
-			append(BaseAttr, schema.AllNames()...),
+			append(BaseAttr, schema.Attrs()...),
 		}
 	}
 	checkpointDataReferVersions[version] = checkpointDataRefer

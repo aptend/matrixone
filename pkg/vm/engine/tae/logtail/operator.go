@@ -26,12 +26,10 @@ type BoundTableOperator struct {
 	visitor catalog.Processor
 	dbID    uint64
 	tableID uint64
-	scope   Scope
 }
 
 func NewBoundTableOperator(catalog *catalog.Catalog,
 	reader *Reader,
-	scope Scope,
 	dbID, tableID uint64,
 	visitor catalog.Processor) *BoundTableOperator {
 	return &BoundTableOperator{
@@ -40,23 +38,13 @@ func NewBoundTableOperator(catalog *catalog.Catalog,
 		visitor: visitor,
 		tableID: tableID,
 		dbID:    dbID,
-		scope:   scope,
 	}
 }
 
 // Run takes a RespBuilder to visit every table/Object/block touched by all txn
 // in the Reader. During the visiting, RespBuiler will fetch information to return logtail entry
 func (c *BoundTableOperator) Run() error {
-	switch c.scope {
-	case ScopeDatabases:
-		return c.processDatabases()
-	case ScopeTables, ScopeColumns:
-		return c.processTables()
-	case ScopeUserTables:
-		return c.processTableData()
-	default:
-		panic("unknown logtail collect scope")
-	}
+	return c.processTableData()
 }
 
 // For normal user table, pick out all dirty blocks and call OnBlock

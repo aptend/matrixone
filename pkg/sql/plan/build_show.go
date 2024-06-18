@@ -502,11 +502,7 @@ func buildShowColumns(stmt *tree.ShowColumns, ctx CompilerContext) (*Plan, error
 		}()
 	}
 	var keyStr string
-	if dbName == catalog.MO_CATALOG && tblName == catalog.MO_DATABASE {
-		keyStr = "case when attname = '" + catalog.SystemDBAttr_ID + "' then 'PRI' else '' END as `Key`"
-	} else if dbName == catalog.MO_CATALOG && tblName == catalog.MO_TABLES {
-		keyStr = "case when attname = '" + catalog.SystemRelAttr_ID + "' then 'PRI' else '' END as `Key`"
-	} else if dbName == catalog.MO_CATALOG && tblName == catalog.MO_COLUMNS {
+	if dbName == catalog.MO_CATALOG && tblName == catalog.MO_COLUMNS {
 		keyStr = "case when attname = '" + catalog.SystemColAttr_UniqName + "' then 'PRI' else '' END as `Key`"
 	} else {
 		if tableDef.Pkey != nil || len(tableDef.Fkeys) != 0 || len(tableDef.Indexes) != 0 {

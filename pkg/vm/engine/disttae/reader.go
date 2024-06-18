@@ -375,6 +375,8 @@ func (r *blockReader) Read(
 		filter,
 		r.fs, mp, vp, policy,
 	)
+
+	// logutil.Infof("yyyy read blk %v, %v, %v", blockInfo.BlockID.String(), blockInfo.EntryState, common.MoBatchToString(bat, 5))
 	if err != nil {
 		return nil, err
 	}

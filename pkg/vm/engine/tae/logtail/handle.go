@@ -370,19 +370,6 @@ func (b *TableLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 			return err
 		}
 
-		if b.tid == pkgcatalog.MO_DATABASE_ID || b.tid == pkgcatalog.MO_TABLES_ID {
-			switch kind {
-			case TableRespKind_Data:
-				logutil.Infof("[yyyy pull] table data [%v] %d-%s-%d: %s", typ, b.tid, b.tname, version,
-					DebugBatchToString("data", batch, false, zap.InfoLevel))
-			case TableRespKind_Blk:
-				logutil.Infof("[yyyy pull] blk meta [%v] %d-%s: %s", typ, b.tid, b.tname,
-					DebugBatchToString("blkmeta", batch, false, zap.InfoLevel))
-			case TableRespKind_Obj:
-				logutil.Infof("[yyyy pull] obj meta [%v] %d-%s: %s", typ, b.tid, b.tname,
-					DebugBatchToString("object", batch, false, zap.InfoLevel))
-			}
-		}
 		tableName := ""
 		switch kind {
 		case TableRespKind_Data:
@@ -399,6 +386,19 @@ func (b *TableLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 				DebugBatchToString("object", batch, false, zap.InfoLevel))
 		}
 
+		if b.tid == pkgcatalog.MO_DATABASE_ID || b.tid == pkgcatalog.MO_TABLES_ID {
+			switch kind {
+			case TableRespKind_Data:
+				logutil.Infof("[yyyy pull] table data [%v] %d-%s-%d: %s", typ, b.tid, b.tname, version,
+					DebugBatchToString("data", batch, false, zap.InfoLevel))
+			case TableRespKind_Blk:
+				logutil.Infof("[yyyy pull] blk meta [%v] %d-%s: %s", typ, b.tid, tableName,
+					DebugBatchToString("blkmeta", batch, false, zap.InfoLevel))
+			case TableRespKind_Obj:
+				logutil.Infof("[yyyy pull] obj meta [%v] %d-%s: %s", typ, b.tid, tableName,
+					DebugBatchToString("object", batch, false, zap.InfoLevel))
+			}
+		}
 		entry := &api.Entry{
 			EntryType:    typ,
 			TableId:      b.tid,
@@ -452,7 +452,7 @@ func LoadCheckpointEntries(
 	ctx context.Context,
 	metLoc string,
 	tableID uint64,
-	tableName string,
+	_ string,
 	dbID uint64,
 	dbName string,
 	mp *mpool.MPool,
@@ -562,11 +562,11 @@ func LoadCheckpointEntries(
 			}
 			return nil, nil, err
 		}
-		if tableName != pkgcatalog.MO_DATABASE &&
-			tableName != pkgcatalog.MO_COLUMNS &&
-			tableName != pkgcatalog.MO_TABLES {
-			tableName = fmt.Sprintf("_%d_meta", tableID)
-		}
+		// if tableName != pkgcatalog.MO_DATABASE &&
+		// 	tableName != pkgcatalog.MO_COLUMNS &&
+		// 	tableName != pkgcatalog.MO_TABLES {
+		// }
+		tableName := fmt.Sprintf("_%d_meta", tableID)
 		if ins != nil {
 			entry := &api.Entry{
 				EntryType:    api.Entry_Insert,
@@ -611,6 +611,10 @@ func LoadCheckpointEntries(
 			}
 			entries = append(entries, entry)
 		}
+	}
+
+	if tableID <= 3 {
+		logutil.Infof("[yyyy ckp] load checkpoint entries %d: %d", tableID, len(entries))
 	}
 	return entries, closeCBs, nil
 }

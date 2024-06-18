@@ -1485,6 +1485,7 @@ func consumeCkpsAndLogTail(
 		}
 	}()
 	for _, entry := range entries {
+		logutil.Infof("yyyyy handle ckp entry %v, %v", entry.TableName, entry.EntryType)
 		if err = consumeEntry(ctx, primarySeqnum,
 			engine, engine.getLatestCatalogCache(), state, entry); err != nil {
 			return

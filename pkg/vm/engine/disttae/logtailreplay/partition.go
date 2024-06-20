@@ -59,14 +59,14 @@ func (p *Partition) CanServe(ts types.TS) bool {
 	return ts.GreaterEq(&p.mu.start) && ts.LessEq(&p.mu.end)
 }
 
-func NewPartition() *Partition {
+func NewPartition(id uint64) *Partition {
 	lock := make(chan struct{}, 1)
 	lock <- struct{}{}
 	ret := &Partition{
 		lock: lock,
 	}
 	ret.mu.start = types.MaxTs()
-	ret.state.Store(NewPartitionState(false))
+	ret.state.Store(NewPartitionState(false, id))
 	return ret
 }
 

@@ -276,11 +276,12 @@ func (b ObjectIndexByTSEntry) Less(than ObjectIndexByTSEntry) bool {
 	return false
 }
 
-func NewPartitionState(noData bool) *PartitionState {
+func NewPartitionState(noData bool, tid uint64) *PartitionState {
 	opts := btree.Options{
 		Degree: 64,
 	}
 	return &PartitionState{
+		tid:             tid,
 		noData:          noData,
 		rows:            btree.NewBTreeGOptions((RowEntry).Less, opts),
 		dataObjects:     btree.NewBTreeGOptions((ObjectEntry).Less, opts),
@@ -294,6 +295,7 @@ func NewPartitionState(noData bool) *PartitionState {
 
 func (p *PartitionState) Copy() *PartitionState {
 	state := PartitionState{
+		tid:             p.tid,
 		rows:            p.rows.Copy(),
 		dataObjects:     p.dataObjects.Copy(),
 		blockDeltas:     p.blockDeltas.Copy(),

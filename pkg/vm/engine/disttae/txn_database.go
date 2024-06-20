@@ -16,21 +16,24 @@ package disttae
 
 import (
 	"context"
+	"fmt"
 	"runtime/debug"
 	"strconv"
 	"strings"
 
 	"go.uber.org/zap"
 
-	"github.com/matrixorigin/matrixone/pkg/logutil"
-	txn2 "github.com/matrixorigin/matrixone/pkg/pb/txn"
-	"github.com/matrixorigin/matrixone/pkg/txn/client"
-
 	"github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
+	"github.com/matrixorigin/matrixone/pkg/common/mpool"
+	moruntime "github.com/matrixorigin/matrixone/pkg/common/runtime"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/defines"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
+	txn2 "github.com/matrixorigin/matrixone/pkg/pb/txn"
+	"github.com/matrixorigin/matrixone/pkg/txn/client"
+	"github.com/matrixorigin/matrixone/pkg/util/executor"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/disttae/cache"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
@@ -546,6 +549,90 @@ func (db *txnDatabase) openSysTable(p *process.Process, id uint64, name string,
 	return tbl
 }
 
+func (db *txnDatabase) freshTableCacheFromStorage(
+	ctx context.Context,
+	accountID uint32,
+	name string, m *mpool.MPool) error {
+	// copy from compile.go runSqlWithResult
+	v, ok := moruntime.ProcessLevelRuntime().GetGlobalVariables(moruntime.InternalSQLExecutor)
+	if !ok {
+		panic("missing lock service")
+	}
+	exec := v.(executor.SQLExecutor)
+	opts := executor.Options{}.
+		WithDisableIncrStatement().
+		WithTxn(db.op).
+		WithTimeZone(db.getTxn().proc.SessionInfo.TimeZone)
+
+	ts := types.TimestampToTS(db.op.SnapshotTS())
+	tblid := uint64(0)
+	// fresh table
+	{
+		tblSql := fmt.Sprintf(catalog.MoTablesFreshFormat, accountID, db.databaseName, name)
+		res, err := exec.Exec(ctx, tblSql, opts)
+		if err != nil {
+			// logutil.Errorf("yyyy fresshTableCacheFromStorage read tbl failed: %v, sql: %s", err, tblSql)
+			return err
+		}
+		defer res.Close()
+		if len(res.Batches) != 1 {
+			return nil
+		}
+		if row := res.Batches[0].RowCount(); row != 1 {
+			panic(fmt.Sprintf("yyyy freshTableCacheFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
+		}
+		bat := res.Batches[0]
+
+		tsvec := vector.NewVec(types.T_TS.ToType())
+		if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+			tsvec.Free(m)
+			return err
+		}
+		defer tsvec.Free(m)
+		vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+		oldvecs := bat.Vecs
+		bat.Vecs = vecs
+		ids := vector.MustFixedCol[uint64](bat.GetVector(catalog.MO_TABLES_REL_ID_IDX + cache.MO_OFF))
+		tblid = ids[0]
+		db.getEng().catalog.InsertTable(bat)
+
+		// restore to free
+		bat.Vecs = oldvecs
+	}
+
+	{
+		// fresh columns
+		colSql := fmt.Sprintf(catalog.MoColumnsFreshFormat, accountID, db.databaseName, name, tblid)
+
+		res, err := exec.Exec(ctx, colSql, opts)
+		if err != nil {
+			logutil.Errorf("yyyy freshTableCacheFromStorage read cols failed: %v, sql: %s", err, colSql)
+			return err
+		}
+		defer res.Close()
+		if len(res.Batches) != 1 {
+			return moerr.NewParseError(ctx, "columns of table %q does not exist, cnt: %v, sql:%v", name, len(res.Batches), colSql)
+		}
+		bat := res.Batches[0]
+		tsvec := vector.NewVec(types.T_TS.ToType())
+		for i := 0; i < bat.RowCount(); i++ {
+			if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+				tsvec.Free(m)
+				return err
+			}
+		}
+		defer tsvec.Free(m)
+		vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+		oldvecs := bat.Vecs
+		bat.Vecs = vecs
+		db.getEng().catalog.InsertColumns(bat)
+
+		// retore to free
+		bat.Vecs = oldvecs
+	}
+	return nil
+}
+
 func (db *txnDatabase) getTableItem(
 	ctx context.Context,
 	accountID uint32,
@@ -569,15 +656,17 @@ func (db *txnDatabase) getTableItem(
 	}
 
 	if ok := c.GetTable(&item); !ok {
-		logutil.Debugf("txnDatabase.Relation table %q(acc %d db %d) does not exist",
-			name,
-			accountID,
-			db.databaseId)
-		if strings.Contains(name, "_copy_") {
-			stackInfo := debug.Stack()
-			logutil.Error(moerr.NewParseError(context.Background(), "table %q does not exists", name).Error(), zap.String("Stack Trace", string(stackInfo)))
+		if err := db.freshTableCacheFromStorage(ctx, accountID, name, db.getTxn().proc.Mp()); err != nil {
+			return cache.TableItem{}, err
 		}
-		return cache.TableItem{}, moerr.NewParseError(ctx, "table %q does not exist", name)
+
+		if ok := c.GetTable(&item); !ok {
+			if strings.Contains(name, "_copy_") {
+				stackInfo := debug.Stack()
+				logutil.Error(moerr.NewParseError(context.Background(), "table %q does not exists", name).Error(), zap.String("Stack Trace", string(stackInfo)))
+			}
+			return cache.TableItem{}, moerr.NewParseError(ctx, "table %q does not exist", name)
+		}
 	}
 	return item, nil
 }

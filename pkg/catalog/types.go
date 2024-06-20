@@ -492,6 +492,12 @@ var (
 		SystemDBAttr_Type,
 		SystemDBAttr_CPKey,
 	}
+	MoDatabaseAllColsString = strings.Join(append([]string{Row_ID}, MoDatabaseSchema...), ",")
+	MoDatabaseFreshFormat   = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q",
+		MoDatabaseAllColsString, MO_CATALOG, MO_DATABASE,
+		SystemDBAttr_AccID, SystemDBAttr_Name)
+
 	MoTablesSchema = []string{
 		SystemRelAttr_ID,
 		SystemRelAttr_Name,
@@ -513,6 +519,16 @@ var (
 		SystemRelAttr_CatalogVersion,
 		SystemRelAttr_CPKey,
 	}
+	MoTablesAllColsString = strings.Replace(
+		strings.Join(append([]string{Row_ID}, MoTablesSchema...), ","),
+		SystemRelAttr_Constraint,
+		fmt.Sprintf("`%s`", SystemRelAttr_Constraint),
+		-1)
+	MoTablesFreshFormat = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q",
+		MoTablesAllColsString, MO_CATALOG, MO_TABLES,
+		SystemRelAttr_AccID, SystemRelAttr_DBName, SystemRelAttr_Name)
+
 	MoTablesSchema_V1 = []string{
 		SystemRelAttr_ID,
 		SystemRelAttr_Name,
@@ -558,6 +574,12 @@ var (
 		SystemColAttr_Seqnum,
 		SystemColAttr_EnumValues,
 	}
+	MoColumnsAllColsString = strings.Join(append([]string{Row_ID}, MoColumnsSchema...), ",")
+	MoColumnsFreshFormat   = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q and %s = %%d",
+		MoColumnsAllColsString, MO_CATALOG, MO_COLUMNS,
+		SystemColAttr_AccID, SystemColAttr_DBName, SystemColAttr_RelName, SystemColAttr_RelID)
+
 	MoColumnsSchema_V1 = []string{
 		SystemColAttr_UniqName,
 		SystemColAttr_AccID,

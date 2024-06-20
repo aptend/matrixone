@@ -16,6 +16,7 @@ package disttae
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 	"strings"
 	"sync"
@@ -45,6 +46,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/util"
 	"github.com/matrixorigin/matrixone/pkg/util/errutil"
+	"github.com/matrixorigin/matrixone/pkg/util/executor"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/util/stack"
 	"github.com/matrixorigin/matrixone/pkg/version"
@@ -182,6 +184,54 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 	return nil
 }
 
+func (e *Engine) freshDatabaseCacheFromStorage(
+	ctx context.Context,
+	accountID uint32,
+	name string, op client.TxnOperator) error {
+	// copy from compile.go runSqlWithResult
+	v, ok := moruntime.ProcessLevelRuntime().GetGlobalVariables(moruntime.InternalSQLExecutor)
+	if !ok {
+		panic("missing lock service")
+	}
+	exec := v.(executor.SQLExecutor)
+	proc := op.GetWorkspace().(*Transaction).proc
+	m := proc.GetMPool()
+	opts := executor.Options{}.
+		WithDisableIncrStatement().
+		WithTxn(op).
+		WithTimeZone(proc.SessionInfo.TimeZone)
+
+	ts := types.TimestampToTS(op.SnapshotTS())
+	sql := fmt.Sprintf(catalog.MoDatabaseFreshFormat, accountID, name)
+	res, err := exec.Exec(ctx, sql, opts)
+	if err != nil {
+		return err
+	}
+	defer res.Close()
+	if len(res.Batches) != 1 {
+		return nil
+	}
+	if row := res.Batches[0].RowCount(); row != 1 {
+		panic(fmt.Sprintf("yyyy freshDatabaseCacheFromStorage failed: table result row cnt: %v, sql : %s", row, sql))
+	}
+	bat := res.Batches[0]
+
+	tsvec := vector.NewVec(types.T_TS.ToType())
+	if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+		tsvec.Free(m)
+		return err
+	}
+	defer tsvec.Free(m)
+	vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+	oldvecs := bat.Vecs
+	bat.Vecs = vecs
+	e.catalog.InsertDatabase(bat)
+
+	// restore to free
+	bat.Vecs = oldvecs
+	return nil
+}
+
 func (e *Engine) Database(ctx context.Context, name string,
 	op client.TxnOperator) (engine.Database, error) {
 	logDebugf(op.Txn(), "Engine.Database %s", name)
@@ -232,7 +282,13 @@ func (e *Engine) Database(ctx context.Context, name string,
 	}
 
 	if ok := catalog.GetDatabase(item); !ok {
-		return nil, moerr.GetOkExpectedEOB()
+		// read batch from storage
+		if err := e.freshDatabaseCacheFromStorage(ctx, accountId, name, op); err != nil {
+			return nil, err
+		}
+		if ok := catalog.GetDatabase(item); !ok {
+			return nil, moerr.GetOkExpectedEOB()
+		}
 	}
 
 	return &txnDatabase{

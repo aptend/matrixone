@@ -223,6 +223,7 @@ const (
 	SystemColAttr_IsClusterBy     = "attr_is_clusterby"
 	SystemColAttr_Seqnum          = "attr_seqnum"
 	SystemColAttr_EnumValues      = "attr_enum"
+	SystemColAttr_CPKey           = CPrimaryKeyColName
 
 	BlockMeta_ID              = "block_id"
 	BlockMeta_Delete_ID       = "block_delete_id"
@@ -392,7 +393,8 @@ const (
 	MO_COLUMNS_ATT_IS_CLUSTERBY          = 21
 	MO_COLUMNS_ATT_SEQNUM_IDX            = 22
 	MO_COLUMNS_ATT_ENUM_IDX              = 23
-	MO_COLUMNS_MAXIDX                    = MO_COLUMNS_ATT_ENUM_IDX
+	MO_COLUMNS_ATT_CPKEY_IDX             = 24
+	MO_COLUMNS_MAXIDX                    = MO_COLUMNS_ATT_CPKEY_IDX
 
 	BLOCKMETA_ID_IDX            = 0
 	BLOCKMETA_ENTRYSTATE_IDX    = 1
@@ -573,6 +575,7 @@ var (
 		SystemColAttr_IsClusterBy,
 		SystemColAttr_Seqnum,
 		SystemColAttr_EnumValues,
+		SystemColAttr_CPKey,
 	}
 	MoColumnsAllColsString = strings.Join(append([]string{Row_ID}, MoColumnsSchema...), ",")
 	MoColumnsFreshFormat   = fmt.Sprintf(
@@ -701,6 +704,7 @@ var (
 		types.New(types.T_int8, 0, 0),                      // att_is_clusterby
 		types.New(types.T_uint16, 0, 0),                    // att_seqnum
 		types.New(types.T_varchar, types.MaxVarcharLen, 0), // att_enum
+		types.New(types.T_varchar, 65535, 0),               // cpkey
 	}
 	MoColumnsTypes_V1 = []types.Type{
 		types.New(types.T_varchar, 256, 0),  // att_uniq_name

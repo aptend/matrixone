@@ -502,64 +502,60 @@ func buildShowColumns(stmt *tree.ShowColumns, ctx CompilerContext) (*Plan, error
 		}()
 	}
 	var keyStr string
-	if dbName == catalog.MO_CATALOG && tblName == catalog.MO_COLUMNS {
-		keyStr = "case when attname = '" + catalog.SystemColAttr_UniqName + "' then 'PRI' else '' END as `Key`"
-	} else {
-		if tableDef.Pkey != nil || len(tableDef.Fkeys) != 0 || len(tableDef.Indexes) != 0 {
-			keyStr += "case"
-			if tableDef.Pkey != nil {
-				for _, name := range tableDef.Pkey.Names {
+	if tableDef.Pkey != nil || len(tableDef.Fkeys) != 0 || len(tableDef.Indexes) != 0 {
+		keyStr += "case"
+		if tableDef.Pkey != nil {
+			for _, name := range tableDef.Pkey.Names {
+				keyStr += " when attname = "
+				keyStr += "'" + name + "'"
+				keyStr += " then 'PRI'"
+			}
+		}
+		if len(tableDef.Fkeys) != 0 {
+			colIdToName := make(map[uint64]string)
+			for _, col := range tableDef.Cols {
+				if col.Hidden {
+					continue
+				}
+				colIdToName[col.ColId] = col.Name
+			}
+			for _, fk := range tableDef.Fkeys {
+				for _, colId := range fk.Cols {
 					keyStr += " when attname = "
-					keyStr += "'" + name + "'"
-					keyStr += " then 'PRI'"
+					keyStr += "'" + colIdToName[colId] + "'"
+					keyStr += " then 'MUL'"
 				}
 			}
-			if len(tableDef.Fkeys) != 0 {
-				colIdToName := make(map[uint64]string)
-				for _, col := range tableDef.Cols {
-					if col.Hidden {
-						continue
-					}
-					colIdToName[col.ColId] = col.Name
-				}
-				for _, fk := range tableDef.Fkeys {
-					for _, colId := range fk.Cols {
-						keyStr += " when attname = "
-						keyStr += "'" + colIdToName[colId] + "'"
-						keyStr += " then 'MUL'"
-					}
-				}
-			}
-			if tableDef.Indexes != nil {
-				for _, indexdef := range tableDef.Indexes {
-					name := indexdef.Parts[0]
-					if indexdef.Unique {
-						if isPrimaryKey(tableDef, indexdef.Parts) {
-							for _, name := range indexdef.Parts {
-								keyStr += " when attname = "
-								keyStr += "'" + name + "'"
-								keyStr += " then 'PRI'"
-							}
-						} else if isMultiplePriKey(indexdef) {
+		}
+		if tableDef.Indexes != nil {
+			for _, indexdef := range tableDef.Indexes {
+				name := indexdef.Parts[0]
+				if indexdef.Unique {
+					if isPrimaryKey(tableDef, indexdef.Parts) {
+						for _, name := range indexdef.Parts {
 							keyStr += " when attname = "
 							keyStr += "'" + name + "'"
-							keyStr += " then 'MUL'"
-						} else {
-							keyStr += " when attname = "
-							keyStr += "'" + name + "'"
-							keyStr += " then 'UNI'"
+							keyStr += " then 'PRI'"
 						}
-					} else {
+					} else if isMultiplePriKey(indexdef) {
 						keyStr += " when attname = "
 						keyStr += "'" + name + "'"
 						keyStr += " then 'MUL'"
+					} else {
+						keyStr += " when attname = "
+						keyStr += "'" + name + "'"
+						keyStr += " then 'UNI'"
 					}
+				} else {
+					keyStr += " when attname = "
+					keyStr += "'" + name + "'"
+					keyStr += " then 'MUL'"
 				}
 			}
-			keyStr += " else '' END as `Key`"
-		} else {
-			keyStr = "'' as `Key`"
 		}
+		keyStr += " else '' END as `Key`"
+	} else {
+		keyStr = "'' as `Key`"
 	}
 
 	ddlType := plan.DataDefinition_SHOW_COLUMNS

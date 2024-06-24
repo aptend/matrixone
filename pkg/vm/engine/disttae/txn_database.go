@@ -243,7 +243,7 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 	var id uint64
 	var rowid types.Rowid
 	var rowids []types.Rowid
-	var colPKs []string
+	var colPKs [][]byte
 	var defs []engine.TableDef
 	if db.op.IsSnapOp() {
 		return nil, moerr.NewInternalErrorNoCtx("delete table in snapshot transaction")
@@ -253,6 +253,9 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 		return nil, err
 	}
 	txn := db.getTxn()
+	var packer *types.Packer
+	put := txn.engine.packerPool.Get(&packer)
+	defer put.Put()
 	k := genTableKey(accountId, name, db.databaseId)
 	if v, ok := txn.createMap.Load(k); ok {
 		txn.createMap.Delete(k)
@@ -261,7 +264,7 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 		rowid = table.rowid
 		rowids = table.rowids
 		defs = table.defs
-		colPKs = getColPks(id, table.tableDef.Cols)
+		colPKs = getColPks(accountId, db.databaseName, name, table.tableDef.Cols, packer)
 	} else if v, ok := txn.tableCache.tableMap.Load(k); ok {
 		table := v.(*txnTable)
 		id = table.tableId
@@ -269,7 +272,7 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 		rowid = table.rowid
 		rowids = table.rowids
 		defs = table.defs
-		colPKs = getColPks(id, table.tableDef.Cols)
+		colPKs = getColPks(accountId, db.databaseName, name, table.tableDef.Cols, packer)
 	} else {
 		item := &cache.TableItem{
 			Name:       name,
@@ -284,7 +287,7 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 		rowid = item.Rowid
 		rowids = item.Rowids
 		defs = item.Defs
-		colPKs = getColPks(id, item.TableDef.Cols)
+		colPKs = getColPks(accountId, db.databaseName, name, item.TableDef.Cols, packer)
 	}
 	if len(rowids) != len(colPKs) {
 		return nil, moerr.NewInternalErrorNoCtx("delete table failed %v, %v", len(rowids), len(colPKs))
@@ -292,9 +295,6 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 
 	{ // delete the row from mo_tables
 
-		var packer *types.Packer
-		put := txn.engine.packerPool.Get(&packer)
-		defer put.Put()
 		bat, err := genDropTableTuple(rowid, accountId, id, db.databaseId,
 			name, db.databaseName, txn.proc.Mp(), packer)
 		if err != nil {
@@ -461,13 +461,12 @@ func (db *txnDatabase) createWithID(
 		tbl.GetTableDef(ctx) // generate tbl.tableDef
 	}
 
+	var packer *types.Packer
+	put := db.getEng().packerPool.Get(&packer)
+	defer put.Put()
 	{ // 3. Write create table batch, update tbl.rowiod
 
 		db := tbl.db
-		var packer *types.Packer
-		put := db.getEng().packerPool.Get(&packer)
-		m := db.getTxn().proc.Mp()
-		defer put.Put()
 		bat, err := genCreateTableTuple(
 			tbl, accountId, userId, roleId,
 			tbl.tableName, tbl.tableId, db.databaseId, db.databaseName, m, packer)
@@ -488,7 +487,7 @@ func (db *txnDatabase) createWithID(
 	}
 
 	{ // 4. Write create column batch
-		bat, err := genCreateColumnTuples(cols, m)
+		bat, err := genCreateColumnTuples(cols, m, packer)
 		if err != nil {
 			return err
 		}

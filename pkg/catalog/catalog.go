@@ -99,18 +99,27 @@ func init() {
 
 	{
 		// mo_columns
+		colCpkPos := len(MoColumnsSchema) - 1
 		MoColumnsTableDefs = make([]engine.TableDef, len(MoColumnsSchema))
 		for i, name := range MoColumnsSchema {
-			MoColumnsTableDefs[i] = newAttributeDef(name, MoColumnsTypes[i], i == 0)
+			MoColumnsTableDefs[i] = newAttributeDef(name, MoColumnsTypes[i], i == colCpkPos)
 		}
 		def := &engine.ConstraintDef{
 			Cts: []engine.Constraint{
 				&engine.PrimaryKeyDef{
 					Pkey: &plan.PrimaryKeyDef{
-						Cols:        []uint64{0},
+						Cols:        []uint64{uint64(colCpkPos)},
 						PkeyColId:   0,
-						PkeyColName: SystemColAttr_UniqName,
-						Names:       []string{SystemColAttr_UniqName},
+						PkeyColName: SystemColAttr_CPKey,
+						Names:       []string{SystemColAttr_AccID, SystemColAttr_DBName, SystemColAttr_RelName, SystemColAttr_Name},
+						CompPkeyCol: &plan.ColDef{
+							ColId:   uint64(colCpkPos),
+							Name:    SystemColAttr_CPKey,
+							Hidden:  true,
+							Typ:     plan.Type{Id: int32(types.T_varchar), Scale: 65536},
+							Default: &plan.Default{},
+							Seqnum:  uint32(colCpkPos),
+						},
 					},
 				},
 			},

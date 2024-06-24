@@ -33,13 +33,13 @@ rel_version    INT UNSIGNED(0)    YES        null
 catalog_version    INT UNSIGNED(0)    YES        null        
 desc	mo_catalog.mo_columns                 ;
 Field    Type    Null    Key    Default    Extra    Comment
-att_uniq_name    VARCHAR(256)    YES    PRI    null        
-account_id    INT UNSIGNED(0)    YES        null        
+att_uniq_name    VARCHAR(256)    YES        null        
+account_id    INT UNSIGNED(0)    YES    PRI    null        
 att_database_id    BIGINT UNSIGNED(0)    YES        null        
-att_database    VARCHAR(256)    YES        null        
+att_database    VARCHAR(256)    YES    PRI    null        
 att_relname_id    BIGINT UNSIGNED(0)    YES        null        
-att_relname    VARCHAR(256)    YES        null        
-attname    VARCHAR(256)    YES        null        
+att_relname    VARCHAR(256)    YES    PRI    null        
+attname    VARCHAR(256)    YES    PRI    null        
 atttyp    VARCHAR(256)    YES        null        
 attnum    INT(0)    YES        null        
 att_length    INT(0)    YES        null        
@@ -351,13 +351,13 @@ rel_version    INT UNSIGNED(0)    YES        null
 catalog_version    INT UNSIGNED(0)    YES        null        
 show columns from	mo_catalog.mo_columns                 ;
 Field    Type    Null    Key    Default    Extra    Comment
-att_uniq_name    VARCHAR(256)    YES    PRI    null        
-account_id    INT UNSIGNED(0)    YES        null        
+att_uniq_name    VARCHAR(256)    YES        null        
+account_id    INT UNSIGNED(0)    YES    PRI    null        
 att_database_id    BIGINT UNSIGNED(0)    YES        null        
-att_database    VARCHAR(256)    YES        null        
+att_database    VARCHAR(256)    YES    PRI    null        
 att_relname_id    BIGINT UNSIGNED(0)    YES        null        
-att_relname    VARCHAR(256)    YES        null        
-attname    VARCHAR(256)    YES        null        
+att_relname    VARCHAR(256)    YES    PRI    null        
+attname    VARCHAR(256)    YES    PRI    null        
 atttyp    VARCHAR(256)    YES        null        
 attnum    INT(0)    YES        null        
 att_length    INT(0)    YES        null        
@@ -669,13 +669,13 @@ rel_version    INT UNSIGNED(0)    YES        null
 catalog_version    INT UNSIGNED(0)    YES        null        
 desc	mo_catalog.mo_columns                 ;
 Field    Type    Null    Key    Default    Extra    Comment
-att_uniq_name    VARCHAR(256)    YES    PRI    null        
-account_id    INT UNSIGNED(0)    YES        null        
+att_uniq_name    VARCHAR(256)    YES        null        
+account_id    INT UNSIGNED(0)    YES    PRI    null        
 att_database_id    BIGINT UNSIGNED(0)    YES        null        
-att_database    VARCHAR(256)    YES        null        
+att_database    VARCHAR(256)    YES    PRI    null        
 att_relname_id    BIGINT UNSIGNED(0)    YES        null        
-att_relname    VARCHAR(256)    YES        null        
-attname    VARCHAR(256)    YES        null        
+att_relname    VARCHAR(256)    YES    PRI    null        
+attname    VARCHAR(256)    YES    PRI    null        
 atttyp    VARCHAR(256)    YES        null        
 attnum    INT(0)    YES        null        
 att_length    INT(0)    YES        null        
@@ -978,13 +978,13 @@ rel_version    INT UNSIGNED(0)    YES        null
 catalog_version    INT UNSIGNED(0)    YES        null        
 show columns from	mo_catalog.mo_columns                 ;
 Field    Type    Null    Key    Default    Extra    Comment
-att_uniq_name    VARCHAR(256)    YES    PRI    null        
-account_id    INT UNSIGNED(0)    YES        null        
+att_uniq_name    VARCHAR(256)    YES        null        
+account_id    INT UNSIGNED(0)    YES    PRI    null        
 att_database_id    BIGINT UNSIGNED(0)    YES        null        
-att_database    VARCHAR(256)    YES        null        
+att_database    VARCHAR(256)    YES    PRI    null        
 att_relname_id    BIGINT UNSIGNED(0)    YES        null        
-att_relname    VARCHAR(256)    YES        null        
-attname    VARCHAR(256)    YES        null        
+att_relname    VARCHAR(256)    YES    PRI    null        
+attname    VARCHAR(256)    YES    PRI    null        
 atttyp    VARCHAR(256)    YES        null        
 attnum    INT(0)    YES        null        
 att_length    INT(0)    YES        null        

@@ -102,7 +102,7 @@ func (e *Engine) init(ctx context.Context) error {
 		}
 
 		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
-		bat, err = genCreateColumnTuples(cols, m)
+		bat, err = genCreateColumnTuples(cols, m, packer)
 		if err != nil {
 			return err
 		}
@@ -112,7 +112,7 @@ func (e *Engine) init(ctx context.Context) error {
 			return err
 		}
 		state, done = part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertColumns(bat)
 		bat.Clean(m)
@@ -144,7 +144,7 @@ func (e *Engine) init(ctx context.Context) error {
 		bat.Clean(m)
 
 		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
-		bat, err = genCreateColumnTuples(cols, m)
+		bat, err = genCreateColumnTuples(cols, m, packer)
 		if err != nil {
 			return err
 		}
@@ -154,7 +154,7 @@ func (e *Engine) init(ctx context.Context) error {
 			return err
 		}
 		state, done = part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertColumns(bat)
 		bat.Clean(m)
@@ -186,7 +186,7 @@ func (e *Engine) init(ctx context.Context) error {
 		bat.Clean(m)
 
 		part = e.partitions[[2]uint64{catalog.MO_CATALOG_ID, catalog.MO_COLUMNS_ID}]
-		bat, err = genCreateColumnTuples(cols, m)
+		bat, err = genCreateColumnTuples(cols, m, packer)
 		if err != nil {
 			return err
 		}
@@ -196,7 +196,7 @@ func (e *Engine) init(ctx context.Context) error {
 			return err
 		}
 		state, done = part.MutateState()
-		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX, packer)
+		state.HandleRowsInsert(ctx, ibat, catalog.MO_COLUMNS_ATT_CPKEY_IDX, packer)
 		done()
 		e.catalog.InsertColumns(bat)
 		bat.Clean(m)

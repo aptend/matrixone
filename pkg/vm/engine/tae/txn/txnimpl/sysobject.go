@@ -127,6 +127,14 @@ func FillColumnRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Ta
 			colData.Append(colDef.SeqNum, false)
 		case pkgcatalog.SystemColAttr_EnumValues:
 			colData.Append([]byte(colDef.EnumValues), false)
+		case pkgcatalog.SystemColAttr_CPKey:
+			packer := types.NewPacker(common.WorkspaceAllocator)
+			packer.EncodeUint32(schema.AcInfo.TenantID)
+			packer.EncodeStringType([]byte(table.GetDB().GetName()))
+			packer.EncodeStringType([]byte(schema.Name))
+			packer.EncodeStringType([]byte(colDef.Name))
+			colData.Append(packer.Bytes(), false)
+			packer.FreeMem()
 		case pkgcatalog.Row_ID:
 		default:
 			panic("unexpected colname. if add new catalog def, fill it in this switch")
@@ -173,7 +181,7 @@ func FillTableRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Tab
 		colData.Append(schema.Version, false)
 	case pkgcatalog.SystemRelAttr_CatalogVersion:
 		colData.Append(schema.CatalogVersion, false)
-	case pkgcatalog.SystemDBAttr_CPKey:
+	case pkgcatalog.SystemRelAttr_CPKey:
 		packer := types.NewPacker(common.WorkspaceAllocator)
 		packer.EncodeUint32(schema.AcInfo.TenantID)
 		packer.EncodeStringType([]byte(table.GetDB().GetName()))
@@ -181,6 +189,7 @@ func FillTableRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Tab
 		colData.Append(packer.Bytes(), false)
 		packer.FreeMem()
 	case pkgcatalog.Row_ID:
+		// fill outside of this func
 	default:
 		panic(fmt.Sprintf("unexpected colname %q. if add new catalog def, fill it in this switch", attr))
 	}
@@ -215,7 +224,7 @@ func FillDBRow(db *catalog.DBEntry, _ *catalog.MVCCNode[*catalog.EmptyMVCCNode],
 		colData.Append(packer.Bytes(), false)
 		packer.FreeMem()
 	case pkgcatalog.Row_ID:
-		// colData.Append(*objectio.NewRowid(objectio.NewBlockid(objectio.NewSegmentid(), 0, 0), 0), false)
+		// fill outside of this func
 	default:
 		panic(fmt.Sprintf("unexpected colname %q. if add new catalog def, fill it in this switch", attr))
 	}

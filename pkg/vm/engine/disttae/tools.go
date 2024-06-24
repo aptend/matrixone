@@ -308,13 +308,15 @@ func genCreateTableTuple(tbl *txnTable, accountId, userId, roleId uint32, name s
 }
 
 // genCreateColumnTuples yields a batch for insertion into mo_columns.
-func genCreateColumnTuples(cols []column, m *mpool.MPool) (*batch.Batch, error) {
+func genCreateColumnTuples(cols []column, m *mpool.MPool, packer *types.Packer) (*batch.Batch, error) {
 	bat := batch.NewWithSize(len(catalog.MoColumnsSchema))
 	bat.Attrs = append(bat.Attrs, catalog.MoColumnsSchema...)
 	bat.SetRowCount(len(cols))
 
 	var err error
+	packer.Reset()
 	defer func() {
+		packer.Reset()
 		if err != nil {
 			bat.Clean(m)
 		}
@@ -325,7 +327,7 @@ func genCreateColumnTuples(cols []column, m *mpool.MPool) (*batch.Batch, error) 
 	}
 	for _, col := range cols {
 		idx := catalog.MO_COLUMNS_ATT_UNIQ_NAME_IDX
-		if err = vector.AppendBytes(bat.Vecs[idx], []byte(genColumnPrimaryKey(col.tableId, col.name)),
+		if err = vector.AppendBytes(bat.Vecs[idx], []byte(fmt.Sprintf("%v-%v", col.tableId, col.name)),
 			false, m); err != nil {
 			return nil, err
 		}
@@ -421,13 +423,23 @@ func genCreateColumnTuples(cols []column, m *mpool.MPool) (*batch.Batch, error) 
 		if err = vector.AppendBytes(bat.Vecs[idx], []byte(col.enumValues), false, m); err != nil {
 			return nil, err
 		}
+		idx = catalog.MO_COLUMNS_ATT_CPKEY_IDX
+		packer.Reset()
+		packer.EncodeUint32(col.accountId)
+		packer.EncodeStringType([]byte(col.databaseName))
+		packer.EncodeStringType([]byte(col.tableName))
+		packer.EncodeStringType([]byte(col.name))
+		if err = vector.AppendBytes(bat.Vecs[idx], packer.Bytes(), false, m); err != nil {
+			return nil, err
+		}
+
 	}
 	return bat, nil
 }
 
 // genDropColumnTuple generates the batch for deletion on mo_columns.
 // the batch has rowid vector.
-func genDropColumnTuples(rowids []types.Rowid, pks []string, m *mpool.MPool) (*batch.Batch, error) {
+func genDropColumnTuples(rowids []types.Rowid, pks [][]byte, m *mpool.MPool) (*batch.Batch, error) {
 	bat := batch.NewWithSize(2)
 	bat.Attrs = []string{catalog.Row_ID, catalog.CPrimaryKeyColName}
 	bat.SetRowCount(len(rowids))
@@ -449,7 +461,7 @@ func genDropColumnTuples(rowids []types.Rowid, pks []string, m *mpool.MPool) (*b
 
 	pkVec := vector.NewVec(types.T_varchar.ToType())
 	for _, s := range pks {
-		if err = vector.AppendBytes(pkVec, []byte(s), false, m); err != nil {
+		if err = vector.AppendBytes(pkVec, s, false, m); err != nil {
 			return nil, err
 		}
 	}
@@ -878,14 +890,15 @@ func fillRandomRowidAndZeroTs(bat *batch.Batch, m *mpool.MPool) (*api.Batch, err
 	return batch.BatchToProtoBatch(bat)
 }
 
-func genColumnPrimaryKey(tableId uint64, name string) string {
-	return fmt.Sprintf("%v-%v", tableId, name)
-}
-
-func getColPks(tid uint64, cols []*plan.ColDef) []string {
-	pks := make([]string, 0, len(cols))
+func getColPks(aid uint32, dbName, tblName string, cols []*plan.ColDef, packer *types.Packer) [][]byte {
+	pks := make([][]byte, 0, len(cols))
 	for _, col := range cols {
-		pks = append(pks, genColumnPrimaryKey(tid, col.Name))
+		packer.Reset()
+		packer.EncodeUint32(aid)
+		packer.EncodeStringType([]byte(dbName))
+		packer.EncodeStringType([]byte(tblName))
+		packer.EncodeStringType([]byte(col.Name))
+		pks = append(pks, packer.Bytes())
 	}
 	return pks
 }

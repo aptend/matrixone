@@ -1445,7 +1445,9 @@ func (data *CNCheckpointData) ReadFromData(
 			if err != nil {
 				return
 			}
-			logutil.Infof("yyyy load block %v: %d-%d to %d", block.GetLocation().String(), block.GetStartOffset(), block.GetEndOffset(), bat.Vecs[0].Length())
+			if tableID <= 3 {
+				logutil.Infof("yyyy load block %v: %d-%d to %d", block.GetLocation().String(), block.GetStartOffset(), block.GetEndOffset(), bat.Vecs[0].Length())
+			}
 			if block.GetEndOffset() == 0 {
 				continue
 			}

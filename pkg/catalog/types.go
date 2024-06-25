@@ -494,8 +494,8 @@ var (
 		SystemDBAttr_Type,
 		SystemDBAttr_CPKey,
 	}
-	MoDatabaseAllColsString = strings.Join(append([]string{Row_ID}, MoDatabaseSchema...), ",")
-	MoDatabaseFreshFormat   = fmt.Sprintf(
+	MoDatabaseAllColsString  = strings.Join(append([]string{Row_ID}, MoDatabaseSchema...), ",")
+	MoDatabaseAllQueryFormat = fmt.Sprintf(
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q",
 		MoDatabaseAllColsString, MO_CATALOG, MO_DATABASE,
 		SystemDBAttr_AccID, SystemDBAttr_Name)
@@ -526,9 +526,19 @@ var (
 		SystemRelAttr_Constraint,
 		fmt.Sprintf("`%s`", SystemRelAttr_Constraint),
 		-1)
-	MoTablesFreshFormat = fmt.Sprintf(
+	MoTablesAllQueryFormat = fmt.Sprintf(
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q",
 		MoTablesAllColsString, MO_CATALOG, MO_TABLES,
+		SystemRelAttr_AccID, SystemRelAttr_DBName, SystemRelAttr_Name)
+
+	MoTablesInDBQueryFormat = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q",
+		SystemRelAttr_Name, MO_CATALOG, MO_TABLES,
+		SystemRelAttr_AccID, SystemRelAttr_DBName)
+
+	MoTablesRowidQueryFormat = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q",
+		Row_ID, MO_CATALOG, MO_TABLES,
 		SystemRelAttr_AccID, SystemRelAttr_DBName, SystemRelAttr_Name)
 
 	MoTablesSchema_V1 = []string{
@@ -577,10 +587,15 @@ var (
 		SystemColAttr_EnumValues,
 		SystemColAttr_CPKey,
 	}
-	MoColumnsAllColsString = strings.Join(append([]string{Row_ID}, MoColumnsSchema...), ",")
-	MoColumnsFreshFormat   = fmt.Sprintf(
+	MoColumnsAllColsString  = strings.Join(append([]string{Row_ID}, MoColumnsSchema...), ",")
+	MoColumnsAllQueryFormat = fmt.Sprintf(
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q and %s = %%d",
 		MoColumnsAllColsString, MO_CATALOG, MO_COLUMNS,
+		SystemColAttr_AccID, SystemColAttr_DBName, SystemColAttr_RelName, SystemColAttr_RelID)
+
+	MoColumnsRowidsQueryFormat = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q and %s = %%d",
+		Row_ID, MO_CATALOG, MO_COLUMNS,
 		SystemColAttr_AccID, SystemColAttr_DBName, SystemColAttr_RelName, SystemColAttr_RelID)
 
 	MoColumnsSchema_V1 = []string{

@@ -184,10 +184,7 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 	return nil
 }
 
-func (e *Engine) freshDatabaseCacheFromStorage(
-	ctx context.Context,
-	accountID uint32,
-	name string, op client.TxnOperator) error {
+func execReadSql(ctx context.Context, op client.TxnOperator, sql string) (executor.Result, error) {
 	// copy from compile.go runSqlWithResult
 	v, ok := moruntime.ProcessLevelRuntime().GetGlobalVariables(moruntime.InternalSQLExecutor)
 	if !ok {
@@ -195,20 +192,25 @@ func (e *Engine) freshDatabaseCacheFromStorage(
 	}
 	exec := v.(executor.SQLExecutor)
 	proc := op.GetWorkspace().(*Transaction).proc
-	m := proc.GetMPool()
 	opts := executor.Options{}.
 		WithDisableIncrStatement().
 		WithTxn(op).
 		WithTimeZone(proc.SessionInfo.TimeZone)
+	return exec.Exec(ctx, sql, opts)
+}
 
-	ts := types.TimestampToTS(op.SnapshotTS())
-	sql := fmt.Sprintf(catalog.MoDatabaseFreshFormat, accountID, name)
-	res, err := exec.Exec(ctx, sql, opts)
+func (e *Engine) freshDatabaseCacheFromStorage(
+	ctx context.Context,
+	accountID uint32,
+	name string, op client.TxnOperator) error {
+
+	sql := fmt.Sprintf(catalog.MoDatabaseAllQueryFormat, accountID, name)
+	res, err := execReadSql(ctx, op, sql)
 	if err != nil {
 		return err
 	}
 	defer res.Close()
-	if len(res.Batches) != 1 {
+	if len(res.Batches) != 1 { // not found
 		return nil
 	}
 	if row := res.Batches[0].RowCount(); row != 1 {
@@ -216,6 +218,9 @@ func (e *Engine) freshDatabaseCacheFromStorage(
 	}
 	bat := res.Batches[0]
 
+	// TODO(aptend): add craetedTs as column
+	ts := types.TimestampToTS(op.SnapshotTS())
+	m := op.GetWorkspace().(*Transaction).proc.GetMPool()
 	tsvec := vector.NewVec(types.T_TS.ToType())
 	if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
 		tsvec.Free(m)

@@ -50,49 +50,26 @@ func (db *txnDatabase) getEng() *Engine {
 }
 
 func (db *txnDatabase) Relations(ctx context.Context) ([]string, error) {
-	var rels []string
-	//first get all delete tables
-	seenTables := make(map[string]any)
-	db.getTxn().deletedTableMap.Range(func(k, _ any) bool {
-		key := k.(tableKey)
-		if key.databaseId == db.databaseId {
-			seenTables[key.name] = nil
-		}
-		return true
-	})
-	db.getTxn().createMap.Range(func(k, _ any) bool {
-		key := k.(tableKey)
-		if key.databaseId == db.databaseId {
-			//if the table is deleted, do not save it.
-			if _, exist := seenTables[key.name]; !exist {
-				rels = append(rels, key.name)
-				seenTables[key.name] = nil
-			}
-		}
-		return true
-	})
-	accountId, err := defines.GetAccountId(ctx)
+	aid, err := defines.GetAccountId(ctx)
 	if err != nil {
 		return nil, err
 	}
-	var catache *cache.CatalogCache
-	if !db.op.IsSnapOp() {
-		catache = db.getTxn().engine.getLatestCatalogCache()
-	} else {
-		catache, err = db.getTxn().engine.getOrCreateSnapCatalogCache(
-			ctx,
-			types.TimestampToTS(db.op.SnapshotTS()))
-		if err != nil {
-			return nil, err
+	sql := fmt.Sprintf(catalog.MoTablesInDBQueryFormat, aid, db.databaseName)
+
+	res, err := execReadSql(ctx, db.op, sql)
+	if err != nil {
+		return nil, err
+	}
+
+	defer res.Close()
+
+	var rels []string
+	for _, b := range res.Batches {
+		for i, v := 0, b.Vecs[0]; i < v.Length(); i++ {
+			rels = append(rels, v.GetStringAt(i))
 		}
 	}
-	tbls, _ := catache.Tables(accountId, db.databaseId, db.op.SnapshotTS())
-	for _, tbl := range tbls {
-		//if the table is deleted or modified in txn, skip
-		if _, exist := seenTables[tbl]; !exist {
-			rels = append(rels, tbl)
-		}
-	}
+	logutil.Infof("yyyyy Relations return %v", rels)
 	return rels, nil
 }
 
@@ -256,21 +233,19 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 	var packer *types.Packer
 	put := txn.engine.packerPool.Get(&packer)
 	defer put.Put()
+
+	// 1. Get columns from TableDelf
 	k := genTableKey(accountId, name, db.databaseId)
 	if v, ok := txn.createMap.Load(k); ok {
 		txn.createMap.Delete(k)
 		table := v.(*txnTable)
 		id = table.tableId
-		rowid = table.rowid
-		rowids = table.rowids
 		defs = table.defs
 		colPKs = getColPks(accountId, db.databaseName, name, table.tableDef.Cols, packer)
 	} else if v, ok := txn.tableCache.tableMap.Load(k); ok {
+		txn.tableCache.tableMap.Delete(k)
 		table := v.(*txnTable)
 		id = table.tableId
-		txn.tableCache.tableMap.Delete(k)
-		rowid = table.rowid
-		rowids = table.rowids
 		defs = table.defs
 		colPKs = getColPks(accountId, db.databaseName, name, table.tableDef.Cols, packer)
 	} else {
@@ -281,16 +256,38 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 			Ts:         db.op.SnapshotTS(),
 		}
 		if ok := txn.engine.getLatestCatalogCache().GetTable(item); !ok {
-			return nil, moerr.GetOkExpectedEOB()
+			// It is assumed that the table is in the catalog cache, because it has passed the check of plan building
+			panic("delete table failed")
 		}
 		id = item.Id
-		rowid = item.Rowid
-		rowids = item.Rowids
 		defs = item.Defs
 		colPKs = getColPks(accountId, db.databaseName, name, item.TableDef.Cols, packer)
 	}
+
+	res, err := execReadSql(ctx, db.op, fmt.Sprintf(catalog.MoTablesRowidQueryFormat, accountId, db.databaseName, name))
+	if err != nil {
+		return nil, err
+	}
+	if len(res.Batches) != 1 || res.Batches[0].Vecs[0].Length() != 1 {
+		panic("delete table failed: query failed")
+	}
+	rowid = vector.GetFixedAt[types.Rowid](res.Batches[0].Vecs[0], 0)
+
+	res, err = execReadSql(ctx, db.op, fmt.Sprintf(catalog.MoColumnsRowidsQueryFormat, accountId, db.databaseName, name, id))
+	if len(res.Batches) != 1 {
+		panic("delete table column failed: query failed")
+	}
+	for i, v := 0, res.Batches[0].Vecs[0]; i < v.Length(); i++ {
+		rowids = append(rowids, vector.GetFixedAt[types.Rowid](v, i))
+	}
+
 	if len(rowids) != len(colPKs) {
 		return nil, moerr.NewInternalErrorNoCtx("delete table failed %v, %v", len(rowids), len(colPKs))
+	}
+
+	logutil.Infof("yyyyy delete rowid %s", rowid.String())
+	for _, r := range rowids {
+		logutil.Infof("yyyyy delete col rowid %s", r.String())
 	}
 
 	{ // delete the row from mo_tables
@@ -567,7 +564,7 @@ func (db *txnDatabase) freshTableCacheFromStorage(
 	tblid := uint64(0)
 	// fresh table
 	{
-		tblSql := fmt.Sprintf(catalog.MoTablesFreshFormat, accountID, db.databaseName, name)
+		tblSql := fmt.Sprintf(catalog.MoTablesAllQueryFormat, accountID, db.databaseName, name)
 		res, err := exec.Exec(ctx, tblSql, opts)
 		if err != nil {
 			// logutil.Errorf("yyyy fresshTableCacheFromStorage read tbl failed: %v, sql: %s", err, tblSql)
@@ -601,7 +598,7 @@ func (db *txnDatabase) freshTableCacheFromStorage(
 
 	{
 		// fresh columns
-		colSql := fmt.Sprintf(catalog.MoColumnsFreshFormat, accountID, db.databaseName, name, tblid)
+		colSql := fmt.Sprintf(catalog.MoColumnsAllQueryFormat, accountID, db.databaseName, name, tblid)
 
 		res, err := exec.Exec(ctx, colSql, opts)
 		if err != nil {

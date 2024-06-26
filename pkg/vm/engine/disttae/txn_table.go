@@ -923,8 +923,7 @@ func (tbl *txnTable) collectDirtyBlocks(
 			// TODO Adjustments will be made here in the future
 			if entry.typ == DELETE {
 				//deletes in tbl.writes maybe comes from PartitionState.rows or PartitionState.blocks.
-				if entry.fileName == "" &&
-					entry.tableId != catalog.MO_DATABASE_ID && entry.tableId != catalog.MO_TABLES_ID && entry.tableId != catalog.MO_COLUMNS_ID {
+				if entry.fileName == "" {
 					vs := vector.MustFixedCol[types.Rowid](entry.bat.GetVector(0))
 					for _, v := range vs {
 						id, _ := v.Decode()
@@ -1544,6 +1543,21 @@ func (tbl *txnTable) GetDBID(ctx context.Context) uint64 {
 	return tbl.db.databaseId
 }
 
+func stringify[T fmt.Stringer](s []T) string {
+	buf := &bytes.Buffer{}
+	buf.WriteRune('[')
+	for i, v := range s {
+		if i > 0 {
+			buf.WriteRune(' ')
+			buf.WriteRune(' ')
+		}
+		buf.WriteString(v.String())
+	}
+	buf.WriteRune(']')
+	buf.WriteString(fmt.Sprintf("[%d]", len(s)))
+	return buf.String()
+}
+
 // NewReader creates a new list of Readers to read data from the table.
 // Parameters:
 //   - ctx: Context used to control the lifecycle of the request.
@@ -1570,6 +1584,7 @@ func (tbl *txnTable) NewReader(
 	pkFilters := ConstructPKFilters(tbl.tableDef, tbl.db.databaseName, ts, state, expr, tbl.proc.Load(), txn.engine.packerPool)
 
 	blkArray := objectio.BlockInfoSlice(ranges)
+
 	if !pkFilters.inMemPKFilter.isValid || plan2.IsFalseExpr(expr) {
 		return []engine.Reader{new(emptyReader)}, nil
 	}
@@ -1594,6 +1609,9 @@ func (tbl *txnTable) NewReader(
 			}
 			dirtyBlks = append(dirtyBlks, blkInfo)
 		}
+		// if tbl.tableId == 2 {
+		// 	logutil.Infof("yyyyy tables reader %s, clean: %+v, dirty: %+v", blkArray.String(), stringify(cleanBlks), dirtyBlks)
+		// }
 		rds0, err := tbl.newMergeReader(ctx, num, expr, pkFilters, dirtyBlks, txnOffset)
 		if err != nil {
 			return nil, err

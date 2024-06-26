@@ -168,6 +168,8 @@ func newBlockReader(
 		},
 		blks: blks,
 	}
+	r.tableName = tableDef.Name
+	r.tid = tableDef.TblId
 	r.filterState.expr = filterExpr
 	r.filterState.filter = filter
 	return r
@@ -376,7 +378,9 @@ func (r *blockReader) Read(
 		r.fs, mp, vp, policy,
 	)
 
-	// logutil.Infof("yyyy read blk %v, %v, %v", blockInfo.BlockID.String(), blockInfo.EntryState, common.MoBatchToString(bat, 5))
+	// if r.tid == 2 && len(cols) < 10 && slices.Contains(cols, "relname") && slices.Contains(cols, "__mo_rowid") {
+	// 	logutil.Infof("yyyy %v read blk %v, %v, %v, %v", cols, blockInfo.BlockID.String(), blockInfo.EntryState, common.MoBatchToString(bat, 5), r.buffer)
+	// }
 	if err != nil {
 		return nil, err
 	}

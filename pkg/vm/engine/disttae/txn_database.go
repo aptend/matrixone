@@ -15,6 +15,7 @@
 package disttae
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"runtime/debug"
@@ -47,6 +48,18 @@ func (db *txnDatabase) getTxn() *Transaction {
 
 func (db *txnDatabase) getEng() *Engine {
 	return db.op.GetWorkspace().(*Transaction).engine
+}
+
+func (db *txnDatabase) GetDatabaseId(ctx context.Context) string {
+	return strconv.FormatUint(db.databaseId, 10)
+}
+
+func (db *txnDatabase) GetCreateSql(ctx context.Context) string {
+	return db.databaseCreateSql
+}
+
+func (db *txnDatabase) IsSubscription(ctx context.Context) bool {
+	return db.databaseType == catalog.SystemDBTypeSubscription
 }
 
 func (db *txnDatabase) Relations(ctx context.Context) ([]string, error) {
@@ -285,10 +298,12 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 		return nil, moerr.NewInternalErrorNoCtx("delete table failed %v, %v", len(rowids), len(colPKs))
 	}
 
-	logutil.Infof("yyyyy delete rowid %s", rowid.String())
+	buf := &bytes.Buffer{}
 	for _, r := range rowids {
-		logutil.Infof("yyyyy delete col rowid %s", r.String())
+		buf.WriteString(r.BorrowBlockID().ShortStringEx())
+		buf.WriteRune(',')
 	}
+	logutil.Infof("yyyyy delete rowid %s, %s", rowid.BorrowBlockID().ShortStringEx(), buf.String())
 
 	{ // delete the row from mo_tables
 
@@ -359,18 +374,6 @@ func (db *txnDatabase) Truncate(ctx context.Context, name string) (uint64, error
 	}
 
 	return newId, nil
-}
-
-func (db *txnDatabase) GetDatabaseId(ctx context.Context) string {
-	return strconv.FormatUint(db.databaseId, 10)
-}
-
-func (db *txnDatabase) GetCreateSql(ctx context.Context) string {
-	return db.databaseCreateSql
-}
-
-func (db *txnDatabase) IsSubscription(ctx context.Context) bool {
-	return db.databaseType == catalog.SystemDBTypeSubscription
 }
 
 func (db *txnDatabase) Create(ctx context.Context, name string, defs []engine.TableDef) error {
@@ -575,7 +578,7 @@ func (db *txnDatabase) freshTableCacheFromStorage(
 			return nil
 		}
 		if row := res.Batches[0].RowCount(); row != 1 {
-			panic(fmt.Sprintf("yyyy freshTableCacheFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
+			panic(fmt.Sprintf("freshTableCacheFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
 		}
 		bat := res.Batches[0]
 

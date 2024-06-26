@@ -168,7 +168,7 @@ func (p *PartitionReader) Read(
 			}
 		}
 
-		// if slices.Contains(colNames, "col1") {
+		// if slices.Contains(colNames, "relname") && slices.Contains(colNames, "__mo_rowid") {
 		// 	logutil.Infof("yyyyy txn read %v with %v",
 		// 		colNames, common.MoBatchToString(result, 20))
 		// }
@@ -254,7 +254,7 @@ func (p *PartitionReader) Read(
 				"partition reader[snapshot: partitionState.rows]",
 				result))
 		}
-		// if slices.Contains(colNames, "col1") {
+		// if slices.Contains(colNames, "relname") && slices.Contains(colNames, "__mo_rowid") {
 		// 	logutil.Infof("yyyyy part read %v with %v",
 		// 		colNames, common.MoBatchToString(result, 20))
 		// }

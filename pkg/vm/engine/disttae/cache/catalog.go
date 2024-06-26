@@ -514,7 +514,6 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 		key.Id = k.Id
 		item, _ := cc.tables.data.Get(key)
 		coldefs := make([]engine.TableDef, 0, len(cols))
-		item.Rowids = make([]types.Rowid, len(cols))
 		for i, col := range cols {
 			if col.constraintType == catalog.SystemColPKConstraint {
 				item.PrimaryIdx = i
@@ -524,7 +523,6 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 				item.ClusterByIdx = i
 			}
 			coldefs = append(coldefs, genTableDefOfColumn(col))
-			copy(item.Rowids[i][:], col.rowid[:])
 		}
 		item.TableDef, item.Defs = getTableDef(item, coldefs)
 	}

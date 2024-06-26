@@ -793,6 +793,8 @@ type blockSortHelper struct {
 }
 
 type blockReader struct {
+	tableName string
+	tid       uint64
 	withFilterMixin
 
 	// used for prefetch

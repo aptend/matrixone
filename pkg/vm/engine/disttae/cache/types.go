@@ -109,16 +109,6 @@ type TableItem struct {
 	Defs     []engine.TableDef
 	Rowid    types.Rowid
 	Version  uint32
-	/*
-		Rowids in mo_columns from replayed logtail.
-
-		CORNER CASE:
-		create table t1(a int);
-		begin;
-		drop table t1;
-		show tables; //no table t1. no item for t1 in mo_columns also.
-	*/
-	Rowids []types.Rowid
 
 	// table def
 	Kind           string
@@ -137,7 +127,8 @@ type TableItem struct {
 	ClusterByIdx int
 
 	// Mark if it is a delete
-	deleted bool
+	deleted     bool
+	initedByCol bool
 }
 
 type tableItemKey struct {
@@ -285,10 +276,6 @@ func copyTableItem(dst, src *TableItem) {
 	dst.PrimarySeqnum = src.PrimarySeqnum
 	dst.Version = src.Version
 	copy(dst.Rowid[:], src.Rowid[:])
-	dst.Rowids = make([]types.Rowid, len(src.Rowids))
-	for i, rowid := range src.Rowids {
-		copy(dst.Rowids[i][:], rowid[:])
-	}
 }
 
 func copyDatabaseItem(dest, src *DatabaseItem) {

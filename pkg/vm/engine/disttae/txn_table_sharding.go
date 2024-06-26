@@ -43,7 +43,6 @@ func newTxnTableWithItem(
 		createSql:     item.CreateSql,
 		constraint:    item.Constraint,
 		rowid:         item.Rowid,
-		rowids:        item.Rowids,
 		lastTS:        db.op.SnapshotTS(),
 	}
 	tbl.proc.Store(process)

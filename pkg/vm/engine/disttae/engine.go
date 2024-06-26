@@ -214,7 +214,7 @@ func (e *Engine) freshDatabaseCacheFromStorage(
 		return nil
 	}
 	if row := res.Batches[0].RowCount(); row != 1 {
-		panic(fmt.Sprintf("yyyy freshDatabaseCacheFromStorage failed: table result row cnt: %v, sql : %s", row, sql))
+		panic(fmt.Sprintf("freshDatabaseCacheFromStorage failed: table result row cnt: %v, sql : %s", row, sql))
 	}
 	bat := res.Batches[0]
 

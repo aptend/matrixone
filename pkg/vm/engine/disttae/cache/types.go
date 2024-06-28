@@ -35,16 +35,13 @@ const (
 	MO_TIMESTAMP_IDX = 1
 )
 
-type TableKey struct {
+type TableChangeQuery struct {
 	AccountId  uint32
 	DatabaseId uint64
 	Name       string
-}
-
-type TableVersion struct {
-	Version uint32
-	Ts      *timestamp.Timestamp
-	TableId uint64
+	Version    uint32
+	TableId    uint64
+	Ts         timestamp.Timestamp
 }
 
 // catalog cache
@@ -66,7 +63,7 @@ type CatalogCache struct {
 //	    . gc by timestamp
 type databaseCache struct {
 	data       *btree.BTreeG[*DatabaseItem]
-	rowidIndex *btree.BTreeG[*DatabaseItem]
+	cpkeyIndex *btree.BTreeG[*DatabaseItem]
 }
 
 // table cache:
@@ -76,8 +73,7 @@ type databaseCache struct {
 //	    . gc by timestamp
 type tableCache struct {
 	data       *btree.BTreeG[*TableItem]
-	rowidIndex *btree.BTreeG[*TableItem]
-	tableGuard *tableGuard
+	cpkeyIndex *btree.BTreeG[*TableItem]
 }
 
 type DatabaseItem struct {
@@ -85,15 +81,14 @@ type DatabaseItem struct {
 	AccountId uint32
 	Name      string
 	Ts        timestamp.Timestamp
+	deleted   bool // Mark if it is a delete
 
 	// database value
 	Id        uint64
-	Rowid     types.Rowid
 	Typ       string
 	CreateSql string
-
-	// Mark if it is a delete
-	deleted bool
+	Rowid     types.Rowid
+	CPKey     []byte
 }
 
 type TableItem struct {
@@ -102,23 +97,16 @@ type TableItem struct {
 	DatabaseId uint64
 	Name       string
 	Ts         timestamp.Timestamp
+	deleted    bool // Mark if it is a delete
 
 	// table value
 	Id       uint64
 	TableDef *plan.TableDef
 	Defs     []engine.TableDef
-	Rowid    types.Rowid
 	Version  uint32
-	/*
-		Rowids in mo_columns from replayed logtail.
 
-		CORNER CASE:
-		create table t1(a int);
-		begin;
-		drop table t1;
-		show tables; //no table t1. no item for t1 in mo_columns also.
-	*/
-	Rowids []types.Rowid
+	Rowid types.Rowid
+	CPKey []byte
 
 	// table def
 	Kind           string
@@ -136,8 +124,7 @@ type TableItem struct {
 	// clusterBy key
 	ClusterByIdx int
 
-	// Mark if it is a delete
-	deleted bool
+	initedByCol bool
 }
 
 type tableItemKey struct {
@@ -188,14 +175,9 @@ func databaseItemLess(a, b *DatabaseItem) bool {
 		return false
 	}
 	if a.Ts.Equal(b.Ts) {
-		if a.Id > b.Id {
+		if !a.deleted && b.deleted {
 			return true
 		}
-		if a.Id < b.Id {
-			return false
-		}
-		// for the same database id, the delete item is head.
-		return a.deleted
 	}
 	return a.Ts.Greater(b.Ts)
 }
@@ -260,12 +242,12 @@ func tableItemLess(a, b *TableItem) bool {
 	return a.Ts.Greater(b.Ts)
 }
 
-func databaseItemRowidLess(a, b *DatabaseItem) bool {
-	return bytes.Compare(a.Rowid[:], b.Rowid[:]) < 0
+func databaseItemCPKeyLess(a, b *DatabaseItem) bool {
+	return bytes.Compare(a.CPKey[:], b.CPKey[:]) < 0
 }
 
-func tableItemRowidLess(a, b *TableItem) bool {
-	return bytes.Compare(a.Rowid[:], b.Rowid[:]) < 0
+func tableItemCPKeyLess(a, b *TableItem) bool {
+	return bytes.Compare(a.CPKey[:], b.CPKey[:]) < 0
 }
 
 // copyTableItem copies src to dst
@@ -285,10 +267,6 @@ func copyTableItem(dst, src *TableItem) {
 	dst.PrimarySeqnum = src.PrimarySeqnum
 	dst.Version = src.Version
 	copy(dst.Rowid[:], src.Rowid[:])
-	dst.Rowids = make([]types.Rowid, len(src.Rowids))
-	for i, rowid := range src.Rowids {
-		copy(dst.Rowids[i][:], rowid[:])
-	}
 }
 
 func copyDatabaseItem(dest, src *DatabaseItem) {

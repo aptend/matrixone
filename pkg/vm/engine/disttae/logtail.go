@@ -18,6 +18,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/disttae/cache"
 
@@ -60,16 +61,19 @@ func consumeEntry(
 		switch e.TableId {
 		case catalog.MO_TABLES_ID:
 			bat, _ := batch.ProtoBatchToBatch(e.Bat)
+			logutil.Infof("yyyyy handle tbl table batch %d", bat.RowCount())
 			if cache != nil {
 				cache.InsertTable(bat)
 			}
 		case catalog.MO_DATABASE_ID:
 			bat, _ := batch.ProtoBatchToBatch(e.Bat)
+			logutil.Infof("yyyyy handle db table batch %d", bat.RowCount())
 			if cache != nil {
 				cache.InsertDatabase(bat)
 			}
 		case catalog.MO_COLUMNS_ID:
 			bat, _ := batch.ProtoBatchToBatch(e.Bat)
+			logutil.Infof("yyyyy handle col table batch %d", bat.RowCount())
 			if cache != nil {
 				cache.InsertColumns(bat)
 			}

@@ -16,7 +16,6 @@ package disttae
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
 	"strings"
 	"sync"
@@ -28,9 +27,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
-	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
-	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
@@ -1671,17 +1668,17 @@ func hackConsumeLogtail(
 		primarySeqnum = catalog.MO_TABLES_CPKEY_IDX
 		for i := 0; i < len(lt.Commands); i++ {
 			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
-				bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
-				if lt.Commands[i].EntryType == api.Entry_Insert {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy insert table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(i)))
-					}
-				} else {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy delete table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
-					}
-				}
+				// bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
+				// rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
+				// if lt.Commands[i].EntryType == api.Entry_Insert {
+				// 	for i, row := range rowid {
+				// 		logutil.Infof("yyyyy insert table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(i)))
+				// 	}
+				// } else {
+				// 	for i, row := range rowid {
+				// 		logutil.Infof("yyyyy delete table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
+				// 	}
+				// }
 			}
 			if err := consumeEntry(ctx, primarySeqnum,
 				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
@@ -1694,19 +1691,19 @@ func hackConsumeLogtail(
 	case catalog.MO_DATABASE_ID:
 		primarySeqnum = catalog.MO_DATABASE_CPKEY_IDX
 		for i := 0; i < len(lt.Commands); i++ {
-			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
-				bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
-				if lt.Commands[i].EntryType == api.Entry_Insert {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy insert cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_DATABASE_CPKEY_IDX].GetBytesAt(i)))
-					}
-				} else {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy delete cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
-					}
-				}
-			}
+			// if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
+			// 	bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
+			// 	rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
+			// 	if lt.Commands[i].EntryType == api.Entry_Insert {
+			// 		for i, row := range rowid {
+			// 			logutil.Infof("yyyyy insert cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_DATABASE_CPKEY_IDX].GetBytesAt(i)))
+			// 		}
+			// 	} else {
+			// 		for i, row := range rowid {
+			// 			logutil.Infof("yyyyy delete cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
+			// 		}
+			// 	}
+			// }
 			if err := consumeEntry(ctx, primarySeqnum,
 				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
 				return err

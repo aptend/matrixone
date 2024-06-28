@@ -222,6 +222,10 @@ func (db *txnDatabase) Relation(ctx context.Context, name string, proc any) (eng
 	)
 
 	db.getTxn().tableCache.tableMap.Store(key, tbl)
+	if name == "tt" {
+		tbls, ids := db.getTxn().engine.catalog.Tables(accountId, db.databaseId, db.op.SnapshotTS())
+		logutil.Infof("yyyyy Relation %s, %v, %v", name, tbls, ids)
+	}
 	return tbl, nil
 }
 
@@ -301,11 +305,11 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 	}
 
 	buf := &bytes.Buffer{}
-	for _, r := range rowids {
-		buf.WriteString(r.BorrowBlockID().ShortStringEx())
+	for i := range rowids {
+		buf.WriteString(rowids[i].ShortStringEx())
 		buf.WriteRune(',')
 	}
-	logutil.Infof("yyyyy delete rowid %s, %s", rowid.BorrowBlockID().ShortStringEx(), buf.String())
+	logutil.Infof("yyyyy delete %q rowid %s, %s", name, rowid.ShortStringEx(), buf.String())
 
 	{ // delete the row from mo_tables
 
@@ -508,6 +512,13 @@ func (db *txnDatabase) createWithID(
 			tbl.rowids = append(tbl.rowids, vector.GetFixedAt[types.Rowid](rowidVec, i))
 		}
 	}
+
+	buf := &bytes.Buffer{}
+	for i := range tbl.rowids {
+		buf.WriteString(tbl.rowids[i].ShortStringEx())
+		buf.WriteRune(',')
+	}
+	logutil.Infof("yyyyy create %s rowid %s, %s", tbl.tableName, tbl.rowid.ShortStringEx(), buf.String())
 
 	// 5. handle map cache
 	key := genTableKey(accountId, name, db.databaseId)

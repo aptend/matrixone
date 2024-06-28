@@ -163,7 +163,9 @@ func HandleSyncLogTailReq(
 			_ = ckpClient.FlushTable(ctx, did, tid, end)
 			// try again after flushing
 			newResp, closeCB, err := HandleSyncLogTailReq(ctx, ckpClient, mgr, c, req, false)
-			logutil.Infof("[logtail] flush result: %d -> %d err: %v", resp.ProtoSize(), newResp.ProtoSize(), err)
+			logutil.Infof("[logtail] flush result: %v -> %v err: %v",
+				common.HumanReadableBytes(resp.ProtoSize()),
+				common.HumanReadableBytes(newResp.ProtoSize()), err)
 			return newResp, closeCB, err
 		}
 	}
@@ -386,16 +388,18 @@ func (b *TableLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 				DebugBatchToString("object", batch, false, zap.InfoLevel))
 		}
 
-		if b.tid == pkgcatalog.MO_DATABASE_ID || b.tid == pkgcatalog.MO_TABLES_ID {
+		if b.tid == pkgcatalog.MO_DATABASE_ID || b.tid == pkgcatalog.MO_TABLES_ID || b.tid == pkgcatalog.MO_COLUMNS_ID {
 			switch kind {
 			case TableRespKind_Data:
 				logutil.Infof("[yyyy pull] table data [%v] %d-%s-%d: %s", typ, b.tid, b.tname, version,
 					DebugBatchToString("data", batch, false, zap.InfoLevel))
 			case TableRespKind_Blk:
 				logutil.Infof("[yyyy pull] blk meta [%v] %d-%s: %s", typ, b.tid, tableName,
+					// batch.PPString(30)) // DebugBatchToString("blkmeta", batch, false, zap.InfoLevel))
 					DebugBatchToString("blkmeta", batch, false, zap.InfoLevel))
 			case TableRespKind_Obj:
 				logutil.Infof("[yyyy pull] obj meta [%v] %d-%s: %s", typ, b.tid, tableName,
+					// batch.PPString(30)) // DebugBatchToString("object", batch, false, zap.InfoLevel))
 					DebugBatchToString("object", batch, false, zap.InfoLevel))
 			}
 		}

@@ -15,8 +15,7 @@
 package cache
 
 import (
-	"fmt"
-	"math"
+	"encoding/hex"
 	"sort"
 	"sync"
 
@@ -39,12 +38,11 @@ func NewCatalog() *CatalogCache {
 	return &CatalogCache{
 		tables: &tableCache{
 			data:       btree.NewBTreeG(tableItemLess),
-			rowidIndex: btree.NewBTreeG(tableItemRowidLess),
-			tableGuard: newTableGuard(),
+			cpkeyIndex: btree.NewBTreeG(tableItemCPKeyLess),
 		},
 		databases: &databaseCache{
 			data:       btree.NewBTreeG(databaseItemLess),
-			rowidIndex: btree.NewBTreeG(databaseItemRowidLess),
+			cpkeyIndex: btree.NewBTreeG(databaseItemCPKeyLess),
 		},
 		mu: struct {
 			sync.Mutex
@@ -93,7 +91,7 @@ func (cc *CatalogCache) GC(ts timestamp.Timestamp) {
 		for _, item := range items {
 			cc.tables.data.Delete(item)
 			if !item.deleted {
-				cc.tables.rowidIndex.Delete(item)
+				cc.tables.cpkeyIndex.Delete(item)
 			}
 		}
 	}
@@ -112,15 +110,35 @@ func (cc *CatalogCache) GC(ts timestamp.Timestamp) {
 		for _, item := range items {
 			cc.databases.data.Delete(item)
 			if !item.deleted {
-				cc.databases.rowidIndex.Delete(item)
+				cc.databases.cpkeyIndex.Delete(item)
 			}
 		}
 	}
 }
 
-type tableIdNameKey struct {
-	id   uint64
-	name string
+func (cc *CatalogCache) Databases(accountId uint32, ts timestamp.Timestamp) []string {
+	var rs []string
+
+	key := &DatabaseItem{
+		AccountId: accountId,
+	}
+	mp := make(map[string]struct{})
+	cc.databases.data.Ascend(key, func(item *DatabaseItem) bool {
+		if item.AccountId != accountId {
+			return false
+		}
+		if item.Ts.Greater(ts) {
+			return true
+		}
+		if _, ok := mp[item.Name]; !ok {
+			mp[item.Name] = struct{}{}
+			if !item.deleted {
+				rs = append(rs, item.Name)
+			}
+		}
+		return true
+	})
+	return rs
 }
 
 func (cc *CatalogCache) Tables(accountId uint32, databaseId uint64,
@@ -132,7 +150,7 @@ func (cc *CatalogCache) Tables(accountId uint32, databaseId uint64,
 		AccountId:  accountId,
 		DatabaseId: databaseId,
 	}
-	mp := make(map[tableIdNameKey]uint8)
+	mp := make(map[string]struct{})
 	cc.tables.data.Ascend(key, func(item *TableItem) bool {
 		if item.AccountId != accountId {
 			return false
@@ -140,15 +158,15 @@ func (cc *CatalogCache) Tables(accountId uint32, databaseId uint64,
 		if item.DatabaseId != databaseId {
 			return false
 		}
-		// In previous impl table id is used to deduplicate, but this a corner case: rename table t to newt, and rename newt back to t.
-		// In this case newt is first found deleted and taking the place of active t's tableid.
-		// What's more, if a table is truncated, a name can be occuppied by different ids. only use name to to dedup is also inadequate.
+
 		if item.Ts.Greater(ts) {
 			return true
 		}
-		key := tableIdNameKey{id: item.Id, name: item.Name}
-		if _, ok := mp[key]; !ok {
-			mp[key] = 0
+		if _, ok := mp[item.Name]; !ok {
+			// How does this work?
+			// 1. If there are two items in the same txn, non-deleted always comes first.
+			// 2. if this item is deleted, the map will block the next item with the same name.
+			mp[item.Name] = struct{}{}
 			if !item.deleted {
 				rs = append(rs, item.Name)
 				rids = append(rids, item.Id)
@@ -192,43 +210,20 @@ func (cc *CatalogCache) GetTableByName(databaseID uint64, tableName string) *Tab
 	return rel
 }
 
-func (cc *CatalogCache) Databases(accountId uint32, ts timestamp.Timestamp) []string {
-	var rs []string
-
-	key := &DatabaseItem{
-		AccountId: accountId,
-	}
-	mp := make(map[string]uint8)
-	cc.databases.data.Ascend(key, func(item *DatabaseItem) bool {
-		if item.AccountId != accountId {
-			return false
-		}
-		if item.Ts.Greater(ts) {
-			return true
-		}
-		if _, ok := mp[item.Name]; !ok {
-			mp[item.Name] = 0
-			if !item.deleted {
-				rs = append(rs, item.Name)
-			}
-		}
-		return true
-	})
-	return rs
-}
-
 func (cc *CatalogCache) GetTable(tbl *TableItem) bool {
 	var find bool
 
-	// refer to the comment in tableItemLess for the reason of using this way
 	cc.tables.data.Ascend(tbl, func(item *TableItem) bool {
 		if item.Name != tbl.Name {
 			return false
 		}
 
-		// we just find once
+		// just find once
 		if !item.deleted {
 			find = true
+			if !item.initedByCol {
+				logutil.Infof("yyyyy read incomplete table item %v", item.Name)
+			}
 			copyTableItem(tbl, item)
 		}
 		return false
@@ -237,123 +232,89 @@ func (cc *CatalogCache) GetTable(tbl *TableItem) bool {
 	return find
 }
 
-func (cc *CatalogCache) GetDatabase(db *DatabaseItem) bool {
+func (cc *CatalogCache) HasNewerVersion(qry *TableChangeQuery) bool {
 	var find bool
-	var ts timestamp.Timestamp
-	var databaseId uint64
 
-	deleted := make(map[uint64]bool)
-	inserted := make(map[uint64]*DatabaseItem)
-	db.Id = math.MaxUint64
-
-	cc.databases.data.Ascend(db, func(item *DatabaseItem) bool {
-		if item.deleted && item.AccountId == db.AccountId && item.Name == db.Name {
-			if !ts.IsEmpty() {
-				if item.Ts.Equal(ts) {
-					deleted[item.Id] = true
-					return true
-				} else {
-					return false
-				}
-			}
-			ts = item.Ts
-			databaseId = item.Id
-			deleted[item.Id] = true
-			return true
+	key := &TableItem{
+		AccountId:  qry.AccountId,
+		DatabaseId: qry.DatabaseId,
+		Name:       qry.Name,
+		Ts:         types.MaxTs().ToTimestamp(), // get the latest version
+	}
+	cc.tables.data.Ascend(key, func(item *TableItem) bool {
+		if item.Name != qry.Name {
+			return false
 		}
 
-		if !item.deleted && item.AccountId == db.AccountId && item.Name == db.Name &&
-			(ts.IsEmpty() || ts.Equal(item.Ts) && databaseId != item.Id) {
-			if !ts.IsEmpty() && ts.Equal(item.Ts) && databaseId != item.Id {
-				inserted[item.Id] = item
-				return true
-			} else {
+		if item.Ts.Greater(qry.Ts) {
+			if item.deleted || item.Id != qry.TableId {
 				find = true
-				copyDatabaseItem(db, item)
-				return false
 			}
 		}
 		return false
 	})
+	return find
+}
 
-	if find {
-		return true
-	}
+func (cc *CatalogCache) GetDatabase(db *DatabaseItem) bool {
+	var find bool
 
-	for rowid := range deleted {
-		delete(inserted, rowid)
-	}
+	cc.databases.data.Ascend(db, func(item *DatabaseItem) bool {
+		if item.Name != db.Name {
+			return false
+		}
 
-	//if there is no inserted item, it means that the database is deleted.
-	if len(inserted) == 0 {
+		// just find once
+		if !item.deleted {
+			find = true
+			copyDatabaseItem(db, item)
+		}
 		return false
-	}
+	})
 
-	//if there is more than one inserted item, it means that it is wrong
-	if len(inserted) > 1 {
-		panic(fmt.Sprintf("account %d has multiple database %s", db.AccountId, db.Name))
-	}
-
-	//get item
-	for _, item := range inserted {
-		copyDatabaseItem(db, item)
-	}
-	return true
+	return find
 }
 
 func (cc *CatalogCache) DeleteTable(bat *batch.Batch) {
-	rowids := vector.MustFixedCol[types.Rowid](bat.GetVector(MO_ROWID_IDX))
+	cpks := bat.GetVector(MO_OFF + 0)
 	timestamps := vector.MustFixedCol[types.TS](bat.GetVector(MO_TIMESTAMP_IDX))
-	for i, rowid := range rowids {
-		if item, ok := cc.tables.rowidIndex.Get(&TableItem{Rowid: rowid}); ok {
+	for i, ts := range timestamps {
+		pk := cpks.GetBytesAt(i)
+		if item, ok := cc.tables.cpkeyIndex.Get(&TableItem{CPKey: pk}); ok {
+			// Note: the newItem.Id is the latest id under the name of the table,
+			// not the id that can be seen at the moment ts.
+			// Lucy thing is that the wrong tableid hold by delete item not used.
 			newItem := &TableItem{
 				deleted:    true,
 				Id:         item.Id,
 				Name:       item.Name,
+				CPKey:      append([]byte{}, item.CPKey...),
 				Rowid:      item.Rowid,
 				AccountId:  item.AccountId,
 				DatabaseId: item.DatabaseId,
-				Ts:         timestamps[i].ToTimestamp(),
+				Ts:         ts.ToTimestamp(),
 			}
-			cc.tables.addTableItem(newItem)
-
-			key := TableKey{
-				AccountId:  item.AccountId,
-				DatabaseId: item.DatabaseId,
-				Name:       item.Name,
-			}
-
-			oldVersion := cc.tables.tableGuard.getSchemaVersion(key)
-
-			if oldVersion != nil && oldVersion.TableId != item.Id {
-				// drop old table for alter table stmt
-				oldVersion.Version = math.MaxUint32
-				cc.tables.tableGuard.setSchemaVersion(key, oldVersion)
-			} else {
-				// normal drop table stmt
-				cc.tables.tableGuard.setSchemaVersion(key, &TableVersion{
-					Version: math.MaxUint32,
-					Ts:      &item.Ts,
-				})
-			}
+			cc.tables.data.Set(newItem)
 		}
 	}
 }
 
 func (cc *CatalogCache) DeleteDatabase(bat *batch.Batch) {
-	rowids := vector.MustFixedCol[types.Rowid](bat.GetVector(MO_ROWID_IDX))
+	cpks := bat.GetVector(MO_OFF + 0)
 	timestamps := vector.MustFixedCol[types.TS](bat.GetVector(MO_TIMESTAMP_IDX))
-	for i, rowid := range rowids {
-		if item, ok := cc.databases.rowidIndex.Get(&DatabaseItem{Rowid: rowid}); ok {
+	for i, ts := range timestamps {
+		pk := cpks.GetBytesAt(i)
+		if item, ok := cc.databases.cpkeyIndex.Get(&DatabaseItem{CPKey: pk}); ok {
 			newItem := &DatabaseItem{
 				deleted:   true,
 				Id:        item.Id,
 				Name:      item.Name,
 				Rowid:     item.Rowid,
+				CPKey:     append([]byte{}, item.CPKey...),
 				AccountId: item.AccountId,
 				Typ:       item.Typ,
 				CreateSql: item.CreateSql,
-				Ts:        timestamps[i].ToTimestamp(),
+				Ts:        ts.ToTimestamp(),
 			}
 			cc.databases.data.Set(newItem)
 		}
@@ -376,6 +337,7 @@ func (cc *CatalogCache) InsertTable(bat *batch.Batch) {
 	constraints := bat.GetVector(catalog.MO_TABLES_CONSTRAINT_IDX + MO_OFF)
 	versions := vector.MustFixedCol[uint32](bat.GetVector(catalog.MO_TABLES_VERSION_IDX + MO_OFF))
 	catalogVersions := vector.MustFixedCol[uint32](bat.GetVector(catalog.MO_TABLES_CATALOG_VERSION_IDX + MO_OFF))
+	pks := bat.GetVector(catalog.MO_TABLES_CPKEY_IDX + MO_OFF)
 	for i, account := range accounts {
 		item := new(TableItem)
 		item.Id = ids[i]
@@ -396,47 +358,11 @@ func (cc *CatalogCache) InsertTable(bat *batch.Batch) {
 		item.PrimarySeqnum = -1
 		item.ClusterByIdx = -1
 		copy(item.Rowid[:], rowids[i][:])
-		// invalid old name table
-		exist, ok := cc.tables.rowidIndex.Get(&TableItem{Rowid: rowids[i]})
-		if ok && exist.Name != item.Name {
-			logutil.Infof("rename invalidate %d-%s,v%d@%s", exist.Id, exist.Name, exist.Version, item.Ts.String())
-			newItem := &TableItem{
-				deleted:    true,
-				Id:         exist.Id,
-				Name:       exist.Name,
-				Rowid:      exist.Rowid,
-				AccountId:  exist.AccountId,
-				DatabaseId: exist.DatabaseId,
-				Version:    exist.Version,
-				Ts:         item.Ts,
-			}
-			cc.tables.addTableItem(newItem)
+		item.CPKey = append(item.CPKey, pks.GetBytesAt(i)...)
 
-			key := TableKey{
-				AccountId:  account,
-				DatabaseId: item.DatabaseId,
-				Name:       exist.Name,
-			}
-			cc.tables.tableGuard.setSchemaVersion(key, &TableVersion{
-				Version: math.MaxUint32,
-				Ts:      &item.Ts,
-				TableId: item.Id,
-			})
-		}
-
-		key := TableKey{
-			AccountId:  account,
-			DatabaseId: item.DatabaseId,
-			Name:       item.Name,
-		}
-
-		cc.tables.tableGuard.setSchemaVersion(key, &TableVersion{
-			Version: item.Version,
-			Ts:      &item.Ts,
-			TableId: item.Id,
-		})
-		cc.tables.addTableItem(item)
-		cc.tables.rowidIndex.Set(item)
+		cc.tables.data.Set(item)
+		cc.tables.cpkeyIndex.Set(item)
+		logutil.Infof("yyyyy insert table %v-%v-%s, %v", item.AccountId, item.DatabaseId, item.Name, hex.EncodeToString(pks.GetBytesAt(i)))
 	}
 }
 
@@ -514,7 +440,6 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 		key.Id = k.Id
 		item, _ := cc.tables.data.Get(key)
 		coldefs := make([]engine.TableDef, 0, len(cols))
-		item.Rowids = make([]types.Rowid, len(cols))
 		for i, col := range cols {
 			if col.constraintType == catalog.SystemColPKConstraint {
 				item.PrimaryIdx = i
@@ -524,9 +449,9 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 				item.ClusterByIdx = i
 			}
 			coldefs = append(coldefs, genTableDefOfColumn(col))
-			copy(item.Rowids[i][:], col.rowid[:])
 		}
 		item.TableDef, item.Defs = getTableDef(item, coldefs)
+		item.initedByCol = true
 	}
 }
 
@@ -538,6 +463,7 @@ func (cc *CatalogCache) InsertDatabase(bat *batch.Batch) {
 	ids := vector.MustFixedCol[uint64](bat.GetVector(catalog.MO_DATABASE_DAT_ID_IDX + MO_OFF))
 	typs := bat.GetVector(catalog.MO_DATABASE_DAT_TYPE_IDX + MO_OFF)
 	createSqls := bat.GetVector(catalog.MO_DATABASE_CREATESQL_IDX + MO_OFF)
+	pks := bat.GetVector(catalog.MO_DATABASE_CPKEY_IDX + MO_OFF)
 	for i, account := range accounts {
 		item := new(DatabaseItem)
 		item.Id = ids[i]
@@ -547,8 +473,10 @@ func (cc *CatalogCache) InsertDatabase(bat *batch.Batch) {
 		item.Typ = typs.GetStringAt(i)
 		item.CreateSql = createSqls.GetStringAt(i)
 		copy(item.Rowid[:], rowids[i][:])
+		item.CPKey = append(item.CPKey, pks.GetBytesAt(i)...)
 		cc.databases.data.Set(item)
-		cc.databases.rowidIndex.Set(item)
+		cc.databases.cpkeyIndex.Set(item)
+		logutil.Infof("yyyyy insert db %v-%v cpk %v, %v", item.AccountId, item.Name, item.Rowid.ShortStringEx(), hex.EncodeToString(pks.GetBytesAt(i)))
 	}
 }
 
@@ -583,16 +511,6 @@ func genTableDefOfColumn(col column) engine.TableDef {
 		attr.Primary = true
 	}
 	return &engine.AttributeDef{Attr: attr}
-}
-
-// GetSchemaVersion returns the version of table
-func (cc *CatalogCache) GetSchemaVersion(name TableKey) *TableVersion {
-	return cc.tables.tableGuard.getSchemaVersion(name)
-}
-
-// addTableItem inserts a new table item.
-func (c *tableCache) addTableItem(item *TableItem) {
-	c.data.Set(item)
 }
 
 func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) (*plan.TableDef, []engine.TableDef) {

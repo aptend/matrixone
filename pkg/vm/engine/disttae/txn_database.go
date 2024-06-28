@@ -21,13 +21,12 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.uber.org/zap"
 
 	"github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
-	"github.com/matrixorigin/matrixone/pkg/common/mpool"
-	moruntime "github.com/matrixorigin/matrixone/pkg/common/runtime"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/defines"
@@ -289,23 +288,25 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 	rowid = vector.GetFixedAt[types.Rowid](res.Batches[0].Vecs[0], 0)
 
 	res, err = execReadSql(ctx, db.op, fmt.Sprintf(catalog.MoColumnsRowidsQueryFormat, accountId, db.databaseName, name, id))
-	if len(res.Batches) != 1 {
-		panic("delete table column failed: query failed")
+	if err != nil {
+		return nil, err
 	}
-	for i, v := 0, res.Batches[0].Vecs[0]; i < v.Length(); i++ {
-		rowids = append(rowids, vector.GetFixedAt[types.Rowid](v, i))
+	for _, b := range res.Batches {
+		for i, v := 0, b.Vecs[0]; i < v.Length(); i++ {
+			rowids = append(rowids, vector.GetFixedAt[types.Rowid](v, i))
+		}
 	}
 
 	if len(rowids) != len(colPKs) {
-		return nil, moerr.NewInternalErrorNoCtx("delete table failed %v, %v", len(rowids), len(colPKs))
+		panic(fmt.Sprintf("delete table failed %v, %v", len(rowids), len(colPKs)))
 	}
 
 	buf := &bytes.Buffer{}
-	for _, r := range rowids {
-		buf.WriteString(r.BorrowBlockID().ShortStringEx())
+	for i := range rowids {
+		buf.WriteString(rowids[i].ShortStringEx())
 		buf.WriteRune(',')
 	}
-	logutil.Infof("yyyyy delete rowid %s, %s", rowid.BorrowBlockID().ShortStringEx(), buf.String())
+	logutil.Infof("yyyyy delete %q rowid %s, %s", name, rowid.ShortStringEx(), buf.String())
 
 	{ // delete the row from mo_tables
 
@@ -509,6 +510,13 @@ func (db *txnDatabase) createWithID(
 		}
 	}
 
+	buf := &bytes.Buffer{}
+	for i := range tbl.rowids {
+		buf.WriteString(tbl.rowids[i].ShortStringEx())
+		buf.WriteRune(',')
+	}
+	logutil.Infof("yyyyy create %s rowid %s, %s", tbl.tableName, tbl.rowid.ShortStringEx(), buf.String())
+
 	// 5. handle map cache
 	key := genTableKey(accountId, name, db.databaseId)
 	db.getTxn().addCreateTable(key, tbl)
@@ -550,88 +558,81 @@ func (db *txnDatabase) openSysTable(p *process.Process, id uint64, name string,
 	return tbl
 }
 
-func (db *txnDatabase) freshTableCacheFromStorage(
+func (db *txnDatabase) foundTableFromStorage(
 	ctx context.Context,
 	accountID uint32,
-	name string, m *mpool.MPool) error {
-	// copy from compile.go runSqlWithResult
-	v, ok := moruntime.ProcessLevelRuntime().GetGlobalVariables(moruntime.InternalSQLExecutor)
-	if !ok {
-		panic("missing lock service")
-	}
-	exec := v.(executor.SQLExecutor)
-	opts := executor.Options{}.
-		WithDisableIncrStatement().
-		WithTxn(db.op).
-		WithTimeZone(db.getTxn().proc.SessionInfo.TimeZone)
-
-	ts := types.TimestampToTS(db.op.SnapshotTS())
-	tblid := uint64(0)
-	// fresh table
+	name string) (tableitem *cache.TableItem, err error) {
+	now := time.Now()
+	defer func() {
+		logutil.Infof("yyyyy foundTableFromStorage %v-%v-%v %v", accountID, db.databaseName, name, time.Since(now))
+	}()
+	var (
+		ts    = types.TimestampToTS(db.op.SnapshotTS())
+		tblid uint64
+		cc    = db.getEng().catalog
+	)
+	// query table
 	{
 		tblSql := fmt.Sprintf(catalog.MoTablesAllQueryFormat, accountID, db.databaseName, name)
-		res, err := exec.Exec(ctx, tblSql, opts)
+		var res executor.Result
+		res, err = execReadSql(ctx, db.op, tblSql)
 		if err != nil {
-			// logutil.Errorf("yyyy fresshTableCacheFromStorage read tbl failed: %v, sql: %s", err, tblSql)
-			return err
+			logutil.Errorf("yyyy foundTableFromStorage read tbl failed: %v, sql: %s", err, tblSql)
+			return
 		}
 		defer res.Close()
 		if len(res.Batches) != 1 {
-			return nil
+			return
 		}
 		if row := res.Batches[0].RowCount(); row != 1 {
-			panic(fmt.Sprintf("freshTableCacheFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
+			panic(fmt.Sprintf("foundTableFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
 		}
 		bat := res.Batches[0]
 
-		tsvec := vector.NewVec(types.T_TS.ToType())
-		if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
-			tsvec.Free(m)
-			return err
+		if err := fillTsVecForSysTableQueryBatch(bat, ts, res.Mp); err != nil {
+			return nil, err
 		}
-		defer tsvec.Free(m)
-		vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
-		oldvecs := bat.Vecs
-		bat.Vecs = vecs
 		ids := vector.MustFixedCol[uint64](bat.GetVector(catalog.MO_TABLES_REL_ID_IDX + cache.MO_OFF))
 		tblid = ids[0]
-		db.getEng().catalog.InsertTable(bat)
-
-		// restore to free
-		bat.Vecs = oldvecs
+		cc.ParseTablesBatchAnd(bat, func(ti *cache.TableItem) {
+			tableitem = ti
+		})
 	}
 
 	{
 		// fresh columns
 		colSql := fmt.Sprintf(catalog.MoColumnsAllQueryFormat, accountID, db.databaseName, name, tblid)
-
-		res, err := exec.Exec(ctx, colSql, opts)
+		var res executor.Result
+		res, err = execReadSql(ctx, db.op, colSql)
 		if err != nil {
-			logutil.Errorf("yyyy freshTableCacheFromStorage read cols failed: %v, sql: %s", err, colSql)
-			return err
+			logutil.Errorf("yyyy foundTableFromStorage read cols failed: %v, sql: %s", err, colSql)
+			return
 		}
 		defer res.Close()
-		if len(res.Batches) != 1 {
-			return moerr.NewParseError(ctx, "columns of table %q does not exist, cnt: %v, sql:%v", name, len(res.Batches), colSql)
+		if len(res.Batches) == 0 {
+			err = moerr.NewParseError(ctx, "columns of table %q does not exist, cnt: %v, sql:%v", name, len(res.Batches), colSql)
+			return
 		}
 		bat := res.Batches[0]
-		tsvec := vector.NewVec(types.T_TS.ToType())
-		for i := 0; i < bat.RowCount(); i++ {
-			if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
-				tsvec.Free(m)
-				return err
+		for _, b := range res.Batches[1:] {
+			bat, err = bat.Append(ctx, res.Mp, b)
+			if err != nil {
+				return
 			}
 		}
-		defer tsvec.Free(m)
-		vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
-		oldvecs := bat.Vecs
-		bat.Vecs = vecs
-		db.getEng().catalog.InsertColumns(bat)
-
-		// retore to free
-		bat.Vecs = oldvecs
+		if err := fillTsVecForSysTableQueryBatch(bat, ts, res.Mp); err != nil {
+			return nil, err
+		}
+		cc.ParseColumnsBatchAnd(bat, func(m map[cache.TableItemKey]cache.Columns) {
+			if len(m) != 1 {
+				panic(fmt.Sprintf("foundTableFromStorage failed: columns touch %d tables", len(m)))
+			}
+			for _, v := range m {
+				cc.InitTableItemWithColumns(tableitem, v)
+			}
+		})
 	}
-	return nil
+	return tableitem, nil
 }
 
 func (db *txnDatabase) getTableItem(
@@ -657,17 +658,26 @@ func (db *txnDatabase) getTableItem(
 	}
 
 	if ok := c.GetTable(&item); !ok {
-		if err := db.freshTableCacheFromStorage(ctx, accountID, name, db.getTxn().proc.Mp()); err != nil {
-			return cache.TableItem{}, err
-		}
-
-		if ok := c.GetTable(&item); !ok {
+		var tableitem *cache.TableItem
+		if !c.CanServe(types.TimestampToTS(db.op.SnapshotTS())) {
+			if tableitem, err = db.foundTableFromStorage(ctx, accountID, name); err != nil {
+				return cache.TableItem{}, err
+			}
+			if tableitem == nil {
+				if strings.Contains(name, "_copy_") {
+					stackInfo := debug.Stack()
+					logutil.Error(moerr.NewParseError(context.Background(), "table %q does not exists", name).Error(), zap.String("Stack Trace", string(stackInfo)))
+				}
+				return cache.TableItem{}, moerr.NewParseError(ctx, "table %q does not exist", name)
+			}
+		} else {
 			if strings.Contains(name, "_copy_") {
 				stackInfo := debug.Stack()
 				logutil.Error(moerr.NewParseError(context.Background(), "table %q does not exists", name).Error(), zap.String("Stack Trace", string(stackInfo)))
 			}
 			return cache.TableItem{}, moerr.NewParseError(ctx, "table %q does not exist", name)
 		}
+		return *tableitem, nil
 	}
 	return item, nil
 }

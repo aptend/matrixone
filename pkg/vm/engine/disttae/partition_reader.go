@@ -90,6 +90,9 @@ func (p *PartitionReader) prepare() error {
 					if entry.bat.Attrs[0] == catalog.BlockMeta_MetaLoc {
 						return
 					}
+					if sels, ok := txn.batchSelectList[entry.bat]; ok && len(sels) == 0 {
+						return
+					}
 					inserts = append(inserts, entry.bat)
 					return
 				}
@@ -103,6 +106,21 @@ func (p *PartitionReader) prepare() error {
 					}
 				}
 			})
+
+		// for theory completeness, here is the code to load deletes from txn.batchSelectList.
+		// for b, sels := range txn.batchSelectList {
+		// 	if v := b.GetVector(0); len(sels) > 0 && v.GetType().Oid == types.T_Rowid {
+		// 		rids := vector.MustFixedCol[types.Rowid](v)
+		// 		// sels is sorted. pick the rowids which are not in sels.
+		// 		for i, j := 0, 0; i < v.Length(); i++ {
+		// 			if int64(i) != sels[j] {
+		// 				deletes[rids[i]] = 0
+		// 			} else {
+		// 				j++
+		// 			}
+		// 		}
+		// 	}
+		// }
 		//deletes maybe comes from PartitionState.rows, PartitionReader need to skip them;
 		// so, here only load deletes which don't belong to PartitionState.blks.
 		if err := p.table.LoadDeletesForMemBlocksIn(p.table._partState.Load(), deletes); err != nil {
@@ -168,7 +186,7 @@ func (p *PartitionReader) Read(
 			}
 		}
 
-		// if slices.Contains(colNames, "relname") && slices.Contains(colNames, "__mo_rowid") {
+		// if p.table.tableId == 2 && slices.Contains(colNames, "__mo_rowid") {
 		// 	logutil.Infof("yyyyy txn read %v with %v",
 		// 		colNames, common.MoBatchToString(result, 20))
 		// }

@@ -500,6 +500,15 @@ var (
 		MoDatabaseAllColsString, MO_CATALOG, MO_DATABASE,
 		SystemDBAttr_AccID, SystemDBAttr_Name)
 
+	MoDatabaseBatchQuery = fmt.Sprintf(
+		"select %s from `%s`.`%s`",
+		MoDatabaseAllColsString, MO_CATALOG, MO_DATABASE)
+
+	MoDatabaseRowidQueryFormat = fmt.Sprintf(
+		"select %s from `%s`.`%s` where %s = %%d and %s = %%q",
+		Row_ID, MO_CATALOG, MO_DATABASE,
+		SystemDBAttr_AccID, SystemDBAttr_Name)
+
 	MoTablesSchema = []string{
 		SystemRelAttr_ID,
 		SystemRelAttr_Name,
@@ -530,6 +539,10 @@ var (
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q",
 		MoTablesAllColsString, MO_CATALOG, MO_TABLES,
 		SystemRelAttr_AccID, SystemRelAttr_DBName, SystemRelAttr_Name)
+
+	MoTablesBatchQuery = fmt.Sprintf(
+		"select %s from `%s`.`%s`",
+		MoTablesAllColsString, MO_CATALOG, MO_TABLES)
 
 	MoTablesInDBQueryFormat = fmt.Sprintf(
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q",
@@ -592,6 +605,11 @@ var (
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q and %s = %%d",
 		MoColumnsAllColsString, MO_CATALOG, MO_COLUMNS,
 		SystemColAttr_AccID, SystemColAttr_DBName, SystemColAttr_RelName, SystemColAttr_RelID)
+
+	MoColumnsBatchQuery = fmt.Sprintf(
+		"select %s from `%s`.`%s` order by %s, %s, %s",
+		MoColumnsAllColsString, MO_CATALOG, MO_COLUMNS,
+		SystemColAttr_AccID, SystemColAttr_DBName, SystemColAttr_RelName)
 
 	MoColumnsRowidsQueryFormat = fmt.Sprintf(
 		"select %s from `%s`.`%s` where %s = %%d and %s = %%q and %s = %%q and %s = %%d",

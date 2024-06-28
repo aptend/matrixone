@@ -163,10 +163,9 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 	if err != nil {
 		return err
 	}
-	var rowidVec *vector.Vector
 	// non-io operations do not need to pass context
 	note := noteForCreate(uint64(accountId), name)
-	if rowidVec, err = txn.WriteBatch(INSERT, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
+	if _, err = txn.WriteBatch(INSERT, note, accountId, catalog.MO_CATALOG_ID, catalog.MO_DATABASE_ID,
 		catalog.MO_CATALOG, catalog.MO_DATABASE, bat, txn.tnStores[0]); err != nil {
 		bat.Clean(txn.proc.Mp())
 		return err
@@ -177,7 +176,6 @@ func (e *Engine) Create(ctx context.Context, name string, op client.TxnOperator)
 		op:           op,
 		databaseId:   databaseId,
 		databaseName: name,
-		rowId:        vector.GetFixedAt[types.Rowid](rowidVec, 0),
 	})
 
 	txn.deletedDatabaseMap.Delete(key)
@@ -199,42 +197,65 @@ func execReadSql(ctx context.Context, op client.TxnOperator, sql string) (execut
 	return exec.Exec(ctx, sql, opts)
 }
 
-func (e *Engine) freshDatabaseCacheFromStorage(
+func fillTsVecForSysTableQueryBatch(bat *batch.Batch, ts types.TS, m *mpool.MPool) error {
+	tsvec := vector.NewVec(types.T_TS.ToType())
+	for i := 0; i < bat.RowCount(); i++ {
+		if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
+			tsvec.Free(m)
+			return err
+		}
+	}
+	bat.Vecs = append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
+	return nil
+}
+
+func isColumnsBatchPerfectlySplitted(bs []*batch.Batch) bool {
+	tidIdx := cache.MO_OFF + catalog.MO_COLUMNS_ATT_RELNAME_ID_IDX
+	if len(bs) == 1 {
+		return true
+	}
+	prevTableId := vector.GetFixedAt[uint64](bs[0].Vecs[tidIdx], bs[0].RowCount()-1)
+	for _, b := range bs[1:] {
+		firstId := vector.GetFixedAt[uint64](b.Vecs[tidIdx], 0)
+		if firstId == prevTableId {
+			return false
+		}
+		prevTableId = vector.GetFixedAt[uint64](b.Vecs[tidIdx], b.RowCount()-1)
+	}
+	return true
+}
+
+func (e *Engine) foundDatabaseFromStorage(
 	ctx context.Context,
 	accountID uint32,
-	name string, op client.TxnOperator) error {
-
+	name string, op client.TxnOperator) (*cache.DatabaseItem, error) {
+	now := time.Now()
+	defer func() {
+		logutil.Infof("yyyy  foundDatabaseFromStorage %v-%v %v", accountID, name, time.Since(now))
+	}()
 	sql := fmt.Sprintf(catalog.MoDatabaseAllQueryFormat, accountID, name)
 	res, err := execReadSql(ctx, op, sql)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer res.Close()
 	if len(res.Batches) != 1 { // not found
-		return nil
+		return nil, nil
 	}
 	if row := res.Batches[0].RowCount(); row != 1 {
-		panic(fmt.Sprintf("freshDatabaseCacheFromStorage failed: table result row cnt: %v, sql : %s", row, sql))
+		panic(fmt.Sprintf("foundDatabaseFromStorage failed: table result row cnt: %v, sql : %s", row, sql))
 	}
 	bat := res.Batches[0]
 
-	// TODO(aptend): add craetedTs as column
 	ts := types.TimestampToTS(op.SnapshotTS())
-	m := op.GetWorkspace().(*Transaction).proc.GetMPool()
-	tsvec := vector.NewVec(types.T_TS.ToType())
-	if err := vector.AppendFixed(tsvec, ts, false, m); err != nil {
-		tsvec.Free(m)
-		return err
+	if err := fillTsVecForSysTableQueryBatch(bat, ts, res.Mp); err != nil {
+		return nil, err
 	}
-	defer tsvec.Free(m)
-	vecs := append([]*vector.Vector{bat.Vecs[0] /*rowid*/, tsvec}, bat.Vecs[1:]...)
-	oldvecs := bat.Vecs
-	bat.Vecs = vecs
-	e.catalog.InsertDatabase(bat)
-
-	// restore to free
-	bat.Vecs = oldvecs
-	return nil
+	var ret *cache.DatabaseItem
+	e.catalog.ParseDatabaseBatchAnd(bat, func(di *cache.DatabaseItem) {
+		ret = di
+	})
+	return ret, nil
 }
 
 func (e *Engine) Database(ctx context.Context, name string,
@@ -243,6 +264,14 @@ func (e *Engine) Database(ctx context.Context, name string,
 	txn, err := txnIsValid(op)
 	if err != nil {
 		return nil, err
+	}
+	if name == catalog.MO_CATALOG {
+		db := &txnDatabase{
+			op:           op,
+			databaseId:   catalog.MO_CATALOG_ID,
+			databaseName: name,
+		}
+		return db, nil
 	}
 	accountId, err := defines.GetAccountId(ctx)
 	if err != nil {
@@ -257,15 +286,6 @@ func (e *Engine) Database(ctx context.Context, name string,
 
 	if v, ok := txn.databaseMap.Load(key); ok {
 		return v.(*txnDatabase), nil
-	}
-
-	if name == catalog.MO_CATALOG {
-		db := &txnDatabase{
-			op:           op,
-			databaseId:   catalog.MO_CATALOG_ID,
-			databaseName: name,
-		}
-		return db, nil
 	}
 
 	item := &cache.DatabaseItem{
@@ -287,11 +307,15 @@ func (e *Engine) Database(ctx context.Context, name string,
 	}
 
 	if ok := catalog.GetDatabase(item); !ok {
-		// read batch from storage
-		if err := e.freshDatabaseCacheFromStorage(ctx, accountId, name, op); err != nil {
-			return nil, err
-		}
-		if ok := catalog.GetDatabase(item); !ok {
+		if !catalog.CanServe(types.TimestampToTS(op.SnapshotTS())) {
+			// read batch from storage
+			if item, err = e.foundDatabaseFromStorage(ctx, accountId, name, op); err != nil {
+				return nil, err
+			}
+			if item == nil {
+				return nil, moerr.GetOkExpectedEOB()
+			}
+		} else {
 			return nil, moerr.GetOkExpectedEOB()
 		}
 	}
@@ -300,7 +324,6 @@ func (e *Engine) Database(ctx context.Context, name string,
 		op:                op,
 		databaseName:      name,
 		databaseId:        item.Id,
-		rowId:             item.Rowid,
 		databaseType:      item.Typ,
 		databaseCreateSql: item.CreateSql,
 	}, nil
@@ -578,7 +601,6 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 		txn.databaseMap.Delete(key)
 		database := val.(*txnDatabase)
 		databaseId = database.databaseId
-		rowId = database.rowId
 	} else {
 		item := &cache.DatabaseItem{
 			Name:      name,
@@ -589,14 +611,12 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 			return moerr.GetOkExpectedEOB()
 		}
 		databaseId = item.Id
-		rowId = item.Rowid
 	}
 
 	dbNew := &txnDatabase{
 		op:           op,
 		databaseName: name,
 		databaseId:   databaseId,
-		rowId:        rowId,
 	}
 
 	rels, err := dbNew.Relations(ctx)
@@ -608,6 +628,15 @@ func (e *Engine) Delete(ctx context.Context, name string, op client.TxnOperator)
 			return err
 		}
 	}
+
+	res, err := execReadSql(ctx, op, fmt.Sprintf(catalog.MoDatabaseRowidQueryFormat, accountId, name))
+	if err != nil {
+		return err
+	}
+	if len(res.Batches) != 1 || res.Batches[0].Vecs[0].Length() != 1 {
+		panic("delete table failed: query failed")
+	}
+	rowId = vector.GetFixedAt[types.Rowid](res.Batches[0].Vecs[0], 0)
 
 	var packer *types.Packer
 	put := e.packerPool.Get(&packer)

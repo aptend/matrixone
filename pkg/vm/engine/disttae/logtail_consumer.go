@@ -16,7 +16,6 @@ package disttae
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
 	"strings"
 	"sync"
@@ -30,7 +29,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
-	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
@@ -540,6 +538,84 @@ func (c *PushClient) waitTimestamp() {
 	}
 }
 
+func (c *PushClient) replayCatalogCache(ctx context.Context, e *Engine) error {
+	// replay mo_catalog cache
+	ts := c.receivedLogTailTime.getTimestamp()
+	typeTs := types.TimestampToTS(ts)
+	op, err := e.cli.New(ctx, timestamp.Timestamp{}, client.WithSkipPushClientReady(), client.WithSnapshotTS(ts))
+	if err != nil {
+		return err
+	}
+	_ = e.New(ctx, op)
+
+	// read databases
+	result, err := execReadSql(ctx, op, catalog.MoDatabaseBatchQuery)
+	if err != nil {
+		return err
+	}
+	logutil.Infof("yyyy read mo_catalog.mo_databases %v rows", stringify(result.Batches, func(b any) string {
+		return fmt.Sprintf("%d", b.(*batch.Batch).RowCount())
+	}))
+	defer result.Close()
+	for _, b := range result.Batches {
+		if err = fillTsVecForSysTableQueryBatch(b, typeTs, result.Mp); err != nil {
+			return err
+		}
+		e.catalog.InsertDatabase(b)
+	}
+
+	// read tables
+	result, err = execReadSql(ctx, op, catalog.MoTablesBatchQuery)
+	if err != nil {
+		return err
+	}
+	logutil.Infof("yyyy read mo_catalog.mo_tables %v rows", stringify(result.Batches, func(b any) string {
+		return fmt.Sprintf("%d", b.(*batch.Batch).RowCount())
+	}))
+	defer result.Close()
+	for _, b := range result.Batches {
+		if err = fillTsVecForSysTableQueryBatch(b, typeTs, result.Mp); err != nil {
+			return err
+		}
+		e.catalog.InsertTable(b)
+	}
+
+	// read columns
+	result, err = execReadSql(ctx, op, catalog.MoColumnsBatchQuery)
+	if err != nil {
+		return err
+	}
+	defer result.Close()
+	logutil.Infof("yyyy read mo_catalog.mo_columns %v rows", stringify(result.Batches, func(b any) string {
+		return fmt.Sprintf("%d", b.(*batch.Batch).RowCount())
+	}))
+
+	if isColumnsBatchPerfectlySplitted(result.Batches) {
+		for _, b := range result.Batches {
+			if err = fillTsVecForSysTableQueryBatch(b, typeTs, result.Mp); err != nil {
+				return err
+			}
+			e.catalog.InsertColumns(b)
+		}
+	} else {
+		bat := result.Batches[0]
+		for _, b := range result.Batches[1:] {
+			bat, err = bat.Append(ctx, result.Mp, b)
+			if err != nil {
+				return err
+			}
+		}
+		if err := fillTsVecForSysTableQueryBatch(bat, typeTs, result.Mp); err != nil {
+			return err
+		}
+		e.catalog.InsertColumns(bat)
+	}
+
+	e.catalog.UpdateStart(typeTs)
+	return nil
+
+}
+
 func (c *PushClient) connect(ctx context.Context, e *Engine) {
 	if c.connector.first.Load() {
 		c.startConsumers(ctx, e)
@@ -560,6 +636,11 @@ func (c *PushClient) connect(ctx context.Context, e *Engine) {
 				continue
 			}
 			c.waitTimestamp()
+
+			if err := c.replayCatalogCache(ctx, e); err != nil {
+				panic(err)
+			}
+
 			e.setPushClientStatus(true)
 			c.connector.first.Store(false)
 			return
@@ -610,6 +691,11 @@ func (c *PushClient) connect(ctx context.Context, e *Engine) {
 		}
 
 		c.waitTimestamp()
+
+		if err := c.replayCatalogCache(ctx, e); err != nil {
+			panic(err)
+		}
+
 		e.setPushClientStatus(true)
 		logutil.Infof("%s %s: connected to server", logTag, c.serviceID)
 
@@ -1671,17 +1757,17 @@ func hackConsumeLogtail(
 		primarySeqnum = catalog.MO_TABLES_CPKEY_IDX
 		for i := 0; i < len(lt.Commands); i++ {
 			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
-				bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
-				if lt.Commands[i].EntryType == api.Entry_Insert {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy insert table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(i)))
-					}
-				} else {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy delete table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
-					}
-				}
+				// bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
+				// rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
+				// if lt.Commands[i].EntryType == api.Entry_Insert {
+				// 	for i, row := range rowid {
+				// 		logutil.Infof("yyyyy insert table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(i)))
+				// 	}
+				// } else {
+				// 	for i, row := range rowid {
+				// 		logutil.Infof("yyyyy delete table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
+				// 	}
+				// }
 			}
 			if err := consumeEntry(ctx, primarySeqnum,
 				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
@@ -1694,19 +1780,19 @@ func hackConsumeLogtail(
 	case catalog.MO_DATABASE_ID:
 		primarySeqnum = catalog.MO_DATABASE_CPKEY_IDX
 		for i := 0; i < len(lt.Commands); i++ {
-			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
-				bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
-				if lt.Commands[i].EntryType == api.Entry_Insert {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy insert cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_DATABASE_CPKEY_IDX].GetBytesAt(i)))
-					}
-				} else {
-					for i, row := range rowid {
-						logutil.Infof("yyyyy delete cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
-					}
-				}
-			}
+			// if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
+			// 	bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
+			// 	rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
+			// 	if lt.Commands[i].EntryType == api.Entry_Insert {
+			// 		for i, row := range rowid {
+			// 			logutil.Infof("yyyyy insert cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_DATABASE_CPKEY_IDX].GetBytesAt(i)))
+			// 		}
+			// 	} else {
+			// 		for i, row := range rowid {
+			// 			logutil.Infof("yyyyy delete cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
+			// 		}
+			// 	}
+			// }
 			if err := consumeEntry(ctx, primarySeqnum,
 				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
 				return err

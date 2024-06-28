@@ -74,10 +74,10 @@ type Result struct {
 	LastInsertID uint64
 	AffectedRows uint64
 	Batches      []*batch.Batch
-	mp           *mpool.MPool
+	Mp           *mpool.MPool
 }
 
 // NewResult create result
 func NewResult(mp *mpool.MPool) Result {
-	return Result{mp: mp}
+	return Result{Mp: mp}
 }

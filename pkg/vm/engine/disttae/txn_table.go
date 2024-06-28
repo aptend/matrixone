@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -1150,6 +1151,13 @@ func (tbl *txnTable) UpdateConstraint(ctx context.Context, c *engine.ConstraintD
 	return tbl.AlterTable(ctx, c, []*api.AlterTableReq{req})
 }
 
+// Note:
+//
+// 1. It is insufficeint to use txn.CreateTable to check, which contains newly-created table or newly-altered table in txn.
+// Imagine altering a normal table twice in a single txn,
+// and then the second alter will be treated as an operation on a newly-created table if txn.CreateTable is used.
+//
+// 2. This check depends on replaying all catalog cache when cn starts.
 func (tbl *txnTable) isCreatedInTxn(name string) bool {
 	item := &cache.TableItem{
 		Name:       name,
@@ -1226,8 +1234,6 @@ func (tbl *txnTable) AlterTable(ctx context.Context, c *engine.ConstraintDef, re
 	// 0. check if the table is created in txn.
 	// For a table created in txn, alter means to recreate table and put relating dml/alter batch behind the new create batch.
 	// For a normal table, alter means sending Alter request to TN, no creating command, and no dropping command.
-	// Note: txn.CreateTable can't used to check, which contains newly-created table or newly-altered table in txn.
-	// Imagine altering a normal table twice in a single txn, where the second alter will be treated as on operation on a newly-created table.
 	createdInTxn := tbl.isCreatedInTxn(oldTableName)
 	if !createdInTxn {
 		tbl.version += 1
@@ -1530,18 +1536,22 @@ func (tbl *txnTable) GetDBID(ctx context.Context) uint64 {
 	return tbl.db.databaseId
 }
 
-func stringify[T fmt.Stringer](s []T) string {
+func stringify(req any, f func(any) string) string {
 	buf := &bytes.Buffer{}
+	v := reflect.ValueOf(req)
 	buf.WriteRune('[')
-	for i, v := range s {
-		if i > 0 {
-			buf.WriteRune(' ')
-			buf.WriteRune(' ')
+	if v.Kind() == reflect.Slice {
+
+		for i := 0; i < v.Len(); i++ {
+			if i > 0 {
+				buf.WriteRune(' ')
+				buf.WriteRune(' ')
+			}
+			buf.WriteString(f(v.Index(i).Interface()))
 		}
-		buf.WriteString(v.String())
 	}
 	buf.WriteRune(']')
-	buf.WriteString(fmt.Sprintf("[%d]", len(s)))
+	buf.WriteString(fmt.Sprintf("[%d]", v.Len()))
 	return buf.String()
 }
 

@@ -424,9 +424,9 @@ func (p *PartitionState) HandleObjectInsert(ctx context.Context, bat *api.Batch,
 		var objEntry ObjectEntry
 
 		objEntry.ObjectStats = objectio.ObjectStats(statsVec.GetBytesAt(idx))
-		if p.tid <= 3 {
-			logutil.Infof("table %d objmeta yyyy %v, state %v", p.tid, objEntry.ObjectStats.String(), stateCol[idx])
-		}
+		// if p.tid <= 3 {
+		// 	logutil.Infof("table %d objmeta yyyy %v, state %v", p.tid, objEntry.ObjectStats.String(), stateCol[idx])
+		// }
 		if objEntry.ObjectStats.BlkCnt() == 0 || objEntry.ObjectStats.Rows() == 0 {
 			logutil.Errorf("skip empty object stats when HandleObjectInsert, %s\n", objEntry.String())
 			continue

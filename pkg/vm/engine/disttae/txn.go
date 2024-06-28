@@ -1008,11 +1008,6 @@ func (txn *Transaction) getCachedTable(
 	if v, ok := txn.tableCache.tableMap.Load(k); ok {
 		tbl = v.(*txnTable)
 
-		tblKey := cache.TableKey{
-			AccountId:  k.accountId,
-			DatabaseId: k.databaseId,
-			Name:       k.name,
-		}
 		var catache *cache.CatalogCache
 		var err error
 		if !txn.op.IsSnapOp() {
@@ -1025,14 +1020,18 @@ func (txn *Transaction) getCachedTable(
 				return nil
 			}
 		}
-		val := catache.GetSchemaVersion(tblKey)
-		if val != nil {
-			if val.Ts.Greater(tbl.lastTS) && val.Version != tbl.version {
-				txn.tableCache.tableMap.Delete(genTableKey(k.accountId, k.name, k.databaseId))
-				return nil
-			}
+		tblKey := &cache.TableChangeQuery{
+			AccountId:  k.accountId,
+			DatabaseId: k.databaseId,
+			Name:       k.name,
+			Version:    tbl.version,
+			TableId:    tbl.tableId,
+			Ts:         tbl.lastTS,
 		}
-
+		if catache.HasNewerVersion(tblKey) {
+			txn.tableCache.tableMap.Delete(genTableKey(k.accountId, k.name, k.databaseId))
+			return nil
+		}
 	}
 	return tbl
 }

@@ -305,9 +305,11 @@ func (client *txnClient) New(
 		_ = op.Rollback(ctx)
 		return nil, err
 	}
-	if err := op.UpdateSnapshot(ctx, ts); err != nil {
-		_ = op.Rollback(ctx)
-		return nil, err
+	if !op.skipWaitPushClient {
+		if err := op.UpdateSnapshot(ctx, ts); err != nil {
+			_ = op.Rollback(ctx)
+			return nil, err
+		}
 	}
 
 	util.LogTxnSnapshotTimestamp(
@@ -461,18 +463,20 @@ func (client *txnClient) openTxn(op *txnOperator) error {
 		client.mu.Unlock()
 	}()
 
-	for client.mu.state == paused {
-		if client.normalStateNoWait {
-			return moerr.NewInternalErrorNoCtx("cn service is not ready, retry later")
-		}
+	if !op.skipWaitPushClient {
+		for client.mu.state == paused {
+			if client.normalStateNoWait {
+				return moerr.NewInternalErrorNoCtx("cn service is not ready, retry later")
+			}
 
-		util.GetLogger().Warn("txn client is in pause state, wait for it to be ready",
-			zap.String("txn ID", hex.EncodeToString(op.txnID)))
-		// Wait until the txn client's state changed to normal, and it will probably take
-		// no more than 5 seconds in theory.
-		client.mu.cond.Wait()
-		util.GetLogger().Warn("txn client is in ready state",
-			zap.String("txn ID", hex.EncodeToString(op.txnID)))
+			util.GetLogger().Warn("txn client is in pause state, wait for it to be ready",
+				zap.String("txn ID", hex.EncodeToString(op.txnID)))
+			// Wait until the txn client's state changed to normal, and it will probably take
+			// no more than 5 seconds in theory.
+			client.mu.cond.Wait()
+			util.GetLogger().Warn("txn client is in ready state",
+				zap.String("txn ID", hex.EncodeToString(op.txnID)))
+		}
 	}
 
 	if !op.options.UserTxn() ||

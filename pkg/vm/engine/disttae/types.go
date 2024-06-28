@@ -671,8 +671,6 @@ type txnDatabase struct {
 	databaseCreateSql string
 	//txn               *Transaction
 	op client.TxnOperator
-
-	rowId types.Rowid
 }
 
 type tableKey struct {

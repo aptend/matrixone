@@ -27,6 +27,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
+	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
@@ -557,6 +558,16 @@ func (c *PushClient) connect(ctx context.Context, e *Engine) {
 				continue
 			}
 			c.waitTimestamp()
+
+			// TODO(aptend): retore catalog cache
+			ts := c.receivedLogTailTime.getTimestamp()
+			op, _ := e.cli.New(ctx, timestamp.Timestamp{}, client.WithSkipPushClientReady(), client.WithSnapshotTS(ts))
+			e.New(ctx, op)
+			result, _ := execReadSql(ctx, op, "select * from mo_catalog.mo_database")
+			logutil.Infof("yyyy read mo_catalog.mo_databases %v rows", stringify(result.Batches, func(b any) string {
+				return fmt.Sprintf("%d", b.(*batch.Batch).RowCount())
+			}))
+
 			e.setPushClientStatus(true)
 			c.connector.first.Store(false)
 			return
@@ -607,6 +618,9 @@ func (c *PushClient) connect(ctx context.Context, e *Engine) {
 		}
 
 		c.waitTimestamp()
+
+		// TODO(aptend) retore catalog cache
+
 		e.setPushClientStatus(true)
 		logutil.Infof("%s %s: connected to server", logTag, c.serviceID)
 

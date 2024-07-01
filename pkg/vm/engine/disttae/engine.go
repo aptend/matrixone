@@ -244,6 +244,14 @@ func (e *Engine) Database(ctx context.Context, name string,
 	if err != nil {
 		return nil, err
 	}
+	if name == catalog.MO_CATALOG {
+		db := &txnDatabase{
+			op:           op,
+			databaseId:   catalog.MO_CATALOG_ID,
+			databaseName: name,
+		}
+		return db, nil
+	}
 	accountId, err := defines.GetAccountId(ctx)
 	if err != nil {
 		return nil, err
@@ -257,15 +265,6 @@ func (e *Engine) Database(ctx context.Context, name string,
 
 	if v, ok := txn.databaseMap.Load(key); ok {
 		return v.(*txnDatabase), nil
-	}
-
-	if name == catalog.MO_CATALOG {
-		db := &txnDatabase{
-			op:           op,
-			databaseId:   catalog.MO_CATALOG_ID,
-			databaseName: name,
-		}
-		return db, nil
 	}
 
 	item := &cache.DatabaseItem{

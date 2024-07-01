@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -1530,18 +1531,22 @@ func (tbl *txnTable) GetDBID(ctx context.Context) uint64 {
 	return tbl.db.databaseId
 }
 
-func stringify[T fmt.Stringer](s []T) string {
+func stringify(req any, f func(any) string) string {
 	buf := &bytes.Buffer{}
+	v := reflect.ValueOf(req)
 	buf.WriteRune('[')
-	for i, v := range s {
-		if i > 0 {
-			buf.WriteRune(' ')
-			buf.WriteRune(' ')
+	if v.Kind() == reflect.Slice {
+
+		for i := 0; i < v.Len(); i++ {
+			if i > 0 {
+				buf.WriteRune(' ')
+				buf.WriteRune(' ')
+			}
+			buf.WriteString(f(v.Index(i).Interface()))
 		}
-		buf.WriteString(v.String())
 	}
 	buf.WriteRune(']')
-	buf.WriteString(fmt.Sprintf("[%d]", len(s)))
+	buf.WriteString(fmt.Sprintf("[%d]", v.Len()))
 	return buf.String()
 }
 

@@ -15,7 +15,6 @@
 package cache
 
 import (
-	"encoding/hex"
 	"sort"
 	"sync"
 
@@ -362,7 +361,7 @@ func (cc *CatalogCache) InsertTable(bat *batch.Batch) {
 
 		cc.tables.data.Set(item)
 		cc.tables.cpkeyIndex.Set(item)
-		logutil.Infof("yyyyy insert table %v-%v-%s, %v", item.AccountId, item.DatabaseId, item.Name, hex.EncodeToString(pks.GetBytesAt(i)))
+		// logutil.Infof("yyyyy insert table %v-%v-%s, %v", item.AccountId, item.DatabaseId, item.Name, hex.EncodeToString(pks.GetBytesAt(i)))
 	}
 }
 
@@ -476,7 +475,7 @@ func (cc *CatalogCache) InsertDatabase(bat *batch.Batch) {
 		item.CPKey = append(item.CPKey, pks.GetBytesAt(i)...)
 		cc.databases.data.Set(item)
 		cc.databases.cpkeyIndex.Set(item)
-		logutil.Infof("yyyyy insert db %v-%v cpk %v, %v", item.AccountId, item.Name, item.Rowid.ShortStringEx(), hex.EncodeToString(pks.GetBytesAt(i)))
+		// logutil.Infof("yyyyy insert db %v-%v cpk %v, %v", item.AccountId, item.Name, item.Rowid.ShortStringEx(), hex.EncodeToString(pks.GetBytesAt(i)))
 	}
 }
 

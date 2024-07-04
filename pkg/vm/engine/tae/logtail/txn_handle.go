@@ -255,6 +255,13 @@ func (b *TxnLogtailRespBuilder) buildLogtailEntry(tid, dbid uint64, tableName, d
 	if delete {
 		entryType = api.Entry_Delete
 	}
+	if b.txn.GetMemo().IsFlushOrMerge &&
+		entryType == api.Entry_Delete &&
+		tid <= pkgcatalog.MO_TABLES_ID &&
+		tableName[0] != '_' /* noraml deletes in flush or merge for mo_database or mo_tables */ {
+		tableName = fmt.Sprintf("trans_del-%v", tableName)
+	}
+
 	entry := &api.Entry{
 		EntryType:    entryType,
 		TableId:      tid,

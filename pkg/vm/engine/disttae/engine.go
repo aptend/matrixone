@@ -44,7 +44,6 @@ import (
 	client2 "github.com/matrixorigin/matrixone/pkg/queryservice/client"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
-	"github.com/matrixorigin/matrixone/pkg/util"
 	"github.com/matrixorigin/matrixone/pkg/util/errutil"
 	"github.com/matrixorigin/matrixone/pkg/util/executor"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
@@ -552,12 +551,6 @@ func (e *Engine) GetRelationById(ctx context.Context, op client.TxnOperator, tab
 	}
 
 	if rel == nil {
-		if tableId == 2 {
-			logutil.Errorf("can not find table by id %d: accountId: %v", tableId, accountId)
-			tbls, tblIds := catache.Tables(accountId, 1, op.SnapshotTS())
-			logutil.Errorf("tables: %v, tableIds: %v", tbls, tblIds)
-			util.CoreDump()
-		}
 		return "", "", nil, moerr.NewInternalError(ctx, "can not find table by id %d: accountId: %v ", tableId, accountId)
 	}
 	return

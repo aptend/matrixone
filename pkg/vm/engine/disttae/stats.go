@@ -426,6 +426,7 @@ func (gs *GlobalStats) updateTableStats(key pb.StatsInfoKey) {
 			return
 		}
 		for _, partitionTableName := range partitionInfo.PartitionTableNames {
+			// TODO: get the right account id
 			partitionTable := gs.engine.getLatestCatalogCache().GetTableByName(key.DatabaseID, partitionTableName)
 			partitionsTableDef = append(partitionsTableDef, partitionTable.TableDef)
 			ps := gs.engine.getOrCreateLatestPart(key.DatabaseID, partitionTable.Id).Snapshot()

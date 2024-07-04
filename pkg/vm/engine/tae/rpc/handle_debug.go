@@ -281,6 +281,7 @@ func (h *Handle) HandleCommitMerge(
 	}()
 	txn, err := h.db.GetOrCreateTxnWithMeta(nil, meta.GetID(),
 		types.TimestampToTS(meta.GetSnapshotTS()))
+	txn.GetMemo().IsFlushOrMerge = true
 	if err != nil {
 		return
 	}

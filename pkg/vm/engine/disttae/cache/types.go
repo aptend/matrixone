@@ -59,7 +59,7 @@ type CatalogCache struct {
 // database cache:
 //
 //		. get by database key
-//	    . del by rowid
+//	    . del by consulting cpkey
 //	    . gc by timestamp
 type databaseCache struct {
 	data       *btree.BTreeG[*DatabaseItem]
@@ -69,7 +69,7 @@ type databaseCache struct {
 // table cache:
 //
 //		. get by table key
-//	    . del by rowid
+//	    . del by consulting cpkey
 //	    . gc by timestamp
 type tableCache struct {
 	data       *btree.BTreeG[*TableItem]

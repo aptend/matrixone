@@ -2199,11 +2199,14 @@ func (tbl *txnTable) transferDeletes(
 							i)
 						rowids[i] = newId
 						beTransfered++
+					} else {
+						logutil.Infof("%v-%v transfer deletes failed, note: %v, oldrowid: %v",
+							tbl.tableId, tbl.tableName, entry.note, rowids[i].ShortStringEx())
 					}
 				}
 			}
 			if beTransfered != toTransfer {
-				return moerr.NewInternalErrorNoCtx("transfer deletes failed")
+				return moerr.NewInternalErrorNoCtx("%v-%v transfer deletes failed %v/%v", tbl.tableId, tbl.tableName, beTransfered, toTransfer)
 			}
 		}
 	}

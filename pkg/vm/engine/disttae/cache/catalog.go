@@ -59,8 +59,6 @@ func (cc *CatalogCache) UpdateDuration(start types.TS, end types.TS) {
 	logutil.Infof("yyyyy update catalog-cache duration %v-%v", start.ToString(), end.ToString())
 }
 
-var _ = (&CatalogCache{}).UpdateStart
-
 func (cc *CatalogCache) UpdateStart(ts types.TS) {
 	cc.mu.Lock()
 	defer cc.mu.Unlock()
@@ -78,42 +76,42 @@ func (cc *CatalogCache) CanServe(ts types.TS) bool {
 
 func (cc *CatalogCache) GC(ts timestamp.Timestamp) {
 	{ // table cache gc
-		var items []*TableItem
-
-		cc.tables.data.Scan(func(item *TableItem) bool {
-			if len(items) > GcBuffer {
-				return false
-			}
-			if item.Ts.Less(ts) {
-				items = append(items, item)
-			}
-			return true
-		})
-		for _, item := range items {
-			cc.tables.data.Delete(item)
-			if !item.deleted {
-				cc.tables.cpkeyIndex.Delete(item)
-			}
-		}
+		// var items []*TableItem
+		// TODO(aptend)gc stale deleted items
+		// cc.tables.data.Scan(func(item *TableItem) bool {
+		// 	if len(items) > GcBuffer {
+		// 		return false
+		// 	}
+		// 	if item.Ts.Less(ts) {
+		// 		items = append(items, item)
+		// 	}
+		// 	return true
+		// })
+		// for _, item := range items {
+		// 	cc.tables.data.Delete(item)
+		// 	if cpkItem, exist := cc.tables.cpkeyIndex.Get(item); exist && cpkItem.Ts.Less(ts) {
+		// 		cc.tables.cpkeyIndex.Delete(item)
+		// 	}
+		// }
 	}
 	{ // database cache gc
-		var items []*DatabaseItem
-
-		cc.databases.data.Scan(func(item *DatabaseItem) bool {
-			if len(items) > GcBuffer {
-				return false
-			}
-			if item.Ts.Less(ts) {
-				items = append(items, item)
-			}
-			return true
-		})
-		for _, item := range items {
-			cc.databases.data.Delete(item)
-			if !item.deleted {
-				cc.databases.cpkeyIndex.Delete(item)
-			}
-		}
+		// var items []*DatabaseItem
+		//
+		// cc.databases.data.Scan(func(item *DatabaseItem) bool {
+		// 	if len(items) > GcBuffer {
+		// 		return false
+		// 	}
+		// 	if item.Ts.Less(ts) {
+		// 		items = append(items, item)
+		// 	}
+		// 	return true
+		// })
+		// for _, item := range items {
+		// 	cc.databases.data.Delete(item)
+		// 	if cpkItem, exist := cc.databases.cpkeyIndex.Get(item); exist && cpkItem.Ts.Less(ts) {
+		// 		cc.databases.cpkeyIndex.Delete(item)
+		// 	}
+		// }
 	}
 }
 
@@ -178,6 +176,7 @@ func (cc *CatalogCache) Tables(accountId uint32, databaseId uint64,
 	return rs, rids
 }
 
+// GetTableById's complexicity is O(n)
 func (cc *CatalogCache) GetTableById(databaseId, tblId uint64) *TableItem {
 	var rel *TableItem
 
@@ -186,7 +185,7 @@ func (cc *CatalogCache) GetTableById(databaseId, tblId uint64) *TableItem {
 	}
 	// If account is much, the performance is very bad.
 	cc.tables.data.Ascend(key, func(item *TableItem) bool {
-		if item.Id == tblId {
+		if item.Id == tblId && !item.deleted {
 			rel = item
 			return false
 		}
@@ -195,14 +194,15 @@ func (cc *CatalogCache) GetTableById(databaseId, tblId uint64) *TableItem {
 	return rel
 }
 
-// GetTableByName returns the table item whose name is tableName in the database.
+// GetTableByName's complexicity is O(n)
 func (cc *CatalogCache) GetTableByName(databaseID uint64, tableName string) *TableItem {
 	var rel *TableItem
 	key := &TableItem{
 		DatabaseId: databaseID,
 	}
+	// if database ID is search from the first item with account id != 0
 	cc.tables.data.Ascend(key, func(item *TableItem) bool {
-		if item.Name == tableName {
+		if item.Name == tableName && !item.deleted {
 			rel = item
 			return false
 		}
@@ -283,8 +283,8 @@ func (cc *CatalogCache) DeleteTable(bat *batch.Batch) {
 		pk := cpks.GetBytesAt(i)
 		if item, ok := cc.tables.cpkeyIndex.Get(&TableItem{CPKey: pk}); ok {
 			// Note: the newItem.Id is the latest id under the name of the table,
-			// not the id that can be seen at the moment ts.
-			// Lucy thing is that the wrong tableid hold by delete item not used.
+			// not the id that should be seen at the moment ts.
+			// Lucy thing is that the wrong tableid hold by this delete item will never be used.
 			newItem := &TableItem{
 				deleted:    true,
 				Id:         item.Id,
@@ -295,6 +295,7 @@ func (cc *CatalogCache) DeleteTable(bat *batch.Batch) {
 				DatabaseId: item.DatabaseId,
 				Ts:         ts.ToTimestamp(),
 			}
+			// logutil.Infof("yyyy catalog delete table %v-%v-%s, %v", item.AccountId, item.DatabaseId, item.Name, ts.ToString())
 			cc.tables.data.Set(newItem)
 		}
 	}
@@ -369,7 +370,7 @@ func (cc *CatalogCache) InsertTable(bat *batch.Batch) {
 	cc.ParseTablesBatchAnd(bat, func(item *TableItem) {
 		cc.tables.data.Set(item)
 		cc.tables.cpkeyIndex.Set(item)
-		// logutil.Infof("yyyyy insert table %v-%v-%s, %v", item.AccountId, item.DatabaseId, item.Name, hex.EncodeToString(pks.GetBytesAt(i)))
+		// logutil.Infof("yyyyy insert table %v-%v-%s(%v), %v", item.AccountId, item.DatabaseId, item.Name, item.Id, item.Ts.String())
 	})
 }
 

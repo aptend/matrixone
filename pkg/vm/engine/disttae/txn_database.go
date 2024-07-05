@@ -127,13 +127,10 @@ func (db *txnDatabase) getTableNameById(ctx context.Context, id uint64) (string,
 				return "", err
 			}
 		}
-		tbls, tblIds := catache.Tables(
-			accountId, db.databaseId, db.op.SnapshotTS())
-		for idx, tblId := range tblIds {
-			if tblId == id {
-				tblName = tbls[idx]
-				break
-			}
+
+		item := catache.GetTableByIdAndTime(accountId, db.databaseId, id, db.op.SnapshotTS())
+		if item != nil {
+			tblName = item.Name
 		}
 	}
 	return tblName, nil
@@ -147,8 +144,8 @@ func (db *txnDatabase) getRelationById(ctx context.Context, id uint64) (string, 
 	if tblName == "" {
 		return "", nil, nil
 	}
-	rel, _ := db.Relation(ctx, tblName, nil)
-	return tblName, rel, nil
+	rel, err := db.Relation(ctx, tblName, nil)
+	return tblName, rel, err
 }
 
 func (db *txnDatabase) Relation(ctx context.Context, name string, proc any) (engine.Relation, error) {

@@ -151,10 +151,7 @@ func (cc *CatalogCache) Tables(accountId uint32, databaseId uint64,
 	}
 	mp := make(map[string]struct{})
 	cc.tables.data.Ascend(key, func(item *TableItem) bool {
-		if item.AccountId != accountId {
-			return false
-		}
-		if item.DatabaseId != databaseId {
+		if item.AccountId != accountId || item.DatabaseId != databaseId {
 			return false
 		}
 
@@ -176,39 +173,95 @@ func (cc *CatalogCache) Tables(accountId uint32, databaseId uint64,
 	return rs, rids
 }
 
-// GetTableById's complexicity is O(n)
-func (cc *CatalogCache) GetTableById(databaseId, tblId uint64) *TableItem {
+// GetTableById's complexicity is O(n), where n is the number of all tables in the database
+func (cc *CatalogCache) GetTableByIdAndTime(accountID uint32, databaseId, tblId uint64, ts timestamp.Timestamp) *TableItem {
+	// Snapshot of the table data:
+	// acc dbid tblname ts
+	//   0 42 A 5
+	//   0 42 A 4
+	//   0 42 A 3
+	//   0 42 A 2
+	//   0 42 A 1
+	//   0 42 B 1
+	//   0 42 C 2
+	//   0 42 C 1
+	// given the accountID = 0, databaseId = 42, tblId = 42421, ts = 3
+	// we want to find out which table has tblid = 42421 from the three candidates:
+	// a. 0 42 A 3
+	// b. 0 42 B 1
+	// c. 0 42 C 2
+
 	var rel *TableItem
 
 	key := &TableItem{
+		AccountId:  accountID,
 		DatabaseId: databaseId,
 	}
-	// If account is much, the performance is very bad.
+
+	prevTableName := ""
 	cc.tables.data.Ascend(key, func(item *TableItem) bool {
-		if item.Id == tblId && !item.deleted {
-			rel = item
+		if item.AccountId != accountID || item.DatabaseId != databaseId {
 			return false
 		}
+		if item.Ts.Greater(ts) {
+			return true // continue to find older version
+		}
+
+		if item.Name != prevTableName {
+			// this is the first visible item with brand new name
+			if !item.deleted && item.Id == tblId {
+				rel = item
+				return false
+			}
+			prevTableName = item.Name
+		}
+
+		// no need to check the items with the same name
 		return true
 	})
 	return rel
 }
 
-// GetTableByName's complexicity is O(n)
-func (cc *CatalogCache) GetTableByName(databaseID uint64, tableName string) *TableItem {
+func (cc *CatalogCache) scanWithOnlyDbId(did uint64, f func(*TableItem) bool) *TableItem {
 	var rel *TableItem
-	key := &TableItem{
-		DatabaseId: databaseID,
-	}
-	// if database ID is search from the first item with account id != 0
-	cc.tables.data.Ascend(key, func(item *TableItem) bool {
-		if item.Name == tableName && !item.deleted {
-			rel = item
-			return false
+
+	seenTargetDB := false
+	prevTableName := ""
+	// no accountid, it has to scan all items
+	cc.tables.data.Ascend(&TableItem{}, func(item *TableItem) bool {
+		if item.DatabaseId != did {
+			// if have never seen the target db, continue to find it
+			// if have seen the target db, stop scanning
+			return !seenTargetDB
 		}
+		if !seenTargetDB {
+			seenTargetDB = true
+		}
+		if item.Name != prevTableName {
+			if !item.deleted && f(item) {
+				rel = item
+				return false
+			}
+			prevTableName = item.Name
+		}
+
 		return true
 	})
 	return rel
+}
+
+// GetTableById's complexicity is O(n), where n is the number of all items of the table cache.
+func (cc *CatalogCache) GetTableById(databaseId, tblId uint64) *TableItem {
+	return cc.scanWithOnlyDbId(databaseId, func(item *TableItem) bool {
+		return item.Id == tblId
+	})
+}
+
+// GetTableByName's complexicity is O(n), where n is the number of all items of the table cache.
+func (cc *CatalogCache) GetTableByName(databaseID uint64, tableName string) *TableItem {
+	return cc.scanWithOnlyDbId(databaseID, func(item *TableItem) bool {
+		return item.Name == tableName
+	})
 }
 
 func (cc *CatalogCache) GetTable(tbl *TableItem) bool {

@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"runtime"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -381,80 +382,11 @@ func (e *Engine) Databases(ctx context.Context, op client.TxnOperator) ([]string
 }
 
 func (e *Engine) GetNameById(ctx context.Context, op client.TxnOperator, tableId uint64) (dbName string, tblName string, err error) {
-	var txn *Transaction
-	txn, err = txnIsValid(op)
-	if err != nil {
-		return "", "", err
-	}
-	accountId, err := defines.GetAccountId(ctx)
-	if err != nil {
-		return "", "", err
-	}
-	var db engine.Database
-	noRepCtx := errutil.ContextWithNoReport(ctx, true)
-	txn.databaseMap.Range(func(k, _ any) bool {
-		key := k.(databaseKey)
-		dbName = key.name
-		if key.accountId == accountId {
-			db, err = e.Database(noRepCtx, key.name, op)
-			if err != nil {
-				return false
-			}
-			distDb := db.(*txnDatabase)
-			tblName, err = distDb.getTableNameById(ctx, key.id)
-			if err != nil {
-				return false
-			}
-			if tblName != "" {
-				return false
-			}
-		}
-		return true
-	})
-	var catalog *cache.CatalogCache
-	if !op.IsSnapOp() {
-		catalog = e.getLatestCatalogCache()
-	} else {
-		catalog, err = e.getOrCreateSnapCatalogCache(
-			ctx,
-			types.TimestampToTS(op.SnapshotTS()))
-		if err != nil {
-			return "", "", err
-		}
-	}
-	if tblName == "" {
-		dbNames := getDatabasesExceptDeleted(accountId, catalog, txn)
-		for _, databaseName := range dbNames {
-			db, err = e.Database(noRepCtx, databaseName, op)
-			if err != nil {
-				return "", "", err
-			}
-			distDb := db.(*txnDatabase)
-			tableName, rel, err := distDb.getRelationById(noRepCtx, tableId)
-			if err != nil {
-				return "", "", err
-			}
-			if rel != nil {
-				tblName = tableName
-				dbName = databaseName
-				break
-			}
-		}
-	}
-
-	if tblName == "" {
-		return "", "", moerr.NewInternalError(ctx, "can not find table name by id %d", tableId)
-	}
-
+	dbName, tblName, _, err = e.GetRelationById(ctx, op, tableId)
 	return
 }
 
 func (e *Engine) GetRelationById(ctx context.Context, op client.TxnOperator, tableId uint64) (dbName, tableName string, rel engine.Relation, err error) {
-	var txn *Transaction
-	txn, err = txnIsValid(op)
-	if err != nil {
-		return "", "", nil, err
-	}
 	switch tableId {
 	case catalog.MO_DATABASE_ID:
 		db := &txnDatabase{
@@ -484,73 +416,44 @@ func (e *Engine) GetRelationById(ctx context.Context, op client.TxnOperator, tab
 		return catalog.MO_CATALOG, catalog.MO_COLUMNS,
 			db.openSysTable(nil, tableId, catalog.MO_COLUMNS, defs), nil
 	}
-	accountId, err := defines.GetAccountId(ctx)
+
+	noRepCtx := errutil.ContextWithNoReport(ctx, true)
+	dbs, err := e.Databases(ctx, op)
 	if err != nil {
 		return "", "", nil, err
 	}
-	var db engine.Database
-	noRepCtx := errutil.ContextWithNoReport(ctx, true)
-	txn.databaseMap.Range(func(k, _ any) bool {
-		key := k.(databaseKey)
-		dbName = key.name
-		// the mo_catalog now can be accessed by all accounts
-		if dbName == catalog.MO_CATALOG || key.accountId == accountId {
-			db, err = e.Database(noRepCtx, key.name, op)
-			if err != nil {
-				return false
-			}
-			distDb := db.(*txnDatabase)
-			tableName, rel, err = distDb.getRelationById(noRepCtx, tableId)
-			if err != nil {
-				return false
-			}
-			if rel != nil {
-				return false
-			}
-		}
-		return true
-	})
-	var catache *cache.CatalogCache
-	if !op.IsSnapOp() {
-		catache = e.getLatestCatalogCache()
-	} else {
-		catache, err = e.getOrCreateSnapCatalogCache(
-			ctx,
-			types.TimestampToTS(op.SnapshotTS()))
+	fn := func(tryDB string) error {
+		var db engine.Database
+		db, err = e.Database(noRepCtx, tryDB, op)
 		if err != nil {
+			return err
+		}
+		distDb := db.(*txnDatabase)
+		tableName, rel, err = distDb.getRelationById(noRepCtx, tableId)
+		if err != nil {
+			return err
+		}
+		if rel != nil {
+			dbName = tryDB
+		}
+		return nil
+	}
+	for _, dbname := range dbs {
+		if err := fn(dbname); err != nil {
+			return "", "", nil, err
+		}
+		if rel != nil {
+			break
+		}
+	}
+	// everyone is able to see MO_CATALOG
+	if rel == nil && !slices.Contains(dbs, catalog.MO_CATALOG) {
+		if err := fn(catalog.MO_CATALOG); err != nil {
 			return "", "", nil, err
 		}
 	}
 	if rel == nil {
-		dbNames := getDatabasesExceptDeleted(accountId, catache, txn)
-		fn := func(dbName string) error {
-			db, err = e.Database(noRepCtx, dbName, op)
-			if err != nil {
-				return err
-			}
-			distDb := db.(*txnDatabase)
-			tableName, rel, err = distDb.getRelationById(noRepCtx, tableId)
-			if err != nil {
-				return err
-			}
-			return nil
-		}
-		for _, dbName = range dbNames {
-			if err := fn(dbName); err != nil {
-				return "", "", nil, err
-			}
-			if rel != nil {
-				break
-			}
-		}
-		if rel == nil {
-			if err := fn(catalog.MO_CATALOG); err != nil {
-				return "", "", nil, err
-			}
-		}
-	}
-
-	if rel == nil {
+		accountId, _ := defines.GetAccountId(ctx)
 		return "", "", nil, moerr.NewInternalError(ctx, "can not find table by id %d: accountId: %v ", tableId, accountId)
 	}
 	return

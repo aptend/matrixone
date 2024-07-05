@@ -230,9 +230,14 @@ func (cc *CatalogCache) scanWithOnlyDbId(did uint64, f func(*TableItem) bool) *T
 	// no accountid, it has to scan all items
 	cc.tables.data.Ascend(&TableItem{}, func(item *TableItem) bool {
 		if item.DatabaseId != did {
-			// if have never seen the target db, continue to find it
-			// if have seen the target db, stop scanning
-			return !seenTargetDB
+			if did == catalog.MO_CATALOG_ID {
+				// if the target db is the catalog db, keep scanning
+				return true
+			} else {
+				// if have never seen the target db, continue to find it
+				// if have seen the target db, stop scanning
+				return !seenTargetDB
+			}
 		}
 		if !seenTargetDB {
 			seenTargetDB = true

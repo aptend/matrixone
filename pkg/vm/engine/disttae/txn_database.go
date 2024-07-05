@@ -530,7 +530,16 @@ func (db *txnDatabase) createWithID(
 
 func (db *txnDatabase) openSysTable(p *process.Process, id uint64, name string,
 	defs []engine.TableDef) engine.Relation {
-	item := db.getEng().getLatestCatalogCache().GetTableById(db.databaseId, id)
+	item := &cache.TableItem{
+		AccountId:  catalog.System_Account,
+		DatabaseId: catalog.MO_CATALOG_ID,
+		Name:       name,
+		Ts:         db.op.SnapshotTS(),
+	}
+	found := db.getEng().getLatestCatalogCache().GetTable(item)
+	if !found {
+		panic("can't find system table")
+	}
 	tbl := &txnTable{
 		//AccountID for mo_tables, mo_database, mo_columns is always 0.
 		accountId:     0,

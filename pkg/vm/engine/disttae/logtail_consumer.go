@@ -1746,71 +1746,19 @@ func hackConsumeLogtail(
 	state *logtailreplay.PartitionState,
 	lt *logtail.TableLogtail) error {
 
-	var packer *types.Packer
-	put := engine.packerPool.Get(&packer)
-	defer put.Put()
-
 	t0 := time.Now()
-	switch lt.Table.TbId {
-
-	case catalog.MO_TABLES_ID:
-		primarySeqnum = catalog.MO_TABLES_CPKEY_IDX
-		for i := 0; i < len(lt.Commands); i++ {
-			if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
-				// bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-				// rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
-				// if lt.Commands[i].EntryType == api.Entry_Insert {
-				// 	for i, row := range rowid {
-				// 		logutil.Infof("yyyyy insert table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(i)))
-				// 	}
-				// } else {
-				// 	for i, row := range rowid {
-				// 		logutil.Infof("yyyyy delete table cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
-				// 	}
-				// }
-			}
-			if err := consumeEntry(ctx, primarySeqnum,
-				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
-				return err
-			}
-		}
-		v2.LogtailUpdatePartitonConsumeLogtailCatalogTableDurationHistogram.Observe(time.Since(t0).Seconds())
-		return nil
-
-	case catalog.MO_DATABASE_ID:
-		primarySeqnum = catalog.MO_DATABASE_CPKEY_IDX
-		for i := 0; i < len(lt.Commands); i++ {
-			// if !logtailreplay.IsMetaTable(lt.Commands[i].TableName) {
-			// 	bat, _ := batch.ProtoBatchToBatch(lt.Commands[i].Bat)
-			// 	rowid := vector.MustFixedCol[types.Rowid](bat.GetVector(0))
-			// 	if lt.Commands[i].EntryType == api.Entry_Insert {
-			// 		for i, row := range rowid {
-			// 			logutil.Infof("yyyyy insert cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2+catalog.MO_DATABASE_CPKEY_IDX].GetBytesAt(i)))
-			// 		}
-			// 	} else {
-			// 		for i, row := range rowid {
-			// 			logutil.Infof("yyyyy delete cpk %v, %v", row.String(), hex.EncodeToString(bat.Vecs[2].GetBytesAt(i)))
-			// 		}
-			// 	}
-			// }
-			if err := consumeEntry(ctx, primarySeqnum,
-				engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
-				return err
-			}
-		}
-		v2.LogtailUpdatePartitonConsumeLogtailCatalogTableDurationHistogram.Observe(time.Since(t0).Seconds())
-		return nil
-
-	}
-
-	t0 = time.Now()
 	for i := 0; i < len(lt.Commands); i++ {
 		if err := consumeEntry(ctx, primarySeqnum,
 			engine, engine.getLatestCatalogCache(), state, &lt.Commands[i]); err != nil {
 			return err
 		}
 	}
-	v2.LogtailUpdatePartitonConsumeLogtailCommandsDurationHistogram.Observe(time.Since(t0).Seconds())
+
+	if lt.Table.TbId == catalog.MO_DATABASE_ID || lt.Table.TbId == catalog.MO_TABLES_ID || lt.Table.TbId == catalog.MO_COLUMNS_ID {
+		v2.LogtailUpdatePartitonConsumeLogtailCatalogTableDurationHistogram.Observe(time.Since(t0).Seconds())
+	} else {
+		v2.LogtailUpdatePartitonConsumeLogtailCatalogTableDurationHistogram.Observe(time.Since(t0).Seconds())
+	}
 
 	return nil
 }

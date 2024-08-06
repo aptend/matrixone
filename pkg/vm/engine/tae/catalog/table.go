@@ -342,6 +342,10 @@ type TableStat struct {
 	Csize     int
 }
 
+func (entry *TableEntry) ObjectCnt() int {
+	return entry.link.tree.Load().Len()
+}
+
 func (entry *TableEntry) ObjectStats(level common.PPLevel, start, end int) (stat TableStat, w bytes.Buffer) {
 
 	it := entry.MakeObjectIt(true)

@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
@@ -43,6 +44,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnbase"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnimpl"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/wal"
+	"go.uber.org/zap"
 )
 
 const (
@@ -95,7 +97,7 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 		opts.Fs = objectio.TmpNewFileservice(ctx, path.Join(dirname, "data"))
 	}
 	if opts.LocalFs == nil {
-		opts.LocalFs = objectio.TmpNewFileservice(ctx, path.Join(dirname, "data"))
+		opts.LocalFs = objectio.TmpNewFileservice(ctx, path.Join(dirname, "local-data"))
 	}
 
 	db = &DB{
@@ -297,7 +299,64 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 
 	// For debug or test
 	// logutil.Info(db.Catalog.SimplePPString(common.PPL2))
+	err = db.TryUpgradeForThreeTables()
+	if err != nil {
+		logutil.Fatal("open-tae", common.OperationField("upgrade"), common.AnyField("err", err))
+	}
 	return
+}
+
+func (db *DB) TryUpgradeForThreeTables() error {
+	ctx := context.Background()
+	txn, err := db.TxnMgr.StartTxn(nil)
+	if err != nil {
+		return err
+	}
+	moCatalog, err := txn.GetDatabaseByID(pkgcatalog.MO_CATALOG_ID)
+	if err != nil {
+		return err
+	}
+	moTbl, err := moCatalog.GetRelationByID(pkgcatalog.MO_TABLES_ID)
+	if err != nil {
+		return err
+	}
+	if cnt := moTbl.GetMeta().(*catalog.TableEntry).ObjectCnt(); cnt > 0 {
+		_, b := moTbl.GetMeta().(*catalog.TableEntry).ObjectStats(common.PPL3, 0, -1)
+		logutil.Info("yyyy skip", zap.Int("cnt", cnt), zap.String("stats", b.String()))
+		return nil
+	}
+	moDb, err := moCatalog.GetRelationByID(pkgcatalog.MO_DATABASE_ID)
+	if err != nil {
+		return err
+	}
+	moCol, err := moCatalog.GetRelationByID(pkgcatalog.MO_COLUMNS_ID)
+	if err != nil {
+		return err
+	}
+
+	moDBBat, moTblBat, moColBat, err := collectThreeTableBatch(db.Catalog)
+	if err != nil {
+		return err
+	}
+
+	if err = moDb.Append(ctx, moDBBat); err != nil {
+		return err
+	}
+	if err = moTbl.Append(ctx, moTblBat); err != nil {
+		return err
+	}
+	if err = moCol.Append(ctx, moColBat); err != nil {
+		return err
+	}
+	if err = txn.Commit(ctx); err != nil {
+		return err
+	}
+
+	currTs := types.BuildTS(time.Now().UTC().UnixNano(), 42)
+	db.BGCheckpointRunner.FlushTable(ctx, pkgcatalog.MO_CATALOG_ID, pkgcatalog.MO_DATABASE_ID, currTs)
+	db.BGCheckpointRunner.FlushTable(ctx, pkgcatalog.MO_CATALOG_ID, pkgcatalog.MO_TABLES_ID, currTs)
+	db.BGCheckpointRunner.FlushTable(ctx, pkgcatalog.MO_CATALOG_ID, pkgcatalog.MO_COLUMNS_ID, currTs)
+	return nil
 }
 
 // TODO: remove it

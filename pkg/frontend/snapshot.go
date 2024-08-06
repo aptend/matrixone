@@ -631,7 +631,7 @@ func restoreToDatabaseOrTable(
 		}
 	}
 
-	getLogger(sid).Info(fmt.Sprintf("[%s] start to create database: %v", snapshotName, dbName))
+	getLogger(sid).Info(fmt.Sprintf("[%s] start to create database: %v", snapshotName, dbName), zap.String("txn", bh.Exec()))
 	if err = bh.Exec(toCtx, "create database if not exists "+dbName); err != nil {
 		return
 	}

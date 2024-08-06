@@ -26,7 +26,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 )
 
-func newAttributeDef(name string, typ types.Type, isPrimary bool) engine.TableDef {
+func newAttributeDef(name string, typ types.Type, isPrimary, isHidden bool) engine.TableDef {
 	return &engine.AttributeDef{
 		Attr: engine.Attribute{
 			Type:     typ,
@@ -34,7 +34,7 @@ func newAttributeDef(name string, typ types.Type, isPrimary bool) engine.TableDe
 			Primary:  isPrimary,
 			Alg:      compress.Lz4,
 			Default:  &plan.Default{NullAbility: true},
-			IsHidden: name == CPrimaryKeyColName,
+			IsHidden: isHidden,
 		},
 	}
 }

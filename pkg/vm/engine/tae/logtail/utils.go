@@ -1215,18 +1215,7 @@ func (data *CNCheckpointData) GetTableMeta(tableID uint64, version uint32, loc o
 		cnBlkInsTableMeta.locations = blkCNInsStr
 		tableMeta.tables[CNBlockInsert] = cnBlkInsTableMeta
 	}
-	// else {
-	// 	///// xxxxx
-	// 	if tableID == pkgcatalog.MO_DATABASE_ID ||
-	// 		tableID == pkgcatalog.MO_TABLES_ID ||
-	// 		tableID == pkgcatalog.MO_COLUMNS_ID {
-	// 		if len(blkDelStr) > 0 {
-	// 			blkDeleteTableMeta := NewTableMeta()
-	// 			blkDeleteTableMeta.locations = blkDelStr
-	// 			tableMeta.tables[BlockDelete] = blkDeleteTableMeta
-	// 		}
-	// 	}
-	// }
+
 	if len(segDelStr) > 0 {
 		segDeleteTableMeta := NewTableMeta()
 		segDeleteTableMeta.locations = segDelStr

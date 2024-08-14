@@ -226,11 +226,11 @@ func (bat *Batch) String() string {
 	return bat.PPString(10)
 }
 
-func (bat *Batch) PPString(num int) string {
+func (bat *Batch) PPString(num int, opts ...common.TypePrintOpt) string {
 	var w bytes.Buffer
 	for i, vec := range bat.Vecs {
 		_, _ = w.WriteString(fmt.Sprintf("[Name=%s]", bat.Attrs[i]))
-		_, _ = w.WriteString(vec.PPString(num))
+		_, _ = w.WriteString(vec.PPString(num, opts...))
 		_ = w.WriteByte('\n')
 	}
 	return w.String()
@@ -497,6 +497,16 @@ func (bat *Batch) Append(src *Batch) (err error) {
 		vec.Extend(src.Vecs[i])
 	}
 	return
+}
+
+func (bat *Batch) ShrinkDeletes() {
+	if bat.Deletes == nil || bat.Deletes.IsEmpty() {
+		return
+	}
+	for _, vec := range bat.Vecs {
+		vec.Shrink(bat.Deletes.ToI64Arrary())
+	}
+	bat.Deletes = nil
 }
 
 // extend vector with same name, consume src batch

@@ -175,10 +175,23 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 		checkpoint.WithReserveWALEntryCount(opts.CheckpointCfg.ReservedWALEntryCount))
 
 	now := time.Now()
-	checkpointed, ckpLSN, valid, err := db.BGCheckpointRunner.Replay(dataFactory)
+	ckpReplayer := db.BGCheckpointRunner.Replay(dataFactory)
+	if err = ckpReplayer.ReadCkpFiles(); err != nil {
+		panic(err)
+	}
+	checkpointed, ckpLSN, valid, err := ckpReplayer.ReplayThreeTablesObjectlist()
 	if err != nil {
 		panic(err)
 	}
+	// What is needed is only the startTs and txnID
+	txnIdAlloc := common.NewTxnIDAllocator()
+	readTxn := txnFactory(nil, nil, txnIdAlloc.Alloc(), checkpointed, types.TS{})
+	ckpReplayer.ReplayCatalog(readTxn)
+
+	if err = ckpReplayer.ReplayObjectlist(); err != nil {
+		panic(err)
+	}
+
 	logutil.Info("open-tae", common.OperationField("replay"),
 		common.OperandField("checkpoints"),
 		common.AnyField("cost", time.Since(now)),

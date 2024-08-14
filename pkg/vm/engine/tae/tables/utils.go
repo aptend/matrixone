@@ -20,7 +20,9 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
+	"github.com/matrixorigin/matrixone/pkg/container/nulls"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/db/dbutils"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index/indexwrapper"
@@ -68,17 +70,19 @@ func LoadPersistedColumnDatas(
 	colIdxs []int,
 	location objectio.Location,
 	mp *mpool.MPool,
-) ([]containers.Vector, error) {
+	tsForAppendable *types.TS,
+) ([]containers.Vector, *nulls.Nulls, error) {
 	cols := make([]uint16, 0)
 	typs := make([]types.Type, 0)
 	vectors := make([]containers.Vector, len(colIdxs))
+	var deletes *nulls.Nulls
 	phyAddIdx := -1
 	for i, colIdx := range colIdxs {
 		def := schema.ColDefs[colIdx]
 		if def.IsPhyAddr() {
 			vec, err := model.PreparePhyAddrData(&id.BlockID, 0, location.Rows(), rt.VectorPool.Transient)
 			if err != nil {
-				return nil, err
+				return nil, deletes, err
 			}
 			phyAddIdx = i
 			vectors[phyAddIdx] = vec
@@ -88,7 +92,15 @@ func LoadPersistedColumnDatas(
 		typs = append(typs, def.Type)
 	}
 	if len(cols) == 0 {
-		return vectors, nil
+		return vectors, deletes, nil
+	}
+
+	if tsForAppendable != nil {
+		deletes = nulls.NewWithSize(1024)
+		cols = append(cols, objectio.SEQNUM_COMMITTS)
+		defer func() {
+			cols = cols[:len(cols)-1]
+		}()
 	}
 	//Extend lifetime of vectors is without the function.
 	//need to copy. closeFunc will be nil.
@@ -101,7 +113,16 @@ func LoadPersistedColumnDatas(
 		true,
 		rt.VectorPool.Transient)
 	if err != nil {
-		return nil, err
+		return nil, deletes, err
+	}
+	if tsForAppendable != nil {
+		commits := vector.MustFixedCol[types.TS](vecs[len(vecs)-1].GetDownstreamVector())
+		for i := 0; i < len(commits); i++ {
+			if commits[i].Greater(tsForAppendable) {
+				deletes.Add(uint64(i))
+			}
+		}
+		vecs = vecs[:len(vecs)-1]
 	}
 	for i, vec := range vecs {
 		idx := i
@@ -110,7 +131,8 @@ func LoadPersistedColumnDatas(
 		}
 		vectors[idx] = vec
 	}
-	return vectors, nil
+
+	return vectors, deletes, nil
 }
 
 func ReadPersistedBlockRow(location objectio.Location) int {

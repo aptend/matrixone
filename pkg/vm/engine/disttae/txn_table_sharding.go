@@ -57,6 +57,7 @@ func newTxnTableWithItem(
 		partition:     item.Partition,
 		createSql:     item.CreateSql,
 		constraint:    item.Constraint,
+		extraInfo:     item.ExtraInfo,
 		rowid:         item.Rowid,
 		lastTS:        db.op.SnapshotTS(),
 	}

@@ -143,11 +143,11 @@ func (task *mergeObjectsTask) GetAccBlkCnts() []int {
 }
 
 func (task *mergeObjectsTask) GetBlockMaxRows() uint32 {
-	return task.schema.BlockMaxRows
+	return task.schema.Extra.BlockMaxRows
 }
 
 func (task *mergeObjectsTask) GetObjectMaxBlocks() uint16 {
-	return task.schema.ObjectMaxBlocks
+	return uint16(task.schema.Extra.BlockCntPerObj)
 }
 
 func (task *mergeObjectsTask) GetTargetObjSize() uint32 {

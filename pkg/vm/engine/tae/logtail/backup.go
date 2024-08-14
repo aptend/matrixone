@@ -502,9 +502,9 @@ func LoadCheckpointEntriesFromKey(
 		buf := data.bats[TNObjectInfoIDX].GetVectorByName(ObjectAttr_ObjectStats).Get(i).([]byte)
 		objectStats.UnMarshal(buf)
 		deletedAt := data.bats[TNObjectInfoIDX].GetVectorByName(EntryNode_DeleteAt).Get(i).(types.TS)
-		if objectStats.Extent().End() > 0 {
-			panic(any(fmt.Sprintf("extent end is not 0: %v, name is %v", objectStats.Extent().End(), objectStats.ObjectName().String())))
-		}
+		// if objectStats.Extent().End() > 0 {
+		// 	panic(any(fmt.Sprintf("extent end is not 0: %v, name is %v", objectStats.Extent().End(), objectStats.ObjectName().String())))
+		// }
 		if !deletedAt.IsEmpty() {
 			panic(any(fmt.Sprintf("deleteAt is not empty: %v, name is %v", deletedAt.ToString(), objectStats.ObjectName().String())))
 		}
@@ -670,9 +670,9 @@ func ReWriteCheckpointAndBlockFromKey(
 			panic(any(fmt.Sprintf("commitTs less than ts: %v-%v", commitTS.ToString(), ts.ToString())))
 		}
 
-		if stats.Extent().End() > 0 {
-			panic(any(fmt.Sprintf("extent end is not 0: %v, name is %v", stats.Extent().End(), stats.ObjectName().String())))
-		}
+		// if stats.Extent().End() > 0 {
+		// 	panic(any(fmt.Sprintf("extent end is not 0: %v, name is %v", stats.Extent().End(), stats.ObjectName().String())))
+		// }
 		if !deleteAt.IsEmpty() {
 			panic(any(fmt.Sprintf("deleteAt is not empty: %v, name is %v", deleteAt.ToString(), stats.ObjectName().String())))
 		}

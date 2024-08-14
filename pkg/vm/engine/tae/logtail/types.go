@@ -21,19 +21,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnbase"
 )
 
-type Scope = int
-
-const (
-	// changes for mo_databases
-	ScopeDatabases Scope = iota + 1
-	// changes for mo_tables
-	ScopeTables
-	// changes for mo_columns
-	ScopeColumns
-	// changes for user tables
-	ScopeUserTables
-)
-
 const (
 	SnapshotAttr_TID                            = catalog.SnapshotAttr_TID
 	SnapshotAttr_DBID                           = catalog.SnapshotAttr_DBID
@@ -229,10 +216,10 @@ var (
 	}
 	MetaSchemaAttr = []string{
 		SnapshotAttr_TID,
-		SnapshotMetaAttr_BlockInsertBatchLocation,
-		SnapshotMetaAttr_BlockCNInsertBatchLocation,
-		SnapshotMetaAttr_BlockDeleteBatchLocation,
-		SnapshotMetaAttr_SegDeleteBatchLocation,
+		SnapshotMetaAttr_BlockInsertBatchLocation,   // insert block
+		SnapshotMetaAttr_BlockCNInsertBatchLocation, // delete block, in insert format for cn
+		SnapshotMetaAttr_BlockDeleteBatchLocation,   // delete block,
+		SnapshotMetaAttr_SegDeleteBatchLocation,     // object insert
 		CheckpointMetaAttr_StorageUsageInsLocation,
 		CheckpointMetaAttr_StorageUsageDelLocation,
 	}

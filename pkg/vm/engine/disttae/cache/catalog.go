@@ -29,6 +29,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	plan2 "github.com/matrixorigin/matrixone/pkg/sql/plan"
@@ -492,6 +493,7 @@ func ParseTablesBatchAnd(bat *batch.Batch, f func(*TableItem)) {
 	constraints := bat.GetVector(catalog.MO_TABLES_CONSTRAINT_IDX + MO_OFF)
 	versions := vector.MustFixedCol[uint32](bat.GetVector(catalog.MO_TABLES_VERSION_IDX + MO_OFF))
 	catalogVersions := vector.MustFixedCol[uint32](bat.GetVector(catalog.MO_TABLES_CATALOG_VERSION_IDX + MO_OFF))
+	extraInfos := bat.GetVector(catalog.MO_TABLES_EXTRA_INFO_IDX + MO_OFF)
 	pks := bat.GetVector(catalog.MO_TABLES_CPKEY_IDX + MO_OFF)
 	for i, account := range accounts {
 		item := new(TableItem)
@@ -515,6 +517,7 @@ func ParseTablesBatchAnd(bat *batch.Batch, f func(*TableItem)) {
 		item.ClusterByIdx = -1
 		copy(item.Rowid[:], rowids[i][:])
 		item.CPKey = append(item.CPKey, pks.GetBytesAt(i)...)
+		item.ExtraInfo = api.MustUnmarshalTblExtra(extraInfos.GetBytesAt(i))
 
 		f(item)
 	}
@@ -805,7 +808,10 @@ func getTableDef(tblItem *TableItem, coldefs []engine.TableDef) (*plan.TableDef,
 		Key:   catalog.SystemRelAttr_Kind,
 		Value: TableType,
 	})
-
+	props.Properties = append(props.Properties, engine.Property{
+		Key:   catalog.PropSchemaExtra,
+		Value: string(api.MustMarshalTblExtra(tblItem.ExtraInfo)),
+	})
 	if tblItem.CreateSql != "" {
 		properties = append(properties, &plan.Property{
 			Key:   catalog.SystemRelAttr_CreateSQL,

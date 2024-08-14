@@ -280,7 +280,7 @@ func (node *memoryNode) PrepareAppend(rows uint32) (n uint32, err error) {
 		length = uint32(node.data.Length())
 	}
 
-	left := node.writeSchema.BlockMaxRows - length
+	left := node.writeSchema.Extra.BlockMaxRows - length
 
 	if left == 0 {
 		err = moerr.NewInternalErrorNoCtx("not appendable")

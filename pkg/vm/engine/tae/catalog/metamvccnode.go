@@ -186,16 +186,7 @@ func (e *ObjectMVCCNode) IsEmpty() bool {
 	return e.Size() == 0
 }
 
-func (e *ObjectMVCCNode) AppendTuple(sid *types.Objectid, batch *containers.Batch, empty bool) {
-	if empty {
-		stats := objectio.NewObjectStats()
-		objectio.SetObjectStatsObjectName(stats, objectio.BuildObjectNameWithObjectID(sid)) // when replay, sid is get from object name
-		batch.GetVectorByName(ObjectAttr_ObjectStats).Append(stats[:], false)
-		return
-	}
-	if e.IsEmpty() {
-		panic("logic error")
-	}
+func (e *ObjectMVCCNode) AppendTuple(sid *types.Objectid, batch *containers.Batch, _ bool) {
 	batch.GetVectorByName(ObjectAttr_ObjectStats).Append(e.ObjectStats[:], false)
 }
 
@@ -214,6 +205,7 @@ type ObjectNode struct {
 	sorted   bool   // deprecated
 
 	remainingRows *common.FixedSampleIII[int]
+	forcePNode    bool // not persisted, only in memory. a flag to force ckp-replayed aobject to be created as a pnode
 }
 
 const (

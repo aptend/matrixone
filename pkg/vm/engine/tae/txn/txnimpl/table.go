@@ -638,7 +638,7 @@ func (tbl *txnTable) addObjsWithMetaLoc(ctx context.Context, stats objectio.Obje
 	metaLocs := make([]objectio.Location, 0)
 	blkCount := stats.BlkCnt()
 	totalRow := stats.Rows()
-	blkMaxRows := tbl.schema.BlockMaxRows
+	blkMaxRows := tbl.schema.Extra.BlockMaxRows
 	for i := uint16(0); i < uint16(blkCount); i++ {
 		var blkRow uint32
 		if totalRow > blkMaxRows {

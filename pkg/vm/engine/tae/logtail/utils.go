@@ -36,7 +36,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/data"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnbase"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnimpl"
 	"go.uber.org/zap"
 )
 
@@ -56,8 +55,9 @@ const (
 	CheckpointVersion10 uint32 = 10
 	CheckpointVersion11 uint32 = 11
 	CheckpointVersion12 uint32 = 12
+	CheckpointVersion13 uint32 = 13
 
-	CheckpointCurrentVersion = CheckpointVersion12
+	CheckpointCurrentVersion = CheckpointVersion13
 )
 
 const (
@@ -145,6 +145,7 @@ var checkpointDataSchemas_V9 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_V10 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_V11 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_V12 [MaxIDX]*catalog.Schema
+var checkpointDataSchemas_V13 [MaxIDX]*catalog.Schema
 var checkpointDataSchemas_Curr [MaxIDX]*catalog.Schema
 
 var checkpointDataReferVersions map[uint32][MaxIDX]*checkpointDataItem
@@ -413,6 +414,38 @@ func init() {
 
 	checkpointDataSchemas_V12 = [MaxIDX]*catalog.Schema{
 		MetaSchema,
+		catalog.SystemDBSchema_V1,
+		TxnNodeSchema,
+		DBDelSchema, // 3
+		DBTNSchema,
+		catalog.SystemTableSchema_V3,
+		TblTNSchema,
+		TblDelSchema, // 7
+		TblTNSchema,
+		catalog.SystemColumnSchema_V2,
+		ColumnDelSchema,
+		SegSchema, // 11
+		SegTNSchema,
+		DelSchema,
+		SegTNSchema,
+		BlkMetaSchema, // 15
+		BlkTNSchema,
+		DelSchema,
+		BlkTNSchema,
+		BlkMetaSchema, // 19
+		BlkTNSchema,
+		DelSchema,
+		BlkTNSchema,
+		BlkMetaSchema, // 23
+		TNMetaSchema,
+		StorageUsageSchema, // 25
+		ObjectInfoSchema,
+		ObjectInfoSchema,
+		StorageUsageSchema,
+	}
+
+	checkpointDataSchemas_V13 = [MaxIDX]*catalog.Schema{
+		MetaSchema,
 		catalog.SystemDBSchema,
 		TxnNodeSchema,
 		DBDelSchema, // 3
@@ -457,7 +490,8 @@ func init() {
 	registerCheckpointDataReferVersion(CheckpointVersion10, checkpointDataSchemas_V10[:])
 	registerCheckpointDataReferVersion(CheckpointVersion11, checkpointDataSchemas_V11[:])
 	registerCheckpointDataReferVersion(CheckpointVersion12, checkpointDataSchemas_V12[:])
-	checkpointDataSchemas_Curr = checkpointDataSchemas_V12
+	registerCheckpointDataReferVersion(CheckpointVersion13, checkpointDataSchemas_V13[:])
+	checkpointDataSchemas_Curr = checkpointDataSchemas_V13
 }
 
 func IDXString(idx uint16) string {
@@ -918,18 +952,17 @@ func NewGlobalCollector(
 func (data *CheckpointData) ApplyReplayTo(
 	c *catalog.Catalog,
 	dataFactory catalog.DataFactory,
+	forSys bool,
 ) (err error) {
-	c.OnReplayDatabaseBatch(data.GetDBBatchs())
-	ins, colins, tnins, del, tndel := data.GetTblBatchs()
-	c.OnReplayTableBatch(ins, colins, tnins, del, tndel, dataFactory)
 	objectInfo := data.GetTNObjectBatchs()
-	c.OnReplayObjectBatch(objectInfo, dataFactory)
-	objectInfo = data.GetObjectBatchs()
-	c.OnReplayObjectBatch(objectInfo, dataFactory)
-	ins, tnins, del, tndel = data.GetTNBlkBatchs()
-	c.OnReplayBlockBatch(ins, tnins, del, tndel, dataFactory)
-	ins, tnins, del, tndel = data.GetBlkBatchs()
-	c.OnReplayBlockBatch(ins, tnins, del, tndel, dataFactory)
+	objectInfoMore := data.GetObjectBatchs()
+	ins, tnins, del, tndel := data.GetTNBlkBatchs()
+	insMore, tninsMore, delMore, tndelMore := data.GetBlkBatchs()
+
+	c.OnReplayObjectBatch(objectInfo, dataFactory, forSys)
+	c.OnReplayObjectBatch(objectInfoMore, dataFactory, forSys)
+	c.OnReplayBlockBatch(ins, tnins, del, tndel, dataFactory, forSys)
+	c.OnReplayBlockBatch(insMore, tninsMore, delMore, tndelMore, dataFactory, forSys)
 	return
 }
 
@@ -963,26 +996,6 @@ func switchCheckpointIdx(i uint16, _ uint64) uint16 {
 	} else if i == StorageUsageDel {
 		idx = StorageUsageDelIDX
 	}
-	// switch tableID {
-	// case pkgcatalog.MO_DATABASE_ID:
-	// 	if i == BlockInsert {
-	// 		idx = DBInsertIDX
-	// 	} else if i == BlockDelete {
-	// 		idx = DBDeleteIDX
-	// 	}
-	// case pkgcatalog.MO_TABLES_ID:
-	// 	if i == BlockInsert {
-	// 		idx = TBLInsertIDX
-	// 	} else if i == BlockDelete {
-	// 		idx = TBLDeleteIDX
-	// 	}
-	// case pkgcatalog.MO_COLUMNS_ID:
-	// 	if i == BlockInsert {
-	// 		idx = TBLColInsertIDX
-	// 	} else if i == BlockDelete {
-	// 		idx = TBLColDeleteIDX
-	// 	}
-	// }
 	return idx
 }
 
@@ -1115,15 +1128,12 @@ func (data *CNCheckpointData) PrefetchFrom(
 	return nil
 }
 
-func (data *CNCheckpointData) isMOCatalogTables(tid uint64) bool {
-	return tid == pkgcatalog.MO_DATABASE_ID || tid == pkgcatalog.MO_TABLES_ID || tid == pkgcatalog.MO_COLUMNS_ID
-}
 func (data *CNCheckpointData) GetTableMeta(tableID uint64, version uint32, loc objectio.Location) (meta *CheckpointMeta) {
 	if len(data.meta) != 0 {
 		meta = data.meta[tableID]
 		return
 	}
-	if version <= CheckpointVersion4 && data.isMOCatalogTables(tableID) {
+	if version <= CheckpointVersion4 && pkgcatalog.IsSystemTable(tableID) {
 		tableMeta := NewCheckpointMeta()
 		switch tableID {
 		case pkgcatalog.MO_DATABASE_ID:
@@ -1215,18 +1225,7 @@ func (data *CNCheckpointData) GetTableMeta(tableID uint64, version uint32, loc o
 		cnBlkInsTableMeta.locations = blkCNInsStr
 		tableMeta.tables[CNBlockInsert] = cnBlkInsTableMeta
 	}
-	// else {
-	// 	///// xxxxx
-	// 	if tableID == pkgcatalog.MO_DATABASE_ID ||
-	// 		tableID == pkgcatalog.MO_TABLES_ID ||
-	// 		tableID == pkgcatalog.MO_COLUMNS_ID {
-	// 		if len(blkDelStr) > 0 {
-	// 			blkDeleteTableMeta := NewTableMeta()
-	// 			blkDeleteTableMeta.locations = blkDelStr
-	// 			tableMeta.tables[BlockDelete] = blkDeleteTableMeta
-	// 		}
-	// 	}
-	// }
+
 	if len(segDelStr) > 0 {
 		segDeleteTableMeta := NewTableMeta()
 		segDeleteTableMeta.locations = segDelStr
@@ -1336,7 +1335,7 @@ func (data *CNCheckpointData) ReadFromData(
 	// 	return
 	// }
 	if version <= CheckpointVersion4 {
-		if tableID == pkgcatalog.MO_DATABASE_ID || tableID == pkgcatalog.MO_TABLES_ID || tableID == pkgcatalog.MO_COLUMNS_ID {
+		if pkgcatalog.IsSystemTable(tableID) {
 			dataBats = make([]*batch.Batch, MetaMaxIdx)
 			switch tableID {
 			case pkgcatalog.MO_DATABASE_ID:
@@ -1528,23 +1527,6 @@ func (data *CNCheckpointData) GetTableDataFromBats(tid uint64, bats []*batch.Bat
 	if len(bats) == 0 {
 		return
 	}
-	// if tid == pkgcatalog.MO_DATABASE_ID || tid == pkgcatalog.MO_TABLES_ID || tid == pkgcatalog.MO_COLUMNS_ID {
-	// 	insTaeBat = bats[BlockInsert]
-	// 	delTaeBat = bats[BlockDelete]
-	// 	if insTaeBat != nil {
-	// 		ins, err = batch.BatchToProtoBatch(insTaeBat)
-	// 		if err != nil {
-	// 			return
-	// 		}
-	// 	}
-	// 	if delTaeBat != nil {
-	// 		del, err = batch.BatchToProtoBatch(delTaeBat)
-	// 		if err != nil {
-	// 			return
-	// 		}
-	// 	}
-	// 	return
-	// }
 
 	insTaeBat = bats[BlockInsert]
 	if insTaeBat != nil {
@@ -1985,13 +1967,6 @@ func (data *CheckpointData) WriteTo(
 				continue
 			}
 
-			// if i > BlockDelete {
-			// 	if tid == pkgcatalog.MO_DATABASE_ID ||
-			// 		tid == pkgcatalog.MO_TABLES_ID ||
-			// 		tid == pkgcatalog.MO_COLUMNS_ID {
-			// 		break
-			// 	}
-			// }
 			idx := switchCheckpointIdx(uint16(i), tid)
 			for _, blockIdx := range indexes[idx] {
 				block := blockIdx.indexes
@@ -2550,6 +2525,9 @@ func (data *CheckpointData) readAll(
 			if uint16(idx) == MetaIDX || uint16(idx) == TNMetaIDX {
 				continue
 			}
+			if idxu16 := uint16(idx); idxu16 >= DBInsertIDX && idxu16 <= TBLColDeleteIDX {
+				continue
+			}
 			item := checkpointDataReferVersions[version][idx]
 			if bats, err = LoadBlkColumnsByMeta(
 				version, ctx, item.types, item.attrs, uint16(idx), reader, data.allocator,
@@ -2676,6 +2654,18 @@ func (data *CheckpointData) readAll(
 							vec.Append([]byte(""), false)
 						}
 						bat.AddVector(pkgcatalog.SystemColAttr_CPKey, vec)
+					}
+				}
+			}
+			if version <= CheckpointVersion12 {
+				if uint16(idx) == TBLInsertIDX {
+					for _, bat := range bats {
+						length := bat.GetVectorByName(catalog.AttrRowID).Length()
+						vec := containers.MakeVector(types.New(types.T_varchar, types.MaxVarcharLen, 0), data.allocator)
+						for i := 0; i < length; i++ {
+							vec.Append([]byte(""), false)
+						}
+						bat.AddVector(pkgcatalog.SystemRelAttr_ExtraInfo, vec)
 					}
 				}
 			}
@@ -3031,50 +3021,14 @@ func (collector *BaseCollector) VisitDB(entry *catalog.DBEntry) error {
 		return nil
 	}
 	mvccNodes := entry.ClonePreparedInRange(collector.start, collector.end)
-	// delStart := collector.data.bats[DBDeleteIDX].GetVectorByName(catalog.AttrRowID).Length()
-	// insStart := collector.data.bats[DBInsertIDX].GetVectorByName(catalog.AttrRowID).Length()
 	for _, node := range mvccNodes {
 		if node.IsAborted() {
 			continue
 		}
-		dbNode := node
-		var created, dropped bool
-		if dbNode.HasDropCommitted() {
-			dropped = true
-			if dbNode.CreatedAt.Equal(&dbNode.DeletedAt) {
-				created = true
-			}
-		} else {
-			created = true
-		}
-		if dropped {
+		if node.HasDropCommitted() {
 			collector.Usage.Deletes = append(collector.Usage.Deletes, entry)
-			// delScehma is empty, it will just fill rowid / commit ts
-			catalogEntry2Batch(
-				collector.data.bats[DBDeleteIDX],
-				entry,
-				node,
-				DBDelSchema,
-				txnimpl.FillDBRow,
-				objectio.HackU64ToRowid(entry.GetID()),
-				dbNode.GetEnd())
-			dbNode.TxnMVCCNode.AppendTuple(collector.data.bats[DBDeleteTxnIDX])
-			collector.data.bats[DBDeleteTxnIDX].GetVectorByName(SnapshotAttr_DBID).Append(entry.GetID(), false)
-		}
-		if created {
-			catalogEntry2Batch(collector.data.bats[DBInsertIDX],
-				entry,
-				node,
-				catalog.SystemDBSchema,
-				txnimpl.FillDBRow,
-				objectio.HackU64ToRowid(entry.GetID()),
-				dbNode.GetEnd())
-			dbNode.TxnMVCCNode.AppendTuple(collector.data.bats[DBInsertTxnIDX])
 		}
 	}
-	// delEnd := collector.data.bats[DBDeleteIDX].GetVectorByName(catalog.AttrRowID).Length()
-	// insEnd := collector.data.bats[DBInsertIDX].GetVectorByName(catalog.AttrRowID).Length()
-	// collector.data.updateMOCatalog(pkgcatalog.MO_DATABASE_ID, int32(insStart), int32(insEnd), int32(delStart), int32(delEnd))
 	return nil
 }
 func (collector *GlobalCollector) isEntryDeletedBeforeThreshold(entry catalog.BaseEntry) bool {
@@ -3100,105 +3054,14 @@ func (collector *BaseCollector) VisitTable(entry *catalog.TableEntry) (err error
 		return nil
 	}
 	mvccNodes := entry.ClonePreparedInRange(collector.start, collector.end)
-	tableInsBat := collector.data.bats[TBLInsertIDX]
-	tableInsTxnBat := collector.data.bats[TBLInsertTxnIDX]
-	tableDelBat := collector.data.bats[TBLDeleteIDX]
-	tableDelTxnBat := collector.data.bats[TBLDeleteTxnIDX]
-	tableColInsBat := collector.data.bats[TBLColInsertIDX]
-	tableColDelBat := collector.data.bats[TBLColDeleteIDX]
-	// tblDelStart := tableDelBat.GetVectorByName(catalog.AttrRowID).Length()
-	// tblInsStart := tableInsBat.GetVectorByName(catalog.AttrRowID).Length()
-	// colDelStart := tableColDelBat.GetVectorByName(catalog.AttrRowID).Length()
-	// colInsStart := tableColInsBat.GetVectorByName(catalog.AttrRowID).Length()
 	for _, node := range mvccNodes {
 		if node.IsAborted() {
 			continue
 		}
-		tblNode := node
-		var created, dropped bool
-		if tblNode.HasDropCommitted() {
-			dropped = true
-			if tblNode.CreatedAt.Equal(&tblNode.DeletedAt) {
-				created = true
-			}
-		} else {
-			created = true
-		}
-		if created {
-			for _, syscol := range catalog.SystemColumnSchema.ColDefs {
-				txnimpl.FillColumnRow(
-					entry,
-					tblNode,
-					syscol.Name,
-					tableColInsBat.GetVectorByName(syscol.Name),
-				)
-			}
-			// send dropped column del
-			for _, name := range tblNode.BaseNode.Schema.Extra.DroppedAttrs {
-				tableColDelBat.GetVectorByName(catalog.AttrRowID).Append(objectio.HackBytes2Rowid([]byte(fmt.Sprintf("%d-%s", entry.GetID(), name))), false)
-				tableColDelBat.GetVectorByName(catalog.AttrCommitTs).Append(tblNode.GetEnd(), false)
-				tableColDelBat.GetVectorByName(pkgcatalog.SystemColAttr_UniqName).Append([]byte(fmt.Sprintf("%d-%s", entry.GetID(), name)), false)
-			}
-			rowidVec := tableColInsBat.GetVectorByName(catalog.AttrRowID)
-			commitVec := tableColInsBat.GetVectorByName(catalog.AttrCommitTs)
-			for _, usercol := range tblNode.BaseNode.Schema.ColDefs {
-				rowidVec.Append(objectio.HackBytes2Rowid([]byte(fmt.Sprintf("%d-%s", entry.GetID(), usercol.Name))), false)
-				commitVec.Append(tblNode.GetEnd(), false)
-			}
-
-			tableInsTxnBat.GetVectorByName(
-				SnapshotAttr_BlockMaxRow).Append(entry.GetLastestSchemaLocked().BlockMaxRows, false)
-			tableInsTxnBat.GetVectorByName(
-				SnapshotAttr_ObjectMaxBlock).Append(entry.GetLastestSchemaLocked().ObjectMaxBlocks, false)
-			tableInsTxnBat.GetVectorByName(
-				SnapshotAttr_SchemaExtra).Append(tblNode.BaseNode.Schema.MustGetExtraBytes(), false)
-
-			catalogEntry2Batch(
-				tableInsBat,
-				entry,
-				tblNode,
-				catalog.SystemTableSchema,
-				txnimpl.FillTableRow,
-				objectio.HackU64ToRowid(entry.GetID()),
-				tblNode.GetEnd(),
-			)
-
-			tblNode.TxnMVCCNode.AppendTuple(tableInsTxnBat)
-		}
-		if dropped {
+		if node.HasDropCommitted() {
 			collector.Usage.Deletes = append(collector.Usage.Deletes, entry)
-			tableDelTxnBat.GetVectorByName(
-				SnapshotAttr_DBID).Append(entry.GetDB().GetID(), false)
-			tableDelTxnBat.GetVectorByName(
-				SnapshotAttr_TID).Append(entry.GetID(), false)
-
-			rowidVec := tableColDelBat.GetVectorByName(catalog.AttrRowID)
-			commitVec := tableColDelBat.GetVectorByName(catalog.AttrCommitTs)
-			pkVec := tableColDelBat.GetVectorByName(pkgcatalog.SystemColAttr_UniqName)
-			for _, usercol := range tblNode.BaseNode.Schema.ColDefs {
-				rowidVec.Append(objectio.HackBytes2Rowid([]byte(fmt.Sprintf("%d-%s", entry.GetID(), usercol.Name))), false)
-				commitVec.Append(tblNode.GetEnd(), false)
-				pkVec.Append([]byte(fmt.Sprintf("%d-%s", entry.GetID(), usercol.Name)), false)
-			}
-
-			catalogEntry2Batch(
-				tableDelBat,
-				entry,
-				tblNode,
-				TblDelSchema,
-				txnimpl.FillTableRow,
-				objectio.HackU64ToRowid(entry.GetID()),
-				tblNode.GetEnd(),
-			)
-			tblNode.TxnMVCCNode.AppendTuple(tableDelTxnBat)
 		}
 	}
-	// tblDelEnd := tableDelBat.GetVectorByName(catalog.AttrRowID).Length()
-	// tblInsEnd := tableInsBat.GetVectorByName(catalog.AttrRowID).Length()
-	// colDelEnd := tableColDelBat.GetVectorByName(catalog.AttrRowID).Length()
-	// colInsEnd := tableColInsBat.GetVectorByName(catalog.AttrRowID).Length()
-	// collector.data.updateMOCatalog(pkgcatalog.MO_TABLES_ID, int32(tblInsStart), int32(tblInsEnd), int32(tblDelStart), int32(tblDelEnd))
-	// collector.data.updateMOCatalog(pkgcatalog.MO_COLUMNS_ID, int32(colInsStart), int32(colInsEnd), int32(colDelStart), int32(colDelEnd))
 	return nil
 }
 
@@ -3296,10 +3159,13 @@ func (collector *GlobalCollector) VisitObj(entry *catalog.ObjectEntry) error {
 
 func (collector *BaseCollector) visitTombstone(entry data.Tombstone) {
 	// If ctx is used when collect in memory deletes.
+
+	// try get the lastest deltalocation in ckp
+	currTs := types.BuildTS(time.Now().UTC().UnixNano(), 0)
 	_, start, end, err := entry.VisitDeletes(
 		context.Background(),
 		collector.start,
-		collector.end,
+		currTs,
 		collector.data.bats[BLKMetaInsertIDX],
 		collector.data.bats[BLKMetaInsertTxnIDX],
 		true, false)
@@ -3327,10 +3193,11 @@ func (collector *BaseCollector) VisitTombstone(entry data.Tombstone) (err error)
 }
 
 func (collector *BaseCollector) VisitGlobalTombstone(entry data.Tombstone) (err error) {
+	currTs := types.BuildTS(time.Now().UTC().UnixNano(), 0)
 	_, start, end, err := entry.VisitDeletes(
 		context.Background(),
 		collector.start,
-		collector.end,
+		currTs,
 		collector.data.bats[BLKMetaInsertIDX],
 		collector.data.bats[BLKMetaInsertTxnIDX],
 		true, true)

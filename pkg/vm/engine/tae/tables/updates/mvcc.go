@@ -1207,5 +1207,9 @@ func (n *MVCCHandle) UpdateDeltaLocLocked(txn txnif.TxnReader, deltaloc objectio
 }
 
 func (n *MVCCHandle) ReplayDeltaLoc(mvcc *catalog.MVCCNode[*catalog.MetadataMVCCNode]) {
-	n.deltaloc.Insert(mvcc)
+	if n.deltaloc.SearchNodeLocked(mvcc) == nil {
+		n.deltaloc.Insert(mvcc)
+	} else {
+		logutil.Infof("Idempotent replay delta location %v", mvcc.String())
+	}
 }

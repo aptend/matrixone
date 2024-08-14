@@ -128,9 +128,14 @@ func (e *TestEngine) Close() error {
 	return err
 }
 
-func (e *TestEngine) CreateRelAndAppend(bat *containers.Batch, createDB bool) (handle.Database, handle.Relation) {
+func (e *TestEngine) CreateRelAndAppend(bat *containers.Batch, createDB bool) {
 	clonedSchema := e.schema.Clone()
-	return CreateRelationAndAppend(e.T, e.tenantID, e.DB, DefaultTestDB, clonedSchema, bat, createDB)
+	CreateRelationAndAppend(e.T, e.tenantID, e.DB, DefaultTestDB, clonedSchema, bat, createDB)
+}
+
+func (e *TestEngine) CreateRelAndAppend2(bat *containers.Batch, createDB bool) {
+	clonedSchema := e.schema.Clone()
+	CreateRelationAndAppend2(e.T, e.tenantID, e.DB, DefaultTestDB, clonedSchema, bat, createDB)
 }
 
 func (e *TestEngine) CheckRowsByScan(exp int, applyDelete bool) {
@@ -387,6 +392,7 @@ func InitTestDB(
 	t *testing.T,
 	opts *options.Options,
 ) *db.DB {
+	blockio.Start("")
 	dir := testutils.InitTestEnv(moduleName, t)
 	db, _ := db.Open(ctx, dir, opts)
 	// only ut executes this checker
@@ -465,7 +471,7 @@ func cnReadCheckpointWithVersion(t *testing.T, tid uint64, location objectio.Loc
 			segDel = e.Bat
 		} else if e.EntryType == api.Entry_Delete {
 			del = e.Bat
-			if tid != pkgcatalog.MO_DATABASE_ID && tid != pkgcatalog.MO_TABLES_ID && tid != pkgcatalog.MO_COLUMNS_ID {
+			if !pkgcatalog.IsSystemTable(tid) {
 				cnIns = entries[i-1].Bat
 				i--
 			}

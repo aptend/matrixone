@@ -31,8 +31,7 @@ func bool2i8(v bool) int8 {
 	}
 }
 
-func FillColumnRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.TableMVCCNode], attr string, colData containers.Vector) {
-	schema := node.BaseNode.Schema
+func FillColumnRow(table *catalog.TableEntry, schema *catalog.Schema, attr string, colData containers.Vector) {
 	tableID := table.GetID()
 	for i, colDef := range schema.ColDefs {
 		switch attr {
@@ -45,7 +44,6 @@ func FillColumnRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Ta
 		case pkgcatalog.SystemColAttr_Num:
 			colData.Append(int32(i+1), false)
 		case pkgcatalog.SystemColAttr_Type:
-			//colData.Append(int32(colDef.Type.Oid))
 			data, _ := types.Encode(&colDef.Type)
 			colData.Append(data, false)
 		case pkgcatalog.SystemColAttr_DBID:
@@ -105,8 +103,7 @@ func FillColumnRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Ta
 	}
 }
 
-func FillTableRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.TableMVCCNode], attr string, colData containers.Vector) {
-	schema := node.BaseNode.Schema
+func FillTableRow(table *catalog.TableEntry, schema *catalog.Schema, attr string, colData containers.Vector) {
 	switch attr {
 	case pkgcatalog.SystemRelAttr_ID:
 		colData.Append(table.GetID(), false)
@@ -153,6 +150,8 @@ func FillTableRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Tab
 		packer.Close()
 	case pkgcatalog.Row_ID:
 		// fill outside of this func
+	case pkgcatalog.SystemRelAttr_ExtraInfo:
+		colData.Append([]byte(schema.MustGetExtraBytes()), false)
 	default:
 		panic(fmt.Sprintf("unexpected colname %q. if add new catalog def, fill it in this switch", attr))
 	}
@@ -160,7 +159,7 @@ func FillTableRow(table *catalog.TableEntry, node *catalog.MVCCNode[*catalog.Tab
 
 // FillDBRow is used for checkpoint collecting and catalog-tree replaying at the moment.
 // As to Logtail and GetColumnDataById, objects in mo_database are the right place to get data.
-func FillDBRow(db *catalog.DBEntry, _ *catalog.MVCCNode[*catalog.EmptyMVCCNode], attr string, colData containers.Vector) {
+func FillDBRow(db *catalog.DBEntry, attr string, colData containers.Vector) {
 	switch attr {
 	case pkgcatalog.SystemDBAttr_ID:
 		colData.Append(db.GetID(), false)

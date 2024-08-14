@@ -50,7 +50,7 @@ func newAObject(
 ) *aobject {
 	obj := &aobject{}
 	obj.baseObject = newBaseObject(obj, meta, rt)
-	if obj.meta.Load().HasDropCommitted() {
+	if meta.IsForcePNode() || obj.meta.Load().HasDropCommitted() {
 		pnode := newPersistedNode(obj.baseObject)
 		node := NewNode(pnode)
 		node.Ref()
@@ -83,7 +83,7 @@ func (obj *aobject) IsAppendable() bool {
 		return false
 	}
 	rows, _ := node.Rows()
-	return rows < obj.meta.Load().GetSchema().BlockMaxRows
+	return rows < obj.meta.Load().GetSchema().Extra.BlockMaxRows
 }
 
 func (obj *aobject) PrepareCompactInfo() (result bool, reason string) {
@@ -91,7 +91,6 @@ func (obj *aobject) PrepareCompactInfo() (result bool, reason string) {
 		reason = fmt.Sprintf("entering refcount %d", n)
 		return
 	}
-	obj.FreezeAppend()
 	if !obj.meta.Load().PrepareCompact() || !obj.appendMVCC.PrepareCompact() {
 		if !obj.meta.Load().PrepareCompact() {
 			reason = "meta preparecomp false"
@@ -393,7 +392,7 @@ func (obj *aobject) estimateRawScore() (score int, dropped bool, err error) {
 	}
 
 	rows, err := obj.Rows()
-	if rows == int(obj.meta.Load().GetSchema().BlockMaxRows) {
+	if rows == int(obj.meta.Load().GetSchema().Extra.BlockMaxRows) {
 		score = 100
 		return
 	}

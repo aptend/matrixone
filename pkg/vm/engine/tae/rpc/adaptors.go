@@ -43,20 +43,24 @@ func CreateRelation(
 	if err != nil {
 		return
 	}
-	schema.BlockMaxRows = options.DefaultBlockMaxRows
-	schema.ObjectMaxBlocks = options.DefaultBlocksPerObject
-	if len(schema.Comment) > 0 {
-		if r := MaxRows.FindStringSubmatch(schema.Comment); len(r) > 0 {
-			if maxrows, err := strconv.Atoi(r[1]); err == nil {
-				schema.BlockMaxRows = uint32(maxrows)
+
+	if schema.Extra.BlockMaxRows == 0 {
+		schema.Extra.BlockMaxRows = options.DefaultBlockMaxRows
+		schema.Extra.BlockCntPerObj = uint32(options.DefaultBlocksPerObject)
+		if len(schema.Comment) > 0 {
+			if r := MaxRows.FindStringSubmatch(schema.Comment); len(r) > 0 {
+				if maxrows, err := strconv.Atoi(r[1]); err == nil {
+					schema.Extra.BlockMaxRows = uint32(maxrows)
+				}
 			}
-		}
-		if r := MaxBlks.FindStringSubmatch(schema.Comment); len(r) > 0 {
-			if maxblks, err := strconv.Atoi(r[1]); err == nil {
-				schema.ObjectMaxBlocks = uint16(maxblks)
+			if r := MaxBlks.FindStringSubmatch(schema.Comment); len(r) > 0 {
+				if maxblks, err := strconv.Atoi(r[1]); err == nil {
+					schema.Extra.BlockCntPerObj = uint32(maxblks)
+				}
 			}
 		}
 	}
+
 	_, err = dbH.CreateRelationWithID(schema, id)
 	return err
 }

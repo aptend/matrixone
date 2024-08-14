@@ -240,7 +240,7 @@ func (blk *baseObject) buildMetalocation(bid uint16) (objectio.Location, error) 
 	if err != nil {
 		return nil, err
 	}
-	blkMaxRows := blk.meta.Load().GetSchema().BlockMaxRows
+	blkMaxRows := blk.meta.Load().GetSchema().Extra.BlockMaxRows
 	blkRow := blkMaxRows
 	if bid == uint16(blk.meta.Load().BlockCnt())-1 {
 		blkRow = stats.Rows() - uint32(bid)*blkMaxRows
@@ -574,8 +574,13 @@ func (blk *baseObject) ResolvePersistedColumnDatas(
 	}
 	id := blk.meta.Load().AsCommonID()
 	id.SetBlockOffset(blkID)
-	vecs, err := LoadPersistedColumnDatas(
-		ctx, readSchema, blk.rt, id, colIdxs, location, mp,
+	var tsForAppendable *types.TS
+	if blk.meta.Load().IsAppendable() {
+		ts := txn.GetStartTS()
+		tsForAppendable = &ts
+	}
+	vecs, deletes, err := LoadPersistedColumnDatas(
+		ctx, readSchema, blk.rt, id, colIdxs, location, mp, tsForAppendable,
 	)
 	if err != nil {
 		return nil, err
@@ -588,6 +593,7 @@ func (blk *baseObject) ResolvePersistedColumnDatas(
 	if skipDeletes {
 		return
 	}
+	view.Deletes = deletes
 
 	defer func() {
 		if err != nil {

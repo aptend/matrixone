@@ -85,6 +85,7 @@ func DoIfDebugEnabled(fn func()) {
 type opt struct {
 	doNotPrintBinary bool
 	specialRowid     bool // just a uint64, blockid
+	tryInterpret     func([]byte) string
 }
 
 type TypePrintOpt interface {
@@ -98,6 +99,12 @@ func (w WithDoNotPrintBin) apply(o *opt) { o.doNotPrintBinary = true }
 type WithSpecialRowid struct{}
 
 func (w WithSpecialRowid) apply(o *opt) { o.specialRowid = true }
+
+type WithInterpret struct {
+	Fn func([]byte) string
+}
+
+func (w WithInterpret) apply(o *opt) { o.tryInterpret = w.Fn }
 
 func TypeStringValue(t types.Type, v any, isNull bool, opts ...TypePrintOpt) string {
 	if isNull {
@@ -132,9 +139,12 @@ func TypeStringValue(t types.Type, v any, isNull bool, opts ...TypePrintOpt) str
 			return string(buf)
 		} else if opt.doNotPrintBinary {
 			return fmt.Sprintf("binary[%d]", len(buf))
-		} else {
-			return fmt.Sprintf("%x", buf)
+		} else if opt.tryInterpret != nil {
+			if s := opt.tryInterpret(buf); len(s) > 0 {
+				return s
+			}
 		}
+		return fmt.Sprintf("%x", buf)
 	case types.T_array_float32:
 		// The parent function is mostly used to print the vector content for debugging.
 		return types.BytesToArrayToString[float32](v.([]byte))

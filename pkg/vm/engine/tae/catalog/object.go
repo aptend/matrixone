@@ -515,6 +515,10 @@ func (entry *ObjectEntry) IsActive() bool {
 	return !entry.HasDropCommitted()
 }
 
+func (entry *ObjectEntry) IsForcePNode() bool {
+	return entry.forcePNode
+}
+
 func (entry *ObjectEntry) TreeMaxDropCommitEntry() (BaseEntry, *ObjectEntry) {
 	table := entry.GetTable()
 	db := table.GetDB()
@@ -574,7 +578,7 @@ func (entry *ObjectEntry) HasDropIntent() bool {
 // for old flushed objects, stats may be empty
 func (entry *ObjectEntry) ObjectPersisted() bool {
 	if entry.IsAppendable() {
-		return entry.HasDropIntent()
+		return entry.IsForcePNode() || entry.HasDropIntent()
 	} else {
 		return true
 	}

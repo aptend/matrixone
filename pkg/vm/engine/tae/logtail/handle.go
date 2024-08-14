@@ -139,12 +139,6 @@ func HandleSyncLogTailReq(
 	req.Table.DbName = dbEntry.GetName()
 	req.Table.TbName = schema.Name
 	req.Table.PrimarySeqnum = uint32(schema.GetPrimaryKey().SeqNum)
-	tableEntry.RLock()
-	createTS := tableEntry.GetCreatedAtLocked()
-	tableEntry.RUnlock()
-	if start.Less(&createTS) {
-		start = createTS
-	}
 
 	ckpLoc, checkpointed, err := ckpClient.CollectCheckpointsInRange(ctx, start, end)
 	if err != nil {
@@ -326,18 +320,17 @@ func (b *TableLogtailRespBuilder) visitObjData(e *catalog.ObjectEntry) error {
 	}
 	return nil
 }
-func visitObject(batch *containers.Batch, entry *catalog.ObjectEntry, txnMVCCNode *txnbase.TxnMVCCNode, create bool, push bool, committs types.TS, checkObjectstats bool) {
+
+func visitObject(batch *containers.Batch, entry *catalog.ObjectEntry, txnMVCCNode *txnbase.TxnMVCCNode, create bool, push bool, committs types.TS, _ bool) {
 	batch.GetVectorByName(catalog.AttrRowID).Append(objectio.HackObjid2Rowid(entry.ID()), false)
 	if push {
 		batch.GetVectorByName(catalog.AttrCommitTs).Append(committs, false)
 	} else {
 		batch.GetVectorByName(catalog.AttrCommitTs).Append(txnMVCCNode.End, false)
 	}
-	empty := entry.IsAppendable() && create
-	if checkObjectstats && empty {
-		panic("logic error")
-	}
-	entry.ObjectMVCCNode.AppendTuple(entry.ID(), batch, empty)
+
+	// every object for objects seen by checkpoint collector
+	entry.ObjectMVCCNode.AppendTuple(entry.ID(), batch, false)
 	if push {
 		txnMVCCNode.AppendTupleWithCommitTS(batch, committs)
 	} else {
@@ -529,8 +522,7 @@ func LoadCheckpointEntries(
 
 	shouldSkip := func(i int) bool {
 		versionTry := CheckpointCurrentVersion >= CheckpointVersion12 && versions[i] < CheckpointVersion12
-		sysTable := tableID == pkgcatalog.MO_DATABASE_ID || tableID == pkgcatalog.MO_TABLES_ID || tableID == pkgcatalog.MO_COLUMNS_ID
-		return versionTry && sysTable
+		return versionTry && pkgcatalog.IsSystemTable(tableID)
 	}
 
 	for i := range objectLocations {

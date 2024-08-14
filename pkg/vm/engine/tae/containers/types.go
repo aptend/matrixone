@@ -22,6 +22,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/nulls"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	cnVector "github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 )
 
 type Options struct {
@@ -82,12 +83,14 @@ type Vector interface {
 	// NullCount will consider ConstNull and Const vector
 	NullCount() int
 
+	Shrink([]int64)
+
 	Close()
 
 	// Test functions
 	Equals(o Vector) bool
 	String() string
-	PPString(num int) string
+	PPString(num int, opts ...common.TypePrintOpt) string
 	AppendMany(vs []any, isNulls []bool)
 	Delete(i int)
 }

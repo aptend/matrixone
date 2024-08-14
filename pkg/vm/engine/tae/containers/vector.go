@@ -296,6 +296,11 @@ func (vec *vectorWrapper) IsConstNull() bool {
 	return vec.wrapped.IsConstNull()
 }
 
+func (vec *vectorWrapper) Shrink(deletes []int64) {
+	vec.tryCOW()
+	vec.wrapped.Shrink(deletes, true)
+}
+
 // conver a const vectorWrapper to a normal one, getting ready to edit
 func (vec *vectorWrapper) TryConvertConst() Vector {
 	if vec.wrapped.IsConstNull() {
@@ -513,13 +518,13 @@ func (vec *vectorWrapper) String() string {
 
 // PPString Pretty Print
 // Deprecated: Only use for test functions
-func (vec *vectorWrapper) PPString(num int) string {
+func (vec *vectorWrapper) PPString(num int, opts ...common.TypePrintOpt) string {
 	var w bytes.Buffer
 	limit := vec.Length()
 	if num > 0 && num < limit {
 		limit = num
 	}
-	_, _ = w.WriteString(fmt.Sprintf("[T=%s]%s", vec.GetType().String(), common.MoVectorToString(vec.GetDownstreamVector(), limit)))
+	_, _ = w.WriteString(fmt.Sprintf("[T=%s]%s", vec.GetType().String(), common.MoVectorToString(vec.GetDownstreamVector(), limit, opts...)))
 	if vec.Length() > num {
 		_, _ = w.WriteString("...")
 	}

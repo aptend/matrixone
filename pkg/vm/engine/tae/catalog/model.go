@@ -19,6 +19,7 @@ import (
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 )
@@ -40,6 +41,7 @@ var SystemDBSchema_V1 *Schema
 var SystemTableSchema *Schema
 var SystemTableSchema_V1 *Schema
 var SystemTableSchema_V2 *Schema
+var SystemTableSchema_V3 *Schema
 var SystemColumnSchema *Schema
 var SystemColumnSchema_V1 *Schema
 var SystemColumnSchema_V2 *Schema
@@ -75,6 +77,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
+	// for old version, we don't care about whether the pk is correct or not, after all, it is just used to read batch in checkpoint
 
 	SystemDBSchema_V1 = NewEmptySchema(pkgcatalog.MO_DATABASE + "_v1")
 	for i, colname := range pkgcatalog.MoDatabaseSchema_V1 {
@@ -121,6 +125,22 @@ func init() {
 		}
 	}
 	if err = SystemTableSchema_V2.Finalize(true); err != nil {
+		panic(err)
+	}
+
+	SystemTableSchema_V3 = NewEmptySchema(pkgcatalog.MO_TABLES + "_v3")
+	for i, colname := range pkgcatalog.MoTablesSchema_V3 {
+		if i == 0 {
+			if err = SystemTableSchema_V3.AppendPKCol(colname, pkgcatalog.MoTablesTypes_V3[i], 0); err != nil {
+				panic(err)
+			}
+		} else {
+			if err = SystemTableSchema_V3.AppendCol(colname, pkgcatalog.MoTablesTypes_V3[i]); err != nil {
+				panic(err)
+			}
+		}
+	}
+	if err = SystemTableSchema_V3.Finalize(true); err != nil {
 		panic(err)
 	}
 
@@ -197,6 +217,8 @@ func DefsToSchema(name string, defs []engine.TableDef) (schema *Schema, err erro
 					schema.Relkind = property.Value
 				case pkgcatalog.SystemRelAttr_CreateSQL:
 					schema.Createsql = property.Value
+				case pkgcatalog.PropSchemaExtra:
+					schema.Extra = api.MustUnmarshalTblExtra([]byte(property.Value))
 				default:
 				}
 			}
@@ -272,6 +294,10 @@ func SchemaToDefs(schema *Schema) (defs []engine.TableDef, err error) {
 			Value: schema.Createsql,
 		})
 	}
+	pro.Properties = append(pro.Properties, engine.Property{
+		Key:   pkgcatalog.PropSchemaExtra,
+		Value: string(api.MustMarshalTblExtra(schema.Extra)),
+	})
 	defs = append(defs, pro)
 
 	return

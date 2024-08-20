@@ -20,6 +20,8 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"sync/atomic"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
@@ -40,11 +42,37 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/options"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 const (
 	batchPrefetchSize = 1000
 )
+
+var exactCnt atomic.Int64
+var exactLoopCnt atomic.Int64
+var prefixCnt atomic.Int64
+var prefixLoopCnt atomic.Int64
+
+func init() {
+	go func() {
+		ticker := time.NewTicker(time.Second * 10)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				logutil.Info(
+					"DEBUG-TOMBSTONE-2",
+					zap.Int64("exact-cnt", exactCnt.Load()),
+					zap.Int64("exact-loop-cnt", exactLoopCnt.Load()),
+					zap.Int64("prefix-cnt", prefixCnt.Load()),
+					zap.Int64("prefix-loop-cnt", prefixLoopCnt.Load()),
+				)
+			}
+		}
+
+	}()
+}
 
 func NewRemoteDataSource(
 	ctx context.Context,
@@ -215,7 +243,7 @@ func (rs *RemoteDataSource) ApplyTombstones(
 	ctx context.Context,
 	bid objectio.Blockid,
 	rowsOffset []int64,
-) (left []int64, err error) {
+) (left []int64, _ bool, err error) {
 
 	slices.SortFunc(rowsOffset, func(a, b int64) int {
 		return int(a - b)
@@ -629,7 +657,7 @@ func (ls *LocalDataSource) filterInMemUnCommittedInserts(
 		offsets := rowIdsToOffset(retainedRowIds, int64(0)).([]int64)
 
 		b, _ := retainedRowIds[0].Decode()
-		sels, err := ls.ApplyTombstones(ls.ctx, b, offsets)
+		sels, _, err := ls.ApplyTombstones(ls.ctx, b, offsets)
 		if err != nil {
 			return err
 		}
@@ -697,16 +725,39 @@ func (ls *LocalDataSource) filterInMemCommittedInserts(
 		}
 	}
 
+	if ls.memPKFilter.op == 0 && ls.memPKFilter.SpecFactory != nil {
+		exactCnt.Add(1)
+	} else if ls.memPKFilter.op == 146 {
+		prefixCnt.Add(1)
+	}
+
+	var removedByPersisted bool
 	for appendedRows < int(options.DefaultBlockMaxRows) && ls.pStateRows.insIter.Next() {
 		entry := ls.pStateRows.insIter.Entry()
 		b, o := entry.RowID.Decode()
+		if ls.memPKFilter.op == 0 && ls.memPKFilter.SpecFactory != nil {
+			exactLoopCnt.Add(1)
+		} else if ls.memPKFilter.op == 146 {
+			prefixLoopCnt.Add(1)
+		}
 
-		sel, err = ls.ApplyTombstones(ls.ctx, b, []int64{int64(o)})
+		sel, removedByPersisted, err = ls.ApplyTombstones(ls.ctx, b, []int64{int64(o)})
 		if err != nil {
 			return err
 		}
 
 		if len(sel) == 0 {
+			if removedByPersisted {
+				logutil.Warn(
+					"DEBUG-INMEMORY-TOMBSTONE",
+					zap.String("rowid", entry.RowID.String()),
+					zap.String("table-name", ls.table.tableName),
+					zap.Any("op", ls.memPKFilter.op),
+					zap.String("entry.ts", entry.Time.ToString()),
+					zap.Any("entry.is-deleted", entry.Deleted),
+					zap.String("txn", ls.table.db.op.Txn().DebugString()),
+				)
+			}
 			continue
 		}
 
@@ -804,7 +855,7 @@ func (ls *LocalDataSource) ApplyTombstones(
 	ctx context.Context,
 	bid objectio.Blockid,
 	rowsOffset []int64,
-) ([]int64, error) {
+) ([]int64, bool, error) {
 
 	slices.SortFunc(rowsOffset, func(a, b int64) int {
 		return int(a - b)
@@ -818,7 +869,7 @@ func (ls *LocalDataSource) ApplyTombstones(
 	if ls.tombstonePolicy&engine.Policy_SkipUncommitedS3 == 0 {
 		rowsOffset, err = ls.applyWorkspaceFlushedS3Deletes(bid, rowsOffset, nil)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 	}
 
@@ -828,15 +879,20 @@ func (ls *LocalDataSource) ApplyTombstones(
 	if ls.tombstonePolicy&engine.Policy_SkipCommittedInMemory == 0 {
 		rowsOffset = ls.applyPStateInMemDeletes(bid, rowsOffset, nil)
 	}
+	var removedByPersisted bool
 	if ls.tombstonePolicy&engine.Policy_SkipCommittedS3 == 0 {
+		pLen := len(rowsOffset)
 		rowsOffset, err = ls.applyPStateTombstoneObjects(bid, rowsOffset, nil)
+		if pLen != len(rowsOffset) {
+			removedByPersisted = true
+		}
 		//rowsOffset, err = ls.applyPStatePersistedDeltaLocation(bid, rowsOffset, nil)
 		if err != nil {
-			return nil, err
+			return nil, false, err
 		}
 	}
 
-	return rowsOffset, nil
+	return rowsOffset, removedByPersisted, nil
 }
 
 func (ls *LocalDataSource) GetTombstones(
@@ -1114,9 +1170,9 @@ func (ls *LocalDataSource) applyPStateTombstoneObjects(
 	deletedRows *nulls.Nulls,
 ) ([]int64, error) {
 
-	//if ls.rc.SkipPStateDeletes {
-	//	return offsets, nil
-	//}
+	// if ls.rc.SkipPStateDeletes {
+	// 	return offsets, nil
+	// }
 
 	if ls.pState.ApproxTombstoneObjectsNum() == 0 {
 		return offsets, nil

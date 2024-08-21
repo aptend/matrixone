@@ -572,7 +572,7 @@ func TestColumnsTransfer(t *testing.T) {
 		tasks.WaitableCtx, txn,
 		[]*catalog2.ObjectEntry{firstEntry},
 		nil,
-		tae.Runtime, txn.GetStartTS())
+		tae.Runtime)
 	require.NoError(t, err)
 	worker.SendOp(task1)
 	err = task1.WaitDone(context.Background())
@@ -668,7 +668,7 @@ func TestInProgressTransfer(t *testing.T) {
 			tasks.WaitableCtx, tnFlushTxn,
 			[]*catalog2.ObjectEntry{firstEntry},
 			nil,
-			tae.Runtime, tnFlushTxn.GetStartTS())
+			tae.Runtime)
 		require.NoError(t, err)
 		worker.SendOp(task1)
 		err = task1.WaitDone(context.Background())
@@ -711,7 +711,7 @@ func TestInProgressTransfer(t *testing.T) {
 			tasks.WaitableCtx, tnFlushTxn2,
 			[]*catalog2.ObjectEntry{entry},
 			nil,
-			tae.Runtime, tnFlushTxn2.GetStartTS())
+			tae.Runtime)
 		require.NoError(t, err)
 		worker.SendOp(task1)
 		err = task1.WaitDone(context.Background())
@@ -820,7 +820,7 @@ func TestShowDatabasesInRestoreTxn(t *testing.T) {
 		tasks.WaitableCtx, txn,
 		[]*catalog2.ObjectEntry{firstEntry},
 		nil,
-		tae.Runtime, txn.GetStartTS())
+		tae.Runtime)
 	require.NoError(t, err)
 	worker.SendOp(task1)
 	err = task1.WaitDone(context.Background())

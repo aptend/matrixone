@@ -867,7 +867,7 @@ func (r *runner) onWaitWaitableItems(items ...any) {
 	logutil.Debugf("Total [%d] WAL Checkpointed | [%s]", len(items), time.Since(start))
 }
 
-func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.TableTree, endTs types.TS) error {
+func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.TableTree) error {
 	metas := make([]*catalog.ObjectEntry, 0, 10)
 	for _, obj := range tree.Objs {
 		object, err := table.GetObjectByID(obj.ID, false)
@@ -902,7 +902,7 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 		scopes = append(scopes, *meta.AsCommonID())
 	}
 
-	factory := jobs.FlushTableTailTaskFactory(metas, tombstoneMetas, r.rt, endTs)
+	factory := jobs.FlushTableTailTaskFactory(metas, tombstoneMetas, r.rt)
 	if _, err := r.rt.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, scopes, factory); err != nil {
 		if err != tasks.ErrScheduleScopeConflict {
 			logutil.Infof("[FlushTabletail] %d-%s %v", table.ID, table.GetLastestSchemaLocked(false).Name, err)
@@ -987,7 +987,6 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 	for _, ticket := range r.objMemSizeList {
 		table, asize, dsize := ticket.tbl, ticket.asize, ticket.dsize
 		dirtyTree := entry.GetTree().GetTable(table.ID)
-		_, endTs := entry.GetTimeRange()
 
 		stats := table.Stats
 		stats.Lock()
@@ -995,16 +994,9 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 
 		if force {
 			logutil.Infof("[flushtabletail] force flush %v-%s", table.ID, table.GetLastestSchemaLocked(false).Name)
-			if err := r.fireFlushTabletail(table, dirtyTree, endTs); err == nil {
+			if err := r.fireFlushTabletail(table, dirtyTree); err == nil {
 				stats.ResetDeadlineWithLock()
 			}
-			continue
-		}
-
-		if stats.LastFlush.IsEmpty() {
-			// first boot, just bail out, and never enter this branch again
-			stats.LastFlush = stats.LastFlush.Next()
-			stats.ResetDeadlineWithLock()
 			continue
 		}
 
@@ -1033,7 +1025,7 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 
 		ready := flushReady()
 		// debug log, delete later
-		if !stats.LastFlush.IsEmpty() && asize+dsize > 2*1000*1024 {
+		if stats.Inited && asize+dsize > 2*1000*1024 {
 			logutil.Infof("[flushtabletail] %v(%v) %v dels  FlushCountDown %v, flushReady %v",
 				table.GetLastestSchemaLocked(false).Name,
 				common.HumanReadableBytes(asize+dsize),
@@ -1044,7 +1036,7 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 		}
 
 		if ready {
-			if err := r.fireFlushTabletail(table, dirtyTree, endTs); err == nil {
+			if err := r.fireFlushTabletail(table, dirtyTree); err == nil {
 				stats.ResetDeadlineWithLock()
 			}
 		}

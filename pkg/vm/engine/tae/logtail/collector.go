@@ -186,8 +186,7 @@ func (d *dirtyCollector) Run(lag time.Duration) {
 func (d *dirtyCollector) ScanInRangePruned(from, to types.TS) (
 	tree *DirtyTreeEntry) {
 	tree, _ = d.ScanInRange(from, to)
-	ctx := context.WithValue(context.Background(), TempFKey{}, 42)
-	if err := d.tryCompactTree(ctx, d.interceptor, tree.tree, from, to); err != nil {
+	if err := d.tryCompactTree(context.Background(), d.interceptor, tree.tree); err != nil {
 		panic(err)
 	}
 	return
@@ -352,7 +351,7 @@ func (d *dirtyCollector) cleanupStorage() {
 			toDeletes = append(toDeletes, entry)
 			return true
 		}
-		if err := d.tryCompactTree(context.Background(), d.interceptor, entry.tree, entry.start, entry.end); err != nil {
+		if err := d.tryCompactTree(context.Background(), d.interceptor, entry.tree); err != nil {
 			logutil.Warnf("error: interceptor on dirty tree: %v", err)
 		}
 		if entry.tree.IsEmpty() {
@@ -373,11 +372,18 @@ func (d *dirtyCollector) cleanupStorage() {
 	}
 }
 
-// iter the tree and call interceptor to process block. flushed block, empty obj and table will be removed from the tree
+// iter the tree and call interceptor to process block.
+// Those entries that will be removed from the tree:
+// 1. not found db
+// 2. not found table
+// 3. empty table
+// 4. dropped aobject
+// 5. nobject
+// Or, put it in a more concise way, **not dropped aobjects** will be kept in the tree.
 func (d *dirtyCollector) tryCompactTree(
 	ctx context.Context,
 	interceptor DirtyEntryInterceptor,
-	tree *model.Tree, from, to types.TS) (err error) {
+	tree *model.Tree) (err error) {
 	var (
 		db  *catalog.DBEntry
 		tbl *catalog.TableEntry
@@ -406,15 +412,6 @@ func (d *dirtyCollector) tryCompactTree(
 			}
 			break
 		}
-
-		tbl.Stats.RLock()
-		lastFlush := tbl.Stats.LastFlush
-		if lastFlush.GreaterEq(&to) {
-			tree.Shrink(id)
-			tbl.Stats.RUnlock()
-			continue
-		}
-		tbl.Stats.RUnlock()
 
 		if x := ctx.Value(TempFKey{}); x != nil && TempF.Check(tbl.ID) {
 			logutil.Infof("temp filter skip table %v-%v", tbl.ID, tbl.GetLastestSchemaLocked(false).Name)

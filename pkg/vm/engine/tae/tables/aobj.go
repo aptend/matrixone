@@ -301,33 +301,33 @@ func (obj *aobject) Contains(
 func (obj *aobject) estimateRawScore() (score int, dropped bool, err error) {
 	meta := obj.meta.Load()
 	if meta.HasDropCommitted() {
-		dropped = true
-		return
+		return 0, true, nil
 	}
-	atLeastOneCommitted := meta.ObjectState >= catalog.ObjectState_Create_ApplyCommit
-	if !atLeastOneCommitted {
-		score = 1
-		return
-	}
+	return 1, false, nil
+	// atLeastOneCommitted := meta.ObjectState >= catalog.ObjectState_Create_ApplyCommit
+	// if !atLeastOneCommitted {
+	// 	score = 1
+	// 	return
+	// }
 
-	rows, err := obj.Rows()
-	if rows == int(obj.meta.Load().GetSchema().BlockMaxRows) {
-		score = 100
-		return
-	}
+	// rows, err := obj.Rows()
+	// if rows == int(obj.meta.Load().GetSchema().BlockMaxRows) {
+	// 	score = 100
+	// 	return
+	// }
 
-	if rows == 0 {
-		score = 0
-	} else {
-		score = 1
-	}
+	// if rows == 0 {
+	// 	score = 0
+	// } else {
+	// 	score = 1
+	// }
 
-	if score > 0 {
-		if _, terminated := obj.meta.Load().GetTerminationTS(); terminated {
-			score = 100
-		}
-	}
-	return
+	// if score > 0 {
+	// 	if _, terminated := obj.meta.Load().GetTerminationTS(); terminated {
+	// 		score = 100
+	// 	}
+	// }
+	// return
 }
 
 func (obj *aobject) RunCalibration() (score int, err error) {

@@ -21,6 +21,23 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 )
 
+func RemoveIf[T any](data []T, pred func(t T) bool) []T {
+	// from plan.RemoveIf
+	if len(data) == 0 {
+		return data
+	}
+	res := 0
+	for i := 0; i < len(data); i++ {
+		if !pred(data[i]) {
+			if res != i {
+				data[res] = data[i]
+			}
+			res++
+		}
+	}
+	return data[:res]
+}
+
 // ID is the general identifier type shared by different types like
 // table, object, block, etc.
 //

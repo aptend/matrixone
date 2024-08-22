@@ -139,6 +139,11 @@ func (blk *baseObject) TryUpgrade() (err error) {
 
 func (blk *baseObject) GetMeta() any { return blk.meta.Load() }
 func (blk *baseObject) CheckFlushTaskRetry(startts types.TS) bool {
+	ts := blk.GetMaxAppendTs()
+	return ts.Greater(&startts)
+}
+
+func (blk *baseObject) GetMaxAppendTs() types.TS {
 	if !blk.meta.Load().IsAppendable() {
 		panic("not support")
 	}
@@ -148,7 +153,7 @@ func (blk *baseObject) CheckFlushTaskRetry(startts types.TS) bool {
 	blk.RLock()
 	defer blk.RUnlock()
 	x := blk.appendMVCC.GetLatestAppendPrepareTSLocked()
-	return x.Greater(&startts)
+	return x
 }
 func (blk *baseObject) GetFs() *objectio.ObjectFS { return blk.rt.Fs }
 func (blk *baseObject) GetID() *common.ID         { return blk.meta.Load().AsCommonID() }

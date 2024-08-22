@@ -66,6 +66,7 @@ type Object interface {
 
 	Rows() (int, error)
 	CheckFlushTaskRetry(startts types.TS) bool
+	GetMaxAppendTs() types.TS
 
 	Prefetch(idxes []uint16, blkID uint16) error
 	GetMeta() any

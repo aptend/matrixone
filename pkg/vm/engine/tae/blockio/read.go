@@ -32,24 +32,8 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 )
-
-func removeIf[T any](data []T, pred func(t T) bool) []T {
-	// from plan.RemoveIf
-	if len(data) == 0 {
-		return data
-	}
-	res := 0
-	for i := 0; i < len(data); i++ {
-		if !pred(data[i]) {
-			if res != i {
-				data[res] = data[i]
-			}
-			res++
-		}
-	}
-	return data[:res]
-}
 
 type ReadFilterSearchFuncType func([]*vector.Vector) []int64
 
@@ -85,7 +69,7 @@ func ReadDataByFilter(
 
 	sels = searchFunc(bat.Vecs)
 	if !deleteMask.IsEmpty() {
-		sels = removeIf(sels, func(i int64) bool {
+		sels = common.RemoveIf(sels, func(i int64) bool {
 			return deleteMask.Contains(uint64(i))
 		})
 	}

@@ -235,8 +235,16 @@ type runner struct {
 		files map[string]struct{}
 	}
 
+	flushStatus map[uint64]syncStatus
+
 	onceStart sync.Once
 	onceStop  sync.Once
+}
+
+type syncStatus struct {
+	DataMaxSeq uint64
+	TmMaxTs    types.TS
+	DataMaxTs  types.TS
 }
 
 func NewRunner(
@@ -247,12 +255,13 @@ func NewRunner(
 	wal wal.Driver,
 	opts ...Option) *runner {
 	r := &runner{
-		ctx:       ctx,
-		rt:        rt,
-		catalog:   catalog,
-		source:    source,
-		observers: new(observers),
-		wal:       wal,
+		ctx:         ctx,
+		rt:          rt,
+		catalog:     catalog,
+		source:      source,
+		observers:   new(observers),
+		wal:         wal,
+		flushStatus: make(map[uint64]syncStatus),
 	}
 	r.storage.entries = btree.NewBTreeGOptions(func(a, b *CheckpointEntry) bool {
 		return a.end.Less(&b.end)
@@ -886,6 +895,8 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 		tombstoneMetas = append(tombstoneMetas, object)
 	}
 
+	var currDataMaxSeq uint64
+	var currDataMaxTS, currTmMaxTS types.TS
 	// freeze all append
 	scopes := make([]common.ID, 0, len(metas))
 	for _, meta := range metas {
@@ -894,6 +905,12 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 			return moerr.GetOkExpectedEOB()
 		}
 		scopes = append(scopes, *meta.AsCommonID())
+		if ts := meta.GetObjectData().GetMaxAppendTs(); ts.Greater(&currDataMaxTS) {
+			currDataMaxTS = ts
+		}
+		if meta.SortHint > currDataMaxSeq {
+			currDataMaxSeq = meta.SortHint
+		}
 	}
 	for _, meta := range tombstoneMetas {
 		if !meta.GetObjectData().PrepareCompact() {
@@ -901,6 +918,86 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 			return moerr.GetOkExpectedEOB()
 		}
 		scopes = append(scopes, *meta.AsCommonID())
+		if ts := meta.GetObjectData().GetMaxAppendTs(); ts.Greater(&currTmMaxTS) {
+			currTmMaxTS = ts
+		}
+	}
+
+	// if a tombstone is found with a greater ts, try wait or adjust
+	if currTmMaxTS.Greater(&currDataMaxTS) {
+		// func to pop out tombstone objects with ts greater than fixedTmMaxTs
+		adjustFlushObjs := func(fixedTmMaxTs types.TS) int {
+			toDelScopes := make(map[common.ID]struct{})
+			tombstoneMetas = common.RemoveIf(tombstoneMetas, func(entry *catalog.ObjectEntry) bool {
+				ts := entry.GetObjectData().GetMaxAppendTs()
+				ret := ts.Greater(&fixedTmMaxTs)
+				if ret {
+					toDelScopes[*entry.AsCommonID()] = struct{}{}
+				}
+				return ret
+			})
+			if len(toDelScopes) > 0 {
+				scopes = common.RemoveIf(scopes, func(id common.ID) bool {
+					_, ok := toDelScopes[id]
+					return ok
+				})
+			}
+			return len(toDelScopes)
+		}
+		memo, ok := r.flushStatus[table.ID]
+		if !ok {
+			// if we don't have a memo, we just wait for the next round
+			r.flushStatus[table.ID] = syncStatus{DataMaxSeq: currDataMaxSeq, DataMaxTs: currDataMaxTS, TmMaxTs: currTmMaxTS}
+			logutil.Info("[FLUSH-SYNC] first wait",
+				zap.String("table", tableDesc),
+				zap.Uint64("dataMaxSeq", currDataMaxSeq),
+				zap.String("dataMaxTs", currDataMaxTS.ToString()),
+				zap.String("tmMaxTs", currTmMaxTS.ToString()),
+			)
+			return moerr.GetOkExpectedEOB()
+		}
+
+		// it is in the second round, try select objects to flush
+		if memo.DataMaxSeq > currDataMaxSeq {
+			panic("dirty collecting must be wrong")
+		}
+
+		if memo.DataMaxSeq == currDataMaxSeq {
+			if !memo.DataMaxTs.Equal(&currDataMaxTS) { // a defensive check
+				panic(fmt.Sprintf("memo %v, actual %v", memo.DataMaxTs.ToString(), currDataMaxTS.ToString()))
+			}
+			// there were no more fresh append in the previous scan interval,
+			// so it is safe to flush those deletes with greater ts
+			skipped := adjustFlushObjs(memo.TmMaxTs)
+			logutil.Info("[FLUSH-SYNC] no-new-append",
+				zap.String("table", tableDesc),
+				zap.Int("removeCnt", skipped),
+			)
+		} else if memo.DataMaxSeq < currDataMaxSeq {
+			if !memo.DataMaxTs.Less(&currDataMaxTS) {
+				panic(fmt.Sprintf("memo %v, actual %v", memo.DataMaxTs.ToString(), currDataMaxTS.ToString()))
+			}
+			// new append were found in the last flush interval, try adjust
+			if memo.TmMaxTs.Greater(&currDataMaxTS) {
+				// the new append still doesn't catch up with the old tombstone ts,
+				// update status for data object and wait again
+				r.flushStatus[table.ID] = syncStatus{DataMaxSeq: currDataMaxSeq, DataMaxTs: currDataMaxTS, TmMaxTs: memo.TmMaxTs}
+				logutil.Info("[FLUSH-SYNC] wait combo",
+					zap.String("table", tableDesc),
+					zap.Uint64("curr dataMaxSeq", currDataMaxSeq),
+					zap.String("curr dataMaxTs", currDataMaxTS.ToString()),
+					zap.String("fixed tmMaxTs", memo.TmMaxTs.ToString()),
+				)
+				return moerr.GetOkExpectedEOB()
+			} else {
+				// finally, we can flush objects according to memo.TmMaxTs
+				skipped := adjustFlushObjs(memo.TmMaxTs)
+				logutil.Info("[FLUSH-SYNC] adjust",
+					zap.String("table", tableDesc),
+					zap.Int("removeCnt", skipped),
+				)
+			}
+		}
 	}
 
 	factory := jobs.FlushTableTailTaskFactory(metas, tombstoneMetas, r.rt)
@@ -909,6 +1006,11 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 			logutil.Error("[FlushTabletail] Sched Failure", zap.String("table", tableDesc), zap.Error(err))
 		}
 		return moerr.GetOkExpectedEOB()
+	}
+	// reset the flush status
+	if _, ok := r.flushStatus[table.ID]; ok {
+		delete(r.flushStatus, table.ID)
+		logutil.Info("[FLUSH-SYNC] sync status cleared", zap.String("table", tableDesc))
 	}
 	return nil
 }

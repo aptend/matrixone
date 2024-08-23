@@ -387,7 +387,6 @@ func (d *dirtyCollector) tryCompactTree(
 	var (
 		db  *catalog.DBEntry
 		tbl *catalog.TableEntry
-		obj *catalog.ObjectEntry
 	)
 	for id, dirtyTable := range tree.Tables {
 		// remove empty tables
@@ -419,49 +418,33 @@ func (d *dirtyCollector) tryCompactTree(
 			continue
 		}
 
-		for id, dirtyObj := range dirtyTable.Objs {
-			if obj, err = tbl.GetObjectByID(dirtyObj.ID, false); err != nil {
-				if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
-					dirtyTable.Shrink(id, false)
-					err = nil
-					continue
-				}
-				return
-			}
-			var calibration int
-			calibration, err = obj.GetObjectData().RunCalibration()
+		checkAndTrimObject := func(id types.Objectid, isTombstone bool) error {
+			obj, err := tbl.GetObjectByID(&id, isTombstone)
 			if err != nil {
-				logutil.Warnf("get object rows failed, obj %v, err: %v", obj.ID().String(), err)
-				continue
+				if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+					dirtyTable.Shrink(id, isTombstone)
+					return nil
+				}
+				return err
 			}
-			if calibration == 0 {
-				dirtyTable.Shrink(id, false)
-				continue
+			// keep only non-dropped aobjects
+			if !(obj.IsAppendable() && !obj.HasDropCommitted()) {
+				dirtyTable.Shrink(id, isTombstone)
+				return nil
 			}
-			if err = interceptor.OnObject(obj); err != nil {
+			if err := interceptor.OnObject(obj); err != nil {
+				return err
+			}
+			return nil
+		}
+
+		for id := range dirtyTable.Objs {
+			if err = checkAndTrimObject(id, false); err != nil {
 				return
 			}
 		}
-		for id, dirtyObj := range dirtyTable.Tombstones {
-			if obj, err = tbl.GetObjectByID(dirtyObj.ID, true); err != nil {
-				if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
-					dirtyTable.Shrink(id, true)
-					err = nil
-					continue
-				}
-				return
-			}
-			var calibration int
-			calibration, err = obj.GetObjectData().RunCalibration()
-			if err != nil {
-				logutil.Warnf("get object rows failed, obj %v, err: %v", obj.ID().String(), err)
-				continue
-			}
-			if calibration == 0 {
-				dirtyTable.Shrink(id, true)
-				continue
-			}
-			if err = interceptor.OnObject(obj); err != nil {
+		for id := range dirtyTable.Tombstones {
+			if err = checkAndTrimObject(id, true); err != nil {
 				return
 			}
 		}

@@ -1034,7 +1034,8 @@ func (r *runner) EstimateTableMemSize(table *catalog.TableEntry, tree *model.Tab
 	return
 }
 
-func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
+// for a non-forced dirty tree, it contains all unflushed data in the db at the latest moment
+func (r *runner) scheduleFlushByTheTree(entry *logtail.DirtyTreeEntry, force bool) {
 	if entry.IsEmpty() {
 		return
 	}
@@ -1069,13 +1070,7 @@ func (r *runner) tryCompactTree(entry *logtail.DirtyTreeEntry, force bool) {
 	}
 
 	slices.SortFunc(r.objMemSizeList, func(a, b tableAndSize) int {
-		if a.asize > b.asize {
-			return -1
-		} else if a.asize < b.asize {
-			return 1
-		} else {
-			return 0
-		}
+		return b.asize - a.asize // sort by asize desc
 	})
 
 	pressure := float64(totalSize) / float64(common.RuntimeOverallFlushMemCap.Load())
@@ -1157,11 +1152,11 @@ func (r *runner) onDirtyEntries(entries ...any) {
 		}
 	}
 	if !force.IsEmpty() {
-		r.tryCompactTree(force, true)
+		r.scheduleFlushByTheTree(force, true)
 	}
 
 	if !normal.IsEmpty() {
-		r.tryCompactTree(normal, false)
+		r.scheduleFlushByTheTree(normal, false)
 	}
 }
 

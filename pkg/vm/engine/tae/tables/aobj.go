@@ -299,12 +299,11 @@ func (obj *aobject) Contains(
 	}
 }
 
-func (obj *aobject) estimateRawScore() (score int, dropped bool, err error) {
-	meta := obj.meta.Load()
-	if meta.HasDropCommitted() {
-		return 0, true, nil
+func (obj *aobject) RunCalibration() (score int, err error) {
+	if obj.meta.Load().HasDropCommitted() {
+		return 0, nil
 	}
-	return 1, false, nil
+	return 1, nil
 	// atLeastOneCommitted := meta.ObjectState >= catalog.ObjectState_Create_ApplyCommit
 	// if !atLeastOneCommitted {
 	// 	score = 1
@@ -329,11 +328,6 @@ func (obj *aobject) estimateRawScore() (score int, dropped bool, err error) {
 	// 	}
 	// }
 	// return
-}
-
-func (obj *aobject) RunCalibration() (score int, err error) {
-	score, _, err = obj.estimateRawScore()
-	return
 }
 
 func (obj *aobject) OnReplayAppend(node txnif.AppendNode) (err error) {

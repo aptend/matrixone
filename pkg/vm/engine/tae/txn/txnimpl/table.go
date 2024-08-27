@@ -180,7 +180,7 @@ func (tbl *txnTable) TransferDeletes(ts types.TS, phase string) (err error) {
 	for _, stats := range tbl.tombstoneTable.tableSpace.stats {
 		hasConflict := false
 		for blkID := range stats.BlkCnt() {
-			loc := stats.BlockLocation(uint16(blkID), tbl.tombstoneTable.schema.BlockMaxRows)
+			loc := stats.BlockLocation(uint16(blkID), tbl.tombstoneTable.schema.Extra.BlockMaxRows)
 			vectors, closeFunc, err := blockio.LoadColumns2(
 				tbl.store.ctx,
 				[]uint16{0, 1},
@@ -995,7 +995,7 @@ func (tbl *txnTable) DoPrecommitDedupByNode(ctx context.Context, stats objectio.
 	blkCount := stats.BlkCnt()
 	totalRow := stats.Rows()
 	schema := tbl.getBaseTable(isTombstone).schema
-	blkMaxRows := schema.BlockMaxRows
+	blkMaxRows := schema.Extra.BlockMaxRows
 	for i := uint16(0); i < uint16(blkCount); i++ {
 		var blkRow uint32
 		if totalRow > blkMaxRows {
@@ -1389,7 +1389,7 @@ func (tbl *txnTable) contains(
 	for _, stats := range tbl.tombstoneTable.tableSpace.stats {
 		blkCount := stats.BlkCnt()
 		totalRow := stats.Rows()
-		blkMaxRows := tbl.tombstoneTable.schema.BlockMaxRows
+		blkMaxRows := tbl.tombstoneTable.schema.Extra.BlockMaxRows
 		tombStoneZM := stats.SortKeyZoneMap()
 		var skip bool
 		if skip = !tombStoneZM.FastIntersect(keysZM); skip {
@@ -1507,7 +1507,7 @@ func (tbl *txnTable) FillInWorkspaceDeletes(blkID types.Blockid, deletes **nulls
 		metaLocs := make([]objectio.Location, 0)
 		blkCount := stats.BlkCnt()
 		totalRow := stats.Rows()
-		blkMaxRows := tbl.tombstoneTable.schema.BlockMaxRows
+		blkMaxRows := tbl.tombstoneTable.schema.Extra.BlockMaxRows
 		for i := uint16(0); i < uint16(blkCount); i++ {
 			var blkRow uint32
 			if totalRow > blkMaxRows {
@@ -1569,7 +1569,7 @@ func (tbl *txnTable) IsDeletedInWorkSpace(blkID objectio.Blockid, row uint32) (b
 		metaLocs := make([]objectio.Location, 0)
 		blkCount := stats.BlkCnt()
 		totalRow := stats.Rows()
-		blkMaxRows := tbl.tombstoneTable.schema.BlockMaxRows
+		blkMaxRows := tbl.tombstoneTable.schema.Extra.BlockMaxRows
 		for i := uint16(0); i < uint16(blkCount); i++ {
 			var blkRow uint32
 			if totalRow > blkMaxRows {

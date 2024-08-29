@@ -76,11 +76,19 @@ func (db *txnDatabase) Relations(ctx context.Context) ([]string, error) {
 	defer res.Close()
 
 	var rels []string
+	var rowids []types.Rowid
 	for _, b := range res.Batches {
 		for i, v := 0, b.Vecs[0]; i < v.Length(); i++ {
 			rels = append(rels, v.GetStringAt(i))
 		}
+		for i, v := 0, b.Vecs[1]; i < v.Length(); i++ {
+			rowids = append(rowids, vector.GetFixedAt[types.Rowid](v, i))
+		}
 	}
+	logutil.Info("relations", zap.String("db", db.databaseName), zap.String("relations", strings.Join(rels, ",")), zap.String("rowids", stringifySlice(rowids, func(a any) string {
+		r := a.(types.Rowid)
+		return r.String()
+	})))
 	return rels, nil
 }
 

@@ -863,6 +863,7 @@ func (tbl *txnTable) DedupSnapByPK(ctx context.Context, keys containers.Vector, 
 				zap.Bool("isTombstone", isTombstone),
 				zap.String("pk", keys.PPString(keys.Length())),
 				zap.String("rowids", rowIDs.PPString(rowIDs.Length())),
+				zap.String("txn", tbl.store.txn.String()),
 			)
 			entry := common.TypeStringValue(*keys.GetType(), keys.Get(i), false)
 			return moerr.NewDuplicateEntryNoCtx(entry, colName)

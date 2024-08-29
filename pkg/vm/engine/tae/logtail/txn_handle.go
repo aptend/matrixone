@@ -17,6 +17,7 @@ package logtail
 import (
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
@@ -211,12 +212,12 @@ func (b *TxnLogtailRespBuilder) buildLogtailEntry(tid, dbid uint64, tableName, d
 	if bat == nil || bat.Length() == 0 {
 		return
 	}
-	// if tid == pkgcatalog.MO_DATABASE_ID || tid == pkgcatalog.MO_TABLES_ID || tid == pkgcatalog.MO_COLUMNS_ID {
-	// 	logutil.Infof(
-	// 		"yyyyyy txn logtail] from table %d-%s, is delete %v, batch %v @%s",
-	// 		tid, tableName, delete, bat.PPString(5), b.txn.GetPrepareTS().ToString(),
-	// 	)
-	// }
+	if strings.HasPrefix(tableName, "__mo_index_unique") {
+		logutil.Infof(
+			"yyyyyy txn logtail] from table %d-%s, is delete %v, batch %v @%s",
+			tid, tableName, delete, bat.PPString(5), b.txn.GetPrepareTS().ToString(),
+		)
+	}
 	apiBat, err := containersBatchToProtoBatch(bat)
 	common.DoIfDebugEnabled(func() {
 		logutil.Debugf(

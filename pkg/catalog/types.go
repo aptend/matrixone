@@ -568,8 +568,8 @@ var (
 		MoTablesAllColsString, MO_CATALOG, MO_TABLES)
 
 	MoTablesInDBQueryFormat = fmt.Sprintf(
-		"select %s from `%s`.`%s` where %s = %%d and %s = %%q",
-		SystemRelAttr_Name, MO_CATALOG, MO_TABLES,
+		"select %s, %s from `%s`.`%s` where %s = %%d and %s = %%q",
+		SystemRelAttr_Name, Row_ID, MO_CATALOG, MO_TABLES,
 		SystemRelAttr_AccID, SystemRelAttr_DBName)
 
 	MoTablesRowidQueryFormat = fmt.Sprintf(

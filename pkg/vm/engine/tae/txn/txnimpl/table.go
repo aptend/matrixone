@@ -1486,7 +1486,7 @@ func (tbl *txnTable) TryDeleteByStats(id *common.ID, stats objectio.ObjectStats)
 	return
 }
 
-func (tbl *txnTable) FillInWorkspaceDeletes(blkID types.Blockid, deletes **nulls.Nulls) error {
+func (tbl *txnTable) FillInWorkspaceDeletes(blkID types.Blockid, deletes **nulls.Nulls, deleteStartOffset uint64) error {
 	if tbl.tombstoneTable == nil || tbl.tombstoneTable.tableSpace == nil {
 		return nil
 	}
@@ -1499,7 +1499,7 @@ func (tbl *txnTable) FillInWorkspaceDeletes(blkID types.Blockid, deletes **nulls
 				if *deletes == nil {
 					*deletes = &nulls.Nulls{}
 				}
-				(*deletes).Add(uint64(row))
+				(*deletes).Add(uint64(row) + deleteStartOffset)
 			}
 		}
 	}
@@ -1541,7 +1541,7 @@ func (tbl *txnTable) FillInWorkspaceDeletes(blkID types.Blockid, deletes **nulls
 					if *deletes == nil {
 						*deletes = &nulls.Nulls{}
 					}
-					(*deletes).Add(uint64(row))
+					(*deletes).Add(uint64(row) + deleteStartOffset)
 				}
 			}
 			closeFunc()

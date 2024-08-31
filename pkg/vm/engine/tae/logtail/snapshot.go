@@ -39,7 +39,6 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
-	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnbase"
 )
 
 const (
@@ -307,6 +306,7 @@ func (sm *SnapshotMeta) CopyTablesLocked() map[uint32]map[uint64]*TableInfo {
 }
 
 func (sm *SnapshotMeta) updateTableInfo(data *CheckpointData) {
+	return
 	insTable, insTableTxn, _, _, delTableTxn := data.GetTblBatchs()
 	insAccIDs := vector.MustFixedColWithTypeCheck[uint32](insTable.GetVectorByName(catalog2.SystemColAttr_AccID).GetDownstreamVector())
 	insTIDs := vector.MustFixedColWithTypeCheck[uint64](insTable.GetVectorByName(catalog2.SystemRelAttr_ID).GetDownstreamVector())
@@ -343,10 +343,10 @@ func (sm *SnapshotMeta) updateTableInfo(data *CheckpointData) {
 		}
 		sm.tables[accID][tid] = table
 
-		if sm.acctIndexes[tid] == nil {
-			sm.acctIndexes[tid] = table
-		}
-	}
+	// 	if sm.acctIndexes[tid] == nil {
+	// 		sm.acctIndexes[tid] = table
+	// 	}
+	// }
 
 	delTableIDs := vector.MustFixedColWithTypeCheck[uint64](delTableTxn.GetVectorByName(SnapshotAttr_TID).GetDownstreamVector())
 	delDropAts := vector.MustFixedColWithTypeCheck[types.TS](delTableTxn.GetVectorByName(txnbase.SnapshotAttr_CommitTS).GetDownstreamVector())

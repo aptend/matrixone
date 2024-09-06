@@ -38,6 +38,7 @@ import (
 	"github.com/panjf2000/ants/v2"
 	"github.com/prashantv/gostub"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -58,7 +59,15 @@ func TestBackupData(t *testing.T) {
 	schema.Extra.BlockMaxRows = 10
 	schema.Extra.ObjectMaxBlocks = 10
 	db.BindSchema(schema)
-	testutil.CreateRelation(t, db.DB, "db", schema, true)
+	{
+		txn, err := db.DB.StartTxn(nil)
+		require.NoError(t, err)
+		dbH, err := testutil.CreateDatabase2(ctx, txn, "db")
+		require.NoError(t, err)
+		_, err = testutil.CreateRelation2(ctx, txn, dbH, schema)
+		require.NoError(t, err)
+		require.NoError(t, txn.Commit(ctx))
+	}
 
 	totalRows := uint64(schema.Extra.BlockMaxRows * 30)
 	bat := catalog.MockBatch(schema, int(totalRows))

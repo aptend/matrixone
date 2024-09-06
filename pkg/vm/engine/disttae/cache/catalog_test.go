@@ -95,7 +95,7 @@ func TestTables(t *testing.T) {
 	bat := newTestTableBatch(mp)
 	accounts := vector.MustFixedColWithTypeCheck[uint32](bat.GetVector(catalog.MO_TABLES_ACCOUNT_ID_IDX + MO_OFF))
 	databaseIds := vector.MustFixedColWithTypeCheck[uint64](bat.GetVector(catalog.MO_TABLES_RELDATABASE_ID_IDX + MO_OFF))
-	extraInfos := vector.MustFixedCol[types.Varlena](bat.GetVector(catalog.MO_TABLES_EXTRA_INFO_IDX + MO_OFF))
+	extraInfos := vector.MustFixedColWithTypeCheck[types.Varlena](bat.GetVector(catalog.MO_TABLES_EXTRA_INFO_IDX + MO_OFF))
 	{ // reset account id
 		for i := range accounts {
 			accounts[i] = 1

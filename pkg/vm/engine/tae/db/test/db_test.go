@@ -33,7 +33,6 @@ import (
 
 	"github.com/panjf2000/ants/v2"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -9316,6 +9315,7 @@ func TestFillBlockTombstonesPersistedAobj(t *testing.T) {
 		txn,
 		types.NewBlockidWithObjectID(dataObj.ID(), 0),
 		&deletes,
+		0,
 		common.DebugAllocator)
 	assert.NoError(t, txn.Commit(ctx))
 	assert.Equal(t, 1, deletes.Count())

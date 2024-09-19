@@ -983,7 +983,8 @@ func (c *checkpointCleaner) createNewInput(
 	var snapSize, tableSize uint32
 	input = NewGCTable()
 	logutil.Info("[DiskCleaner]", zap.String("op", "Consume-Start"),
-		zap.Int("entry count :", len(ckps)))
+		zap.Int("entry count :", len(ckps)),
+		zap.String("start :", ckps[0].String()))
 	defer func() {
 		logutil.Info("[DiskCleaner]", zap.String("op", "Consume-End"),
 			zap.String("cost :", time.Since(now).String()),

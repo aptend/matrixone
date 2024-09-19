@@ -360,7 +360,7 @@ func (sm *SnapshotMeta) updateTableInfo(
 		}
 		logutil.Infof("yyyyyy delete table %v @ %v", del.pk.ErrString(nil), del.ts.ToString())
 		if len(sm.pkIndexes[pk]) == 0 {
-			panic(fmt.Sprintf("delete table %v not found @ %v", del.pk.ErrString(nil), del.ts.ToString()))
+			panic(fmt.Sprintf("delete table %v not found @ %v, start is %v, end is %v", del.pk.ErrString(nil), del.ts.ToString(), startts.ToString(), endts.ToString()))
 		}
 		table := sm.pkIndexes[pk][0]
 		if !table.deleteAt.IsEmpty() && table.deleteAt.Greater(&del.ts) {

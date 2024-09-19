@@ -358,6 +358,7 @@ func (sm *SnapshotMeta) updateTableInfo(
 		if sm.pkIndexes[pk] == nil {
 			continue
 		}
+		logutil.Infof("yyyyyy delete table %v @ %v", del.pk.ErrString(nil), del.ts.ToString())
 		if len(sm.pkIndexes[pk]) == 0 {
 			panic(fmt.Sprintf("delete table %v not found @ %v", del.pk.ErrString(nil), del.ts.ToString()))
 		}

@@ -294,6 +294,7 @@ func (sm *SnapshotMeta) updateTableInfo(
 				sm.tables[account] = make(map[uint64]*tableInfo)
 			}
 			table := sm.tables[account][tid]
+			logutil.Infof("yyyyyy add table again %v, %v @ %v", tid, tuple.ErrString(nil), createAt.ToString())
 			if table != nil {
 				// logutil.Infof("yyyyyy add table again %v, %v @ %v", tid, tuple.ErrString(nil), createAt.ToString())
 				if table.createAt.Greater(&createAt) {

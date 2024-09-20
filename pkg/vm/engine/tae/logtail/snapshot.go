@@ -769,7 +769,7 @@ func (sm *SnapshotMeta) RebuildTableInfo(ins *containers.Batch) {
 		accid := insAccIDs[i]
 		createTS := insCreateTSs[i]
 		deleteTS := insDeleteTSs[i]
-		pk := ins.GetVectorByName(MoTablesPK).GetDownstreamVector().GetStringAt(i)
+		pk := string(ins.GetVectorByName(MoTablesPK).GetDownstreamVector().GetBytesAt(i))
 		if sm.tables[accid] == nil {
 			sm.tables[accid] = make(map[uint64]*tableInfo)
 		}

@@ -692,7 +692,7 @@ func (sm *SnapshotMeta) SaveTableInfo(name string, fs fileservice.FileService) (
 			vector.AppendFixed[types.TS](
 				bat.GetVectorByName(catalog.EntryNode_DeleteAt).GetDownstreamVector(),
 				table.deleteAt, false, common.DebugAllocator)
-			logutil.Infof("SaveTableInfo tid: %d, pk: %v, delete %v", table.tid, table.pk, table.deleteAt.ToString())
+			logutil.Infof("SaveTableInfo tid: %d, pk: %v, delete %v, len(pk) is %d", table.tid, table.pk, table.deleteAt.ToString(), len(sm.pkIndexes[table.pk]))
 			vector.AppendBytes(bat.GetVectorByName(MoTablesPK).GetDownstreamVector(),
 				[]byte(table.pk), false, common.DebugAllocator)
 

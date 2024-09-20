@@ -941,6 +941,9 @@ func (sm *SnapshotMeta) ReadTableInfo(ctx context.Context, name string, fs files
 		idxes[i] = uint16(i)
 	}
 	for id, block := range bs {
+		if id == 2 {
+			idxes = []uint16{0}
+		}
 		mobat, release, err := reader.LoadColumns(ctx, idxes, nil, block.GetID(), common.DebugAllocator)
 		if err != nil {
 			return err

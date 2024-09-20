@@ -294,7 +294,7 @@ func (sm *SnapshotMeta) updateTableInfo(
 			if err != nil {
 				return err
 			}
-			pk := tuple.String()
+			pk := tuple.ErrString(nil)
 			if name == catalog2.MO_SNAPSHOTS {
 				sm.tides[tid] = struct{}{}
 				logutil.Info("[UpdateSnapTable]",
@@ -692,7 +692,7 @@ func (sm *SnapshotMeta) SaveTableInfo(name string, fs fileservice.FileService) (
 			vector.AppendFixed[types.TS](
 				bat.GetVectorByName(catalog.EntryNode_DeleteAt).GetDownstreamVector(),
 				table.deleteAt, false, common.DebugAllocator)
-			logutil.Infof("RebuildTableInfo tid: %d, pk: %s", table.tid, table.pk)
+			logutil.Infof("RebuildTableInfo tid: %d, pk: %v", table.tid, table.pk)
 			vector.AppendBytes(bat.GetVectorByName(MoTablesPK).GetDownstreamVector(),
 				[]byte(table.pk), false, common.DebugAllocator)
 

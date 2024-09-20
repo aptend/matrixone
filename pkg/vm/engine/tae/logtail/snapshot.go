@@ -368,7 +368,7 @@ func (sm *SnapshotMeta) updateTableInfo(
 	})
 
 	for _, del := range deletes {
-		pk := del.pk.String()
+		pk := del.pk.ErrString(nil)
 		if sm.pkIndexes[pk] == nil {
 			continue
 		}

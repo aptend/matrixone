@@ -397,6 +397,9 @@ func (sm *SnapshotMeta) updateTableInfo(
 		if len(tables) > 1 {
 			panic(fmt.Sprintf("table %v has more than one entry, tables len %d", pk, len(tables)))
 		}
+		if len(tables) == 0 {
+			continue
+		}
 		tables[0].deleteAt = types.TS{}
 	}
 	return nil

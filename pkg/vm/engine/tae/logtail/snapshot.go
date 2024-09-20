@@ -392,6 +392,13 @@ func (sm *SnapshotMeta) updateTableInfo(
 		sm.acctIndexes[table.tid] = table
 		sm.tables[table.accountID][table.tid] = table
 	}
+
+	for pk, tables := range sm.pkIndexes {
+		if len(tables) > 1 {
+			panic(fmt.Sprintf("table %v has more than one entry, tables len %d", pk, len(tables)))
+		}
+		tables[0].deleteAt = types.TS{}
+	}
 	return nil
 }
 

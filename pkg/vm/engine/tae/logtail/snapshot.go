@@ -785,6 +785,9 @@ func (sm *SnapshotMeta) RebuildTableInfo(ins *containers.Batch) {
 		sm.tables[accid][tid] = table
 		sm.acctIndexes[tid] = table
 		logutil.Infof("RebuildTableInfo tid: %d, pk: %s", tid, pk)
+		if !table.deleteAt.IsEmpty() {
+			continue
+		}
 		if len(sm.pkIndexes[pk]) > 0 {
 			panic(fmt.Sprintf("pk %s already exists, table: %d", pk, tid))
 		}

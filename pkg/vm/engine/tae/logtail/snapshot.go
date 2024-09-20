@@ -57,6 +57,8 @@ const (
 	ColObjId
 )
 
+const MoTablesPK = "mo_tables_pk"
+
 var (
 	objectInfoSchemaAttr = []string{
 		catalog.ObjectAttr_ObjectStats,
@@ -79,6 +81,7 @@ var (
 		SnapshotAttr_TID,
 		catalog2.SystemRelAttr_CreateAt,
 		catalog.EntryNode_DeleteAt,
+		MoTablesPK,
 	}
 
 	tableInfoSchemaTypes = []types.Type{
@@ -87,6 +90,7 @@ var (
 		types.New(types.T_uint64, 0, 0),
 		types.New(types.T_TS, types.MaxVarcharLen, 0),
 		types.New(types.T_TS, types.MaxVarcharLen, 0),
+		types.New(types.T_varchar, types.MaxVarcharLen, 0),
 	}
 
 	snapshotSchemaTypes = []types.Type{
@@ -98,6 +102,14 @@ var (
 		types.New(types.T_varchar, types.MaxVarcharLen, 0),
 		types.New(types.T_varchar, types.MaxVarcharLen, 0),
 		types.New(types.T_uint64, 0, 0),
+	}
+
+	aObjectDelSchemaAttr = []string{
+		catalog.EntryNode_DeleteAt,
+	}
+
+	aObjectDelSchemaTypes = []types.Type{
+		types.New(types.T_TS, types.MaxVarcharLen, 0),
 	}
 )
 
@@ -113,6 +125,7 @@ type tableInfo struct {
 	tid       uint64
 	createAt  types.TS
 	deleteAt  types.TS
+	pk        string
 }
 
 type SnapshotMeta struct {
@@ -202,7 +215,6 @@ func (sm *SnapshotMeta) updateTableInfo(
 	fs fileservice.FileService,
 	data *CheckpointData, startts, endts types.TS,
 ) error {
-	logutil.Info("[UpdateTableInfo] start", zap.String("startts", startts.ToString()), zap.String("endts", endts.ToString()))
 	var objects map[uint64]map[objectio.Segmentid]*objectInfo
 	var tombstones map[uint64]map[objectio.Segmentid]*objectInfo
 	objects = make(map[uint64]map[objectio.Segmentid]*objectInfo, 1)
@@ -309,6 +321,7 @@ func (sm *SnapshotMeta) updateTableInfo(
 				dbID:      db,
 				tid:       tid,
 				createAt:  createAt,
+				pk:        pk,
 			}
 			sm.tables[account][tid] = table
 			sm.acctIndexes[tid] = table
@@ -679,6 +692,8 @@ func (sm *SnapshotMeta) SaveTableInfo(name string, fs fileservice.FileService) (
 			vector.AppendFixed[types.TS](
 				bat.GetVectorByName(catalog.EntryNode_DeleteAt).GetDownstreamVector(),
 				table.deleteAt, false, common.DebugAllocator)
+			vector.AppendBytes(bat.GetVectorByName(MoTablesPK).GetDownstreamVector(),
+				[]byte(table.pk), false, common.DebugAllocator)
 
 			if _, ok := sm.tides[table.tid]; ok {
 				vector.AppendFixed[uint32](
@@ -696,11 +711,26 @@ func (sm *SnapshotMeta) SaveTableInfo(name string, fs fileservice.FileService) (
 				vector.AppendFixed[types.TS](
 					snapTableBat.GetVectorByName(catalog.EntryNode_DeleteAt).GetDownstreamVector(),
 					table.deleteAt, false, common.DebugAllocator)
+				vector.AppendBytes(snapTableBat.GetVectorByName(MoTablesPK).GetDownstreamVector(),
+					[]byte(table.pk), false, common.DebugAllocator)
 			}
 		}
 	}
 	defer bat.Close()
 	defer snapTableBat.Close()
+
+	aObjDelTsBat := containers.NewBatch()
+	for i, attr := range aObjectDelSchemaAttr {
+		aObjDelTsBat.AddVector(attr, containers.MakeVector(aObjectDelSchemaTypes[i], common.DebugAllocator))
+	}
+
+	for ts := range sm.aobjDelTsMap {
+		vector.AppendFixed[types.TS](
+			aObjDelTsBat.GetVectorByName(catalog.EntryNode_DeleteAt).GetDownstreamVector(),
+			ts, false, common.DebugAllocator)
+	}
+	defer aObjDelTsBat.Close()
+
 	writer, err := objectio.NewObjectWriterSpecial(objectio.WriterGC, name, fs)
 	if err != nil {
 		return 0, err
@@ -709,6 +739,10 @@ func (sm *SnapshotMeta) SaveTableInfo(name string, fs fileservice.FileService) (
 		return 0, err
 	}
 	if _, err = writer.WriteWithoutSeqnum(containers.ToCNBatch(snapTableBat)); err != nil {
+		return 0, err
+	}
+
+	if _, err = writer.WriteWithoutSeqnum(containers.ToCNBatch(aObjDelTsBat)); err != nil {
 		return 0, err
 	}
 
@@ -735,6 +769,7 @@ func (sm *SnapshotMeta) RebuildTableInfo(ins *containers.Batch) {
 		accid := insAccIDs[i]
 		createTS := insCreateTSs[i]
 		deleteTS := insDeleteTSs[i]
+		pk := ins.GetVectorByName(MoTablesPK).GetDownstreamVector().GetStringAt(i)
 		if sm.tables[accid] == nil {
 			sm.tables[accid] = make(map[uint64]*tableInfo)
 		}
@@ -744,9 +779,15 @@ func (sm *SnapshotMeta) RebuildTableInfo(ins *containers.Batch) {
 			accountID: accid,
 			createAt:  createTS,
 			deleteAt:  deleteTS,
+			pk:        pk,
 		}
 		sm.tables[accid][tid] = table
 		sm.acctIndexes[tid] = table
+		if len(sm.pkIndexes[pk]) > 0 {
+			panic(fmt.Sprintf("pk %s already exists, table: %d", pk, tid))
+		}
+		sm.pkIndexes[pk] = make([]*tableInfo, 1)
+		sm.pkIndexes[pk][0] = table
 	}
 }
 
@@ -767,6 +808,24 @@ func (sm *SnapshotMeta) RebuildTid(ins *containers.Batch) {
 			sm.tides[tid] = struct{}{}
 			logutil.Info("[RebuildSnapshotTid]", zap.Uint64("tid", tid), zap.Uint32("account id", accid))
 		}
+	}
+}
+
+func (sm *SnapshotMeta) RebuildAObjectDel(ins *containers.Batch) {
+	sm.Lock()
+	defer sm.Unlock()
+	if ins.Length() < 1 {
+		logutil.Warnf("RebuildAObjectDel unexpected length %d", ins.Length())
+		return
+	}
+	sm.aobjDelTsMap = make(map[types.TS]struct{})
+	commitTsVec := vector.MustFixedColWithTypeCheck[types.TS](ins.GetVectorByName(EntryNode_DeleteAt).GetDownstreamVector())
+	for i := 0; i < ins.Length(); i++ {
+		commitTs := commitTsVec[i]
+		if _, ok := sm.aobjDelTsMap[commitTs]; ok {
+			panic(fmt.Sprintf("commitTs %d already exists", commitTs.ToString()))
+		}
+		sm.aobjDelTsMap[commitTs] = struct{}{}
 	}
 }
 
@@ -896,8 +955,10 @@ func (sm *SnapshotMeta) ReadTableInfo(ctx context.Context, name string, fs files
 		}
 		if id == 0 {
 			sm.RebuildTableInfo(bat)
-		} else {
+		} else if id == 1 {
 			sm.RebuildTid(bat)
+		} else {
+
 		}
 	}
 	return nil

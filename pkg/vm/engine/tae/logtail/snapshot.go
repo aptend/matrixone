@@ -57,6 +57,12 @@ const (
 	ColObjId
 )
 
+const (
+	TableInfoTypeIdx types.Enum = iota
+	SnapshotTidIdx
+	AObjectDelIdx
+)
+
 const MoTablesPK = "mo_tables_pk"
 
 var (
@@ -306,7 +312,6 @@ func (sm *SnapshotMeta) updateTableInfo(
 				sm.tables[account] = make(map[uint64]*tableInfo)
 			}
 			table := sm.tables[account][tid]
-			logutil.Infof("yyyyyy add table again %v, %v @ %v", tid, tuple.ErrString(nil), createAt.ToString())
 			if table != nil {
 				// logutil.Infof("yyyyyy add table again %v, %v @ %v", tid, tuple.ErrString(nil), createAt.ToString())
 				if table.createAt.Greater(&createAt) {
@@ -797,7 +802,6 @@ func (sm *SnapshotMeta) RebuildTableInfo(ins *containers.Batch) {
 		if !table.deleteAt.IsEmpty() {
 			continue
 		}
-		logutil.Infof("RebuildTableInfo tid: %d, pk: %s, deleteAt is %v", tid, pk, deleteTS.ToString())
 		if len(sm.pkIndexes[pk]) > 0 {
 			panic(fmt.Sprintf("pk %s already exists, table: %d", pk, tid))
 		}
@@ -951,7 +955,7 @@ func (sm *SnapshotMeta) ReadTableInfo(ctx context.Context, name string, fs files
 		idxes[i] = uint16(i)
 	}
 	for id, block := range bs {
-		if id == 2 {
+		if id == int(AObjectDelIdx) {
 			idxes = []uint16{0}
 		}
 		mobat, release, err := reader.LoadColumns(ctx, idxes, nil, block.GetID(), common.DebugAllocator)
@@ -961,7 +965,7 @@ func (sm *SnapshotMeta) ReadTableInfo(ctx context.Context, name string, fs files
 		defer release()
 		bat := containers.NewBatch()
 		defer bat.Close()
-		if id == 2 {
+		if id == int(AObjectDelIdx) {
 			for i := range aObjectDelSchemaAttr {
 				pkgVec := mobat.Vecs[i]
 				var vec containers.Vector
@@ -985,12 +989,13 @@ func (sm *SnapshotMeta) ReadTableInfo(ctx context.Context, name string, fs files
 			}
 			bat.AddVector(tableInfoSchemaAttr[i], vec)
 		}
-		if id == 0 {
+
+		if id == int(TableInfoTypeIdx) {
 			sm.RebuildTableInfo(bat)
-		} else if id == 1 {
+		} else if id == int(SnapshotTidIdx) {
 			sm.RebuildTid(bat)
 		} else {
-			sm.RebuildAObjectDel(bat)
+			panic("unknown table info type")
 		}
 	}
 	return nil

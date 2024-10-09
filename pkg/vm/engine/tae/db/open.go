@@ -223,13 +223,18 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 	)
 
 	now = time.Now()
-	db.Replay(dataFactory, checkpointed, ckpLSN, valid)
+	if !ckpReplayer.SkipWAL {
+		db.Replay(dataFactory, checkpointed, ckpLSN, valid)
+	} else {
+		logutil.Info("open-tae skip wal replay")
+	}
 	db.Catalog.ReplayTableRows()
 
 	// checkObjectState(db)
 	logutil.Info(
 		"open-tae",
 		common.OperationField("replay"),
+		common.AnyField("lsn", ckpLSN),
 		common.OperandField("wal"),
 		common.AnyField("cost", time.Since(now)),
 	)

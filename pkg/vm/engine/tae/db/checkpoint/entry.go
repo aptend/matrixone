@@ -44,6 +44,8 @@ type CheckpointEntry struct {
 
 	ckpLSN      uint64
 	truncateLSN uint64
+
+	skipWAL bool // to be removed
 }
 
 func NewCheckpointEntry(sid string, start, end types.TS, typ EntryType) *CheckpointEntry {

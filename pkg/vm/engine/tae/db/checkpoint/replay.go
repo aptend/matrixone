@@ -54,6 +54,8 @@ type CkpReplayer struct {
 
 	readDuration, applyDuration       time.Duration
 	readCount, applyCount, totalCount int
+
+	SkipWAL bool
 }
 
 func (c *CkpReplayer) Close() {
@@ -135,6 +137,9 @@ func (c *CkpReplayer) ReadCkpFiles() (err error) {
 	c.readDuration += time.Since(t0)
 
 	entries, maxGlobalEnd := ReplayCheckpointEntries(bat, checkpointVersion)
+	if len(entries) == 1 && entries[0].skipWAL {
+		c.SkipWAL = true
+	}
 	c.ckpEntries = entries
 
 	// step2. read checkpoint data, output is the ckpdatas
@@ -477,6 +482,11 @@ func ReplayCheckpointEntries(bat *containers.Batch, checkpointVersion int) (entr
 			}
 		}
 		version := bat.GetVectorByName(CheckpointAttr_Version).Get(i).(uint32)
+		var skipWAL bool
+		if version == 65535 {
+			skipWAL = true
+			version = logtail.CheckpointCurrentVersion
+		}
 		tnLoc := objectio.Location(bat.GetVectorByName(CheckpointAttr_AllLocations).Get(i).([]byte))
 		var ckpLSN, truncateLSN uint64
 		ckpLSN = bat.GetVectorByName(CheckpointAttr_CheckpointLSN).Get(i).(uint64)
@@ -491,6 +501,7 @@ func ReplayCheckpointEntries(bat *containers.Batch, checkpointVersion int) (entr
 			version:     version,
 			ckpLSN:      ckpLSN,
 			truncateLSN: truncateLSN,
+			skipWAL:     skipWAL,
 		}
 		entries[i] = checkpointEntry
 		if typ == ET_Global {

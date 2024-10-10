@@ -62,6 +62,8 @@ func fillRuntimeOptions(opts *options.Options) {
 }
 
 func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, err error) {
+	merge.StopMerge.Store(true)
+
 	dbLocker, err := createDBLock(dirname)
 
 	logutil.Info("open-tae", common.OperationField("Start"),
@@ -276,6 +278,19 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 	db.GCManager.Start()
 
 	go TaeMetricsTask(ctx)
+
+	firstTs := types.BuildTS(time.Now().UTC().UnixNano(), 0)
+	if err := db.BGCheckpointRunner.ForceGlobalCheckpointSynchronously(ctx, firstTs, time.Hour); err != nil {
+		panic(err)
+	}
+
+	time.Sleep(time.Second * 5)
+	secondTs := types.BuildTS(time.Now().UTC().UnixNano(), 0)
+	if err := db.BGCheckpointRunner.ForceGlobalCheckpointSynchronously(ctx, secondTs, time.Hour); err != nil {
+		panic(err)
+	}
+
+	time.Sleep(time.Hour * 5)
 
 	// For debug or test
 	// logutil.Info(db.Catalog.SimplePPString(common.PPL2))

@@ -775,9 +775,14 @@ func (tbl *txnTable) rangesOnePart(
 
 	errCtx := errutil.ContextWithNoReport(ctx, true)
 
+	tts := tbl.db.op.SnapshotTS()
+	typesTs := types.TimestampToTS(tts)
 	if err = ForeachSnapshotObjects(
-		tbl.db.op.SnapshotTS(),
+		tts,
 		func(obj logtailreplay.ObjectInfo, isCommitted bool) (err2 error) {
+			if obj.GetAppendable() && obj.DeleteTime.LE(&typesTs) {
+				logutil.Infof("yyyy slow path: %v snapts %v", obj.String(), tts.String())
+			}
 			var meta objectio.ObjectDataMeta
 			skipObj = false
 

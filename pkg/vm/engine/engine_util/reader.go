@@ -440,6 +440,9 @@ func (r *reader) Read(
 	r.readBlockCnt++
 
 	if len(r.cacheVectors) == 0 {
+		// if r.tableDef.TblId == 2 && len(cols) == 2 {
+		// 	logutil.Infof("yyy reader string %s", r.source.String())
+		// }
 		r.cacheVectors = containers.NewVectors(len(r.columns.seqnums) + 1)
 	}
 

@@ -287,6 +287,12 @@ func FilterTxnObjects(
 			if !iter.Next() {
 				return objectio.ZeroObjectStats, ErrNoMore
 			}
+
+			obj := iter.Entry()
+			tts := types.TimestampToTS(snapshotTS)
+			if obj.GetAppendable() && obj.DeleteTime.LE(&tts) {
+				logutil.Infof("yyyy fast path: %v snapts %v", obj.String(), tts.ToString())
+			}
 			return iter.Entry().ObjectStats, nil
 		}
 	}

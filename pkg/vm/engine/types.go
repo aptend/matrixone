@@ -773,6 +773,7 @@ type DataSource interface {
 	SetFilterZM(zm objectio.ZoneMap)
 
 	Close()
+	String() string
 }
 
 type Ranges interface {

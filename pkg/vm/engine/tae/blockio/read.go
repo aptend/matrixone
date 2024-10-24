@@ -33,6 +33,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 )
 
@@ -249,11 +250,21 @@ func BlockDataRead(
 			v2.TaskSelReadFilterHit.Inc()
 		}
 
+		if info.IsAppendable() && tableName == "mo_tables" && len(colTypes) == 2 && colTypes[1].Oid == types.T_Rowid {
+			logutil.Info("yyy read zero",
+				zap.Any("phyAddrColumnPos", phyAddrColumnPos),
+				zap.String("blk", info.String()),
+				zap.Any("columns", columns),
+				zap.Any("ts", ts.String()),
+				zap.Any("sels", sels),
+			)
+		}
 		if len(sels) == 0 {
 			return nil
 		}
 	}
 
+	selsCnt := len(sels)
 	err = BlockDataReadInner(
 		ctx,
 		info,
@@ -273,6 +284,17 @@ func BlockDataRead(
 		return err
 	}
 
+	if selsCnt > 0 && selsCnt != bat.Vecs[0].Length() {
+		logutil.Info("yyy read",
+			zap.Any("phyAddrColumnPos", phyAddrColumnPos),
+			zap.String("blk", info.String()),
+			zap.Any("columns", columns),
+			zap.Any("ts", ts.String()),
+			zap.Any("sels", sels),
+			zap.Any("selsCnt", selsCnt),
+			zap.String("bat", common.MoBatchToString(bat, 20)),
+		)
+	}
 	bat.SetRowCount(bat.Vecs[0].Length())
 	return nil
 }

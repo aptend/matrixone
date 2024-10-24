@@ -225,7 +225,7 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 
 	// 1.1 table rowid
 	sql := fmt.Sprintf(catalog.MoTablesRowidQueryFormat, accountId, db.databaseName, name)
-	res, err := execReadSql(ctx, db.op, sql, true)
+	res, err := execReadSql(ctx, db.op, sql, false)
 	if err != nil {
 		return nil, err
 	}
@@ -238,6 +238,7 @@ func (db *txnDatabase) deleteTable(ctx context.Context, name string, forAlter bo
 			zap.String("sql", sql),
 			zap.Uint64("did", db.databaseId),
 			zap.Uint64("tid", rel.GetTableID(ctx)),
+			zap.String("txn", db.getTxn().op.Txn().DebugString()),
 			zap.String("workspace", db.getTxn().PPString()))
 		panic("delete table failed: query failed")
 	}

@@ -275,6 +275,12 @@ func (entry *flushTableTailEntry) PrepareCommit() error {
 			zap.Int("in-queue-transfers", trans),
 		)
 	}
+
+	logutil.Info(
+		"[FLUSH-PREPARE-COMMIT]",
+		zap.String("task", entry.taskName),
+		zap.String("commit-ts", entry.txn.GetPrepareTS().ToString()),
+	)
 	return nil
 }
 

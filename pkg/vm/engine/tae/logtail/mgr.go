@@ -207,19 +207,13 @@ func (mgr *Manager) TryCompactTable() {
 }
 
 func (mgr *Manager) GetTableOperator(
-	from, to types.TS,
-	catalog *catalog.Catalog,
-	dbID, tableID uint64,
-	visitor catalog.Processor,
+	tableEntry *catalog.TableEntry,
+	visitor *TableLogtailRespBuilder,
 ) *BoundTableOperator {
-	reader := mgr.GetReader(from, to)
-	return NewBoundTableOperator(
-		catalog,
-		reader,
-		dbID,
-		tableID,
-		visitor,
-	)
+	return &BoundTableOperator{
+		tbl:     tableEntry,
+		visitor: visitor,
+	}
 }
 
 func (mgr *Manager) RegisterCallback(cb func(from, to timestamp.Timestamp, closeCB func(), tails ...logtail.TableLogtail) error) error {

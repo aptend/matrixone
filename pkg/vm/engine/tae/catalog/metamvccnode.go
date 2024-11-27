@@ -167,10 +167,6 @@ func (e *ObjectMVCCNode) IsEmpty() bool {
 	return e.Size() == 0
 }
 
-func (e *ObjectMVCCNode) AppendTuple(sid *types.Objectid, batch *containers.Batch) {
-	batch.GetVectorByName(ObjectAttr_ObjectStats).Append(e.ObjectStats[:], false)
-}
-
 func ReadObjectInfoTuple(bat *containers.Batch, row int) (e *ObjectMVCCNode) {
 	buf := bat.GetVectorByName(ObjectAttr_ObjectStats).Get(row).([]byte)
 	e = &ObjectMVCCNode{

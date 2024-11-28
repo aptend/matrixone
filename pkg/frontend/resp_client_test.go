@@ -1,4 +1,4 @@
-// Copyright 2023 Matrix Origin
+// Copyright 2021 - 2024 Matrix Origin
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package fileservice
+package frontend
 
 import (
-	"github.com/matrixorigin/matrixone/pkg/common/reuse"
+	"testing"
 )
 
-func init() {
-	reuse.CreatePool[tracePoint](
-		newTracePoint,
-		resetTracePoint,
-		reuse.DefaultOptions[tracePoint]().
-			WithEnableChecker())
+func Test_mysqlResp(t *testing.T) {
+	var resp *MysqlResp
+	resp.SetStr(DBNAME, "test")
+	resp.GetStr(DBNAME)
+	resp.SetU32(CONNID, 100)
+	resp.GetU32(CONNID)
+	resp.ResetStatistics()
 }

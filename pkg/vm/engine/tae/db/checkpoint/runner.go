@@ -972,16 +972,14 @@ func (r *runner) EstimateTableMemSize(table *catalog.TableEntry, tree *model.Tab
 		if err != nil {
 			panic(err)
 		}
-		a, _ := object.GetObjectData().EstimateMemSize()
-		asize += a
+		asize += object.GetObjectData().EstimateMemSize()
 	}
 	for _, obj := range tree.Tombstones {
 		object, err := table.GetObjectByID(obj.ID, true)
 		if err != nil {
 			panic(err)
 		}
-		a, _ := object.GetObjectData().EstimateMemSize()
-		dsize += a
+		dsize += object.GetObjectData().EstimateMemSize()
 	}
 	return
 }

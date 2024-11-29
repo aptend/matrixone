@@ -9084,23 +9084,22 @@ func TestEstimateMemSize(t *testing.T) {
 		testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schema, bat, true)
 		txn, rel := tae.GetRelation()
 		blk := testutil.GetOneBlockMeta(rel)
-		size1, ds1 := blk.GetObjectData().EstimateMemSize()
+		size1 := blk.GetObjectData().EstimateMemSize()
 		schema50rowSize = size1
 
 		blkID := objectio.NewBlockidWithObjectID(blk.ID(), 0)
 		err := rel.DeleteByPhyAddrKey(*objectio.NewRowid(blkID, 1))
 		assert.NoError(t, err)
-		size2, ds2 := blk.GetObjectData().EstimateMemSize()
+		size2 := blk.GetObjectData().EstimateMemSize()
 
 		err = rel.DeleteByPhyAddrKey(*objectio.NewRowid(blkID, 5))
 		assert.NoError(t, err)
-		size3, ds3 := blk.GetObjectData().EstimateMemSize()
+		size3 := blk.GetObjectData().EstimateMemSize()
 		// assert.Less(t, size1, size2)
 		// assert.Less(t, size2, size3)
 		assert.NoError(t, txn.Rollback(ctx))
-		size4, ds4 := blk.GetObjectData().EstimateMemSize()
+		size4 := blk.GetObjectData().EstimateMemSize()
 		t.Log(size1, size2, size3, size4)
-		t.Log(ds1, ds2, ds3, ds4)
 	}
 
 	{
@@ -9109,26 +9108,25 @@ func TestEstimateMemSize(t *testing.T) {
 		testutil.CreateRelationAndAppend(t, 0, tae.DB, "db", schemaBig, bat, false)
 		txn, rel := tae.GetRelation()
 		blk := testutil.GetOneBlockMeta(rel)
-		size1, d1 := blk.GetObjectData().EstimateMemSize()
+		size1 := blk.GetObjectData().EstimateMemSize()
 
 		blkID := objectio.NewBlockidWithObjectID(blk.ID(), 0)
 		err := rel.DeleteByPhyAddrKey(*objectio.NewRowid(blkID, 1))
 		assert.NoError(t, err)
 
-		size2, d2 := blk.GetObjectData().EstimateMemSize()
+		size2 := blk.GetObjectData().EstimateMemSize()
 
 		err = rel.DeleteByPhyAddrKey(*objectio.NewRowid(blkID, 5))
 		assert.NoError(t, err)
-		size3, d3 := blk.GetObjectData().EstimateMemSize()
+		size3 := blk.GetObjectData().EstimateMemSize()
 
 		assert.NoError(t, txn.Commit(ctx))
 
 		txn, rel = tae.GetRelation()
 		tombstone := testutil.GetOneTombstoneMeta(rel)
-		size4, d4 := tombstone.GetObjectData().EstimateMemSize()
+		size4 := tombstone.GetObjectData().EstimateMemSize()
 
 		t.Log(size1, size2, size3, size4)
-		t.Log(d1, d2, d3, d4)
 		assert.Equal(t, size1, size2)
 		assert.Equal(t, size2, size3)
 		assert.NotZero(t, size4)

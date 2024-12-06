@@ -280,6 +280,9 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 		}
 		c.retryTimes = retryTimes
 		defChanged := moerr.IsMoErrCode(err, moerr.ErrTxnNeedRetryWithDefChanged)
+		if strings.Contains(c.sql, "create index") {
+			panic(moerr.NewInternalErrorNoCtx("txn need retry panic"))
+		}
 		if runC, err = c.prepareRetry(defChanged); err != nil {
 			return nil, err
 		}

@@ -1217,6 +1217,10 @@ func (tbl *txnTable) isCreatedInTxn(ctx context.Context) (bool, error) {
 		return tbl.createdInTxn, nil
 	}
 
+	if tbl.tableName == "xxxx" {
+		logutil.Infof("==== return error %v", tbl.getTxn().proc.GetTxnOperator().Txn().DebugString())
+		return false, moerr.NewTxnNeedRetry(ctx)
+	}
 	if tbl.db.op.IsSnapOp() {
 		// if the operation is snapshot read, isCreatedInTxn can not be called by AlterTable
 		// So if the snapshot read want to subcribe logtail tail, let it go ahead.

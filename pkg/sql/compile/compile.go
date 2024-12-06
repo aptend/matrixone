@@ -4560,6 +4560,7 @@ func (s *Scope) affectedRows() uint64 {
 }
 
 func (c *Compile) runSql(sql string) error {
+	logutil.Infof("---- runsql: %v, txn %v ", sql, hex.EncodeToString(c.proc.GetTxnOperator().Txn().ID))
 	return c.runSqlWithAccountId(sql, NoAccountId)
 }
 

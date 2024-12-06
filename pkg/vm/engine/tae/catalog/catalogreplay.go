@@ -129,9 +129,9 @@ func (catalog *Catalog) onReplayUpdateTable(cmd *EntryCommand[*TableMVCCNode, *T
 	tblun := tbl.SearchNodeLocked(un)
 	if tblun == nil {
 		tbl.InsertLocked(un) //TODO isvalid
-		if tbl.isColumnChangedInSchema() {
-			tbl.FreezeAppend()
-		}
+		// if tbl.isColumnChangedInSchema() {
+		// 	tbl.FreezeAppend()
+		// }
 		schema := un.BaseNode.Schema
 		tbl.TableNode.schema.Store(schema)
 		// alter table rename
@@ -179,20 +179,23 @@ func (catalog *Catalog) onReplayUpdateObject(
 		cmd.mvccNode.TxnMVCCNode = &obj.CreateNode
 		cmd.mvccNode.EntryMVCCNode = &obj.EntryMVCCNode
 		obj.ObjectMVCCNode = *cmd.mvccNode.BaseNode
+		logutil.Infof("add stats %v", obj.StringWithLevel(2))
 		obj.ObjectState = ObjectState_Create_ApplyCommit
 		rel.AddEntryLocked(obj)
 	}
 	if cmd.mvccNode.DeletedAt.Equal(&txnif.UncommitTS) {
-		obj, err = rel.GetObjectByID(cmd.ID.ObjectID(), cmd.node.IsTombstone)
+		cobj, err := rel.GetObjectByID(cmd.ID.ObjectID(), cmd.node.IsTombstone)
 		if err != nil {
 			panic(fmt.Sprintf("obj %v not existed, table:\n%v", cmd.ID.String(), rel.StringWithLevel(3)))
 		}
+		obj = cobj.Clone()
 		obj.EntryMVCCNode = *cmd.mvccNode.EntryMVCCNode
 		obj.DeleteNode = *cmd.mvccNode.TxnMVCCNode
 		obj.ObjectMVCCNode = *cmd.mvccNode.BaseNode
 		cmd.mvccNode.TxnMVCCNode = &obj.DeleteNode
 		cmd.mvccNode.EntryMVCCNode = &obj.EntryMVCCNode
 		obj.ObjectState = ObjectState_Delete_ApplyCommit
+		rel.AddEntryLocked(obj)
 	}
 
 	if obj.objData == nil {
@@ -385,9 +388,9 @@ func (catalog *Catalog) onReplayCreateTable(dbid, tid uint64, schema *Schema, tx
 			},
 		}
 		tbl.InsertLocked(un)
-		if tbl.isColumnChangedInSchema() {
-			tbl.FreezeAppend()
-		}
+		// if tbl.isColumnChangedInSchema() {
+		// 	tbl.FreezeAppend()
+		// }
 		tbl.TableNode.schema.Store(schema)
 		if schema.Extra.OldName != "" {
 			logutil.Infof("replay rename %v from %v -> %v", tid, schema.Extra.OldName, schema.Name)
@@ -488,10 +491,12 @@ func (catalog *Catalog) onReplayCheckpointObject(
 				entryNode.String(), isTombstone, objNode.String(),
 				txnNode.String(), rel.StringWithLevel(3)))
 		}
-		obj.EntryMVCCNode = *entryNode
-		obj.ObjectMVCCNode = *objNode
-		obj.DeleteNode = *txnNode
-		obj.ObjectState = ObjectState_Delete_ApplyCommit
+		deleteNode := obj.Clone()
+		deleteNode.EntryMVCCNode = *entryNode
+		deleteNode.ObjectMVCCNode = *objNode
+		deleteNode.DeleteNode = *txnNode
+		deleteNode.ObjectState = ObjectState_Delete_ApplyCommit
+		rel.AddEntryLocked(deleteNode)
 	}
 	if !entryNode.CreatedAt.Equal(&txnNode.End) && !entryNode.DeletedAt.Equal(&txnNode.End) {
 		// In back up, aobj is replaced with naobj and its DeleteAt is removed.
@@ -530,31 +535,22 @@ func (catalog *Catalog) onReplayCheckpointObject(
 }
 
 func (catalog *Catalog) ReplayTableRows() {
-	rows := uint64(0)
-	tableProcessor := new(LoopProcessor)
-	tableProcessor.ObjectFn = func(be *ObjectEntry) error {
-		if !be.IsActive() {
-			return nil
-		}
-		rows += be.GetObjectData().GetRowsOnReplay()
-		return nil
-	}
-	tableProcessor.TombstoneFn = func(be *ObjectEntry) error {
-		if !be.IsActive() {
-			return nil
-		}
-		rows -= be.GetObjectData().GetRowsOnReplay()
-		return nil
-	}
 	processor := new(LoopProcessor)
 	processor.TableFn = func(tbl *TableEntry) error {
 		if tbl.db.name == pkgcatalog.MO_CATALOG {
 			return nil
 		}
-		rows = 0
-		err := tbl.RecurLoop(tableProcessor)
-		if err != nil {
-			panic(err)
+		rows := uint64(0)
+		reader := txnbase.MockTxnReaderWithNow()
+		it := tbl.MakeDataVisibleObjectIt(reader)
+		defer it.Release()
+		for it.Next() {
+			rows += it.Item().GetObjectData().GetRowsOnReplay()
+		}
+		it = tbl.MakeTombstoneVisibleObjectIt(reader)
+		defer it.Release()
+		for it.Next() {
+			rows -= it.Item().GetObjectData().GetRowsOnReplay()
 		}
 		tbl.rows.Store(rows)
 		return nil

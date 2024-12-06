@@ -64,6 +64,10 @@ func (un EntryMVCCNode) IsCreating() bool {
 	return un.CreatedAt.Equal(&txnif.UncommitTS)
 }
 
+func (un EntryMVCCNode) IsDropping() bool {
+	return un.DeletedAt.Equal(&txnif.UncommitTS)
+}
+
 func (un EntryMVCCNode) Clone() *EntryMVCCNode {
 	return &EntryMVCCNode{
 		CreatedAt: un.CreatedAt,

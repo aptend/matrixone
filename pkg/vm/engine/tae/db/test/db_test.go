@@ -8322,8 +8322,10 @@ func TestSoftDeleteRollback(t *testing.T) {
 	schema.Extra.BlockMaxRows = 20
 	schema.Name = "testtable"
 	tae.BindSchema(schema)
-	bat := catalog.MockBatch(schema, 50)
+	bats := catalog.MockBatch(schema, 100).Split(2)
+	bat := bats[0]
 	defer bat.Close()
+	defer bats[1].Close()
 
 	tae.CreateRelAndAppend(bat, true)
 
@@ -8336,18 +8338,20 @@ func TestSoftDeleteRollback(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NoError(t, txn2.Commit(context.Background()))
 
-	txn, rel := tae.GetRelation()
-	it := rel.MakeObjectIt(false)
-	var obj *catalog.ObjectEntry
-	for it.Next() {
-		obj = it.GetObject().GetMeta().(*catalog.ObjectEntry)
-		if obj.IsActive() && !obj.IsAppendable() {
-			break
+	{ // rollback the soft delete
+		txn, rel := tae.GetRelation()
+		it := rel.MakeObjectIt(false)
+		var obj *catalog.ObjectEntry
+		for it.Next() {
+			obj = it.GetObject().GetMeta().(*catalog.ObjectEntry)
+			if obj.IsActive() && !obj.IsAppendable() {
+				break
+			}
 		}
+		t.Log(obj.ID().String())
+		assert.NoError(t, txn.GetStore().SoftDeleteObject(false, obj.AsCommonID()))
+		assert.NoError(t, txn.Rollback(ctx))
 	}
-	t.Log(obj.ID().String())
-	assert.NoError(t, txn.GetStore().SoftDeleteObject(false, obj.AsCommonID()))
-	assert.NoError(t, txn.Rollback(ctx))
 
 	tae.CheckRowsByScan(50, false)
 }
@@ -10419,4 +10423,38 @@ func Test_BasicTxnModeSwitch(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, db.DBTxnMode_Write, tae.GetTxnMode())
 	assert.True(t, tae.TxnMgr.IsWriteMode())
+}
+
+func TestDedupx(t *testing.T) {
+	ctx := context.Background()
+
+	opts := config.WithLongScanAndCKPOpts(nil)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
+	defer tae.Close()
+	schema := catalog.MockSchemaAll(3, 2)
+	schema.Extra.BlockMaxRows = 5
+	schema.Extra.ObjectMaxBlocks = 256
+	tae.BindSchema(schema)
+	bat := catalog.MockBatch(schema, 21)
+	defer bat.Close()
+	tae.CreateRelAndAppend(bat, true)
+
+	var entry *catalog.TableEntry
+	txn, rel := tae.GetRelation()
+	entry = rel.GetMeta().(*catalog.TableEntry)
+	it := rel.MakeObjectIt(false)
+	require.True(t, it.Next())
+	require.NoError(t, rel.SoftDeleteObject(it.GetObject().GetID(), false))
+	t.Log(rel.SimplePPString(3))
+
+	nit := entry.MakeDataVisibleObjectIt(txnbase.MockTxnReaderWithNow())
+	for nit.Next() {
+		t.Log(nit.Item().StringWithLevel(2))
+	}
+	require.NoError(t, txn.Rollback(ctx))
+	t.Log("after rollback")
+	nit = entry.MakeDataVisibleObjectIt(txnbase.MockTxnReaderWithNow())
+	for nit.Next() {
+		t.Log(nit.Item().StringWithLevel(2))
+	}
 }

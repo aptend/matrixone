@@ -26,6 +26,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/moprobe"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
+	"github.com/matrixorigin/matrixone/pkg/common/reuse"
 	"github.com/matrixorigin/matrixone/pkg/container/nulls"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
@@ -1093,6 +1094,26 @@ func (tbl *txnTable) DedupSnapByPK(
 	return
 }
 
+type auxMap struct {
+	M map[objectio.ObjectId]*catalog.ObjectEntry
+}
+
+func (m *auxMap) TypeName() string {
+	return "txnimpl.auxMap"
+}
+
+func init() {
+	reuse.CreatePool(
+		func() *auxMap {
+			return &auxMap{M: make(map[objectio.ObjectId]*catalog.ObjectEntry, 4)}
+		},
+		func(m *auxMap) {
+			clear(m.M)
+		},
+		reuse.DefaultOptions[auxMap](),
+	)
+}
+
 /*
 findDeletes set the rowIDs to null if the row is deleted, and committed in time range [from, to]
 
@@ -1114,7 +1135,10 @@ func (tbl *txnTable) findDeletes(
 
 	tbl.entry.WaitTombstoneObjectCommitted(to)
 	it := tbl.entry.MakeTombstoneObjectIt()
-	candidates := make(map[objectio.ObjectId]*catalog.ObjectEntry, 0)
+	// candidates := make(map[objectio.ObjectId]*catalog.ObjectEntry, 0)
+	am := reuse.Alloc[auxMap](nil)
+	defer reuse.Free(am, nil)
+	candidates := am.M
 	var earlybreak bool
 	for ok := it.Last(); ok; ok = it.Prev() {
 		if earlybreak {
@@ -1136,8 +1160,8 @@ func (tbl *txnTable) findDeletes(
 
 		// only keep the latest entry. for example, there are two objects under same object id:
 		// 1. one created entry with createAt = from + 2
-		// 2. one dropped entry with createAt = from + 2 & deletedAt = to - 10
-		// we should only keep the dropped entry and remove the created entry.
+		// 2. one dropped entry with createAt = from + 2 & deletedAt = from + 4
+		// we should only keep the dropped entry
 		if _, exist := candidates[*obj.ID()]; !exist {
 			candidates[*obj.ID()] = obj
 		}

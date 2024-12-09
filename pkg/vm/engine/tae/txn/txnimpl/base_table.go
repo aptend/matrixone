@@ -18,6 +18,7 @@ import (
 	"context"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
+	"github.com/matrixorigin/matrixone/pkg/common/reuse"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
@@ -228,7 +229,10 @@ func (tbl *baseTable) incrementalGetRowsByPK(ctx context.Context, pks containers
 		common.WorkspaceAllocator,
 	)
 
-	candidates := make(map[objectio.ObjectId]*catalog.ObjectEntry, 0)
+	// candidates := make(map[objectio.ObjectId]*catalog.ObjectEntry, 0)
+	cc := reuse.Alloc[auxMap](nil)
+	defer reuse.Free(cc, nil)
+	candidates := cc.M
 	var earlybreak bool
 	for ok := objIt.Last(); ok; ok = objIt.Prev() {
 		if earlybreak {

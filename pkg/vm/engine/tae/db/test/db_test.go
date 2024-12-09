@@ -1355,7 +1355,7 @@ func TestFlushTabletail(t *testing.T) {
 		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		it := rel.MakeObjectIt(false)
 		// 6 nablks has 87 rows
-		dels := []int{3, 2, 0, 0, 0, 2}
+		dels := []int{0, 0, 2, 3, 2, 0}
 		total := 0
 		i := 0
 		for it.Next() {
@@ -1387,7 +1387,7 @@ func TestFlushTabletail(t *testing.T) {
 		txn, rel := testutil.GetDefaultRelation(t, tae.DB, schema.Name)
 		it := rel.MakeObjectIt(false)
 		// 6 nablks has 87 rows
-		dels := []int{3, 2, 0, 0, 0, 2}
+		dels := []int{0, 0, 2, 3, 2, 0}
 		total := 0
 		idxs := make([]int, 0, len(schema.ColDefs)-1)
 		for i := 0; i < len(schema.ColDefs)-1; i++ {
@@ -2935,7 +2935,7 @@ func TestMergeBlocksIntoMultipleObjects(t *testing.T) {
 			objCnt := 0
 			for it := rel.MakeObjectIt(false); it.Next(); {
 				obj := it.GetObject()
-				if objCnt == 0 {
+				if objCnt == 1 {
 					assert.NotNil(t, tae.Runtime.TransferDelsMap.GetDelsForBlk(*objectio.NewBlockidWithObjectID(obj.GetID(), 0)))
 				} else {
 					assert.NotNil(t, tae.Runtime.TransferDelsMap.GetDelsForBlk(*objectio.NewBlockidWithObjectID(obj.GetID(), 1)))
@@ -2981,11 +2981,9 @@ func TestMergeEmptyBlocks(t *testing.T) {
 	{
 		txn, rel := tae.GetRelation()
 
-		obj := testutil.GetOneObject(rel).GetMeta().(*catalog.ObjectEntry)
-		objHandle, err := rel.GetObject(obj.ID(), false)
-		assert.NoError(t, err)
+		obj := testutil.GetOneBlockMeta(rel)
 
-		objsToMerge := []*catalog.ObjectEntry{objHandle.GetMeta().(*catalog.ObjectEntry)}
+		objsToMerge := []*catalog.ObjectEntry{obj}
 		task, err := jobs.NewMergeObjectsTask(nil, txn, objsToMerge, tae.Runtime, 0, false)
 		assert.NoError(t, err)
 		err = task.OnExec(context.Background())
@@ -6318,7 +6316,7 @@ func TestAlterColumnAndFreeze(t *testing.T) {
 	assert.NoError(t, rel.AlterTable(context.TODO(), api.NewAddColumnReq(0, 0, "xyz", types.NewProtoType(types.T_int32), 0)))
 	assert.NoError(t, txn.Commit(context.Background()))
 
-	assert.Error(t, rel0.Append(context.Background(), nil)) // schema changed, error
+	require.Error(t, rel0.Append(context.Background(), nil)) // schema changed, error
 	// Test variaous read on old schema
 	testutil.CheckAllColRowsByScan(t, rel0, 8, false)
 
@@ -6338,7 +6336,7 @@ func TestAlterColumnAndFreeze(t *testing.T) {
 			assert.Equal(t, uint16(2), val.(uint16))
 		}
 	}
-	assert.Error(t, txn0.Commit(context.Background())) // scheam change, commit failed
+	require.Error(t, txn0.Commit(context.Background())) // scheam change, commit failed
 
 	// GetValueByFilter() is combination of GetByFilter and GetValue
 	// GetValueByPhyAddrKey is GetValue
@@ -6350,19 +6348,17 @@ func TestAlterColumnAndFreeze(t *testing.T) {
 	bats = catalog.MockBatch(schema1, 16).Split(4)
 	assert.Error(t, rel.Append(context.Background(), bats[0])) // dup error
 	assert.NoError(t, rel.Append(context.Background(), bats[1]))
-	assert.NoError(t, txn.Commit(context.Background()))
+	require.NoError(t, txn.Commit(context.Background()))
 
 	txn, rel = tae.GetRelation()
 	testutil.CheckAllColRowsByScan(t, rel, 8, false)
 	it := rel.MakeObjectIt(false)
-	cnt := 0
 	var id2 *common.ID
-	for it.Next() {
-		cnt++
-		id2 = it.GetObject().Fingerprint()
-	}
+	// there are 2 blocks, the first is freezed
+	require.True(t, it.Next())
+	id2 = it.GetObject().Fingerprint()
+	require.True(t, it.Next())
 	it.Close()
-	assert.Equal(t, 2, cnt) // 2 blocks because the first is freezed
 
 	for _, col := range rel.Schema(false).(*catalog.Schema).ColDefs {
 		val, null, err := rel.GetValue(id, 3, uint16(col.Idx), false) // get first blk
@@ -8361,9 +8357,8 @@ func TestDedupSnapshot3(t *testing.T) {
 			database, _ := txn.GetDatabase("db")
 			rel, _ := database.GetRelationByName(schema.Name)
 			err := rel.BatchDedup(bats[offset].Vecs[3])
-			txn.Commit(context.Background())
+			require.NoError(t, txn.Commit(context.Background()))
 			if err != nil {
-				logutil.Infof("err is %v", err)
 				return
 			}
 
@@ -8371,8 +8366,10 @@ func TestDedupSnapshot3(t *testing.T) {
 			txn2.SetDedupType(txnif.DedupPolicy_CheckIncremental)
 			database, _ = txn2.GetDatabase("db")
 			rel, _ = database.GetRelationByName(schema.Name)
-			_ = rel.Append(context.Background(), bats[offset])
-			_ = txn2.Commit(context.Background())
+			require.NoError(t, rel.Append(context.Background(), bats[offset]))
+			// 1 fail, 4 success
+			txn2.Commit(context.Background())
+
 		}
 	}
 
@@ -8396,7 +8393,7 @@ func TestDedupSnapshot3(t *testing.T) {
 				t.Log(obj.GetMeta().(*catalog.ObjectEntry).GetObjectData().PPString(common.PPL3, 0, "", -1))
 			}
 		}
-		assert.Equal(t, totalRows, rows)
+		require.Equal(t, totalRows, rows)
 	}
 	assert.NoError(t, txn.Commit(context.Background()))
 }
@@ -8411,8 +8408,10 @@ func TestSoftDeleteRollback(t *testing.T) {
 	schema.Extra.BlockMaxRows = 20
 	schema.Name = "testtable"
 	tae.BindSchema(schema)
-	bat := catalog.MockBatch(schema, 50)
+	bats := catalog.MockBatch(schema, 100).Split(2)
+	bat := bats[0]
 	defer bat.Close()
+	defer bats[1].Close()
 
 	tae.CreateRelAndAppend(bat, true)
 
@@ -8425,18 +8424,20 @@ func TestSoftDeleteRollback(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NoError(t, txn2.Commit(context.Background()))
 
-	txn, rel := tae.GetRelation()
-	it := rel.MakeObjectIt(false)
-	var obj *catalog.ObjectEntry
-	for it.Next() {
-		obj = it.GetObject().GetMeta().(*catalog.ObjectEntry)
-		if obj.IsActive() && !obj.IsAppendable() {
-			break
+	{ // rollback the soft delete
+		txn, rel := tae.GetRelation()
+		it := rel.MakeObjectIt(false)
+		var obj *catalog.ObjectEntry
+		for it.Next() {
+			obj = it.GetObject().GetMeta().(*catalog.ObjectEntry)
+			if obj.IsActive() && !obj.IsAppendable() {
+				break
+			}
 		}
+		t.Log(obj.ID().String())
+		assert.NoError(t, txn.GetStore().SoftDeleteObject(false, obj.AsCommonID()))
+		assert.NoError(t, txn.Rollback(ctx))
 	}
-	t.Log(obj.ID().String())
-	assert.NoError(t, txn.GetStore().SoftDeleteObject(false, obj.AsCommonID()))
-	assert.NoError(t, txn.Rollback(ctx))
 
 	tae.CheckRowsByScan(50, false)
 }
@@ -10202,7 +10203,7 @@ func TestRollbackMergeInQueue(t *testing.T) {
 	meta := objH.GetMeta().(*catalog.ObjectEntry)
 	require.Equal(t, catalog.ObjectState_Create_ApplyCommit, meta.ObjectState)
 	require.True(t, meta.DeletedAt.IsEmpty())
-	require.Equal(t, 2, rel.GetMeta().(*catalog.TableEntry).ObjectCnt(false) /*Aobj(deleted), Nobj(rollbacked)*/)
+	require.Equal(t, 3, rel.GetMeta().(*catalog.TableEntry).ObjectCnt(false) /*Aobj(created + deleted), Nobj(rollbacked)*/)
 }
 
 func TestTransferInMerge(t *testing.T) {
@@ -10529,4 +10530,38 @@ func Test_BasicTxnModeSwitch(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, db.DBTxnMode_Write, tae.GetTxnMode())
 	assert.True(t, tae.TxnMgr.IsWriteMode())
+}
+
+func TestDedupx(t *testing.T) {
+	ctx := context.Background()
+
+	opts := config.WithLongScanAndCKPOpts(nil)
+	tae := testutil.NewTestEngine(ctx, ModuleName, t, opts)
+	defer tae.Close()
+	schema := catalog.MockSchemaAll(3, 2)
+	schema.Extra.BlockMaxRows = 5
+	schema.Extra.ObjectMaxBlocks = 256
+	tae.BindSchema(schema)
+	bat := catalog.MockBatch(schema, 21)
+	defer bat.Close()
+	tae.CreateRelAndAppend(bat, true)
+
+	var entry *catalog.TableEntry
+	txn, rel := tae.GetRelation()
+	entry = rel.GetMeta().(*catalog.TableEntry)
+	it := rel.MakeObjectIt(false)
+	require.True(t, it.Next())
+	require.NoError(t, rel.SoftDeleteObject(it.GetObject().GetID(), false))
+	t.Log(rel.SimplePPString(3))
+
+	nit := entry.MakeDataVisibleObjectIt(txnbase.MockTxnReaderWithNow())
+	for nit.Next() {
+		t.Log(nit.Item().StringWithLevel(2))
+	}
+	require.NoError(t, txn.Rollback(ctx))
+	t.Log("after rollback")
+	nit = entry.MakeDataVisibleObjectIt(txnbase.MockTxnReaderWithNow())
+	for nit.Next() {
+		t.Log(nit.Item().StringWithLevel(2))
+	}
 }

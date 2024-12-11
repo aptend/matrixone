@@ -281,13 +281,13 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 	go TaeMetricsTask(ctx)
 
 	firstTs := types.BuildTS(time.Now().UTC().UnixNano(), 0)
-	if err := db.BGCheckpointRunner.ForceGlobalCheckpointSynchronously(ctx, firstTs, time.Hour); err != nil {
+	if err := db.ForceGlobalCheckpoint(ctx, firstTs, time.Hour); err != nil {
 		panic(err)
 	}
 
 	time.Sleep(time.Second * 5)
 	secondTs := types.BuildTS(time.Now().UTC().UnixNano(), 0)
-	if err := db.BGCheckpointRunner.ForceGlobalCheckpointSynchronously(ctx, secondTs, time.Hour); err != nil {
+	if err := db.ForceGlobalCheckpoint(ctx, secondTs, time.Hour); err != nil {
 		panic(err)
 	}
 	fmt.Println("======= migration checkpointed =======", secondTs.ToString())

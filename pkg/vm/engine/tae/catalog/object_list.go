@@ -26,6 +26,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 	"github.com/tidwall/btree"
+	"go.uber.org/zap"
 )
 
 const (
@@ -156,10 +157,9 @@ func (l *ObjectList) GetAllNodes(id *objectio.ObjectId) []*ObjectEntry {
 }
 
 func (l *ObjectList) GetObjectByID(objectID *objectio.ObjectId) (obj *ObjectEntry, err error) {
-	s := l.Show()
 	obj = l.GetLastestNode(objectID)
 	if obj == nil {
-		fmt.Println(s, objectID.ShortStringEx())
+		logutil.Error("GetObjectByID", zap.String("obj", objectID.ShortStringEx()))
 		err = moerr.GetOkExpectedEOB()
 	}
 	return

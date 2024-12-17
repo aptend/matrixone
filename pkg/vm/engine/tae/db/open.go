@@ -17,6 +17,7 @@ package db
 import (
 	"bytes"
 	"context"
+	"os"
 	"path"
 	"sync/atomic"
 	"time"
@@ -276,6 +277,17 @@ func Open(ctx context.Context, dirname string, opts *options.Options) (db *DB, e
 	db.GCManager.Start()
 
 	go TaeMetricsTask(ctx)
+
+	buf := &bytes.Buffer{}
+	lp := catalog.LoopProcessor{}
+	lp.ObjectFn = func(oe *catalog.ObjectEntry) error {
+		buf.WriteString(objectio.BuildObjectName(oe.ID.Segment(), oe.ID.Offset()).String())
+		buf.WriteRune('\n')
+		return nil
+	}
+	db.Catalog.RecurLoop(&lp)
+	data := buf.Bytes()
+	os.WriteFile("./objectlist", data, 0666)
 
 	// For debug or test
 	// logutil.Info(db.Catalog.SimplePPString(common.PPL2))

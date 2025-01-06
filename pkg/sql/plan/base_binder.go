@@ -25,6 +25,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/defines"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/sql/parsers"
 	"github.com/matrixorigin/matrixone/pkg/sql/parsers/dialect"
@@ -33,6 +34,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/sql/util"
 	"github.com/matrixorigin/matrixone/pkg/util/errutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 func (b *baseBinder) baseBindExpr(astExpr tree.Expr, depth int32, isRoot bool) (expr *Expr, err error) {
@@ -324,6 +326,7 @@ func (b *baseBinder) baseBindColRef(astExpr *tree.UnresolvedName, depth int32, i
 				return nil, moerr.NewInvalidInputf(b.GetContext(), "ambiguous column reference '%v'", name)
 			}
 		} else {
+			logutil.Info("yyyyyyy", zap.Any("table", table), zap.Any("col", col), zap.Any("binding", b.ctx.bindingByCol))
 			err = moerr.NewInvalidInputf(localErrCtx, "column %s does not exist", name)
 		}
 	} else {
@@ -415,6 +418,7 @@ func (b *baseBinder) baseBindColRef(astExpr *tree.UnresolvedName, depth int32, i
 
 	if parent == nil {
 		if err != nil {
+			logutil.Info("yyyyyyy", zap.Any("table", table), zap.Any("col", col), zap.Any("binding", b.ctx.bindingByCol))
 			errutil.ReportError(b.GetContext(), err)
 		}
 		return

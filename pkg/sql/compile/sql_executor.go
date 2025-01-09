@@ -137,7 +137,7 @@ func (s *sqlExecutor) ExecTxn(
 	}
 	err = execFunc(exec)
 	if err != nil {
-		logutil.Error("internal sql executor error", zap.Error(err), zap.String("sql", opts.SQL()), zap.String("txn", exec.Txn().Txn().DebugString()))
+		// logutil.Error("internal sql executor error", zap.Error(err), zap.String("sql", opts.SQL()), zap.String("txn", exec.Txn().Txn().DebugString()))
 		return exec.rollback(err)
 	}
 	if err = exec.commit(); err != nil {
@@ -239,7 +239,23 @@ func (exec *txnExecutor) Use(db string) {
 func (exec *txnExecutor) Exec(
 	sql string,
 	statementOption executor.StatementOption,
-) (executor.Result, error) {
+) (r executor.Result, err error) {
+	defer func() {
+		if err != nil {
+			txnInfo := "empty txn"
+			sessionInfo := "empty session"
+			if txn := exec.opts.Txn(); txn != nil {
+				txnInfo = txn.Txn().DebugString()
+				sessionInfo = txn.TxnOptions().SessionInfo
+			}
+			logutil.Error("txnExecutor error",
+				zap.Error(err),
+				zap.String("sql", sql),
+				zap.String("txn", txnInfo),
+				zap.String("session", sessionInfo),
+			)
+		}
+	}()
 	// NOTE: This code is to restore tenantID information in the Context when temporarily switching tenants
 	// so that it can be restored to its original state after completing the task.
 	var originCtx context.Context

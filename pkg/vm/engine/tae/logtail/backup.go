@@ -587,7 +587,7 @@ func ReWriteCheckpointAndBlockFromKey(
 			if deleteAt.IsEmpty() {
 				continue
 			}
-			if appendable {
+			if !appendable {
 				continue
 			}
 			addObjectToObjectData(stats, appendable, i, tid, dataType, od)

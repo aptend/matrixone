@@ -293,6 +293,7 @@ func execBackup(
 	}()
 	now := time.Now()
 	baseTS := ts
+	var prvData *logtail.CheckpointData
 	for i, name := range names {
 		if len(name) == 0 {
 			continue
@@ -322,6 +323,9 @@ func execBackup(
 		}
 		defer data.Close()
 		oNames = append(oNames, oneNames...)
+		if i == len(names)-1 {
+			prvData = data
+		}
 	}
 	loadDuration += time.Since(now)
 	now = time.Now()
@@ -382,7 +386,7 @@ func execBackup(
 			tnLocation      objectio.Location
 		)
 		cnLocation, tnLocation, checkpointFiles, err = logtail.ReWriteCheckpointAndBlockFromKey(ctx, sid, srcFs, dstFs,
-			cnLocation, uint32(version), start)
+			cnLocation, prvData, uint32(version), start)
 		for _, name := range checkpointFiles {
 			dentry, err := dstFs.StatFile(ctx, name)
 			if err != nil {

@@ -488,6 +488,7 @@ func ReWriteCheckpointAndBlockFromKey(
 	sid string,
 	fs, dstFs fileservice.FileService,
 	loc objectio.Location,
+	prvData *CheckpointData,
 	version uint32, ts types.TS,
 ) (objectio.Location, objectio.Location, []string, error) {
 	logutil.Info("[Start]", common.OperationField("ReWrite Checkpoint"),
@@ -564,8 +565,36 @@ func ReWriteCheckpointAndBlockFromKey(
 		return objInfoData
 	}
 
+	initPrvData := func(
+		od *map[string]*objData,
+		idx uint16,
+		dataType objectio.DataMetaType,
+	) *containers.Batch {
+		objInfoData := prvData.bats[idx]
+		objInfoStats := objInfoData.GetVectorByName(ObjectAttr_ObjectStats)
+		objInfoTid := objInfoData.GetVectorByName(SnapshotAttr_TID)
+		objInfoDelete := objInfoData.GetVectorByName(EntryNode_DeleteAt)
+
+		for i := 0; i < objInfoData.Length(); i++ {
+			stats := objectio.NewObjectStats()
+			stats.UnMarshal(objInfoStats.Get(i).([]byte))
+			appendable := stats.GetAppendable()
+			deleteAt := objInfoDelete.Get(i).(types.TS)
+			tid := objInfoTid.Get(i).(uint64)
+			if deleteAt.IsEmpty() {
+				continue
+			}
+			if !appendable {
+				continue
+			}
+			addObjectToObjectData(stats, appendable, i, tid, dataType, od)
+		}
+		return objInfoData
+	}
+
 	objInfoData := initData(&objectsData, ObjectInfoIDX, objectio.SchemaData)
 	tombstoneInfoData := initData(&tombstonesData, TombstoneObjectInfoIDX, objectio.SchemaTombstone)
+	initPrvData(&tombstonesData, TombstoneObjectInfoIDX, objectio.SchemaTombstone)
 
 	phaseNumber = 3
 

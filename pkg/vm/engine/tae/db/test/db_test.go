@@ -8244,11 +8244,6 @@ func TestGCCatalog1(t *testing.T) {
 	err = txn2.Commit(context.Background())
 	assert.NoError(t, err)
 
-	t.Log(tae.Catalog.SimplePPString(3))
-	commitTS := txn2.GetCommitTS()
-	tae.Catalog.GCByTS(context.Background(), commitTS.Next())
-	t.Log(tae.Catalog.SimplePPString(3))
-
 	resetCount()
 	err = tae.Catalog.RecurLoop(p)
 	assert.NoError(t, err)
@@ -8282,7 +8277,7 @@ func TestGCCatalog1(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Log(tae.Catalog.SimplePPString(3))
-	commitTS = txn3.GetCommitTS()
+	commitTS := txn3.GetCommitTS()
 	tae.Catalog.GCByTS(context.Background(), commitTS.Next())
 	t.Log(tae.Catalog.SimplePPString(3))
 

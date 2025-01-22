@@ -29,6 +29,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tables"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnbase"
 )
 
 type CheckpointData_V2 struct {
@@ -246,11 +247,9 @@ func (collector *BaseCollector_V2) Collect(c *catalog.Catalog) (err error) {
 }
 
 func (collector *BaseCollector_V2) visitObject(entry *catalog.ObjectEntry) error {
-	mvccNodes := entry.GetMVCCNodeInRange(collector.start, collector.end)
-
-	for _, node := range mvccNodes {
+	return entry.ForeachMVCCNodeInRange(collector.start, collector.end, func(node *txnbase.TxnMVCCNode) error {
 		if node.IsAborted() {
-			continue
+			return nil
 		}
 		isObjectTombstone := node.End.Equal(&entry.CreatedAt)
 		if err := collectObjectBatch(
@@ -262,8 +261,8 @@ func (collector *BaseCollector_V2) visitObject(entry *catalog.ObjectEntry) error
 			collector.data.sinker.Write(context.Background(), collector.data.batch)
 			collector.data.batch.CleanOnlyData()
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func collectObjectBatch(

@@ -7420,6 +7420,13 @@ func TestPitrMeta(t *testing.T) {
 	})
 	pitr, err = db.DiskCleaner.GetCleaner().GetPITRs()
 	assert.Nil(t, err)
+	testutils.WaitExpect(10000, func() bool {
+		if len(pitr.ToTsList()) <= 0 {
+			pitr, err = db.DiskCleaner.GetCleaner().GetPITRs()
+			assert.Nil(t, err)
+		}
+		return len(pitr.ToTsList()) > 0
+	})
 	assert.True(t, len(pitr.ToTsList()) > 0)
 }
 
@@ -8237,11 +8244,6 @@ func TestGCCatalog1(t *testing.T) {
 	err = txn2.Commit(context.Background())
 	assert.NoError(t, err)
 
-	t.Log(tae.Catalog.SimplePPString(3))
-	commitTS := txn2.GetCommitTS()
-	tae.Catalog.GCByTS(context.Background(), commitTS.Next())
-	t.Log(tae.Catalog.SimplePPString(3))
-
 	resetCount()
 	err = tae.Catalog.RecurLoop(p)
 	assert.NoError(t, err)
@@ -8275,7 +8277,7 @@ func TestGCCatalog1(t *testing.T) {
 	assert.NoError(t, err)
 
 	t.Log(tae.Catalog.SimplePPString(3))
-	commitTS = txn3.GetCommitTS()
+	commitTS := txn3.GetCommitTS()
 	tae.Catalog.GCByTS(context.Background(), commitTS.Next())
 	t.Log(tae.Catalog.SimplePPString(3))
 

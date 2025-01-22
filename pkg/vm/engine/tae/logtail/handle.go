@@ -323,17 +323,17 @@ func (b *TableLogtailRespBuilder) BuildResp() (api.SyncLogTailResp, error) {
 		}
 
 		tableName := b.tname
-		// switch kind {
-		// case TableRespKind_Data:
-		// 	logutil.Infof("[logtail] table data [%v] %d-%s-%d: %s", typ, b.tid, b.tname, version,
-		// 		DebugBatchToString("data", batch, false, zap.InfoLevel))
-		// case TableRespKind_DataMeta:
-		// 	logutil.Infof("[logtail] table data meta [%v] %d-%s: %s", typ, b.tid, b.tname,
-		// 		DebugBatchToString("object", batch, false, zap.InfoLevel))
-		// case TableRespKind_TombstoneMeta:
-		// 	logutil.Infof("[logtail] table tombstone meta [%v] %d-%s: %s", typ, b.tid, b.tname,
-		// 		DebugBatchToString("object", batch, false, zap.InfoLevel))
-		// }
+		switch kind {
+		case TableRespKind_Data:
+			logutil.Infof("[logtail] table data [%v] %d-%s-%d: %s", typ, b.tid, b.tname, version,
+				DebugBatchToString("data", batch, false, zap.InfoLevel))
+		case TableRespKind_DataMeta:
+			logutil.Infof("[logtail] table data meta [%v] %d-%s: %s", typ, b.tid, b.tname,
+				DebugBatchToString("object", batch, false, zap.InfoLevel))
+		case TableRespKind_TombstoneMeta:
+			logutil.Infof("[logtail] table tombstone meta [%v] %d-%s: %s", typ, b.tid, b.tname,
+				DebugBatchToString("object", batch, false, zap.InfoLevel))
+		}
 
 		entry := &api.Entry{
 			EntryType:    typ,

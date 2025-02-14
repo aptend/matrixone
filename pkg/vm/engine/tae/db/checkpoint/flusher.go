@@ -68,8 +68,7 @@ type Flusher interface {
 	ChangeForceCheckInterval(interval time.Duration)
 	GetCfg() FlushCfg
 	Restart(opts ...FlusherOption)
-	IsStopped() bool
-	Start()
+	IsNoop() bool
 	Stop()
 }
 
@@ -165,6 +164,7 @@ func NewFlusher(
 	checkpointSchduler CheckpointScheduler,
 	catalogCache *catalog.Catalog,
 	sourcer logtail.Collector,
+	noop bool,
 	opts ...FlusherOption,
 ) Flusher {
 	flusher := &flusher{
@@ -173,11 +173,15 @@ func NewFlusher(
 		catalogCache:       catalogCache,
 		sourcer:            sourcer,
 	}
+	if noop {
+		return flusher
+	}
 	flusher.impl.Store(newFlusherImpl(rt, checkpointSchduler, catalogCache, sourcer, opts...))
+	flusher.impl.Load().Start()
 	return flusher
 }
 
-func (f *flusher) IsStopped() bool {
+func (f *flusher) IsNoop() bool {
 	return f.impl.Load() == nil
 }
 
@@ -260,15 +264,6 @@ func (f *flusher) GetCfg() FlushCfg {
 		return FlushCfg{}
 	}
 	return impl.GetCfg()
-}
-
-func (f *flusher) Start() {
-	impl := f.impl.Load()
-	if impl == nil {
-		logutil.Warn("need restart")
-		return
-	}
-	impl.Start()
 }
 
 func (f *flusher) Stop() {
@@ -415,24 +410,6 @@ func (flusher *flushImpl) scheduleFlush(
 	flusher.checkFlushConditionAndFire(entry, force, pressure, lastCkp)
 }
 
-func (flusher *flushImpl) EstimateTableMemSize(table *catalog.TableEntry, tree *model.TableTree) (asize int, dsize int) {
-	for _, obj := range tree.Objs {
-		object, err := table.GetObjectByID(obj.ID, false)
-		if err != nil {
-			panic(err)
-		}
-		asize += object.GetObjectData().EstimateMemSize()
-	}
-	for _, obj := range tree.Tombstones {
-		object, err := table.GetObjectByID(obj.ID, true)
-		if err != nil {
-			panic(err)
-		}
-		dsize += object.GetObjectData().EstimateMemSize()
-	}
-	return
-}
-
 func foreachAobjBefore(_ context.Context,
 	table *catalog.TableEntry, ts types.TS, lastCkp types.TS,
 	df func(*catalog.ObjectEntry),
@@ -486,7 +463,7 @@ func (flusher *flushImpl) collectTableMemUsage(entry *logtail.DirtyTreeEntry, la
 	sizevisitor := new(model.BaseTreeVisitor)
 	var totalSize int
 	_, end := entry.GetTimeRange()
-	sizevisitor.TableFn = func(did, tid uint64) error {
+	sizevisitor.TableFn = func(did, tid uint64, _, _ int) error {
 		db, err := flusher.catalogCache.GetDatabaseByID(did)
 		if err != nil {
 			panic(err)

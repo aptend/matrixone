@@ -106,8 +106,8 @@ func NewSystemTableEntry(db *DBEntry, id uint64, schema *Schema) *TableEntry {
 			Schema:          schema,
 			TombstoneSchema: GetTombstoneSchema(schema)})
 
-	if DefaultTableDataFactory != nil {
-		e.tableData = DefaultTableDataFactory(e)
+	if db.catalog.DataFactory != nil {
+		e.tableData = db.catalog.DataFactory.MakeTableFactory()(e)
 	}
 	return e
 }
@@ -230,6 +230,51 @@ func (entry *TableEntry) MakeDataVisibleObjectIt(txn txnif.TxnReader) *VisibleCo
 
 func (entry *TableEntry) WaitDataObjectCommitted(ts types.TS) {
 	entry.dataObjects.WaitUntilCommitted(ts)
+}
+
+func (entry *TableEntry) IsTableTailFlushed(start, end types.TS) (bool, *ObjectEntry) {
+	ready, notFlushed := IsTableTailFlushed(entry, start, end, false)
+	if !ready {
+		return false, notFlushed
+	}
+	return IsTableTailFlushed(entry, start, end, true)
+}
+
+func IsTableTailFlushed(table *TableEntry, start, end types.TS, isTombstone bool) (bool, *ObjectEntry) {
+	var it btree.IterG[*ObjectEntry]
+	if isTombstone {
+		table.WaitTombstoneObjectCommitted(end)
+		it = table.MakeTombstoneObjectIt()
+	} else {
+		table.WaitDataObjectCommitted(end)
+		it = table.MakeDataObjectIt()
+	}
+	earlybreak := false
+	// some entries shared the same timestamp with end, so we need to seek to the next one
+	key := &ObjectEntry{EntryMVCCNode: EntryMVCCNode{DeletedAt: end.Next()}}
+	var ok bool
+	if ok = it.Seek(key); !ok {
+		ok = it.Last()
+	}
+	for ; ok; ok = it.Prev() {
+		if earlybreak {
+			break
+		}
+		obj := it.Item()
+		if !obj.IsAppendable() || obj.IsDEntry() || obj.CreatedAt.GT(&end) {
+			continue
+		}
+		// check only appendable C entries
+		if obj.CreatedAt.LT(&start) {
+			earlybreak = true
+		}
+		// the C entry has no counterpart D entry or the D entry is not committed yet
+		if next := obj.GetNextVersion(); next == nil || !next.IsCommitted() {
+			return false, obj
+		}
+	}
+
+	return true, nil
 }
 
 func (entry *TableEntry) CreateObject(

@@ -17,6 +17,7 @@ package merge
 import (
 	"cmp"
 	"context"
+	"iter"
 	"math"
 	"os"
 	"slices"
@@ -42,11 +43,10 @@ var StopMerge atomic.Bool
 type taskHostKind int
 
 const (
-	taskHostCN taskHostKind = iota
-	taskHostDN
+	taskHostDN taskHostKind = iota
+	taskHostCN
 
-	constMaxMemCap         = 12 * common.Const1GBytes // max original memory for an object
-	estimateMemUsagePerRow = 30
+	constMaxMemCap = 12 * common.Const1GBytes // max original memory for an object
 )
 
 func score(objs []*catalog.ObjectEntry) float64 {
@@ -168,25 +168,6 @@ func removeOversize(objs []*catalog.ObjectEntry) []*catalog.ObjectEntry {
 	return objs[:i]
 }
 
-func estimateMergeSize(objs []*catalog.ObjectEntry) int {
-	size := 0
-	for _, o := range objs {
-		blkRow := 8192
-		if r := o.Rows(); r == 0 {
-			continue
-		} else if r < 8192 {
-			blkRow = int(r)
-		}
-		size += blkRow * int(o.OriginSize()/o.Rows()) / 2 * 3 // read one block
-		size += int(o.Rows()) * estimateMemUsagePerRow        // transfer page
-		size += int(o.OriginSize())                           // objectio write buffer
-	}
-	// Go's load factor is 6.5. This means there are average 6.5 key/elem pairs per bucket.
-	// Each bucket holds up to 8 key/elem pairs. So the memory wasted are 1.5 / 8 ~= 0.2.
-	// So we reserve 120% memory per row here.
-	return size / 5 * 6
-}
-
 type resourceController struct {
 	proc *process.Process
 
@@ -194,16 +175,7 @@ type resourceController struct {
 	using    int64
 	reserved int64
 
-	reservedMergeRows int64
-	transferPageLimit int64
-
 	cpuPercent float64
-
-	skippedFromOOM bool
-	count          int
-	prevCount      int
-
-	tableStart time.Time
 }
 
 func (c *resourceController) setMemLimit(total uint64) {
@@ -216,22 +188,21 @@ func (c *resourceController) setMemLimit(total uint64) {
 		panic("failed to get system total memory")
 	}
 
-	if c.limit > 200*common.Const1GBytes {
-		c.transferPageLimit = c.limit / 25 * 2 // 8%
-	} else if c.limit > 100*common.Const1GBytes {
-		c.transferPageLimit = c.limit / 25 * 3 // 12%
-	} else if c.limit > 40*common.Const1GBytes {
-		c.transferPageLimit = c.limit / 25 * 4 // 16%
-	} else {
-		c.transferPageLimit = math.MaxInt64 // no limit
-	}
+	// if c.limit > 200*common.Const1GBytes {
+	// 	c.transferPageLimit = c.limit / 25 * 2 // 8%
+	// } else if c.limit > 100*common.Const1GBytes {
+	// 	c.transferPageLimit = c.limit / 25 * 3 // 12%
+	// } else if c.limit > 40*common.Const1GBytes {
+	// 	c.transferPageLimit = c.limit / 25 * 4 // 16%
+	// } else {
+	// 	c.transferPageLimit = math.MaxInt64 // no limit
+	// }
 
 	logutil.Info(
 		"MergeExecutorMemoryInfo",
 		common.AnyField("container-limit", common.HumanReadableBytes(int(cgroup))),
 		common.AnyField("host-memory", common.HumanReadableBytes(int(total))),
 		common.AnyField("merge-limit", common.HumanReadableBytes(int(c.limit))),
-		common.AnyField("transfer-page-limit", common.HumanReadableBytes(int(c.transferPageLimit))),
 		common.AnyField("error", err),
 	)
 }
@@ -251,11 +222,6 @@ func (c *resourceController) refresh() {
 	if percents, err := cpu.Percent(0, false); err == nil {
 		c.cpuPercent = percents[0]
 	}
-	c.reservedMergeRows = 0
-	c.reserved = 0
-
-	c.skippedFromOOM = false
-	c.count = 0
 }
 
 func (c *resourceController) availableMem() int64 {
@@ -266,52 +232,52 @@ func (c *resourceController) availableMem() int64 {
 	return avail
 }
 
-func (c *resourceController) printStats() {
-	if c.reservedMergeRows == 0 && c.availableMem() > 512*common.Const1MBytes {
-		return
-	}
-
-	logutil.Info("MergeExecutorMemoryStats",
+func (c *resourceController) printMemUsage() {
+	logutil.Info("MergeExecutorEvent",
+		common.AnyField("event", "memory stats"),
 		common.AnyField("merge-limit", common.HumanReadableBytes(int(c.limit))),
 		common.AnyField("process-mem", common.HumanReadableBytes(int(c.using))),
-		common.AnyField("reserving-rows", common.HumanReadableBytes(int(c.reservedMergeRows))),
 		common.AnyField("reserving-mem", common.HumanReadableBytes(int(c.reserved))),
 	)
 }
 
-func (c *resourceController) reserveResources(objs []*catalog.ObjectEntry) {
-	for _, obj := range objs {
-		if obj.Rows() == 0 {
-			continue
-		}
-		c.reservedMergeRows += int64(obj.Rows())
-	}
-	c.reserved += int64(estimateMergeSize(objs))
+func (c *resourceController) reserveResources(estMem int64) {
+	c.reserved += estMem
 }
 
-func (c *resourceController) resourceAvailable(objs []*catalog.ObjectEntry) bool {
+func (c *resourceController) releaseResources(estMem int64) {
+	c.reserved -= estMem
+	if c.reserved < 0 {
+		c.reserved = 0
+	}
+}
 
+func (c *resourceController) resourceAvailable(estMem int64) bool {
 	mem := c.availableMem()
 	if mem > constMaxMemCap {
 		mem = constMaxMemCap
 	}
-	return estimateMergeSize(objs) <= int(2*mem/3)
+	return estMem <= 2*mem/3
 }
 
-func ObjectValid(objectEntry *catalog.ObjectEntry) bool {
-	if objectEntry.IsAppendable() {
-		return false
+func IterEntryAsStats(objs []*catalog.ObjectEntry) iter.Seq[*objectio.ObjectStats] {
+	return func(yield func(*objectio.ObjectStats) bool) {
+		for _, obj := range objs {
+			if !yield(obj.GetObjectStats()) {
+				return
+			}
+		}
 	}
-	if !objectEntry.IsActive() {
-		return false
+}
+
+func IterStats(objs []*objectio.ObjectStats) iter.Seq[*objectio.ObjectStats] {
+	return func(yield func(*objectio.ObjectStats) bool) {
+		for _, obj := range objs {
+			if !yield(obj) {
+				return
+			}
+		}
 	}
-	if !objectEntry.IsCommitted() {
-		return false
-	}
-	if objectEntry.IsCreatingOrAborted() {
-		return false
-	}
-	return true
 }
 
 func CleanUpUselessFiles(entry *api.MergeCommitEntry, fs fileservice.FileService) {
@@ -331,26 +297,5 @@ func CleanUpUselessFiles(entry *api.MergeCommitEntry, fs fileservice.FileService
 			s := objectio.ObjectStats(obj)
 			_ = fs.Delete(ctx, s.ObjectName().String())
 		}
-	}
-}
-
-type policy interface {
-	onObject(*catalog.ObjectEntry) bool
-	revise(*resourceController) []reviseResult
-	resetForTable(*catalog.TableEntry, *BasicPolicyConfig)
-}
-
-func newUpdatePolicyReq(c *BasicPolicyConfig) *api.AlterTableReq {
-	return &api.AlterTableReq{
-		Kind: api.AlterKind_UpdatePolicy,
-		Operation: &api.AlterTableReq_UpdatePolicy{
-			UpdatePolicy: &api.AlterTablePolicy{
-				MinOsizeQuailifed: c.ObjectMinOsize,
-				MaxObjOnerun:      uint32(c.MergeMaxOneRun),
-				MaxOsizeMergedObj: c.MaxOsizeMergedObj,
-				MinCnMergeSize:    c.MinCNMergeSize,
-				Hints:             c.MergeHints,
-			},
-		},
 	}
 }

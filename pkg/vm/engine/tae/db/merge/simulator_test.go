@@ -15,60 +15,69 @@
 package merge
 
 import (
-	"sync"
+	"context"
 	"testing"
 	"time"
+
+	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
+	"github.com/stretchr/testify/require"
 )
-
-func TestClock(t *testing.T) {
-	clock := newFakeClock()
-	ticker := clock.NewTicker(time.Second * 3)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		t.Log("ticker started")
-		i := 0
-		for i < 3 {
-			select {
-			case <-ticker.Chan():
-				t.Logf("ticker fired %d times", i)
-				i++
-			}
-		}
-	}()
-
-	go func() {
-		clock.BlockUntil(1) // wait for the first ticker to fire
-		clock.Advance(5 * time.Second)
-		clock.BlockUntil(1) // wait for the first ticker to fire
-		clock.Advance(5 * time.Second)
-		clock.BlockUntil(1) // wait for the first ticker to fire
-		clock.Advance(5 * time.Second)
-		clock.BlockUntil(1) // wait for the first ticker to fire
-		clock.Advance(5 * time.Second)
-	}()
-
-	wg.Wait()
-}
 
 func TestSimulator(t *testing.T) {
 	clock := newFakeClock()
+
+	scatalog := NewSCatalog()
+	sexecutor := NewSExecutor(clock, scatalog)
+
 	sched := NewMergeScheduler(
 		5*time.Second,
-		&dummyCatalogSource{settingsFn: noDefaultSettings},
-		&dummyExecutor{},
+		scatalog,
+		sexecutor,
 		clock,
 	)
 	sched.Start()
 	defer sched.Stop()
 
-	clock.BlockUntil(1)
-	clock.Advance(5 * time.Second)
-	clock.Advance(5 * time.Second)
-	time.Sleep(time.Second * 1)
-	clock.Advance(5 * time.Second)
-	clock.Advance(5 * time.Second)
-	time.Sleep(time.Second * 1)
-	clock.Advance(5 * time.Second)
+	scatalog.AddData(SData{
+		stats: newTestObjectStats(t, 100, 200, 20*1024, 50, 0, objectio.NewSegmentid(), 0),
+	})
+
+	scatalog.AddData(SData{
+		stats: newTestObjectStats(t, 100, 200, 30*1024, 42, 0, objectio.NewSegmentid(), 0),
+	})
+
+	ticker := time.NewTicker(200 * time.Millisecond)
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				clock.Advance(30 * time.Second)
+				// answer := sched.Query(scatalog.hero)
+				// t.Logf("answer: %+v", answer)
+			}
+		}
+	}()
+
+	time.Sleep(10 * time.Second)
+	cancel()
+	ticker.Stop()
+}
+
+func TestSplitZM(t *testing.T) {
+	zm := index.NewZM(types.T_int32, 0)
+	zm.Update(int32(1))
+	zm.Update(int32(20))
+	zmSplit := splitZM(zm, []int{1, 1, 1})
+	constantZMCount := 0
+	for _, zm := range zmSplit {
+		if IsConstantZM(zm) {
+			constantZMCount++
+		}
+	}
+	require.Equal(t, 2, constantZMCount)
 }

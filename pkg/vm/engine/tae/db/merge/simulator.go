@@ -15,12 +15,23 @@
 package merge
 
 import (
+	"context"
+	"fmt"
+	"iter"
+	"sync"
 	"time"
 
+	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
+	"golang.org/x/exp/constraints"
 
 	"github.com/jonboulle/clockwork"
+	"github.com/tidwall/btree"
 )
 
 // region: Clock
@@ -64,19 +75,469 @@ func (c *fakeClock) Until(t time.Time) time.Duration {
 
 // endregion: Clock
 
-// region: Catalog & IO
+// region: executor
 
-type STable struct {
-	id uint64
+type SExecutor struct {
+	clock    Clock
+	scatalog *SCatalog
 }
 
-type SObject struct {
+func NewSExecutor(c Clock, scatalog *SCatalog) *SExecutor {
+	return &SExecutor{
+		clock:    c,
+		scatalog: scatalog,
+	}
+}
+
+func mergeDataLocked(stable *STable, task mergeTask, clock Clock) (newObjs []SData) {
+
+	var totalOsize, totalCsize, totalRowCount int
+
+	var avgROsize, avgRCsize int
+
+	for _, stat := range task.objs {
+		totalOsize += int(stat.OriginSize())
+		totalCsize += int(stat.Size())
+		totalRowCount += int(stat.Rows())
+	}
+
+	avgROsize = totalOsize / totalRowCount
+	avgRCsize = totalCsize / totalRowCount
+
+	zm := index.NewZM(task.objs[0].SortKeyZoneMap().GetType(), 0)
+	dels := 0
+	for _, stat := range task.objs {
+		zm.Update(stat.SortKeyZoneMap().GetMin())
+		zm.Update(stat.SortKeyZoneMap().GetMax())
+		for _, tombstone := range stable.tombstone {
+			dels += tombstone.distro[stat.ObjectLocation().ObjectId()]
+		}
+	}
+
+	leftRows := totalRowCount - dels
+	objRows := common.DefaultMaxOsizeObjBytes/avgROsize + 100
+	mergedSize := 0
+
+	rowSplit := make([]int, 0)
+
+	for leftRows > 0 {
+		mergedSize += objRows * avgROsize
+		if totalOsize-mergedSize > common.DefaultMaxOsizeObjBytes {
+			rowSplit = append(rowSplit, objRows)
+			leftRows -= objRows
+		} else {
+			rowSplit = append(rowSplit, leftRows)
+			leftRows = 0
+		}
+	}
+
+	zmSplit := splitZM(zm, rowSplit)
+
+	createdSegId := objectio.NewSegmentid()
+
+	for i, zm := range zmSplit {
+		newObj := SData{
+			stats:      objectio.NewObjectStats(),
+			createTime: types.BuildTS(clock.Now().UnixNano(), 0),
+		}
+		row := rowSplit[i]
+		name := objectio.BuildObjectName(createdSegId, uint16(i))
+		objectio.SetObjectStatsObjectName(newObj.stats, name)
+		objectio.SetObjectStatsOriginSize(newObj.stats, uint32(row*avgROsize))
+		objectio.SetObjectStatsSize(newObj.stats, uint32(row*avgRCsize))
+		objectio.SetObjectStatsSortKeyZoneMap(newObj.stats, zm)
+		objectio.SetObjectStatsRowCnt(newObj.stats, uint32(row))
+
+		if task.level > 0 ||
+			newObj.stats.OriginSize() > common.DefaultMinOsizeQualifiedBytes {
+			// for layzer > 0, bump up level
+			// for layzer 0, only bump up level when the produced object's origin size > 90MB
+			if task.level < 7 {
+				newObj.stats.SetLevel(int8(task.level + 1))
+			} else {
+				newObj.stats.SetLevel(7)
+			}
+		}
+
+		newObjs = append(newObjs, newObj)
+	}
+
+	for _, obj := range task.objs {
+		delete(stable.data, obj.ObjectLocation().ObjectId())
+	}
+
+	for _, obj := range newObjs {
+		stable.data[obj.stats.ObjectLocation().ObjectId()] = obj
+	}
+
+	logutil.Infof("mergeDataLocked: %d -> %d", len(task.objs), len(newObjs))
+
+	return
+}
+
+func mergeTombstoneLocked(
+	stable *STable,
+	task mergeTask,
+	clock Clock,
+) (newTombstones []STombstone) {
+
+	var totalOsize, totalCsize, totalRowCount int
+	var avgROsize, avgRCsize int
+	for _, stat := range task.objs {
+		totalOsize += int(stat.OriginSize())
+		totalCsize += int(stat.Size())
+		totalRowCount += int(stat.Rows())
+	}
+	avgROsize = totalOsize / totalRowCount
+	avgRCsize = totalCsize / totalRowCount
+
+	// target disto is tombstone waiting to be flushed
+	targetDistro := btree.NewBTreeG(func(a, b struct {
+		oid   objectio.ObjectId
+		count int
+	}) bool {
+		return a.oid.Compare(&b.oid) < 0
+	})
+
+	// only keep the tombstone targeting alive data object
+	for _, stat := range task.objs {
+		obj := stable.tombstone[stat.ObjectLocation().ObjectId()]
+		for dataid, delcnt := range obj.distro {
+			if _, ok := stable.data[dataid]; ok {
+				targetDistro.Set(struct {
+					oid   objectio.ObjectId
+					count int
+				}{oid: dataid, count: delcnt})
+			}
+		}
+	}
+
+	iter := targetDistro.Iter()
+	defer iter.Release()
+
+	currentObjRow := 0
+	currentObjOsize := 0
+	currentObjCsize := 0
+	mergedSize := 0
+
+	createdSegId := objectio.NewSegmentid()
+	createdObjIdx := uint16(0)
+
+	var newTombstone STombstone
+	var currentZM index.ZM
+
+	writeTombstone := func() {
+		// set stat
+		newStat := newTombstone.stats
+		objectio.SetObjectStatsOriginSize(newStat, uint32(currentObjOsize))
+		objectio.SetObjectStatsSize(newStat, uint32(currentObjCsize))
+		objectio.SetObjectStatsRowCnt(newStat, uint32(currentObjRow))
+		objectio.SetObjectStatsSortKeyZoneMap(newStat, currentZM)
+
+		newTombstones = append(newTombstones, newTombstone)
+		newTombstone = STombstone{}
+		createdObjIdx++
+		mergedSize += currentObjOsize
+		currentObjRow = 0
+		currentObjOsize = 0
+		currentObjCsize = 0
+		currentZM = index.NewZM(types.T_Rowid, 0)
+	}
+
+	for iter.Next() {
+		if newTombstone.distro == nil {
+			newTombstone.stats = objectio.NewObjectStats()
+			objectio.SetObjectStatsObjectName(
+				newTombstone.stats,
+				objectio.BuildObjectName(createdSegId, createdObjIdx),
+			)
+			newTombstone.createTime = types.BuildTS(clock.Now().UnixNano(), 0)
+			newTombstone.distro = make(map[objectio.ObjectId]int)
+			currentZM = index.NewZM(types.T_Rowid, 0)
+		}
+		item := iter.Item()
+		currentObjRow += item.count
+		currentObjOsize += item.count * avgROsize
+		currentObjCsize += item.count * avgRCsize
+		newTombstone.distro[item.oid] = item.count
+
+		// tombstone's zm does not matter for merging
+		currentZM.Update(types.NewRowIDWithObjectIDBlkNumAndRowID(item.oid, 0, 0))
+		currentZM.Update(types.NewRowIDWithObjectIDBlkNumAndRowID(item.oid, 2, 8192))
+
+		if currentObjRow*avgROsize > common.DefaultMaxOsizeObjBytes &&
+			totalOsize-mergedSize > common.DefaultMaxOsizeObjBytes {
+			writeTombstone()
+		}
+	}
+
+	if currentObjRow > 0 {
+		writeTombstone()
+	}
+
+	for _, obj := range task.objs {
+		delete(stable.tombstone, obj.ObjectLocation().ObjectId())
+	}
+
+	for _, obj := range newTombstones {
+		stable.tombstone[obj.stats.ObjectLocation().ObjectId()] = obj
+	}
+
+	return newTombstones
+}
+
+func (e *SExecutor) ExecuteFor(target catalog.MergeTable, task mergeTask) bool {
+
+	stable := target.(*STable)
+
+	stable.Lock()
+	defer stable.Unlock()
+
+	newCount := 0
+	if task.isTombstone {
+		newCount = len(mergeTombstoneLocked(stable, task, e.clock))
+	} else {
+		newCount = len(mergeDataLocked(stable, task, e.clock))
+	}
+
+	sleepTime := float64(task.objs[0].Size()) /
+		float64(common.DefaultMaxOsizeObjBytes) * float64(time.Millisecond) * 150
+
+	e.clock.AfterFunc(time.Duration(sleepTime), func() {
+		if task.doneCB != nil {
+			task.doneCB.f()
+		}
+		for range newCount {
+			e.scatalog.mergeSched.OnCreateNonAppendObject(target)
+		}
+	})
+
+	return true
+}
+
+func updateNumberTypeZM[T constraints.Integer | constraints.Float](
+	zmSplit []index.ZM,
+	ratio []float64,
+	rowsSplit []int,
+	l, r T,
+) {
+	span := float64(r - l)
+	for i := range zmSplit {
+		zmSplit[i].Update(l)
+		if i == len(zmSplit)-1 {
+			zmSplit[i].Update(r)
+		} else {
+			piece := T(ratio[i] * span)
+			// update the right bound only if the rowscount is able to contain
+			// all variants of the current interval.
+			// otherwise, let's make it a constant object for simplicity
+			// and let the last object hold the rest
+			if float64(rowsSplit[i]) > float64(piece) {
+				l = l + piece
+				zmSplit[i].Update(l)
+			}
+			l += 1
+		}
+	}
+}
+
+func splitZM(zm index.ZM, rowsPerObj []int) []index.ZM {
+	ratio := make([]float64, len(rowsPerObj))
+	total := 0
+
+	for _, row := range rowsPerObj {
+		total += row
+	}
+
+	for i, row := range rowsPerObj {
+		ratio[i] = float64(row) / float64(total)
+	}
+
+	zmSplit := make([]index.ZM, len(rowsPerObj))
+	for i := range zmSplit {
+		zmSplit[i] = index.NewZM(zm.GetType(), 0)
+	}
+
+	_min := zm.GetMin()
+	_max := zm.GetMax()
+
+	switch zm.GetType() {
+	case types.T_int8:
+		l, r := _min.(int8), _max.(int8)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_int16:
+		l, r := _min.(int16), _max.(int16)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_int32:
+		l, r := _min.(int32), _max.(int32)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_int64:
+		l, r := _min.(int64), _max.(int64)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_uint8:
+		l, r := _min.(uint8), _max.(uint8)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_uint16:
+		l, r := _min.(uint16), _max.(uint16)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_uint32:
+		l, r := _min.(uint32), _max.(uint32)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_uint64:
+		l, r := _min.(uint64), _max.(uint64)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_float32:
+		l, r := _min.(float32), _max.(float32)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_float64:
+		l, r := _min.(float64), _max.(float64)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_date:
+		l, r := _min.(types.Date), _max.(types.Date)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_time:
+		l, r := _min.(types.Time), _max.(types.Time)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_datetime:
+		l, r := _min.(types.Datetime), _max.(types.Datetime)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_timestamp:
+		l, r := _min.(types.Timestamp), _max.(types.Timestamp)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_enum:
+		l, r := _min.(types.Enum), _max.(types.Enum)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_decimal64:
+		l, r := _min.(types.Decimal64), _max.(types.Decimal64)
+		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	default:
+		panic(fmt.Sprintf("unsupported type: %s", zm.GetType()))
+	}
+
+	return zmSplit
+}
+
+// endregion: executor
+
+// region: Catalog & IO
+
+type SCatalog struct {
+	mergeSched catalog.MergeNotifierOnCatalog
+	hero       *STable
+}
+
+func (c *SCatalog) AddData(data SData) {
+	c.hero.Lock()
+	defer c.hero.Unlock()
+	c.hero.data[data.stats.ObjectLocation().ObjectId()] = data
+	c.mergeSched.OnCreateNonAppendObject(c.hero)
+}
+
+func (c *SCatalog) AddTombstone(tombstone STombstone) {
+	c.hero.Lock()
+	defer c.hero.Unlock()
+	c.hero.tombstone[tombstone.stats.ObjectLocation().ObjectId()] = tombstone
+	c.mergeSched.OnCreateNonAppendObject(c.hero)
+}
+
+func NewSCatalog() *SCatalog {
+	return &SCatalog{
+		hero: &STable{
+			id:        1000,
+			desc:      "1000-merge-hero",
+			data:      make(map[objectio.ObjectId]SData),
+			tombstone: make(map[objectio.ObjectId]STombstone),
+		},
+	}
+}
+
+func (c *SCatalog) InitSource() iter.Seq[catalog.MergeTable] {
+	return func(yield func(catalog.MergeTable) bool) {
+		yield(c.hero)
+	}
+}
+
+func (c *SCatalog) SetMergeNotifier(scheduler catalog.MergeNotifierOnCatalog) {
+	c.mergeSched = scheduler
+}
+
+func (c *SCatalog) GetMergeSettingsBatchFn() func() (*batch.Batch, func()) {
+	return func() (*batch.Batch, func()) {
+		return nil, func() {}
+	}
+}
+
+type STable struct {
+	sync.RWMutex
+	id   uint64
+	desc string
+
+	data      map[objectio.ObjectId]SData
+	tombstone map[objectio.ObjectId]STombstone
+}
+
+func (t *STable) ID() uint64 { return t.id }
+
+func (t *STable) GetNameDesc() string { return t.desc }
+
+func (t *STable) HasDropCommitted() bool { return false }
+
+func (t *STable) IsSpecialBigTable() bool { return false }
+
+func (t *STable) IterDataItem() iter.Seq[catalog.MergeDataItem] {
+	return func(yield func(catalog.MergeDataItem) bool) {
+		t.RLock()
+		defer t.RUnlock()
+		for _, obj := range t.data {
+			yield(&obj)
+		}
+	}
+}
+
+func (t *STable) IterTombstoneItem() iter.Seq[catalog.MergeTombstoneItem] {
+	return func(yield func(catalog.MergeTombstoneItem) bool) {
+		t.RLock()
+		defer t.RUnlock()
+		for _, obj := range t.tombstone {
+			yield(&obj)
+		}
+	}
+}
+
+type SData struct {
 	stats      *objectio.ObjectStats
 	createTime types.TS
 }
 
+func (o *SData) GetObjectStats() *objectio.ObjectStats {
+	return o.stats
+}
+
+func (o *SData) GetCreatedAt() types.TS {
+	return o.createTime
+}
+
 type STombstone struct {
-	SObject
+	SData
+	distro map[objectio.ObjectId]int
+}
+
+func (o *STombstone) ForeachRowid(
+	ctx context.Context,
+	reuseBatch any,
+	each func(rowid types.Rowid, isNull bool, rowIdx int) error,
+) error {
+	for id, count := range o.distro {
+		rowid := types.NewRowIDWithObjectIDBlkNumAndRowID(id, 0, 0)
+		for i := 0; i < count; i++ {
+			each(rowid, false, i)
+		}
+	}
+	return nil
+}
+
+func (o *STombstone) MakeBufferBatch() (any, func()) {
+	return nil, func() {}
 }
 
 // endregion: Catalog & IO

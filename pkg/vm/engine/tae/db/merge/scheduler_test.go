@@ -98,12 +98,9 @@ func (t *droppedMergeTable) HasDropCommitted() bool {
 
 func TestScheduler(t *testing.T) {
 
-	cata := catalog.MockCatalog(nil)
 	newTestTable := func(did, tid uint64) catalog.MergeTable {
 		db := catalog.MockDBEntryWithAccInfo(1, tid)
 		table := catalog.MockTableEntryWithDB(db, tid)
-		db.TestSetCatalog(cata)
-		table.HasDropCommitted()
 		return catalog.ToMergeTable(table)
 	}
 

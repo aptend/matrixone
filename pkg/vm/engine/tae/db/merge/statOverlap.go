@@ -23,6 +23,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/compute"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
 	"github.com/openacid/slimarray/polyfit"
 	"github.com/tidwall/btree"
 )
@@ -98,7 +99,15 @@ func (o *OverlapStats) String() string {
 		processed := o.ScanObj - o.ConstantObj - o.UniniteddObj
 		coffs = fmt.Sprintf("%v-%d", o.PolynomialCoefficients, processed)
 	}
-	s := fmt.Sprintf("AvgPointDepth: %.2f, AvgOverlapCnt: %.2f, Obj(s,c,u): %d-%d-%d, EventsCnt: %d, Clusters: %v", o.AvgPointDepth, o.AvgOverlapCnt, o.ScanObj, o.ConstantObj, o.UniniteddObj, pointsCnt, o.Clusters)
+	s := fmt.Sprintf("AvgPointDepth: %.2f, AvgOverlapCnt: %.2f, Obj(s,c,u): %d-%d-%d, EventsCnt: %d, Clusters: %v",
+		o.AvgPointDepth,
+		o.AvgOverlapCnt,
+		o.ScanObj,
+		o.ConstantObj,
+		o.UniniteddObj,
+		pointsCnt,
+		o.Clusters,
+	)
 	if coffs != "" {
 		s += fmt.Sprintf(", PolynomialCoefficients: %s", coffs)
 	}
@@ -163,8 +172,11 @@ func MakePointEventsSortedMap(ctx context.Context, statsList []*objectio.ObjectS
 }
 
 func IsConstantObj(stats *objectio.ObjectStats) bool {
-	zm := stats.SortKeyZoneMap()
-	if zm == nil || !zm.IsInited() || stats.OriginSize() < common.DefaultMinOsizeQualifiedBytes {
+	return stats.OriginSize() < common.DefaultMinOsizeQualifiedBytes && IsConstantZM(stats.SortKeyZoneMap())
+}
+
+func IsConstantZM(zm index.ZM) bool {
+	if zm == nil || !zm.IsInited() {
 		return false
 	}
 	// the max is 0xfffffffff..., which has no valuable information, so we treat it as constant and it is not a good candidate for merge

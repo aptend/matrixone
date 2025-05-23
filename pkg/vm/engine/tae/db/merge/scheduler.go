@@ -762,8 +762,8 @@ func (a *MergeScheduler) handleMainLoop() {
 		case <-nextReadyAt:
 			// continue the loop
 		case <-a.heartbeat.Chan():
-			a.rc.printMemUsage()
-			a.rc.refresh()
+			// a.rc.printMemUsage()
+			// a.rc.refresh()
 			// continue the loop
 		case msg := <-a.msgChan:
 			a.dispatchMsg(msg)
@@ -1036,6 +1036,7 @@ func (a *MergeScheduler) doSched(todo *todoItem) {
 	// Schedule tasks
 	for _, task := range tasks {
 		task.doneCB = a.taskObserverFactory(todo.table, task.eSize)
+		logutil.Infof("schedule task: %v", task)
 		if a.executor.ExecuteFor(todo.table, task) {
 			a.rc.reserveResources(int64(task.eSize))
 			if task.isTombstone {
@@ -1071,6 +1072,7 @@ func (a *MergeScheduler) doSched(todo *todoItem) {
 	} else {
 		supp.nextDue = a.baseInterval
 	}
+	logutil.Infof("update nextDue: %v", supp.nextDue)
 	a.pq.Update(todo, afterGather.Add(supp.nextDue))
 
 }
@@ -1122,6 +1124,7 @@ func (p *launchPad) InitWithTrigger(trigger *MMsgTaskTrigger, lastMergeTime time
 	if p.lastMergeTime > TenYears {
 		// avoid busy merge when the system is just started
 		p.lastMergeTime = 30 * time.Minute * time.Duration(rand.Intn(9)+1) / 10
+		logutil.Infof("lastMergeTime: %v", p.lastMergeTime)
 	}
 
 	checkCreateTime := trigger.table.IsSpecialBigTable() && !trigger.handleBigOld
@@ -1189,6 +1192,7 @@ func (p *launchPad) gatherL0Tasks(ctx context.Context,
 	rc *resourceController,
 ) {
 	l0Tasks := GatherLayerZeroMergeTasks(ctx, p.leveledObjects[0], p.lastMergeTime, l0Opts)
+	logutil.Infof("gatherL0Tasks: %d", len(p.leveledObjects[0]))
 	p.revisedResults = append(p.revisedResults,
 		controlTaskMemInPlace(l0Tasks, rc, 2)...)
 }

@@ -73,6 +73,15 @@ func removeOversize(objs []*catalog.ObjectEntry) []*catalog.ObjectEntry {
 	return objs[:i]
 }
 
+type rscController interface {
+	refresh()
+	printMemUsage()
+	reserveResources(estMem int64)
+	releaseResources(estMem int64)
+	availableMem() int64
+	resourceAvailable(estMem int64) bool
+}
+
 type resourceController struct {
 	proc *process.Process
 

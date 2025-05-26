@@ -79,7 +79,7 @@ type MergeScheduler struct {
 	defaultTrigger *MMsgTaskTrigger
 
 	baseInterval time.Duration
-	rc           *resourceController
+	rc           rscController
 	executor     MergeTaskExecutor
 
 	clock Clock
@@ -128,6 +128,10 @@ func NewMergeScheduler(
 	sched.rc.refresh()
 	return sched
 
+}
+
+func (a *MergeScheduler) PatchTestRscController(rc rscController) {
+	a.rc = rc
 }
 
 func (a *MergeScheduler) Stop() {
@@ -1061,7 +1065,7 @@ func (a *MergeScheduler) doSched(todo *todoItem) {
 			Kind: MMsgKindVacuumCheck,
 			Value: MMsgVacuumCheck{
 				Table: todo.table,
-				opts:  DefaultVacuumOpts,
+				opts:  trigger.vacuum,
 			},
 		}
 		supp.bigTaskCnt = supp.bigTaskCnt % bigDataTaskCntThreshold
@@ -1152,7 +1156,7 @@ func (p *launchPad) InitWithTrigger(trigger *MMsgTaskTrigger, lastMergeTime time
 
 func (p *launchPad) gatherTombstoneTasks(ctx context.Context,
 	tombstoneOpts *TombstoneOpts,
-	rc *resourceController,
+	rc rscController,
 ) {
 	tasks := GatherTombstoneTasks(ctx, IterStats(p.tombstoneStats), tombstoneOpts, p.lastMergeTime)
 	p.revisedResults = append(p.revisedResults, controlTaskMemInPlace(tasks, rc, 1)...)
@@ -1162,7 +1166,7 @@ func (p *launchPad) gatherLnTasks(ctx context.Context,
 	lnOpts *OverlapOpts,
 	startlv int,
 	endlv int,
-	rc *resourceController,
+	rc rscController,
 ) {
 	if startlv < 1 {
 		startlv = 1
@@ -1190,9 +1194,15 @@ func (p *launchPad) gatherLnTasks(ctx context.Context,
 
 func (p *launchPad) gatherL0Tasks(ctx context.Context,
 	l0Opts *LayerZeroOpts,
-	rc *resourceController,
+	rc rscController,
 ) {
 	l0Tasks := GatherLayerZeroMergeTasks(ctx, p.leveledObjects[0], p.lastMergeTime, l0Opts)
+	// logutil.Info("MergeExecutorEvent",
+	// 	zap.String("event", "gatherL0Tasks"),
+	// 	zap.Int("l0count", len(p.leveledObjects[0])),
+	// 	zap.Duration("ago", p.lastMergeTime),
+	// 	zap.Int("tolerance", l0Opts.CalcTolerance(p.lastMergeTime)),
+	// )
 	p.revisedResults = append(p.revisedResults,
 		controlTaskMemInPlace(l0Tasks, rc, 2)...)
 }
@@ -1200,7 +1210,7 @@ func (p *launchPad) gatherL0Tasks(ctx context.Context,
 func (p *launchPad) gatherByTrigger(ctx context.Context,
 	trigger *MMsgTaskTrigger,
 	lastMergeTime time.Time,
-	rc *resourceController,
+	rc rscController,
 ) []mergeTask {
 	p.Reset()
 	p.InitWithTrigger(trigger, lastMergeTime)
@@ -1228,7 +1238,7 @@ func sumOsize(objs []*objectio.ObjectStats) int {
 	return sum
 }
 
-func controlTaskMemInPlace(tasks []mergeTask, rc *resourceController, deleteLessThan int) []mergeTask {
+func controlTaskMemInPlace(tasks []mergeTask, rc rscController, deleteLessThan int) []mergeTask {
 	if len(tasks) == 0 {
 		return tasks
 	}

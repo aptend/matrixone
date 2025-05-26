@@ -15,7 +15,6 @@
 package merge
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -26,65 +25,87 @@ import (
 )
 
 func TestSimulator(t *testing.T) {
-	clock := newFakeClock()
+	player := NewSimPlayer()
+	player.Start()
+	player.ResetPace(100*time.Millisecond, 120*time.Second)
+	defer player.Stop()
 
-	scatalog := NewSCatalog()
-	sexecutor := NewSExecutor(clock, scatalog)
+	const K = 1024
+	sid := objectio.NewSegmentid
 
-	sched := NewMergeScheduler(
-		5*time.Second,
-		scatalog,
-		sexecutor,
-		clock,
-	)
-	sched.Start()
-	defer sched.Stop()
+	// add 4 lv0 small objects
+	data := []SData{
+		{
+			stats: newTestObjectStats(t, 100, 200, 24*K, 50, 0, sid(), 0),
+		},
+		{
+			stats: newTestObjectStats(t, 100, 200, 43*K, 50, 0, sid(), 0),
+		},
+		{
+			stats: newTestObjectStats(t, 50, 300, 20*K, 50, 0, sid(), 0),
+		},
+		{
+			stats: newTestObjectStats(t, 150, 400, 20*K, 50, 0, sid(), 0),
+		},
+	}
 
-	scatalog.AddData(SData{
-		stats: newTestObjectStats(t, 100, 200, 20*1024, 50, 0, objectio.NewSegmentid(), 0),
-	})
+	tombstones := []STombstone{
+		{
+			SData: SData{
+				stats: newTestObjectStats(t, 0, 0, 30*K, 20, 0, sid(), 0),
+			},
+			distro: map[objectio.ObjectId]int{
+				data[1].stats.ObjectLocation().ObjectId(): 14,
+				data[2].stats.ObjectLocation().ObjectId(): 6,
+			},
+		},
+	}
 
-	scatalog.AddData(SData{
-		stats: newTestObjectStats(t, 100, 200, 30*1024, 42, 0, objectio.NewSegmentid(), 0),
-	})
+	for _, data := range data {
+		player.AddData(data)
+	}
+	for _, tombstone := range tombstones {
+		player.AddTombstone(tombstone)
+	}
 
-	ticker := time.NewTicker(100 * time.Millisecond)
-	ctx, cancel := context.WithCancel(context.Background())
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				clock.Advance(30 * time.Second)
-				// answer := sched.Query(scatalog.hero)
-				// t.Logf("answer: %+v", answer)
-			}
+	time.Sleep(3 * time.Second)
+	t.Logf("report: %v", player.ReportString())
+
+}
+
+func constantCount(zms []index.ZM) int {
+	constantZMCount := 0
+	for _, zm := range zms {
+		if IsConstantZM(zm) {
+			constantZMCount++
 		}
-	}()
-
-	time.Sleep(10 * time.Second)
-	cancel()
-	ticker.Stop()
+	}
+	return constantZMCount
 }
 
 func TestSplitZM(t *testing.T) {
 	zm := index.NewZM(types.T_int32, 0)
 	zm.Update(int32(1))
 	zm.Update(int32(20))
-	constantCount := func(zms []index.ZM) int {
-		constantZMCount := 0
-		for _, zm := range zms {
-			if IsConstantZM(zm) {
-				constantZMCount++
-			}
-		}
-		return constantZMCount
-	}
 	{
 		zmSplit := splitZM(zm, []int{1, 1, 1})
 		require.Equal(t, 2, constantCount(zmSplit))
 	}
+	{
+		zmSplit := splitZM(zm, []int{100, 100, 100})
+		require.Equal(t, 0, constantCount(zmSplit))
+	}
+}
+
+func TestUpdateStringTypeZM(t *testing.T) {
+	zm := index.NewZM(types.T_varchar, 0)
+	zm.Update([]byte("12345"))
+	zm.Update([]byte("12346"))
+	{
+		zmSplit := splitZM(zm, []int{1, 1, 1})
+		require.Equal(t, 2, constantCount(zmSplit))
+	}
+
 	{
 		zmSplit := splitZM(zm, []int{100, 100, 100})
 		require.Equal(t, 0, constantCount(zmSplit))

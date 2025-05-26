@@ -177,8 +177,10 @@ func MakePointEventsSortedMap(
 }
 
 func IsConstantObj(stats *objectio.ObjectStats) bool {
-	return stats.OriginSize() < common.DefaultMinOsizeQualifiedBytes &&
-		IsConstantZM(stats.SortKeyZoneMap())
+	if stats.OriginSize() < common.DefaultMinOsizeQualifiedBytes {
+		return false
+	}
+	return IsConstantZM(stats.SortKeyZoneMap())
 }
 
 func IsConstantZM(zm index.ZM) bool {

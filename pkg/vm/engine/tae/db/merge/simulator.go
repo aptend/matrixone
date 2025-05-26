@@ -16,11 +16,17 @@ package merge
 
 import (
 	"context"
+	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"iter"
+	"math"
+	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
+	"github.com/docker/go-units"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
@@ -28,13 +34,14 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
+	"go.uber.org/zap"
 	"golang.org/x/exp/constraints"
 
 	"github.com/jonboulle/clockwork"
 	"github.com/tidwall/btree"
 )
 
-// region: Clock
+// region: clock
 
 type Clock interface {
 	clockwork.Clock
@@ -75,11 +82,85 @@ func (c *fakeClock) Until(t time.Time) time.Duration {
 
 // endregion: Clock
 
+// region: resource controller
+
+type simRscController struct {
+	sync.Mutex
+	limit    atomic.Int64
+	reserved int64
+}
+
+func newSimRscController(initLimit int64) *simRscController {
+	c := &simRscController{
+		limit:    atomic.Int64{},
+		reserved: 0,
+	}
+	c.setMemLimit(initLimit)
+	return c
+}
+
+// for testing
+func (c *simRscController) setMemLimit(limit int64) {
+	c.limit.Store(limit)
+}
+
+func (c *simRscController) refresh() {}
+
+func (c *simRscController) printMemUsage() {}
+
+func (c *simRscController) reserveResources(estMem int64) {
+	c.reserved += estMem
+}
+
+func (c *simRscController) releaseResources(estMem int64) {
+	c.reserved -= estMem
+	if c.reserved < 0 {
+		c.reserved = 0
+		logutil.Warnf("simRscController: releaseResources: %d", estMem)
+	}
+}
+
+func (c *simRscController) availableMem() int64 {
+	avail := c.limit.Load() - c.reserved
+	if avail < 0 {
+		avail = 0
+	}
+	return avail
+}
+
+func (c *simRscController) resourceAvailable(estMem int64) bool {
+	mem := c.availableMem()
+	if mem > constMaxMemCap {
+		mem = constMaxMemCap
+	}
+	return estMem <= 2*mem/3
+}
+
+// endregion: resource controller
+
 // region: executor
+
+func iterSDAsStats(objs []SData) iter.Seq[*objectio.ObjectStats] {
+	return func(yield func(*objectio.ObjectStats) bool) {
+		for _, obj := range objs {
+			yield(obj.stats)
+		}
+	}
+}
+
+func iterSTAsStats(objs []STombstone) iter.Seq[*objectio.ObjectStats] {
+	return func(yield func(*objectio.ObjectStats) bool) {
+		for _, obj := range objs {
+			yield(obj.stats)
+		}
+	}
+}
 
 type SExecutor struct {
 	clock    Clock
 	scatalog *SCatalog
+
+	taskId uint64
 
 	// stats
 	dataMergedSize      int64
@@ -135,6 +216,7 @@ func mergeDataLocked(
 	rowSplit := make([]int, 0)
 
 	for leftRows > 0 {
+		// try to merge a full 128 MB object
 		mergedSize += objRows * info.avgROsize
 		if info.totalOsize-mergedSize > common.DefaultMaxOsizeObjBytes {
 			rowSplit = append(rowSplit, objRows)
@@ -180,8 +262,6 @@ func mergeDataLocked(
 	for _, obj := range newObjs {
 		stable.data[obj.stats.ObjectLocation().ObjectId()] = obj
 	}
-
-	logutil.Infof("mergeDataLocked: %d -> %d", len(task.objs), len(newObjs))
 
 	return
 }
@@ -289,27 +369,93 @@ func mergeTombstoneLocked(
 	return newTombstones
 }
 
+func logTask(
+	taskId uint64,
+	task mergeTask,
+	cost time.Duration,
+	toObjs iter.Seq[*objectio.ObjectStats]) {
+	var fromDescBuilder strings.Builder
+	var toDescBuilder strings.Builder
+	name := fmt.Sprintf("[MT-%d]1000-merge-hero", taskId)
+	if task.isTombstone {
+		name = fmt.Sprintf("[MT-%d]1000-tombstone", taskId)
+	}
+	buildObjsString := func(
+		builder *strings.Builder,
+		objs iter.Seq[*objectio.ObjectStats]) (rows, objCnt int) {
+		pad := " | "
+		for obj := range objs {
+			rows += int(obj.Rows())
+			objCnt++
+			if objCnt > 1 {
+				builder.WriteString(pad)
+			}
+			zm := obj.SortKeyZoneMap()
+			if task.isTombstone {
+				builder.WriteString(fmt.Sprintf("%s(%s)Rows(%v)",
+					obj.ObjectName().ObjectId().ShortStringEx(),
+					units.BytesSize(float64(obj.OriginSize())),
+					obj.Rows()))
+			} else {
+				builder.WriteString(fmt.Sprintf("%s(%s)Rows(%v)[%v, %v]",
+					obj.ObjectName().ObjectId().ShortStringEx(),
+					units.BytesSize(float64(obj.OriginSize())),
+					obj.Rows(),
+					zm.GetMin(),
+					zm.GetMax()))
+			}
+		}
+		return
+	}
+
+	fromRows, fromObjCnt := buildObjsString(&fromDescBuilder, IterStats(task.objs))
+	toRows, toObjCnt := buildObjsString(&toDescBuilder, toObjs)
+
+	logutil.Info(
+		"[MERGE-TASK]",
+		zap.String("task", name),
+		zap.String("from-size", units.BytesSize(float64(task.oSize))),
+		zap.String("est-size", units.BytesSize(float64(task.eSize))),
+		zap.Int("from-obj", fromObjCnt),
+		zap.Int("to-obj", toObjCnt),
+		zap.Int("from-rows", fromRows),
+		zap.Int("to-rows", toRows),
+		zap.Int8("level", task.level),
+		zap.String("task-source-note", task.note),
+		zap.String("cost", cost.String()),
+		zap.String("from-objs", fromDescBuilder.String()),
+		zap.String("to-objs", toDescBuilder.String()),
+	)
+}
+
 func (e *SExecutor) ExecuteFor(target catalog.MergeTable, task mergeTask) bool {
 	stable := target.(*STable)
 	stable.Lock()
 	defer stable.Unlock()
 
-	newCount := 0
-	if task.isTombstone {
-		newCount = len(mergeTombstoneLocked(stable, task, e.clock))
-	} else {
-		newCount = len(mergeDataLocked(stable, task, e.clock))
-	}
-
 	// baseline: 2MB oringnal size -> 150ms
-	taskCost := float64(time.Millisecond) * 150 *
-		float64(task.oSize) / common.Const1MBytes / 2
+	taskCost := time.Duration(float64(time.Millisecond) * 150 *
+		float64(task.oSize) / common.Const1MBytes / 2)
 
-	e.clock.AfterFunc(time.Duration(taskCost), func() {
+	newObjCount := 0
+	if task.isTombstone {
+		objs := mergeTombstoneLocked(stable, task, e.clock)
+		logTask(e.taskId, task, taskCost, iterSTAsStats(objs))
+		e.tombstoneMergedSize += int64(task.oSize)
+		newObjCount = len(objs)
+	} else {
+		objs := mergeDataLocked(stable, task, e.clock)
+		logTask(e.taskId, task, taskCost, iterSDAsStats(objs))
+		e.dataMergedSize += int64(task.oSize)
+		newObjCount = len(objs)
+	}
+	e.taskId++
+
+	e.clock.AfterFunc(taskCost, func() {
 		if task.doneCB != nil {
 			task.doneCB.f()
 		}
-		for range newCount {
+		for range newObjCount {
 			e.scatalog.mergeSched.OnCreateNonAppendObject(target)
 		}
 	})
@@ -328,17 +474,70 @@ func updateNumberTypeZM[T constraints.Integer | constraints.Float](
 		zmSplit[i].Update(l)
 		if i == len(zmSplit)-1 {
 			zmSplit[i].Update(r)
-		} else {
+		} else if rowsSplit[i] > 1 {
 			piece := T(ratio[i] * span)
-			// update the right bound only if the rowscount is able to contain
-			// all variants of the current interval.
-			// otherwise, let's make it a constant object for simplicity
-			// and let the last object hold the rest
-			if float64(rowsSplit[i]) > float64(piece) {
-				l = l + piece
-				zmSplit[i].Update(l)
+			l = l + piece
+			zmSplit[i].Update(l)
+		}
+		l += 1
+	}
+}
+
+func fillZero(buf []byte) {
+	for i := range buf {
+		buf[i] = 0
+	}
+}
+
+func updateStringTypeZM(
+	zmSplit []index.ZM,
+	ratio []float64,
+	rowsPerObj []int,
+	l, r []byte,
+) {
+	buf := make([]byte, 8)
+	getPartU64 := func(b []byte, i int) uint64 {
+		if i*8 < len(b) && (i+1)*8 > len(b) {
+			fillZero(buf)
+			copy(buf, b[i*8:])
+			return binary.BigEndian.Uint64(buf)
+		} else if i*8 >= len(b) {
+			return 0
+		} else {
+			return binary.BigEndian.Uint64(b[i*8 : (i+1)*8])
+		}
+	}
+	var diffs = [4]uint64{0, 0, 0, 0}
+	for i := range diffs {
+		diffs[i] = getPartU64(r, i) - getPartU64(l, i)
+	}
+
+	minbuf := make([]byte, 30)
+	copy(minbuf, l)
+
+	for i := range zmSplit {
+		if i == 0 {
+			zmSplit[i].Update(l)
+		} else {
+			zmSplit[i].Update(minbuf)
+		}
+		if i == len(zmSplit)-1 {
+			zmSplit[i].Update(r)
+			return
+		}
+
+		if rowsPerObj[i] > 1 {
+			for j := range diffs {
+				piece := uint64(math.Floor(float64(ratio[i]) * float64(diffs[j])))
+				v := getPartU64(minbuf, j) + piece
+				if j < 3 {
+					binary.BigEndian.PutUint64(minbuf[j*8:(j+1)*8], v)
+				} else {
+					binary.BigEndian.PutUint64(buf, v)
+					copy(minbuf[j*8:30], buf)
+				}
 			}
-			l += 1
+			zmSplit[i].Update(minbuf)
 		}
 	}
 }
@@ -388,6 +587,10 @@ func splitZM(zm index.ZM, rowsPerObj []int) []index.ZM {
 	case types.T_int32:
 		l, r := _min.(int32), _max.(int32)
 		updateNumberTypeZM(zmSplit, ratio, rowsPerObj, l, r)
+	case types.T_char, types.T_varchar, types.T_json,
+		types.T_binary, types.T_varbinary, types.T_blob, types.T_text, types.T_datalink:
+		l, r := _min.([]byte), _max.([]byte)
+		updateStringTypeZM(zmSplit, ratio, rowsPerObj, l, r)
 	default:
 		panic(fmt.Sprintf("unsupported type: %s", zm.GetType()))
 	}
@@ -402,6 +605,9 @@ func splitZM(zm index.ZM, rowsPerObj []int) []index.ZM {
 type SCatalog struct {
 	mergeSched catalog.MergeNotifierOnCatalog
 	hero       *STable
+
+	inputDataSize      int64
+	inputTombstoneSize int64
 }
 
 func (c *SCatalog) AddData(data SData) {
@@ -409,6 +615,7 @@ func (c *SCatalog) AddData(data SData) {
 	defer c.hero.Unlock()
 	c.hero.data[data.stats.ObjectLocation().ObjectId()] = data
 	c.mergeSched.OnCreateNonAppendObject(c.hero)
+	c.inputDataSize += int64(data.stats.OriginSize())
 }
 
 func (c *SCatalog) AddTombstone(tombstone STombstone) {
@@ -416,6 +623,7 @@ func (c *SCatalog) AddTombstone(tombstone STombstone) {
 	defer c.hero.Unlock()
 	c.hero.tombstone[tombstone.stats.ObjectLocation().ObjectId()] = tombstone
 	c.mergeSched.OnCreateNonAppendObject(c.hero)
+	c.inputTombstoneSize += int64(tombstone.stats.OriginSize())
 }
 
 func NewSCatalog() *SCatalog {
@@ -518,4 +726,117 @@ func (o *STombstone) MakeBufferBatch() (any, func()) {
 	return nil, func() {}
 }
 
-// endregion: Catalog & IO
+// endregion: Catalog
+
+// region: SimPalyer
+
+type playerSettings struct {
+	tickInterval time.Duration `json:"tick_interval"`
+	tickStride   time.Duration `json:"tick_stride"`
+}
+
+type SimPlayer struct {
+	sclok *fakeClock
+	scata *SCatalog
+	sexec *SExecutor
+	sched *MergeScheduler
+	srsc  *simRscController
+
+	cancel func()
+	ticker *time.Ticker // std ticker to drive the simulation
+}
+
+func (p *SimPlayer) AddData(data SData) {
+	p.scata.AddData(data)
+}
+
+func (p *SimPlayer) AddTombstone(tombstone STombstone) {
+	p.scata.AddTombstone(tombstone)
+}
+
+func NewSimPlayer() *SimPlayer {
+	sclock := newFakeClock()
+	scatalog := NewSCatalog()
+	sexecutor := NewSExecutor(sclock, scatalog)
+	srsc := newSimRscController(8 * common.Const1GBytes)
+
+	sched := NewMergeScheduler(
+		5*time.Second,
+		scatalog,
+		sexecutor,
+		sclock,
+	)
+	sched.PatchTestRscController(srsc)
+
+	return &SimPlayer{
+		sclok: sclock,
+		scata: scatalog,
+		sexec: sexecutor,
+		sched: sched,
+		srsc:  srsc,
+	}
+}
+
+func (p *SimPlayer) runTicker(trueInterval, simInterval time.Duration) func() {
+	ctx, cancel := context.WithCancel(context.Background())
+	ticker := time.NewTicker(trueInterval)
+	go func() {
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-ticker.C:
+				p.sclok.Advance(simInterval)
+			}
+		}
+	}()
+	return cancel
+}
+
+func (p *SimPlayer) Start() {
+	p.sched.Start()
+	p.cancel = p.runTicker(100*time.Millisecond, 30*time.Second)
+}
+
+func (p *SimPlayer) ResetPace(trueInterval, simInterval time.Duration) {
+	p.cancel()
+	p.cancel = p.runTicker(trueInterval, simInterval)
+}
+
+func (p *SimPlayer) Stop() {
+	p.sched.Stop()
+	p.cancel()
+}
+
+func (p *SimPlayer) ReportString() string {
+	supp := p.sched.supps[p.scata.hero.id]
+	repo := &MergeReport{
+		InputDataSize:       units.BytesSize(float64(p.scata.inputDataSize)),
+		InputTombstoneSize:  units.BytesSize(float64(p.scata.inputTombstoneSize)),
+		DataMergedSize:      units.BytesSize(float64(p.sexec.dataMergedSize)),
+		TombstoneMergedSize: units.BytesSize(float64(p.sexec.tombstoneMergedSize)),
+		DataMergeCount:      supp.totalDataMergeCnt,
+		TombstoneMergeCount: supp.totalTombstoneMergeCnt,
+	}
+	if p.scata.inputDataSize > 0 {
+		repo.DataWA = float64(p.sexec.dataMergedSize) / float64(p.scata.inputDataSize)
+	}
+	if p.scata.inputTombstoneSize > 0 {
+		repo.TombstoneWA = float64(p.sexec.tombstoneMergedSize) / float64(p.scata.inputTombstoneSize)
+	}
+	j, _ := json.MarshalIndent(repo, "", "  ")
+	return string(j)
+}
+
+type MergeReport struct {
+	InputDataSize       string  `json:"input_data_size"`
+	InputTombstoneSize  string  `json:"input_tombstone_size"`
+	DataMergedSize      string  `json:"data_merged_size"`
+	TombstoneMergedSize string  `json:"tombstone_merged_size"`
+	DataWA              float64 `json:"data_wa"`
+	TombstoneWA         float64 `json:"tombstone_wa"`
+	DataMergeCount      int     `json:"data_merge_count"`
+	TombstoneMergeCount int     `json:"tombstone_merge_count"`
+}
+
+// endregion: SimPalyer

@@ -93,16 +93,6 @@ func (c *resourceController) setMemLimit(total uint64) {
 		panic("failed to get system total memory")
 	}
 
-	// if c.limit > 200*common.Const1GBytes {
-	// 	c.transferPageLimit = c.limit / 25 * 2 // 8%
-	// } else if c.limit > 100*common.Const1GBytes {
-	// 	c.transferPageLimit = c.limit / 25 * 3 // 12%
-	// } else if c.limit > 40*common.Const1GBytes {
-	// 	c.transferPageLimit = c.limit / 25 * 4 // 16%
-	// } else {
-	// 	c.transferPageLimit = math.MaxInt64 // no limit
-	// }
-
 	logutil.Info(
 		"MergeExecutorMemoryInfo",
 		common.AnyField("container-limit", common.HumanReadableBytes(int(cgroup))),

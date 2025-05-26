@@ -750,12 +750,12 @@ func TestVacuumOpts(t *testing.T) {
 	t.Logf("VacuumOpts: %s", opts.String())
 
 	mTable := catalog.ToMergeTable(tbl)
-	stats, err := CalculateVacuumStats(ctx, mTable, opts.Clone().WithEnableDetail(false))
+	stats, err := CalculateVacuumStats(ctx, mTable, opts.Clone().WithEnableDetail(false), time.Now())
 	require.NoError(t, err)
 	mergeTasks := GatherCompactTasks(ctx, stats)
 	require.Equal(t, 0, len(mergeTasks))
 
-	stats, err = CalculateVacuumStats(ctx, mTable, opts.Clone().WithCheckBigOnly(false))
+	stats, err = CalculateVacuumStats(ctx, mTable, opts.Clone().WithCheckBigOnly(false), time.Now())
 	require.NoError(t, err)
 	t.Logf("stats: %s", stats.String())
 
@@ -765,7 +765,7 @@ func TestVacuumOpts(t *testing.T) {
 			WithEndScore(1).
 			WithDuration(1 * time.Minute).
 			WithHollowTopK(2)
-		stats, err = CalculateVacuumStats(ctx, mTable, opts)
+		stats, err = CalculateVacuumStats(ctx, mTable, opts, time.Now())
 		require.NoError(t, err)
 		mergeTasks := GatherCompactTasks(ctx, stats)
 		require.Equal(t, 2, len(mergeTasks))

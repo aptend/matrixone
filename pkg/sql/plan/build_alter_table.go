@@ -423,7 +423,37 @@ func isVarcharLengthModified(ctx context.Context, spec *tree.AlterTableModifyCol
 		oldCol.Typ.Width <= newColType.Width &&
 		strings.EqualFold(oldCol.Name, colName) {
 
-		// Additional check: ensure no other column attributes are being modified
+		// Additional strict check: ensure no other column attributes are being modified
+		// Check if any attributes are specified in the new column definition
+		if len(specNewColumn.Attributes) > 0 {
+			// If any attributes are specified, this is not a simple length modification
+			for _, attr := range specNewColumn.Attributes {
+				switch attr.(type) {
+				case *tree.AttributeNull:
+					// NOT NULL/NULL constraint modification is not allowed
+					return false
+				case *tree.AttributeDefault:
+					// Default value modification is not allowed
+					return false
+				case *tree.AttributeAutoIncrement:
+					// Auto increment modification is not allowed
+					return false
+				case *tree.AttributeComment:
+					// Comment modification is not allowed
+					return false
+				case *tree.AttributePrimaryKey, *tree.AttributeUniqueKey, *tree.AttributeUnique, *tree.AttributeKey:
+					// Key constraint modifications are not allowed
+					return false
+				case *tree.AttributeCollate:
+					// Collation modification is not allowed
+					return false
+				default:
+					// Any other attribute modification is not allowed
+					return false
+				}
+			}
+		}
+
 		// This is a simple varchar length modification
 		return true
 	}

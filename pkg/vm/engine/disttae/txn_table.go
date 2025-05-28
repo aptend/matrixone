@@ -1288,7 +1288,7 @@ func (tbl *txnTable) AlterTable(ctx context.Context, c *engine.ConstraintDef, re
 			case api.AlterKind_RenameTable:
 				tbl.tableName = oldTableName
 			case api.AlterKind_ReplaceDef:
-				// ReplaceDef 的回滚通过恢复 defs 来处理
+				// Rollback for ReplaceDef is handled by restoring defs
 				break
 			}
 		}
@@ -1349,14 +1349,14 @@ func (tbl *txnTable) AlterTable(ctx context.Context, c *engine.ConstraintDef, re
 
 	// update TableDef
 	if hasReplaceDef {
-		// 当存在 ReplaceDef 时，替换整个表定义
+		// When ReplaceDef exists, replace the entire table definition
 		replaceDef := replaceDefReq.GetReplaceDef()
 		defs, _ := engine.PlanDefsToExeDefs(replaceDef.Def)
 		defs = append(defs, engine.PlanColsToExeCols(replaceDef.Def.Cols)...)
 		tbl.defs = defs
 		tbl.tableDef = nil
 
-		// 在替换的定义基础上应用其他修改
+		// Apply other modifications on top of the replaced definition
 		if len(appendDef) > 0 {
 			tbl.defs = append(tbl.defs, appendDef...)
 		}

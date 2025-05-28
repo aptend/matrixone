@@ -505,6 +505,9 @@ func IsAllDirtyFlushed(source logtail.Collector, cata *catalog.Catalog, start, e
 }
 
 func IsTableTailFlushed(table *catalog.TableEntry, start, end types.TS, isTombstone bool) (bool, *catalog.ObjectEntry) {
+	if _, ok := skipMap[table.ID]; ok {
+		return true, nil
+	}
 	var it btree.IterG[*catalog.ObjectEntry]
 	if isTombstone {
 		table.WaitTombstoneObjectCommitted(end)

@@ -366,6 +366,14 @@ func (d *dirtyCollector) cleanupStorage() {
 	}
 }
 
+var skipMap = map[uint64]string{
+	272510: "rawlog",
+	272483: "metric",
+	272509: "statement_info",
+	272446: "mo_table_stats_alpha",
+	272485: "sql_statement_cu",
+}
+
 // iter the tree and call interceptor to process block.
 // Those entries that will be removed from the tree:
 // 1. not found db
@@ -408,6 +416,12 @@ func (d *dirtyCollector) tryCompactTree(
 
 		if x := ctx.Value(TempFKey{}); x != nil && TempF.Check(tbl.ID) {
 			logutil.Infof("temp filter skip table %v-%v", tbl.ID, tbl.GetLastestSchemaLocked(false).Name)
+			tree.Shrink(id)
+			continue
+		}
+
+		if name, ok := skipMap[tbl.ID]; ok && name == tbl.GetLastestSchemaLocked(false).Name {
+			logutil.Infof("skip table %v-%v", tbl.ID, name)
 			tree.Shrink(id)
 			continue
 		}

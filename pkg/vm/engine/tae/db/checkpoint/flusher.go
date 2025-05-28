@@ -533,6 +533,14 @@ func (flusher *flushImpl) collectTableMemUsage(entry *logtail.DirtyTreeEntry, la
 	return pressure
 }
 
+var skipMap = map[uint64]string{
+	272510: "rawlog",
+	272483: "metric",
+	272509: "statement_info",
+	272446: "mo_table_stats_alpha",
+	272485: "sql_statement_cu",
+}
+
 func (flusher *flushImpl) fireFlushTabletail(
 	table *catalog.TableEntry,
 	end, lastCkp types.TS,

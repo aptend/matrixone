@@ -1061,11 +1061,15 @@ func (a *MergeScheduler) doSched(todo *todoItem) {
 
 	// Postprocess tasks: issue new vacuum task or adjust the next due time
 	if supp.bigTaskCnt >= bigDataTaskCntThreshold {
+		vacuumOpts := DefaultVacuumOpts
+		if trigger.vacuum != nil {
+			vacuumOpts = trigger.vacuum
+		}
 		a.ioChan <- &MMsg{
 			Kind: MMsgKindVacuumCheck,
 			Value: MMsgVacuumCheck{
 				Table: todo.table,
-				opts:  trigger.vacuum,
+				opts:  vacuumOpts,
 			},
 		}
 		supp.bigTaskCnt = supp.bigTaskCnt % bigDataTaskCntThreshold

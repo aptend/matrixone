@@ -162,6 +162,8 @@ type SExecutor struct {
 
 	taskId uint64
 
+	logEnabled bool
+
 	// stats
 	dataMergedSize      int64
 	tombstoneMergedSize int64
@@ -172,6 +174,10 @@ func NewSExecutor(c Clock, scatalog *SCatalog) *SExecutor {
 		clock:    c,
 		scatalog: scatalog,
 	}
+}
+
+func (e *SExecutor) SetLogEnabled(enabled bool) {
+	e.logEnabled = enabled
 }
 
 type objsInfo struct {
@@ -266,6 +272,11 @@ func mergeDataLocked(
 	return
 }
 
+type oidCount struct {
+	oid   objectio.ObjectId
+	count int
+}
+
 func mergeTombstoneLocked(
 	stable *STable,
 	task mergeTask,
@@ -275,10 +286,7 @@ func mergeTombstoneLocked(
 	info := sizeInfo(task.objs)
 
 	// target disto is tombstone waiting to be flushed
-	targetDistro := btree.NewBTreeG(func(a, b struct {
-		oid   objectio.ObjectId
-		count int
-	}) bool {
+	targetDistro := btree.NewBTreeG(func(a, b oidCount) bool {
 		return a.oid.Compare(&b.oid) < 0
 	})
 
@@ -287,10 +295,9 @@ func mergeTombstoneLocked(
 		obj := stable.tombstone[stat.ObjectLocation().ObjectId()]
 		for dataid, delcnt := range obj.distro {
 			if _, ok := stable.data[dataid]; ok {
-				targetDistro.Set(struct {
-					oid   objectio.ObjectId
-					count int
-				}{oid: dataid, count: delcnt})
+				v, _ := targetDistro.Get(oidCount{oid: dataid})
+				v.count += delcnt
+				targetDistro.Set(oidCount{oid: dataid, count: v.count})
 			}
 		}
 	}
@@ -384,14 +391,17 @@ func logTask(
 		builder *strings.Builder,
 		objs iter.Seq[*objectio.ObjectStats]) (rows, objCnt int) {
 		pad := " | "
+		strType := false
 		for obj := range objs {
 			rows += int(obj.Rows())
 			objCnt++
+			zm := obj.SortKeyZoneMap()
 			if objCnt > 1 {
 				builder.WriteString(pad)
+			} else {
+				_, strType = zm.GetMin().([]byte)
 			}
-			zm := obj.SortKeyZoneMap()
-			if task.isTombstone {
+			if task.isTombstone || strType {
 				builder.WriteString(fmt.Sprintf("%s(%s)Rows(%v)",
 					obj.ObjectName().ObjectId().ShortStringEx(),
 					units.BytesSize(float64(obj.OriginSize())),
@@ -440,12 +450,16 @@ func (e *SExecutor) ExecuteFor(target catalog.MergeTable, task mergeTask) bool {
 	newObjCount := 0
 	if task.isTombstone {
 		objs := mergeTombstoneLocked(stable, task, e.clock)
-		logTask(e.taskId, task, taskCost, iterSTAsStats(objs))
+		if e.logEnabled {
+			logTask(e.taskId, task, taskCost, iterSTAsStats(objs))
+		}
 		e.tombstoneMergedSize += int64(task.oSize)
 		newObjCount = len(objs)
 	} else {
 		objs := mergeDataLocked(stable, task, e.clock)
-		logTask(e.taskId, task, taskCost, iterSDAsStats(objs))
+		if e.logEnabled {
+			logTask(e.taskId, task, taskCost, iterSDAsStats(objs))
+		}
 		e.dataMergedSize += int64(task.oSize)
 		newObjCount = len(objs)
 	}
@@ -742,8 +756,12 @@ type SimPlayer struct {
 	sched *MergeScheduler
 	srsc  *simRscController
 
-	cancel func()
-	ticker *time.Ticker // std ticker to drive the simulation
+	datai           int
+	datasource      []SData
+	tombstonei      int
+	tombstoneSource []STombstone
+	cancel          func()
+	ticker          *time.Ticker // std ticker to drive the simulation
 }
 
 func (p *SimPlayer) AddData(data SData) {
@@ -777,6 +795,31 @@ func NewSimPlayer() *SimPlayer {
 	}
 }
 
+func (p *SimPlayer) SetEventSource(datasource []SData, tombstoneSource []STombstone) {
+	p.datasource = datasource
+	p.tombstoneSource = tombstoneSource
+	p.datai = 0
+	p.tombstonei = 0
+}
+
+func (p *SimPlayer) fillData() {
+	now := p.sclok.Now().UTC().UnixNano()
+	for p.datai < len(p.datasource) &&
+		p.datasource[p.datai].createTime.Physical() < now {
+		p.AddData(p.datasource[p.datai])
+		p.datai++
+	}
+}
+
+func (p *SimPlayer) fillTombstone() {
+	now := p.sclok.Now().UTC().UnixNano()
+	for p.tombstonei < len(p.tombstoneSource) &&
+		p.tombstoneSource[p.tombstonei].createTime.Physical() < now {
+		p.AddTombstone(p.tombstoneSource[p.tombstonei])
+		p.tombstonei++
+	}
+}
+
 func (p *SimPlayer) runTicker(trueInterval, simInterval time.Duration) func() {
 	ctx, cancel := context.WithCancel(context.Background())
 	ticker := time.NewTicker(trueInterval)
@@ -786,6 +829,8 @@ func (p *SimPlayer) runTicker(trueInterval, simInterval time.Duration) func() {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
+				p.fillData()
+				p.fillTombstone()
 				p.sclok.Advance(simInterval)
 			}
 		}
@@ -799,7 +844,9 @@ func (p *SimPlayer) Start() {
 }
 
 func (p *SimPlayer) ResetPace(trueInterval, simInterval time.Duration) {
-	p.cancel()
+	if p.cancel != nil {
+		p.cancel()
+	}
 	p.cancel = p.runTicker(trueInterval, simInterval)
 }
 
@@ -817,6 +864,7 @@ func (p *SimPlayer) ReportString() string {
 		TombstoneMergedSize: units.BytesSize(float64(p.sexec.tombstoneMergedSize)),
 		DataMergeCount:      supp.totalDataMergeCnt,
 		TombstoneMergeCount: supp.totalTombstoneMergeCnt,
+		DataSourceProgress:  fmt.Sprintf("%d/%d", p.datai, len(p.datasource)),
 	}
 	if p.scata.inputDataSize > 0 {
 		repo.DataWA = float64(p.sexec.dataMergedSize) / float64(p.scata.inputDataSize)
@@ -825,7 +873,58 @@ func (p *SimPlayer) ReportString() string {
 		repo.TombstoneWA = float64(p.sexec.tombstoneMergedSize) / float64(p.scata.inputTombstoneSize)
 	}
 	j, _ := json.MarshalIndent(repo, "", "  ")
-	return string(j)
+
+	b := strings.Builder{}
+	b.WriteString(string(j))
+	b.WriteString("\n")
+
+	{
+		ctx := context.Background()
+		p.sched.pad.Reset()
+
+		p.sched.pad.InitWithTrigger(
+			NewMMsgTaskTrigger(p.scata.hero).
+				WithL0(DefaultLayerZeroOpts).
+				WithTombstone(DefaultTombstoneOpts),
+			supp.lastMergeTime,
+		)
+
+		layerZeroStats := CalculateLayerZeroStats(
+			ctx,
+			p.sched.pad.leveledObjects[0],
+			p.sclok.Since(supp.lastMergeTime),
+			DefaultLayerZeroOpts,
+		)
+		b.WriteString(fmt.Sprintf(
+			"level 0 basic stats  : %s\n",
+			layerZeroStats.String()))
+
+		for i := 1; i < len(p.sched.pad.leveledObjects); i++ {
+			if len(p.sched.pad.leveledObjects[i]) == 0 {
+				b.WriteString(fmt.Sprintf("level %d no data\n", i))
+				continue
+			}
+			overlapStats, _ := CalculateOverlapStats(
+				ctx,
+				p.sched.pad.leveledObjects[i],
+				DefaultOverlapOpts,
+			)
+			b.WriteString(fmt.Sprintf(
+				"level %d overlap stats : %s\n",
+				i,
+				overlapStats.String(),
+			))
+		}
+
+		vacuumStats, _ := CalculateVacuumStats(
+			ctx,
+			p.scata.hero,
+			DefaultVacuumOpts.Clone().WithCheckBigOnly(false),
+		)
+		b.WriteString(fmt.Sprintf("vacuum stats : %s\n", vacuumStats.String()))
+	}
+
+	return b.String()
 }
 
 type MergeReport struct {
@@ -837,6 +936,8 @@ type MergeReport struct {
 	TombstoneWA         float64 `json:"tombstone_wa"`
 	DataMergeCount      int     `json:"data_merge_count"`
 	TombstoneMergeCount int     `json:"tombstone_merge_count"`
+
+	DataSourceProgress string `json:"data_source_progress"`
 }
 
 // endregion: SimPalyer

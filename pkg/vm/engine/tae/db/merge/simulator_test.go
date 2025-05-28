@@ -15,17 +15,24 @@
 package merge
 
 import (
+	"context"
+	"encoding/base64"
+	"encoding/json"
+	"os"
 	"testing"
 	"time"
 
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/timestamp"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
 	"github.com/stretchr/testify/require"
 )
 
-func TestSimulator(t *testing.T) {
+func TestBasicSimulator(t *testing.T) {
 	player := NewSimPlayer()
+	player.sexec.SetLogEnabled(true)
 	player.Start()
 	player.ResetPace(100*time.Millisecond, 120*time.Second)
 	defer player.Stop()
@@ -57,6 +64,33 @@ func TestSimulator(t *testing.T) {
 			distro: map[objectio.ObjectId]int{
 				data[1].stats.ObjectLocation().ObjectId(): 14,
 				data[2].stats.ObjectLocation().ObjectId(): 6,
+			},
+		},
+		{
+			SData: SData{
+				stats: newTestObjectStats(t, 0, 0, 50*K, 40, 0, sid(), 0),
+			},
+			distro: map[objectio.ObjectId]int{
+				data[0].stats.ObjectLocation().ObjectId(): 8,
+				data[3].stats.ObjectLocation().ObjectId(): 2,
+				objectio.NewObjectid():                    20,
+			},
+		},
+		{
+			SData: SData{
+				stats: newTestObjectStats(t, 0, 0, 3*K, 1, 0, sid(), 0),
+			},
+			distro: map[objectio.ObjectId]int{
+				data[0].stats.ObjectLocation().ObjectId(): 1,
+			},
+		},
+
+		{
+			SData: SData{
+				stats: newTestObjectStats(t, 0, 0, 3*K, 1, 0, sid(), 0),
+			},
+			distro: map[objectio.ObjectId]int{
+				data[0].stats.ObjectLocation().ObjectId(): 1,
 			},
 		},
 	}
@@ -110,4 +144,55 @@ func TestUpdateStringTypeZM(t *testing.T) {
 		zmSplit := splitZM(zm, []int{100, 100, 100})
 		require.Equal(t, 0, constantCount(zmSplit))
 	}
+}
+
+func ExtractDataInput(filename string, beginTime time.Time) (sdata []SData, err error) {
+	zoutFilePath := "/root/matrixone/zmtest/statement-info.out"
+	ctx := context.Background()
+
+	content, err := os.ReadFile(zoutFilePath)
+	if err != nil {
+		return nil, moerr.NewInternalErrorf(ctx, "Failed to read file: %v", err)
+	}
+	var data []map[string]any
+	json.Unmarshal(content, &data)
+
+	var line map[string]any
+	baseTs := beginTime.UTC().UnixNano()
+	firstSeqTime := int64(0)
+	for i := range data {
+		json.Unmarshal([]byte(data[i]["line"].(string)), &line)
+		ts, _ := timestamp.ParseTimestamp(line["ts"].(string))
+		if firstSeqTime == 0 {
+			firstSeqTime = ts.PhysicalTime
+		}
+		statsbs, _ := base64.StdEncoding.DecodeString(line["stats"].(string))
+		stat := objectio.ObjectStats(statsbs)
+
+		sdata = append(sdata, SData{
+			stats:      &stat,
+			createTime: types.BuildTS(baseTs+ts.PhysicalTime-firstSeqTime, 0),
+		})
+	}
+	return
+}
+
+func TestSimulatorOnStatementInfo(t *testing.T) {
+	player := NewSimPlayer()
+	player.ResetPace(100*time.Millisecond, 60*time.Second)
+
+	filename := "/root/matrixone/zmtest/statement-info.out"
+	sdata, err := ExtractDataInput(filename, player.sclok.Now())
+	t.Log(sdata[0].createTime.ToTimestamp().ToStdTime(), sdata[len(sdata)-1].createTime.ToTimestamp().ToStdTime())
+	require.NoError(t, err)
+
+	player.SetEventSource(sdata, nil)
+	player.Start()
+	defer player.Stop()
+
+	require.NoError(t, err)
+
+	time.Sleep(5 * time.Second)
+
+	t.Logf("report: %v", player.ReportString())
 }

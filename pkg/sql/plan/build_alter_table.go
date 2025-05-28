@@ -428,10 +428,19 @@ func isVarcharLengthModified(ctx context.Context, spec *tree.AlterTableModifyCol
 		if len(specNewColumn.Attributes) > 0 {
 			// If any attributes are specified, this is not a simple length modification
 			for _, attr := range specNewColumn.Attributes {
-				switch attr.(type) {
+				switch a := attr.(type) {
 				case *tree.AttributeNull:
-					// NOT NULL/NULL constraint modification is not allowed
-					return false
+					// Check if NOT NULL/NULL constraint is consistent with original column
+					// a.Is == true means NULL, a.Is == false means NOT NULL
+					// oldCol.NotNull == true means NOT NULL, oldCol.NotNull == false means NULL
+					oldIsNotNull := oldCol.NotNull
+					newIsNotNull := !a.Is
+
+					if oldIsNotNull != newIsNotNull {
+						// NOT NULL/NULL constraint modification is not allowed
+						return false
+					}
+					// If constraints are consistent, continue checking other attributes
 				case *tree.AttributeDefault:
 					// Default value modification is not allowed
 					return false

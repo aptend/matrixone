@@ -890,23 +890,33 @@ func (r *runner) fireFlushTabletail(table *catalog.TableEntry, tree *model.Table
 		metas = append(metas, object)
 	}
 
-	// freeze all append
-	scopes := make([]common.ID, 0, len(metas))
-	for _, meta := range metas {
-		if !meta.GetObjectData().PrepareCompact() {
-			logutil.Infof("[FlushTabletail] %d-%s / %s false prepareCompact ", table.ID, table.GetLastestSchemaLocked().Name, meta.ID.String())
-			return moerr.GetOkExpectedEOB()
+nextChunk:
+	for i := 0; i < len(metas); i += 400 {
+		// Clamp the last chunk to the slice bound as necessary.
+		end := min(400, len(metas[i:]))
+
+		// Set the capacity of each chunk so that appending to a chunk does
+		// not modify the original slice.
+		chunk := metas[i : i+end : i+end]
+
+		// freeze all append
+		scopes := make([]common.ID, 0, len(chunk))
+		for _, meta := range chunk {
+			if !meta.GetObjectData().PrepareCompact() {
+				logutil.Infof("[FlushTabletail] %d-%s / %s false prepareCompact ", table.ID, table.GetLastestSchemaLocked().Name, meta.ID.String())
+				break nextChunk
+			}
+			scopes = append(scopes, *meta.AsCommonID())
 		}
-		scopes = append(scopes, *meta.AsCommonID())
+
+		factory := jobs.FlushTableTailTaskFactory(chunk, r.rt, endTs)
+		if _, err := r.rt.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, scopes, factory); err != nil {
+			if err != tasks.ErrScheduleScopeConflict {
+				logutil.Infof("[FlushTabletail] %d-%s %v", table.ID, table.GetLastestSchemaLocked().Name, err)
+			}
+		}
 	}
 
-	factory := jobs.FlushTableTailTaskFactory(metas, r.rt, endTs)
-	if _, err := r.rt.Scheduler.ScheduleMultiScopedTxnTask(nil, tasks.DataCompactionTask, scopes, factory); err != nil {
-		if err != tasks.ErrScheduleScopeConflict {
-			logutil.Infof("[FlushTabletail] %d-%s %v", table.ID, table.GetLastestSchemaLocked().Name, err)
-		}
-		return moerr.GetOkExpectedEOB()
-	}
 	return nil
 }
 

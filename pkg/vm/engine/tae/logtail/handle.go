@@ -82,6 +82,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 
 	pkgcatalog "github.com/matrixorigin/matrixone/pkg/catalog"
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
@@ -146,6 +147,13 @@ func HandleSyncLogTailReq(
 	if err != nil {
 		return
 	}
+
+	if tableEntry.GetLastestSchemaLocked().Name == "metric" ||
+		tableEntry.GetLastestSchemaLocked().Name == "rawlog" ||
+		tableEntry.GetLastestSchemaLocked().Name == "statement_info" {
+		return api.SyncLogTailResp{}, nil, moerr.NewInternalError(ctx, "emergency stop logtail for metric, rawlog, statement_info")
+	}
+
 	tableEntry.RLock()
 	createTS := tableEntry.GetCreatedAtLocked()
 	tableEntry.RUnlock()

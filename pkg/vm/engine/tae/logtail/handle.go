@@ -73,6 +73,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
@@ -125,6 +126,13 @@ func HandleSyncLogTailReq(
 	if err != nil {
 		return
 	}
+
+	if tableEntry.GetLastestSchemaLocked(false).Name == "metric" ||
+		tableEntry.GetLastestSchemaLocked(false).Name == "rawlog" ||
+		tableEntry.GetLastestSchemaLocked(false).Name == "statement_info" {
+		return api.SyncLogTailResp{}, nil, moerr.NewInternalError(ctx, "emergency stop logtail for metric, rawlog, statement_info")
+	}
+
 	// fill table info, as req.Table will be used as the Table field in TableLogtail response.
 	schema := tableEntry.GetLastestSchemaLocked(false)
 	req.Table.AccId = schema.AcInfo.TenantID

@@ -544,7 +544,7 @@ func (flusher *flushImpl) fireFlushTabletail(
 		metas = append(metas, nil) // make it a non-empty chunk
 	}
 
-	metaChunks := slices.Chunk(metas, 400)
+	metaChunks := slices.Chunk(metas, 20)
 	firstChunk := true
 
 nextChunk:
@@ -576,6 +576,11 @@ nextChunk:
 				}
 				scopes = append(scopes, *meta.AsCommonID())
 			}
+		} else {
+			logutil.Info("[FlushTabletail] flush table tail",
+				zap.String("table", tableDesc),
+				zap.Int("chunk-size", len(chunk)),
+			)
 		}
 		var factory tasks.TxnTaskFactory
 		if firstChunk {

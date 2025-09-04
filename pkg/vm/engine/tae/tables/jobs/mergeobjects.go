@@ -432,7 +432,8 @@ func (task *mergeObjectsTask) Execute(ctx context.Context) (err error) {
 	if task.schema.HasSortKey() {
 		sortkeyPos = task.schema.GetSingleSortKeyIdx()
 	}
-	if task.rt.LockMergeService.IsLockedByUser(task.tid, task.schema.Name) {
+	startTS := task.txn.GetStartTS()
+	if task.rt.LockMergeService.HasBigDelAfter(task.tid, &startTS) {
 		return moerr.NewInternalErrorNoCtxf("LockMerge give up in exec %v", task.Name())
 	}
 	phaseDesc = "1-DoMergeAndWrite"

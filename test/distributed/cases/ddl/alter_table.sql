@@ -46,7 +46,6 @@ insert into t1 values(6, '1981-05-01','green', 26);
 
 ALTER TABLE t1 ADD UNIQUE idx1 (col2, col3);
 insert into t1 values(7, '1981-05-01','green', 26);
-| @regex(pattern=r"");
 show index from t1;
 select * from t1;
 alter table t1 alter index idx1 invisible;

@@ -1,748 +1,1849 @@
+#SQL[@5,N28]Result[]
 drop database if exists test;
+
+#SQL[@6,N20]Result[]
 create database test;
+
+#SQL[@7,N8]Result[]
 use test;
+
+#SQL[@11,N24]Result[]
 drop table if exists s3t;
+
+#SQL[@12,N57]Result[]
 create table s3t (a int, b int, c int, primary key(a, b));
+
+#SQL[@13,N72]Result[]
 insert into s3t select result, 2, 12 from generate_series(1, 30000, 1) g;
+
+#SQL[@15,N40]Result[]
 alter table s3t add column d int after b;
+
+#SQL[@17,N42]Result[]
 insert into s3t values (300001, 34, 23, 1);
+
+#SQL[@18,N24]Result[8, 5]
 select count(*) from s3t;
 count(*)
 30001
+
+#SQL[@19,N30]Result[22, 29]
 select * from s3t where d = 23;
-a    b    d    c
-300001    34    23    1
+a  ¦  b  ¦  d  ¦  c
+300001  ¦  34  ¦  23  ¦  1
+
+#SQL[@21,N29]Result[]
 alter table s3t drop column c;
+
+#SQL[@23,N76]Result[]
 insert into s3t select result, 2, 12 from generate_series(30002, 60000, 1) g;
+
+#SQL[@24,N24]Result[8, 5]
 select count(d) from s3t;
 count(d)
 30000
+
+#SQL[@25,N37]Result[8, 1]
 select count(d) from s3t where d > 13;
 count(d)
 1
+
+#SQL[@29,N26]Result[]
 drop table if exists add01;
+
+#SQL[@30,N281]Result[]
 create table add01 (
-col1 int not null auto_increment primary key,
-col2 varchar(30) not null,
-col3 varchar (20) not null,
-col4 varchar(4) not null,
-col5 int not null);
+                       col1 int not null auto_increment primary key,
+                       col2 varchar(30) not null,
+                       col3 varchar (20) not null,
+                       col4 varchar(4) not null,
+                       col5 int not null);
+
+#SQL[@36,N58]Result[]
 insert into add01 values(1,'数据库','shujuku','abcd',1);
+
+#SQL[@37,N57]Result[]
 insert into add01 values(2,'database','云原生','tb',2);
+
+#SQL[@38,N19]Result[44, 46, 45]
 select * from add01;
-col1    col2    col3    col4    col5
-1    数据库    shujuku    abcd    1
-2    database    云原生    tb    2
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+1  ¦  数据库  ¦  shujuku  ¦  abcd  ¦  1
+2  ¦  database  ¦  云原生  ¦  tb  ¦  2
+
+#SQL[@39,N58]Result[]
 alter table add01 add column col2_3 varchar(20) after col2;
+
+#SQL[@40,N65]Result[]
 alter table add01 add column col7 varchar(30) not null after col5;
+
+#SQL[@41,N46]Result[]
 alter table add01 add column col8 int not null;
+
+#SQL[@42,N52]Result[]
 alter table add01 add column col9 int not null first;
+
+#SQL[@43,N23]Result[23, 325]
 show create table add01;
-Table    Create Table
-add01    CREATE TABLE `add01` (\n  `col9` int NOT NULL,\n  `col1` int NOT NULL AUTO_INCREMENT,\n  `col2` varchar(30) NOT NULL,\n  `col2_3` varchar(20) DEFAULT NULL,\n  `col3` varchar(20) NOT NULL,\n  `col4` varchar(4) NOT NULL,\n  `col5` int NOT NULL,\n  `col7` varchar(30) NOT NULL,\n  `col8` int NOT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+add01  ¦  CREATE TABLE `add01` (
+  `col9` int NOT NULL,
+  `col1` int NOT NULL AUTO_INCREMENT,
+  `col2` varchar(30) NOT NULL,
+  `col2_3` varchar(20) DEFAULT NULL,
+  `col3` varchar(20) NOT NULL,
+  `col4` varchar(4) NOT NULL,
+  `col5` int NOT NULL,
+  `col7` varchar(30) NOT NULL,
+  `col8` int NOT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@44,N67]Result[]
 insert into add01 values(1,3,'nihao','hei','hu','jj',2,'varchar',1);
+
+#SQL[@46,N66]Error[34]
 insert into add01 values(2,3,'nihao',null,'hu','jj',2,'varchar',1);
 Duplicate entry '3' for key 'col1'
+
+#SQL[@47,N69]Error[50]
 insert into add01 values(3,4,'nihao','hi','hu','jj',2,'varchar',null);
 constraint violation: Column 'col8' cannot be null
+
+#SQL[@49,N23]Result[23, 325]
 show create table add01;
-Table    Create Table
-add01    CREATE TABLE `add01` (\n  `col9` int NOT NULL,\n  `col1` int NOT NULL AUTO_INCREMENT,\n  `col2` varchar(30) NOT NULL,\n  `col2_3` varchar(20) DEFAULT NULL,\n  `col3` varchar(20) NOT NULL,\n  `col4` varchar(4) NOT NULL,\n  `col5` int NOT NULL,\n  `col7` varchar(30) NOT NULL,\n  `col8` int NOT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+add01  ¦  CREATE TABLE `add01` (
+  `col9` int NOT NULL,
+  `col1` int NOT NULL AUTO_INCREMENT,
+  `col2` varchar(30) NOT NULL,
+  `col2_3` varchar(20) DEFAULT NULL,
+  `col3` varchar(20) NOT NULL,
+  `col4` varchar(4) NOT NULL,
+  `col5` int NOT NULL,
+  `col7` varchar(30) NOT NULL,
+  `col8` int NOT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@50,N19]Result[86, 76, 75, 71]
 select * from add01;
-col9    col1    col2    col2_3    col3    col4    col5    col7    col8
-0    1    数据库    null    shujuku    abcd    1        0
-0    2    database    null    云原生    tb    2        0
-1    3    nihao    hei    hu    jj    2    varchar    1
+col9  ¦  col1  ¦  col2  ¦  col2_3  ¦  col3  ¦  col4  ¦  col5  ¦  col7  ¦  col8
+0  ¦  1  ¦  数据库  ¦  null  ¦  shujuku  ¦  abcd  ¦  1  ¦    ¦  0
+0  ¦  2  ¦  database  ¦  null  ¦  云原生  ¦  tb  ¦  2  ¦    ¦  0
+1  ¦  3  ¦  nihao  ¦  hei  ¦  hu  ¦  jj  ¦  2  ¦  varchar  ¦  1
+
+#SQL[@51,N16]Result[]
 drop table add01;
+
+#SQL[@54,N26]Result[]
 drop table if exists add02;
+
+#SQL[@55,N40]Result[]
 create table add02(col1 int,col2 binary);
+
+#SQL[@56,N31]Result[]
 insert into add02 values(1,'f');
+
+#SQL[@57,N31]Result[]
 insert into add02 values(2,'4');
+
+#SQL[@58,N54]Error[50]
 alter table add02 add column col3 datetime primary key;
 constraint violation: Column 'col3' cannot be null
+
+#SQL[@59,N23]Result[23, 94]
 show create table add02;
-Table    Create Table
-add02    CREATE TABLE `add02` (\n  `col1` int DEFAULT NULL,\n  `col2` binary(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+add02  ¦  CREATE TABLE `add02` (
+  `col1` int DEFAULT NULL,
+  `col2` binary(1) DEFAULT NULL
+)
+
+#SQL[@60,N16]Result[]
 drop table add02;
+
+#SQL[@63,N26]Result[]
 drop table if exists add03;
+
+#SQL[@64,N42]Result[]
 create table add03(col1 double,col2 float);
+
+#SQL[@65,N45]Result[]
 insert into add03 values(21321.3213,239243.0);
+
+#SQL[@66,N43]Result[]
 alter table add03 add column colf int first;
+
+#SQL[@67,N23]Result[23, 120]
 show create table add03;
-Table    Create Table
-add03    CREATE TABLE `add03` (\n  `colf` int DEFAULT NULL,\n  `col1` double DEFAULT NULL,\n  `col2` float DEFAULT NULL\n)
+Table  ¦  Create Table
+add03  ¦  CREATE TABLE `add03` (
+  `colf` int DEFAULT NULL,
+  `col1` double DEFAULT NULL,
+  `col2` float DEFAULT NULL
+)
+
+#SQL[@68,N40]Result[]
 alter table add03 add column cola binary;
+
+#SQL[@69,N23]Result[23, 153]
 show create table add03;
-Table    Create Table
-add03    CREATE TABLE `add03` (\n  `colf` int DEFAULT NULL,\n  `col1` double DEFAULT NULL,\n  `col2` float DEFAULT NULL,\n  `cola` binary(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+add03  ¦  CREATE TABLE `add03` (
+  `colf` int DEFAULT NULL,
+  `col1` double DEFAULT NULL,
+  `col2` float DEFAULT NULL,
+  `cola` binary(1) DEFAULT NULL
+)
+
+#SQL[@70,N58]Result[]
 alter table add03 add column colm varbinary(10) after col1;
+
+#SQL[@71,N23]Result[23, 190]
 show create table add03;
-Table    Create Table
-add03    CREATE TABLE `add03` (\n  `colf` int DEFAULT NULL,\n  `col1` double DEFAULT NULL,\n  `colm` varbinary(10) DEFAULT NULL,\n  `col2` float DEFAULT NULL,\n  `cola` binary(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+add03  ¦  CREATE TABLE `add03` (
+  `colf` int DEFAULT NULL,
+  `col1` double DEFAULT NULL,
+  `colm` varbinary(10) DEFAULT NULL,
+  `col2` float DEFAULT NULL,
+  `cola` binary(1) DEFAULT NULL
+)
+
+#SQL[@72,N34]Result[]
 alter table add03 drop column colm;
+
+#SQL[@73,N23]Result[23, 153]
 show create table add03;
-Table    Create Table
-add03    CREATE TABLE `add03` (\n  `colf` int DEFAULT NULL,\n  `col1` double DEFAULT NULL,\n  `col2` float DEFAULT NULL,\n  `cola` binary(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+add03  ¦  CREATE TABLE `add03` (
+  `colf` int DEFAULT NULL,
+  `col1` double DEFAULT NULL,
+  `col2` float DEFAULT NULL,
+  `cola` binary(1) DEFAULT NULL
+)
+
+#SQL[@74,N16]Result[]
 drop table add03;
+
+#SQL[@77,N26]Result[]
 drop table if exists add02;
+
+#SQL[@78,N26]Result[]
 create table add02(f1 int);
+
+#SQL[@79,N79]Result[]
 alter table add02 add column f2 datetime not null, add column f21 date not null;
+
+#SQL[@80,N23]Result[23, 108]
 show create table add02;
-Table    Create Table
-add02    CREATE TABLE `add02` (\n  `f1` int DEFAULT NULL,\n  `f2` datetime NOT NULL,\n  `f21` date NOT NULL\n)
+Table  ¦  Create Table
+add02  ¦  CREATE TABLE `add02` (
+  `f1` int DEFAULT NULL,
+  `f2` datetime NOT NULL,
+  `f21` date NOT NULL
+)
+
+#SQL[@81,N53]Result[]
 insert into add02 values(1,'2000-01-01','2000-01-01');
+
+#SQL[@82,N44]Result[]
 alter table add02 add column f3 int not null;
+
+#SQL[@83,N23]Result[23, 129]
 show create table add02;
-Table    Create Table
-add02    CREATE TABLE `add02` (\n  `f1` int DEFAULT NULL,\n  `f2` datetime NOT NULL,\n  `f21` date NOT NULL,\n  `f3` int NOT NULL\n)
+Table  ¦  Create Table
+add02  ¦  CREATE TABLE `add02` (
+  `f1` int DEFAULT NULL,
+  `f2` datetime NOT NULL,
+  `f21` date NOT NULL,
+  `f3` int NOT NULL
+)
+
+#SQL[@86,N45]Error[26]
 alter table add02 add column f3 date not null;
 Duplicate column name 'f3'
+
+#SQL[@87,N120]Result[]
 alter table add02 add column f4 datetime not null default '2002-02-02',add column f41 date not null default '2002-02-02';
+
+#SQL[@88,N100]Result[]
 insert into add02 values(1,'2000-12-12 22:22:22','1997-01-13',13,'1997-12-12 11:11:11','2001-11-12');
+
+#SQL[@89,N19]Result[44, 90, 91]
 select * from add02;
-f1    f2    f21    f3    f4    f41
-1    2000-01-01 00:00:00    2000-01-01    0    2002-02-02 00:00:00    2002-02-02
-1    2000-12-12 22:22:22    1997-01-13    13    1997-12-12 11:11:11    2001-11-12
+f1  ¦  f2  ¦  f21  ¦  f3  ¦  f4  ¦  f41
+1  ¦  2000-01-01 00:00:00  ¦  2000-01-01  ¦  0  ¦  2002-02-02 00:00:00  ¦  2002-02-02
+1  ¦  2000-12-12 22:22:22  ¦  1997-01-13  ¦  13  ¦  1997-12-12 11:11:11  ¦  2001-11-12
+
+#SQL[@90,N16]Result[]
 drop table add02;
+
+#SQL[@92,N23]Result[]
 drop table if exists t1;
+
+#SQL[@93,N59]Result[]
 create table t1 (i int unsigned auto_increment primary key);
+
+#SQL[@94,N49]Result[]
 insert into t1 values (null),(null),(null),(null);
+
+#SQL[@95,N42]Error[25]
 alter table t1 add i int unsigned not null;
 Duplicate column name 'i'
+
+#SQL[@96,N16]Result[1, 1, 1, 1, 1]
 select * from t1;
 i
 1
 2
 3
 4
+
+#SQL[@97,N13]Result[]
 drop table t1;
+
+#SQL[@101,N27]Result[]
 drop table if exists drop01;
+
+#SQL[@102,N43]Result[]
 create table drop01 (a TEXT, id INT, b INT);
+
+#SQL[@103,N41]Result[]
 insert into drop01 values('ahsekafe',1,2);
+
+#SQL[@104,N43]Result[]
 insert into drop01 values('efuiwojq',23,23);
+
+#SQL[@105,N24]Result[23, 110]
 show create table drop01;
-Table    Create Table
-drop01    CREATE TABLE `drop01` (\n  `a` text DEFAULT NULL,\n  `id` int DEFAULT NULL,\n  `b` int DEFAULT NULL\n)
+Table  ¦  Create Table
+drop01  ¦  CREATE TABLE `drop01` (
+  `a` text DEFAULT NULL,
+  `id` int DEFAULT NULL,
+  `b` int DEFAULT NULL
+)
+
+#SQL[@106,N57]Result[]
 alter table drop01 drop column a, add column c text first;
+
+#SQL[@107,N20]Result[16, 18, 20]
 select * from drop01;
-c    id    b
-null    1    2
-null    23    23
+c  ¦  id  ¦  b
+null  ¦  1  ¦  2
+null  ¦  23  ¦  23
+
+#SQL[@108,N24]Result[23, 110]
 show create table drop01;
-Table    Create Table
-drop01    CREATE TABLE `drop01` (\n  `c` text DEFAULT NULL,\n  `id` int DEFAULT NULL,\n  `b` int DEFAULT NULL\n)
+Table  ¦  Create Table
+drop01  ¦  CREATE TABLE `drop01` (
+  `c` text DEFAULT NULL,
+  `id` int DEFAULT NULL,
+  `b` int DEFAULT NULL
+)
+
+#SQL[@109,N17]Result[]
 drop table drop01;
+
+#SQL[@112,N27]Result[]
 drop table if exists drop01;
+
+#SQL[@113,N29]Result[]
 create table drop01(col1 int);
+
+#SQL[@114,N28]Result[]
 insert into drop01 values(1);
+
+#SQL[@115,N28]Result[]
 insert into drop01 values(2);
+
+#SQL[@116,N35]Error[35]
 alter table drop01 drop column col1;
 A table must have at least 1 column
+
+#SQL[@117,N17]Result[]
 drop table drop01;
+
+#SQL[@120,N27]Result[]
 drop table if exists drop02;
+
+#SQL[@121,N29]Result[]
 create table drop02(col1 int);
+
+#SQL[@122,N28]Result[]
 insert into drop02 values(1);
+
+#SQL[@123,N28]Result[]
 insert into drop02 values(2);
+
+#SQL[@124,N49]Result[]
 alter table drop02 add column col2 decimal(20,10);
+
+#SQL[@125,N39]Result[]
 alter table drop02 add column col3 char;
+
+#SQL[@126,N47]Result[]
 alter table drop02 add column col4 int unsigned;
+
+#SQL[@127,N20]Result[34, 31, 31]
 select * from drop02;
-col1    col2    col3    col4
-1    null    null    null
-2    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  null  ¦  null  ¦  null
+2  ¦  null  ¦  null  ¦  null
+
+#SQL[@128,N35]Result[]
 alter table drop02 drop column col2;
+
+#SQL[@129,N35]Result[]
 alter table drop02 drop column col3;
+
+#SQL[@130,N35]Result[]
 alter table drop02 drop column col4;
+
+#SQL[@131,N35]Error[35]
 alter table drop02 drop column col1;
 A table must have at least 1 column
+
+#SQL[@132,N17]Result[]
 drop table drop02;
+
+#SQL[@135,N31]Result[]
 drop table if exists truncate01;
+
+#SQL[@136,N46]Result[]
 create table truncate01(col1 int,col2 decimal);
+
+#SQL[@137,N40]Result[]
 insert into truncate01 values(1,8934245);
+
+#SQL[@138,N38]Result[]
 insert into truncate01 values(2,-1924);
+
+#SQL[@139,N41]Result[]
 insert into truncate01 values(3,18294234);
+
+#SQL[@140,N19]Result[]
 truncate truncate01;
+
+#SQL[@141,N28]Result[23, 108]
 show create table truncate01;
-Table    Create Table
-truncate01    CREATE TABLE `truncate01` (\n  `col1` int DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+truncate01  ¦  CREATE TABLE `truncate01` (
+  `col1` int DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@142,N24]Result[]
 select * from truncate01;
-col1    col2
+
+#SQL[@143,N63]Result[]
 alter table truncate01 add column col3 int unsigned after col1 ;
+
+#SQL[@144,N51]Result[]
 alter table truncate01 add column colF binary first;
+
+#SQL[@145,N28]Result[23, 177]
 show create table truncate01;
-Table    Create Table
-truncate01    CREATE TABLE `truncate01` (\n  `colF` binary(1) DEFAULT NULL,\n  `col1` int DEFAULT NULL,\n  `col3` int unsigned DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+truncate01  ¦  CREATE TABLE `truncate01` (
+  `colF` binary(1) DEFAULT NULL,
+  `col1` int DEFAULT NULL,
+  `col3` int unsigned DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@146,N39]Result[]
 alter table truncate01 drop column col3;
+
+#SQL[@147,N39]Result[]
 alter table truncate01 drop column col1;
+
+#SQL[@148,N28]Result[23, 114]
 show create table truncate01;
-Table    Create Table
-truncate01    CREATE TABLE `truncate01` (\n  `colF` binary(1) DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+truncate01  ¦  CREATE TABLE `truncate01` (
+  `colF` binary(1) DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@149,N21]Result[]
 drop table truncate01;
+
+#SQL[@152,N23]Result[]
 drop table if exists T1;
+
+#SQL[@153,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@154,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@155,N34]Result[]
 insert into t1 values(2,"Bob", 25);
+
+#SQL[@156,N36]Result[]
 insert into t1 values(3,"Carol", 23);
+
+#SQL[@157,N35]Result[]
 insert into t1 values(4,"Dora", 29);
+
+#SQL[@158,N35]Result[]
 create unique index Idx on t1(name);
+
+#SQL[@159,N29]Result[]
 alter table t1 drop column id;
+
+#SQL[@160,N16]Result[13, 12, 11, 13, 12]
 select * from t1;
-name    age
-Abby    24
-Bob    25
-Carol    23
-Dora    29
+name  ¦  age
+Abby  ¦  24
+Bob  ¦  25
+Carol  ¦  23
+Dora  ¦  29
+
+#SQL[@161,N20]Result[23, 119]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  UNIQUE KEY `idx` (`name`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  UNIQUE KEY `idx` (`name`)
+)
+
+#SQL[@162,N13]Result[]
 drop table t1;
+
+#SQL[@165,N28]Result[]
 drop table if exists index01;
+
+#SQL[@166,N62]Result[]
 create table index01(id int,name varchar(20),unique index(id));
+
+#SQL[@167,N38]Result[]
 insert into index01 values(1,'323414');
+
+#SQL[@168,N34]Result[]
 alter table index01 drop column id;
+
+#SQL[@169,N25]Result[23, 73]
 show create table index01;
-Table    Create Table
-index01    CREATE TABLE `index01` (\n  `name` varchar(20) DEFAULT NULL\n)
+Table  ¦  Create Table
+index01  ¦  CREATE TABLE `index01` (
+  `name` varchar(20) DEFAULT NULL
+)
+
+#SQL[@170,N18]Result[]
 drop table index01;
+
+#SQL[@172,N28]Result[]
 drop table if exists index02;
+
+#SQL[@173,N79]Result[]
 create table index02(col1 int,col2 varchar(20),col3 char(20), index(col1,col2));
+
+#SQL[@174,N36]Result[]
 alter table index02 drop column col1;
+
+#SQL[@175,N36]Result[]
 alter table index02 drop column col2;
+
+#SQL[@176,N25]Result[23, 70]
 show create table index02;
-Table    Create Table
-index02    CREATE TABLE `index02` (\n  `col3` char(20) DEFAULT NULL\n)
+Table  ¦  Create Table
+index02  ¦  CREATE TABLE `index02` (
+  `col3` char(20) DEFAULT NULL
+)
+
+#SQL[@177,N18]Result[]
 drop table index02;
+
+#SQL[@179,N28]Result[]
 drop table if exists index03;
+
+#SQL[@180,N73]Result[]
 create table index03(col1 int,col2 binary(10),col3 text,unique key(col2));
+
+#SQL[@181,N36]Result[]
 alter table index03 drop column col2;
+
+#SQL[@182,N25]Result[23, 93]
 show create table index03;
-Table    Create Table
-index03    CREATE TABLE `index03` (\n  `col1` int DEFAULT NULL,\n  `col3` text DEFAULT NULL\n)
+Table  ¦  Create Table
+index03  ¦  CREATE TABLE `index03` (
+  `col1` int DEFAULT NULL,
+  `col3` text DEFAULT NULL
+)
+
+#SQL[@183,N18]Result[]
 drop table index03;
+
+#SQL[@186,N30]Result[]
 drop table if exists cluster01;
+
+#SQL[@187,N69]Result[]
 create table cluster01(a int, b int, c varchar(10)) cluster by(a,b,c);
+
+#SQL[@188,N41]Result[]
 alter table cluster01 add column col1 int;
+
+#SQL[@189,N35]Result[]
 alter table cluster01 drop column c;
+
+#SQL[@190,N35]Result[]
 alter table cluster01 drop column a;
+
+#SQL[@191,N35]Result[]
 alter table cluster01 drop column b;
+
+#SQL[@192,N20]Result[]
 drop table cluster01;
+
+#SQL[@195,N30]Result[]
 drop table if exists foreign01;
+
+#SQL[@196,N154]Result[]
 create table foreign01(col1 int primary key,
-col2 varchar(20),
-col3 int,
-col4 bigint);
+                       col2 varchar(20),
+                       col3 int,
+                       col4 bigint);
+
+#SQL[@200,N30]Result[]
 drop table if exists foreign02;
+
+#SQL[@201,N195]Result[]
 create table foreign02(col1 int,
-col2 int,
-col3 int primary key,
-constraint `c1` foreign key(col1) references foreign01(col1));
+                       col2 int,
+                       col3 int primary key,
+                       constraint `c1` foreign key(col1) references foreign01(col1));
+
+#SQL[@205,N27]Result[23, 181]
 show create table foreign01;
-Table    Create Table
-foreign01    CREATE TABLE `foreign01` (\n  `col1` int NOT NULL,\n  `col2` varchar(20) DEFAULT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+foreign01  ¦  CREATE TABLE `foreign01` (
+  `col1` int NOT NULL,
+  `col2` varchar(20) DEFAULT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@206,N27]Result[23, 253]
 show create table foreign02;
-Table    Create Table
-foreign02    CREATE TABLE `foreign02` (\n  `col1` int DEFAULT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` int NOT NULL,\n  PRIMARY KEY (`col3`),\n  CONSTRAINT `c1` FOREIGN KEY (`col1`) REFERENCES `foreign01` (`col1`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+foreign02  ¦  CREATE TABLE `foreign02` (
+  `col1` int DEFAULT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` int NOT NULL,
+  PRIMARY KEY (`col3`),
+  CONSTRAINT `c1` FOREIGN KEY (`col1`) REFERENCES `foreign01` (`col1`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@207,N44]Result[]
 insert into foreign01 values(1,'sfhuwe',1,1);
+
+#SQL[@208,N49]Result[]
 insert into foreign01 values(2,'37829901k3d',2,2);
+
+#SQL[@209,N35]Result[]
 insert into foreign02 values(1,1,1);
+
+#SQL[@210,N35]Result[]
 insert into foreign02 values(2,2,2);
+
+#SQL[@211,N23]Result[34, 27, 32]
 select * from foreign01;
-col1    col2    col3    col4
-1    sfhuwe    1    1
-2    37829901k3d    2    2
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  sfhuwe  ¦  1  ¦  1
+2  ¦  37829901k3d  ¦  2  ¦  2
+
+#SQL[@212,N23]Result[24, 15, 15]
 select * from foreign02;
-col1    col2    col3
-1    1    1
-2    2    2
+col1  ¦  col2  ¦  col3
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+
+#SQL[@213,N38]Result[]
 alter table foreign01 drop column col2;
+
+#SQL[@214,N38]Result[]
 alter table foreign02 drop column col2;
+
+#SQL[@215,N47]Error[28]
 alter table foreign01 add column col4 int first;
 Duplicate column name 'col4'
+
+#SQL[@216,N41]Result[]
 alter table foreign02 add column col4 int;
+
+#SQL[@217,N23]Result[24, 15, 15]
 select * from foreign01;
-col1    col3    col4
-1    1    1
-2    2    2
+col1  ¦  col3  ¦  col4
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+
+#SQL[@218,N23]Result[24, 18, 18]
 select * from foreign02;
-col1    col3    col4
-1    1    null
-2    2    null
+col1  ¦  col3  ¦  col4
+1  ¦  1  ¦  null
+2  ¦  2  ¦  null
+
+#SQL[@219,N20]Result[]
 drop table foreign02;
+
+#SQL[@220,N20]Result[]
 drop table foreign01;
+
+#SQL[@224,N27]Result[]
 drop table if exists test01;
+
+#SQL[@225,N39]Result[]
 create table test01(col1 int,col2 char);
+
+#SQL[@226,N32]Result[]
 insert into test01 values(1,'a');
+
+#SQL[@227,N32]Result[]
 insert into test01 values(2,'c');
+
+#SQL[@228,N45]Result[]
 alter table test01 add column col3 text first;
+
+#SQL[@229,N52]Result[]
 alter table test01 add column col4 binary after col2;
+
+#SQL[@230,N35]Result[]
 alter table test01 drop column col1;
+
+#SQL[@231,N24]Result[23, 128]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col3` text DEFAULT NULL,\n  `col2` char(1) DEFAULT NULL,\n  `col4` binary(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col3` text DEFAULT NULL,
+  `col2` char(1) DEFAULT NULL,
+  `col4` binary(1) DEFAULT NULL
+)
+
+#SQL[@232,N20]Result[24, 21, 21]
 select * from test01;
-col3    col2    col4
-null    a    null
-null    c    null
+col3  ¦  col2  ¦  col4
+null  ¦  a  ¦  null
+null  ¦  c  ¦  null
+
+#SQL[@233,N17]Result[]
 drop table test01;
-drop table if exists tp5;
-create table tp5 (col1 INT, col2 CHAR(5), col3 DATE) partition by LINEAR key ALGORITHM = 1 (col3) PARTITIONS 5;
-show create table tp5;
-Table    Create Table
-tp5    CREATE TABLE `tp5` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by linear key algorithm = 1 (col3) partitions 5
-alter table tp5 drop column col1;
-invalid input: can't add/drop column for partition table now
-alter table tp5 add column col4 int;
-invalid input: can't add/drop column for partition table now
-drop table tp5;
+
+#SQL[@246,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@247,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@248,N19]Result[]
 create role role_r1;
+
+#SQL[@249,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@250,N37]Error[205]
 drop table if exists test01(col1 int);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 28 near "(col1 int);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 28 near \"(col1 int)\";
+
+#SQL[@251,N28]Error[25]
 insert into test01 values(1);
 no such table test.test01
+
+#SQL[@252,N28]Error[25]
 insert into test01 values(2);
 no such table test.test01
+
+#SQL[@253,N45]Result[]
 grant create database on account * to role_r1;
+
+#SQL[@254,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@255,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@256,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@257,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@259,N8]Result[]
 use test;
+
+#SQL[@260,N44]Error[62]
 alter table test01 add column col0 int first;
 internal error: do not have privilege to execute the statement
+
+#SQL[@262,N42]Result[]
 grant alter table on database * to role_r1;
+
+#SQL[@264,N8]Result[]
 use test;
+
+#SQL[@265,N44]Error[25]
 alter table test01 add column col0 int first;
 no such table test.test01
+
+#SQL[@266,N58]Error[25]
 alter table test01 add column col3 int unsigned after col1;
 no such table test.test01
+
+#SQL[@267,N24]Error[25]
 show create table test01;
 no such table test.test01
+
+#SQL[@268,N35]Error[25]
 alter table test01 drop column col3;
 no such table test.test01
+
+#SQL[@269,N35]Error[25]
 alter table test01 drop column col1;
 no such table test.test01
+
+#SQL[@271,N21]Result[]
 create table t(a int);
+
+#SQL[@272,N17]Error[25]
 drop table test01;
 no such table test.test01
+
+#SQL[@273,N17]Result[]
 drop role role_r1;
+
+#SQL[@274,N17]Result[]
 drop user role_u1;
+
+#SQL[@277,N34]Result[]
 drop table if exists transaction01;
+
+#SQL[@278,N52]Result[]
 create table transaction01 (c int primary key,d int);
+
+#SQL[@279,N5]Result[]
 begin;
+
+#SQL[@280,N37]Result[]
 insert into transaction01 values(1,1);
+
+#SQL[@281,N37]Result[]
 insert into transaction01 values(2,2);
+
+#SQL[@282,N51]Result[]
 alter table transaction01 add column colf int first;
+
+#SQL[@283,N8]Result[]
 rollback;
+
+#SQL[@284,N31]Result[23, 115]
 show create table transaction01;
-Table    Create Table
-transaction01    CREATE TABLE `transaction01` (\n  `c` int NOT NULL,\n  `d` int DEFAULT NULL,\n  PRIMARY KEY (`c`)\n)
+Table  ¦  Create Table
+transaction01  ¦  CREATE TABLE `transaction01` (
+  `c` int NOT NULL,
+  `d` int DEFAULT NULL,
+  PRIMARY KEY (`c`)
+)
+
+#SQL[@285,N24]Result[]
 drop table transaction01;
+
+#SQL[@288,N34]Result[]
 drop table if exists transaction03;
+
+#SQL[@289,N52]Result[]
 create table transaction03 (c int primary key,d int);
+
+#SQL[@290,N37]Result[]
 insert into transaction03 values(1,1);
+
+#SQL[@291,N37]Result[]
 insert into transaction03 values(2,2);
+
+#SQL[@292,N5]Result[]
 begin;
+
+#SQL[@293,N37]Result[]
 insert into transaction03 values(3,1);
+
+#SQL[@294,N37]Result[]
 insert into transaction03 values(4,2);
+
+#SQL[@295,N52]Error[203]
 alter table transaction03 add column decimal after c;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 50 near " after c;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 50 near \" after c\";
+
+#SQL[@296,N31]Result[23, 115]
 show create table transaction03;
-Table    Create Table
-transaction03    CREATE TABLE `transaction03` (\n  `c` int NOT NULL,\n  `d` int DEFAULT NULL,\n  PRIMARY KEY (`c`)\n)
+Table  ¦  Create Table
+transaction03  ¦  CREATE TABLE `transaction03` (
+  `c` int NOT NULL,
+  `d` int DEFAULT NULL,
+  PRIMARY KEY (`c`)
+)
+
+#SQL[@298,N13]Error[26]
 use isolation;
 Unknown database isolation
+
+#SQL[@299,N31]Error[20]
 show create table transaction03;
 No database selected
+
+#SQL[@301,N6]Result[]
 commit;
+
+#SQL[@303,N39]Error[28]
 alter table transaction03 drop column d;
 no such table .transaction03
+
+#SQL[@304,N31]Error[20]
 show create table transaction03;
 No database selected
+
+#SQL[@306,N31]Result[23, 115]
 show create table transaction03;
-Table    Create Table
-transaction03    CREATE TABLE `transaction03` (\n  `c` int NOT NULL,\n  `d` int DEFAULT NULL,\n  PRIMARY KEY (`c`)\n)
+Table  ¦  Create Table
+transaction03  ¦  CREATE TABLE `transaction03` (
+  `c` int NOT NULL,
+  `d` int DEFAULT NULL,
+  PRIMARY KEY (`c`)
+)
+
+#SQL[@307,N27]Result[8, 8, 8, 8, 8]
 select * from transaction03;
-c    d
-1    1
-2    2
-3    1
-4    2
+c  ¦  d
+1  ¦  1
+2  ¦  2
+3  ¦  1
+4  ¦  2
+
+#SQL[@308,N24]Result[]
 drop table transaction03;
+
+#SQL[@311,N34]Result[]
 drop table if exists transaction05;
+
+#SQL[@312,N134]Result[]
 create table transaction05(a int not null auto_increment,b varchar(25) not null,c datetime,primary key(a),key bstr (b),key cdate (c) );
+
+#SQL[@313,N59]Result[]
 insert into transaction05(b,c) values ('aaaa','2020-09-08');
+
+#SQL[@314,N59]Result[]
 insert into transaction05(b,c) values ('aaaa','2020-09-08');
+
+#SQL[@316,N5]Result[]
 begin;
+
+#SQL[@317,N51]Result[]
 alter table transaction05 rename to `conflict_test`;
+
+#SQL[@319,N15]Error[28]
 use ww_conflict;
 Unknown database ww_conflict
+
+#SQL[@320,N5]Result[]
 begin;
+
+#SQL[@321,N39]Error[28]
 alter table conflict_test drop column b;
 no such table .conflict_test
+
+#SQL[@323,N6]Result[]
 commit;
+
+#SQL[@325,N51]Error[28]
 alter table conflict_test add column colf int first;
 no such table .conflict_test
+
+#SQL[@327,N27]Result[15, 36, 36]
 select * from conflict_test;
-a    b    c
-1    aaaa    2020-09-08 00:00:00
-2    aaaa    2020-09-08 00:00:00
+a  ¦  b  ¦  c
+1  ¦  aaaa  ¦  2020-09-08 00:00:00
+2  ¦  aaaa  ¦  2020-09-08 00:00:00
+
+#SQL[@328,N31]Result[23, 204]
 show create table conflict_test;
-Table    Create Table
-conflict_test    CREATE TABLE `conflict_test` (\n  `a` int NOT NULL AUTO_INCREMENT,\n  `b` varchar(25) NOT NULL,\n  `c` datetime DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  KEY `bstr` (`b`),\n  KEY `cdate` (`c`)\n)
+Table  ¦  Create Table
+conflict_test  ¦  CREATE TABLE `conflict_test` (
+  `a` int NOT NULL AUTO_INCREMENT,
+  `b` varchar(25) NOT NULL,
+  `c` datetime DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  KEY `bstr` (`b`),
+  KEY `cdate` (`c`)
+)
+
+#SQL[@329,N24]Result[]
 drop table conflict_test;
+
+#SQL[@333,N29]Result[]
 drop table if exists update01;
+
+#SQL[@334,N59]Result[]
 create table update01(col1 int, col2 int, col3 varchar(20));
+
+#SQL[@335,N44]Result[]
 insert into update01 values(1,2,'cfewquier');
+
+#SQL[@336,N41]Result[]
 insert into update01 values(2,3,'329382');
+
+#SQL[@337,N22]Result[24, 23, 20]
 select * from update01;
-col1    col2    col3
-1    2    cfewquier
-2    3    329382
+col1  ¦  col2  ¦  col3
+1  ¦  2  ¦  cfewquier
+2  ¦  3  ¦  329382
+
+#SQL[@338,N56]Result[]
 alter table update01 add column col1_2 binary after col1;
+
+#SQL[@339,N52]Result[]
 alter table update01 add column col5 blob after col3;
+
+#SQL[@340,N22]Result[46, 43, 40]
 select * from update01;
-col1    col1_2    col2    col3    col5
-1    null    2    cfewquier    null
-2    null    3    329382    null
+col1  ¦  col1_2  ¦  col2  ¦  col3  ¦  col5
+1  ¦  null  ¦  2  ¦  cfewquier  ¦  null
+2  ¦  null  ¦  3  ¦  329382  ¦  null
+
+#SQL[@341,N26]Result[23, 192]
 show create table update01;
-Table    Create Table
-update01    CREATE TABLE `update01` (\n  `col1` int DEFAULT NULL,\n  `col1_2` binary(1) DEFAULT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` varchar(20) DEFAULT NULL,\n  `col5` blob DEFAULT NULL\n)
+Table  ¦  Create Table
+update01  ¦  CREATE TABLE `update01` (
+  `col1` int DEFAULT NULL,
+  `col1_2` binary(1) DEFAULT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` varchar(20) DEFAULT NULL,
+  `col5` blob DEFAULT NULL
+)
+
+#SQL[@342,N69]Result[]
 insert into update01 values(1,'1',3,'ew83u829d3qcefq','q3829ff2e3qe');
+
+#SQL[@343,N54]Result[]
 insert into update01 values(2,'3',6,'3214()_)_)','00');
+
+#SQL[@344,N22]Result[46, 43, 40, 54, 39]
 select * from update01;
-col1    col1_2    col2    col3    col5
-1    null    2    cfewquier    null
-2    null    3    329382    null
-1    1    3    ew83u829d3qcefq    q3829ff2e3qe
-2    3    6    3214()_)_)    00
+col1  ¦  col1_2  ¦  col2  ¦  col3  ¦  col5
+1  ¦  null  ¦  2  ¦  cfewquier  ¦  null
+2  ¦  null  ¦  3  ¦  329382  ¦  null
+1  ¦  1  ¦  3  ¦  ew83u829d3qcefq  ¦  q3829ff2e3qe
+2  ¦  3  ¦  6  ¦  3214()_)_)  ¦  00
+
+#SQL[@346,N45]Result[]
 update update01 set col1 = 100 where col1 = 1;
+
+#SQL[@347,N56]Result[]
 update update01 set col5 = '2798u3d3frew' where col2 = 6;
+
+#SQL[@348,N41]Result[]
 delete from update01 where col1_2 is null;
+
+#SQL[@349,N19]Result[]
 drop table update01;
+
+#SQL[@352,N29]Result[]
 drop table if exists rename01;
+
+#SQL[@353,N29]Result[]
 drop table if exists rename02;
+
+#SQL[@354,N34]Result[]
 create table rename01(a int,b int);
+
+#SQL[@355,N32]Result[]
 insert into rename01 values(1,1);
+
+#SQL[@356,N39]Result[]
 alter table rename01 rename to rename02;
+
+#SQL[@357,N22]Error[51]
 select * from rename01;
-SQL parser error: table "rename01" does not exist
+SQL parser error: table \"rename01\" does not exist
+
+#SQL[@358,N22]Result[8, 8]
 select * from rename02;
-a    b
-1    1
+a  ¦  b
+1  ¦  1
+
+#SQL[@359,N32]Result[]
 insert into rename02 values(2,2);
+
+#SQL[@360,N22]Result[8, 8, 8]
 select * from rename02;
-a    b
-1    1
-2    2
+a  ¦  b
+1  ¦  1
+2  ¦  2
+
+#SQL[@361,N38]Result[]
 update rename02 set a = 10 where a = 1;
+
+#SQL[@362,N22]Result[8, 8, 9]
 select * from rename02;
-a    b
-2    2
-10    1
+a  ¦  b
+2  ¦  2
+10  ¦  1
+
+#SQL[@363,N33]Result[]
 delete from rename02 where a = 10;
+
+#SQL[@364,N22]Result[8, 8]
 select * from rename02;
-a    b
-2    2
+a  ¦  b
+2  ¦  2
+
+#SQL[@365,N44]Result[]
 create view view01 as select * from rename02;
+
+#SQL[@366,N23]Result[]
 truncate table rename02;
+
+#SQL[@367,N19]Result[]
 drop table rename02;
+
+#SQL[@369,N29]Result[]
 drop table if exists rename02;
+
+#SQL[@370,N29]Result[]
 drop table if exists rename03;
+
+#SQL[@371,N29]Result[]
 drop table if exists rename04;
+
+#SQL[@372,N54]Result[]
 create table rename02(a int primary key,b varchar(20));
+
+#SQL[@373,N41]Result[]
 create table rename03(col1 int,col2 char);
+
+#SQL[@374,N44]Result[]
 create table rename04(col1 binary,col2 text);
+
+#SQL[@375,N40]Result[]
 alter table rename02 rename to rename_02;
+
+#SQL[@376,N40]Result[]
 alter table rename03 rename to rename_03;
+
+#SQL[@377,N39]Result[]
 alter table rename04 rename to rename04;
+
+#SQL[@378,N27]Result[23, 115]
 show create table rename_02;
-Table    Create Table
-rename_02    CREATE TABLE `rename_02` (\n  `a` int NOT NULL,\n  `b` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+rename_02  ¦  CREATE TABLE `rename_02` (
+  `a` int NOT NULL,
+  `b` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@379,N27]Result[23, 100]
 show create table rename_03;
-Table    Create Table
-rename_03    CREATE TABLE `rename_03` (\n  `col1` int DEFAULT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+rename_03  ¦  CREATE TABLE `rename_03` (
+  `col1` int DEFAULT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@380,N26]Result[23, 101]
 show create table rename04;
-Table    Create Table
-rename04    CREATE TABLE `rename04` (\n  `col1` binary(1) DEFAULT NULL,\n  `col2` text DEFAULT NULL\n)
+Table  ¦  Create Table
+rename04  ¦  CREATE TABLE `rename04` (
+  `col1` binary(1) DEFAULT NULL,
+  `col2` text DEFAULT NULL
+)
+
+#SQL[@381,N20]Result[]
 drop table rename_02;
+
+#SQL[@382,N20]Result[]
 drop table rename_03;
+
+#SQL[@383,N19]Result[]
 drop table rename04;
+
+#SQL[@386,N29]Result[]
 drop table if exists rename05;
+
+#SQL[@387,N41]Result[]
 create table rename05(col1 int,col2 text);
+
+#SQL[@388,N42]Result[]
 insert into rename05 values(1,'jfhwuief3');
+
+#SQL[@389,N44]Result[]
 insert into rename05 values(2,'ew8uif4324f');
+
+#SQL[@390,N40]Result[]
 alter table rename05 rename to rename_05;
+
+#SQL[@391,N22]Error[51]
 select * from rename05;
-SQL parser error: table "rename05" does not exist
+SQL parser error: table \"rename05\" does not exist
+
+#SQL[@392,N23]Result[14, 16, 18]
 select * from rename_05;
-col1    col2
-1    jfhwuief3
-2    ew8uif4324f
+col1  ¦  col2
+1  ¦  jfhwuief3
+2  ¦  ew8uif4324f
+
+#SQL[@393,N40]Result[]
 alter table rename_05 rename to rename05;
+
+#SQL[@394,N22]Result[14, 16, 18]
 select * from rename05;
-col1    col2
-1    jfhwuief3
-2    ew8uif4324f
+col1  ¦  col2
+1  ¦  jfhwuief3
+2  ¦  ew8uif4324f
+
+#SQL[@395,N23]Error[52]
 select * from rename_05;
-SQL parser error: table "rename_05" does not exist
+SQL parser error: table \"rename_05\" does not exist
+
+#SQL[@396,N19]Result[]
 drop table rename05;
+
+#SQL[@399,N29]Result[]
 drop table if exists rename06;
+
+#SQL[@400,N31]Result[]
 create table rename06(col1 int);
+
+#SQL[@401,N34]Result[]
 insert into rename06 values(1),(2);
+
+#SQL[@402,N33]Error[198]
 alter table rename06 rename to '';
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 33 near " '';";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 33 near \" ''\";
+
+#SQL[@403,N19]Result[]
 drop table rename06;
+
+#SQL[@406,N60]Error[62]
 alter table system.statement_info rename to statement_info01;
 internal error: do not have privilege to execute the statement
+
+#SQL[@407,N56]Error[62]
 alter table mo_catalog.mo_account rename to mo_account01;
 internal error: do not have privilege to execute the statement
+
+#SQL[@408,N53]Error[62]
 alter table mysql.procs_priv rename to `procs_priv01`;
 internal error: do not have privilege to execute the statement
+
+#SQL[@411,N34]Result[]
 drop table if exists transaction01;
+
+#SQL[@412,N52]Result[]
 create table transaction01 (c int primary key,d int);
+
+#SQL[@413,N5]Result[]
 begin;
+
+#SQL[@414,N31]Error[26]
 insert into test_11 values(1,1);
 no such table test.test_11
+
+#SQL[@415,N31]Error[26]
 insert into test_11 values(2,2);
 no such table test.test_11
+
+#SQL[@416,N54]Result[]
 alter table transaction01 rename to `test_transaction`;
+
+#SQL[@417,N8]Result[]
 rollback;
+
+#SQL[@418,N27]Result[]
 select * from transaction01;
-c    d
+
+#SQL[@419,N30]Error[59]
 select * from test_transaction;
-SQL parser error: table "test_transaction" does not exist
+SQL parser error: table \"test_transaction\" does not exist
+
+#SQL[@421,N27]Error[35]
 drop table test_transaction;
 no such table test.test_transaction
+
+#SQL[@424,N34]Result[]
 drop table if exists transaction03;
+
+#SQL[@425,N52]Result[]
 create table transaction03 (c int primary key,d int);
+
+#SQL[@426,N37]Result[]
 insert into transaction03 values(1,1);
+
+#SQL[@427,N37]Result[]
 insert into transaction03 values(2,2);
+
+#SQL[@428,N5]Result[]
 begin;
+
+#SQL[@429,N37]Result[]
 insert into transaction03 values(3,1);
+
+#SQL[@430,N37]Result[]
 insert into transaction03 values(4,2);
+
+#SQL[@431,N51]Result[]
 alter table transaction03 rename to `transaction04`;
+
+#SQL[@432,N27]Result[8, 8, 8, 8, 8]
 select * from transaction04;
-c    d
-3    1
-4    2
-1    1
-2    2
+c  ¦  d
+3  ¦  1
+4  ¦  2
+1  ¦  1
+2  ¦  2
+
+#SQL[@434,N13]Error[26]
 use isolation;
 Unknown database isolation
+
+#SQL[@435,N27]Error[20]
 select * from transaction04;
 No database selected
+
+#SQL[@437,N6]Result[]
 commit;
+
+#SQL[@439,N27]Result[8, 8, 8, 8, 8]
 select * from transaction04;
-c    d
-1    1
-2    2
-3    1
-4    2
+c  ¦  d
+1  ¦  1
+2  ¦  2
+3  ¦  1
+4  ¦  2
+
+#SQL[@440,N24]Result[]
 drop table transaction04;
+
+#SQL[@443,N34]Result[]
 drop table if exists transaction05;
+
+#SQL[@444,N134]Result[]
 create table transaction05(a int not null auto_increment,b varchar(25) not null,c datetime,primary key(a),key bstr (b),key cdate (c) );
+
+#SQL[@445,N59]Result[]
 insert into transaction05(b,c) values ('aaaa','2020-09-08');
+
+#SQL[@446,N59]Result[]
 insert into transaction05(b,c) values ('aaaa','2020-09-08');
+
+#SQL[@448,N5]Result[]
 begin;
+
+#SQL[@449,N51]Result[]
 alter table transaction05 rename to `conflict_test`;
+
+#SQL[@451,N15]Error[28]
 use ww_conflict;
 Unknown database ww_conflict
+
+#SQL[@452,N5]Result[]
 begin;
+
+#SQL[@453,N51]Error[28]
 alter table conflict_test add column colf int first;
 no such table .conflict_test
+
+#SQL[@455,N6]Result[]
 commit;
+
+#SQL[@457,N51]Error[28]
 alter table conflict_test add column colf int first;
 no such table .conflict_test
+
+#SQL[@459,N27]Result[15, 36, 36]
 select * from conflict_test;
-a    b    c
-1    aaaa    2020-09-08 00:00:00
-2    aaaa    2020-09-08 00:00:00
+a  ¦  b  ¦  c
+1  ¦  aaaa  ¦  2020-09-08 00:00:00
+2  ¦  aaaa  ¦  2020-09-08 00:00:00
+
+#SQL[@460,N31]Result[23, 204]
 show create table conflict_test;
-Table    Create Table
-conflict_test    CREATE TABLE `conflict_test` (\n  `a` int NOT NULL AUTO_INCREMENT,\n  `b` varchar(25) NOT NULL,\n  `c` datetime DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  KEY `bstr` (`b`),\n  KEY `cdate` (`c`)\n)
+Table  ¦  Create Table
+conflict_test  ¦  CREATE TABLE `conflict_test` (
+  `a` int NOT NULL AUTO_INCREMENT,
+  `b` varchar(25) NOT NULL,
+  `c` datetime DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  KEY `bstr` (`b`),
+  KEY `cdate` (`c`)
+)
+
+#SQL[@461,N24]Result[]
 drop table conflict_test;
+
+#SQL[@464,N26]Result[]
 drop table if exists `t+1`;
+
+#SQL[@465,N26]Result[]
 drop table if exists `t+2`;
+
+#SQL[@466,N27]Result[]
 create table `t+1` (c1 INT);
+
+#SQL[@467,N34]Result[]
 alter table  `t+1` rename to `t+2`;
+
+#SQL[@468,N27]Result[]
 create table `t+1` (c1 INT);
+
+#SQL[@469,N34]Error[24]
 alter table  `t+1` rename to `t+2`;
 table t+2 already exists
+
+#SQL[@470,N16]Result[]
 drop table `t+1`;
+
+#SQL[@471,N16]Result[]
 drop table `t+2`;
+
+#SQL[@474,N28]Result[]
 drop table if exists `#sql1`;
+
+#SQL[@475,N32]Result[]
 drop table if exists `@0023sql2`;
+
+#SQL[@476,N29]Result[]
 create table `#sql1` (c1 INT);
+
+#SQL[@477,N33]Result[]
 create table `@0023sql2` (c1 INT);
+
+#SQL[@478,N41]Result[]
 alter table `#sql1` rename to `@0023sql1`;
+
+#SQL[@479,N29]Result[23, 67]
 show create table `@0023sql1`;
-Table    Create Table
-@0023sql1    CREATE TABLE `@0023sql1` (\n  `c1` int DEFAULT NULL\n)
+Table  ¦  Create Table
+@0023sql1  ¦  CREATE TABLE `@0023sql1` (
+  `c1` int DEFAULT NULL
+)
+
+#SQL[@480,N41]Result[]
 alter table `@0023sql2` rename to `#sql2`;
+
+#SQL[@481,N25]Result[23, 59]
 show create table `#sql2`;
-Table    Create Table
-#sql2    CREATE TABLE `#sql2` (\n  `c1` int DEFAULT NULL\n)
+Table  ¦  Create Table
+#sql2  ¦  CREATE TABLE `#sql2` (
+  `c1` int DEFAULT NULL
+)
+
+#SQL[@482,N42]Result[]
 alter table `@0023sql1` rename to `#sql-1`;
+
+#SQL[@483,N42]Result[]
 alter table `#sql2` rename to `@0023sql-2`;
+
+#SQL[@484,N26]Result[23, 61]
 show create table `#sql-1`;
-Table    Create Table
-#sql-1    CREATE TABLE `#sql-1` (\n  `c1` int DEFAULT NULL\n)
+Table  ¦  Create Table
+#sql-1  ¦  CREATE TABLE `#sql-1` (
+  `c1` int DEFAULT NULL
+)
+
+#SQL[@485,N30]Result[23, 69]
 show create table `@0023sql-2`;
-Table    Create Table
-@0023sql-2    CREATE TABLE `@0023sql-2` (\n  `c1` int DEFAULT NULL\n)
+Table  ¦  Create Table
+@0023sql-2  ¦  CREATE TABLE `@0023sql-2` (
+  `c1` int DEFAULT NULL
+)
+
+#SQL[@486,N31]Result[]
 insert into `#sql-1` values (1);
+
+#SQL[@487,N35]Result[]
 insert into `@0023sql-2` values (2);
+
+#SQL[@488,N22]Result[2, 1]
 select * from `#sql-1`;
 c1
 1
+
+#SQL[@489,N26]Result[2, 1]
 select * from `@0023sql-2`;
 c1
 2
+
+#SQL[@490,N19]Result[]
 drop table `#sql-1`;
+
+#SQL[@491,N23]Result[]
 drop table `@0023sql-2`;
+
+#SQL[@494,N27]Result[]
 drop table if exists test03;
+
+#SQL[@495,N29]Result[]
 create table test03(col1 int);
+
+#SQL[@496,N30]Result[]
 insert into test03 values(100);
+
+#SQL[@497,N35]Result[]
 alter table test03 rename to test03;
+
+#SQL[@498,N17]Result[]
 drop table test03;
+
+#SQL[@501,N27]Result[]
 drop table if exists test02;
+
+#SQL[@502,N26]Result[]
 create table test02(a int);
+
+#SQL[@503,N40]Result[]
 alter table test02 comment = "comment_1";
+
+#SQL[@504,N24]Result[23, 80]
 show create table test02;
-Table    Create Table
-test02    CREATE TABLE `test02` (\n  `a` int DEFAULT NULL\n) COMMENT='comment_1'
+Table  ¦  Create Table
+test02  ¦  CREATE TABLE `test02` (
+  `a` int DEFAULT NULL
+) COMMENT='comment_1'
+
+#SQL[@505,N63]Result[]
 alter table test02 comment = "comment_2", comment = "comment_3";
+
+#SQL[@506,N24]Result[23, 80]
 show create table test02;
-Table    Create Table
-test02    CREATE TABLE `test02` (\n  `a` int DEFAULT NULL\n) COMMENT='comment_3'
+Table  ¦  Create Table
+test02  ¦  CREATE TABLE `test02` (
+  `a` int DEFAULT NULL
+) COMMENT='comment_3'
+
+#SQL[@507,N17]Result[]
 drop table test02;
+
+#SQL[@510,N27]Result[]
 drop table if exists test03;
+
+#SQL[@511,N26]Result[]
 create table test03(a int);
+
+#SQL[@512,N31]Result[]
 alter table test03 comment = '';
+
+#SQL[@513,N24]Result[23, 60]
 show create table test03;
-Table    Create Table
-test03    CREATE TABLE `test03` (\n  `a` int DEFAULT NULL\n)
+Table  ¦  Create Table
+test03  ¦  CREATE TABLE `test03` (
+  `a` int DEFAULT NULL
+)
+
+#SQL[@514,N63]Result[]
 alter table test03 comment = "comment_2", comment = "comment_3";
+
+#SQL[@515,N24]Result[23, 80]
 show create table test03;
-Table    Create Table
-test03    CREATE TABLE `test03` (\n  `a` int DEFAULT NULL\n) COMMENT='comment_3'
+Table  ¦  Create Table
+test03  ¦  CREATE TABLE `test03` (
+  `a` int DEFAULT NULL
+) COMMENT='comment_3'
+
+#SQL[@516,N17]Result[]
 drop table test03;
+
+#SQL[@519,N27]Result[]
 drop table if exists test04;
+
+#SQL[@520,N26]Result[]
 create table test04(a int);
+
+#SQL[@521,N51]Result[]
 alter table test04 comment = '数据库Database！';
+
+#SQL[@522,N24]Result[23, 91]
 show create table test04;
-Table    Create Table
-test04    CREATE TABLE `test04` (\n  `a` int DEFAULT NULL\n) COMMENT='数据库Database！'
+Table  ¦  Create Table
+test04  ¦  CREATE TABLE `test04` (
+  `a` int DEFAULT NULL
+) COMMENT='数据库Database！'
+
+#SQL[@523,N63]Result[]
 alter table test04 comment = "3721  98479824309284093254324532";
+
+#SQL[@524,N24]Result[23, 103]
 show create table test04;
-Table    Create Table
-test04    CREATE TABLE `test04` (\n  `a` int DEFAULT NULL\n) COMMENT='3721  98479824309284093254324532'
+Table  ¦  Create Table
+test04  ¦  CREATE TABLE `test04` (
+  `a` int DEFAULT NULL
+) COMMENT='3721  98479824309284093254324532'
+
+#SQL[@525,N89]Result[]
 alter table test04 comment = "#$%^&*(%$R%TYGHJHUWHDIU^&W%^&WWsUIHFW&W数据库*&()()()__";
+
+#SQL[@526,N24]Result[23, 129]
 show create table test04;
-Table    Create Table
-test04    CREATE TABLE `test04` (\n  `a` int DEFAULT NULL\n) COMMENT='#$%^&*(%$R%TYGHJHUWHDIU^&W%^&WWsUIHFW&W数据库*&()()()__'
+Table  ¦  Create Table
+test04  ¦  CREATE TABLE `test04` (
+  `a` int DEFAULT NULL
+) COMMENT='#$%^&*(%$R%TYGHJHUWHDIU^&W%^&WWsUIHFW&W数据库*&()()()__'
+
+#SQL[@527,N122]Result[]
 alter table test04 comment = "47382749823409243f4oir32434",comment = "f73hjkrew473982u4f32g54jjUIHFW&W数据库*&()()()__";
+
+#SQL[@528,N24]Result[23, 122]
 show create table test04;
-Table    Create Table
-test04    CREATE TABLE `test04` (\n  `a` int DEFAULT NULL\n) COMMENT='f73hjkrew473982u4f32g54jjUIHFW&W数据库*&()()()__'
+Table  ¦  Create Table
+test04  ¦  CREATE TABLE `test04` (
+  `a` int DEFAULT NULL
+) COMMENT='f73hjkrew473982u4f32g54jjUIHFW&W数据库*&()()()__'
+
+#SQL[@529,N17]Result[]
 drop table test04;
+
+#SQL[@532,N23]Result[]
 drop table if exists t1;
+
+#SQL[@533,N68]Result[]
 create table t1 (i int unsigned not null auto_increment primary key);
+
+#SQL[@534,N27]Result[]
 alter table t1 rename to t2;
+
+#SQL[@535,N27]Result[]
 alter table t2 rename to t1;
+
+#SQL[@536,N36]Result[]
 alter table t1 add column c char(10);
+
+#SQL[@537,N37]Result[]
 alter table t1 comment = "no comment";
+
+#SQL[@538,N20]Result[23, 143]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `i` int unsigned NOT NULL AUTO_INCREMENT,\n  `c` char(10) DEFAULT NULL,\n  PRIMARY KEY (`i`)\n) COMMENT='no comment'
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `i` int unsigned NOT NULL AUTO_INCREMENT,
+  `c` char(10) DEFAULT NULL,
+  PRIMARY KEY (`i`)
+) COMMENT='no comment'
+
+#SQL[@539,N44]Result[]
 alter table t1 comment = 'this is a comment';
+
+#SQL[@540,N20]Result[23, 150]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `i` int unsigned NOT NULL AUTO_INCREMENT,\n  `c` char(10) DEFAULT NULL,\n  PRIMARY KEY (`i`)\n) COMMENT='this is a comment'
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `i` int unsigned NOT NULL AUTO_INCREMENT,
+  `c` char(10) DEFAULT NULL,
+  PRIMARY KEY (`i`)
+) COMMENT='this is a comment'
+
+#SQL[@541,N13]Result[]
 drop table t1;
+
+#SQL[@544,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@545,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@546,N19]Result[]
 create role role_r1;
+
+#SQL[@547,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@548,N29]Result[]
 drop table if exists rename01;
+
+#SQL[@549,N31]Result[]
 create table rename01(col1 int);
+
+#SQL[@550,N30]Result[]
 insert into rename01 values(1);
+
+#SQL[@551,N30]Result[]
 insert into rename01 values(2);
+
+#SQL[@552,N45]Result[]
 grant create database on account * to role_r1;
+
+#SQL[@553,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@554,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@555,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@556,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@558,N8]Result[]
 use test;
+
+#SQL[@559,N40]Result[]
 alter table rename01 rename to newRename;
+
+#SQL[@561,N42]Result[]
 grant alter table on database * to role_r1;
+
+#SQL[@563,N8]Result[]
 use test;
+
+#SQL[@564,N40]Error[27]
 alter table rename01 rename to newRename;
 no such table test.rename01
+
+#SQL[@565,N43]Result[]
 alter table newRename rename to `newRename`;
+
+#SQL[@566,N27]Result[23, 69]
 show create table newRename;
-Table    Create Table
-newrename    CREATE TABLE `newrename` (\n  `col1` int DEFAULT NULL\n)
+Table  ¦  Create Table
+newrename  ¦  CREATE TABLE `newrename` (
+  `col1` int DEFAULT NULL
+)
+
+#SQL[@568,N20]Result[]
 drop table newRename;
+
+#SQL[@569,N17]Result[]
 drop role role_r1;
+
+#SQL[@570,N17]Result[]
 drop user role_u1;
+
+#SQL[@573,N28]Result[]
 drop table if exists table01;
+
+#SQL[@574,N5]Result[]
 begin;
+
+#SQL[@575,N41]Result[]
 create table table01(col1 int, col2 char);
+
+#SQL[@576,N33]Result[]
 insert into table01 values(1,'a');
+
+#SQL[@577,N39]Result[]
 alter table table01 add column col3 int;
+
+#SQL[@578,N6]Result[]
 commit;
+
+#SQL[@579,N21]Result[24, 18]
 select * from table01;
-col1    col2    col3
-1    a    null
+col1  ¦  col2  ¦  col3
+1  ¦  a  ¦  null
+
+#SQL[@580,N24]Result[4, 1]
 select col1 from table01;
 col1
 1
+
+#SQL[@581,N18]Result[]
 drop table table01;
+
+#SQL[@583,N28]Result[]
 drop table if exists table02;
+
+#SQL[@584,N5]Result[]
 begin;
+
+#SQL[@585,N41]Result[]
 create table table02(col1 int, col2 char);
+
+#SQL[@586,N33]Result[]
 insert into table02 values(1,'a');
+
+#SQL[@587,N36]Result[]
 alter table table02 drop column col2;
+
+#SQL[@588,N6]Result[]
 commit;
+
+#SQL[@589,N21]Result[4, 1]
 select * from table02;
 col1
 1
+
+#SQL[@590,N24]Result[4, 1]
 select col1 from table02;
 col1
 1
+
+#SQL[@591,N18]Result[]
 drop table table02;
+
+#SQL[@594,N27]Result[]
 drop table if exists enum01;
+
+#SQL[@595,N28]Result[]
 create table enum01 (id int);
+
+#SQL[@596,N29]Result[]
 insert into enum01 values (1);
+
+#SQL[@597,N53]Result[]
 alter table enum01 add column name enum ('A','B','C');
+
+#SQL[@598,N24]Result[23, 102]
 show create table enum01;
-Table    Create Table
-enum01    CREATE TABLE `enum01` (\n  `id` int DEFAULT NULL,\n  `name` enum('A','B','C') DEFAULT NULL\n)
+Table  ¦  Create Table
+enum01  ¦  CREATE TABLE `enum01` (
+  `id` int DEFAULT NULL,
+  `name` enum('A','B','C') DEFAULT NULL
+)
+
+#SQL[@599,N11]Result[71, 52, 64]
 desc enum01;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    YES        null        
-name    ENUM('A','B','C')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+name  ¦  ENUM('A','B','C')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@600,N20]Result[12, 11]
 select * from enum01;
-id    name
-1    null
+id  ¦  name
+1  ¦  null
+
+#SQL[@601,N33]Result[]
 insert into enum01 values (2,'B');
+
+#SQL[@602,N33]Error[75]
 insert into enum01 values (3,'D');
 internal error: convert to MySQL enum failed: item D is not in enum [A B C]
+
+#SQL[@603,N20]Result[12, 11, 8]
 select * from enum01;
-id    name
-1    null
-2    B
+id  ¦  name
+1  ¦  null
+2  ¦  B
+
+#SQL[@604,N35]Result[]
 alter table enum01 drop column name;
+
+#SQL[@605,N24]Result[23, 61]
 show create table enum01;
-Table    Create Table
-enum01    CREATE TABLE `enum01` (\n  `id` int DEFAULT NULL\n)
+Table  ¦  Create Table
+enum01  ¦  CREATE TABLE `enum01` (
+  `id` int DEFAULT NULL
+)
+
+#SQL[@606,N20]Result[2, 1, 1]
 select * from enum01;
 id
 1
 2
+
+#SQL[@607,N17]Result[]
 drop table enum01;
+
+#SQL[@609,N18]Result[]
 drop database test;
+

@@ -121,8 +121,8 @@ insert into primary01 values (3287, 89384038);
 alter table primary01 rename column col1 to col1New;
 show create table primary01;
 insert into primary01 values (-2839, 8239802839.00000000);
+-- + Duplicate entry '3287' for key 'col1[Nn]ew'
 insert into primary01 (col1New, col2) values (3287, 3293892.3232);
-| @regex(pattern=r"");
 delete from primary01 where col1New = -2839;
 update primary01 set col1 = 2873892 where col1New = 2389324;
 update primary01 set col1New = 2873892 where col1New = 2389324;

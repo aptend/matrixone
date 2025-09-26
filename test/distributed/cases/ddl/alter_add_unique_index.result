@@ -1,45 +1,91 @@
+#SQL[@2,N23]Result[]
 DROP TABLE IF EXISTS t0;
+
+#SQL[@3,N83]Result[]
 CREATE TABLE t0(
-col1 VARCHAR(255),
-col2 DATETIME,
-col3 DECIMAL(10,2)
+    col1 VARCHAR(255),
+    col2 DATETIME,
+    col3 DECIMAL(10,2)
 );
+
+#SQL[@10,N61]Result[]
 INSERT INTO t0 VALUES ('test', '2023-04-01 12:00:00', 123.45);
+
+#SQL[@11,N61]Result[]
 INSERT INTO t0 VALUES ('test', '2023-04-01 12:00:00', 678.90);
+
+#SQL[@12,N23]Result[8, 1]
 SELECT COUNT(*) FROM t0;
-count(*)
+COUNT(*)
 2
+
+#SQL[@15,N116]Error[73]
 ALTER TABLE t0 ADD UNIQUE KEY `unique_compound_key`(col1, col2) COMMENT 'Unique constraint for VARCHAR and DATETIME';
 Duplicate entry '(test,2023-04-01 12:00:00)' for key '__mo_index_idx_col'
+
+#SQL[@18,N18]Result[]
 SHOW INDEX FROM t0;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
+
+#SQL[@19,N23]Result[8, 1]
 SELECT COUNT(*) FROM t0;
-count(*)
+COUNT(*)
 2
+
+#SQL[@21,N13]Result[]
 DROP TABLE t0;
+
+#SQL[@24,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@25,N73]Result[]
 CREATE TABLE t1(
-col1 DECIMAL(5,2),
-col2 DATETIME,
-col3 int
+    col1 DECIMAL(5,2),
+    col2 DATETIME,
+    col3 int
 );
+
+#SQL[@31,N48]Result[]
 INSERT INTO t1 VALUES (10.55, '2023-04-01', 100);
+
+#SQL[@32,N48]Result[]
 INSERT INTO t1 VALUES (10.55, '2023-04-01', 200);
+
+#SQL[@33,N23]Result[8, 1]
 SELECT COUNT(*) FROM t1;
-count(*)
+COUNT(*)
 2
+
+#SQL[@36,N116]Error[73]
 ALTER TABLE t1 ADD UNIQUE KEY `unique_decimal_date_key`(col1, col2) COMMENT 'Unique constraint for DECIMAL and DATE';
 Duplicate entry '(1055,2023-04-01 00:00:00)' for key '__mo_index_idx_col'
+
+#SQL[@39,N18]Result[]
 SHOW INDEX FROM t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
+
+#SQL[@40,N23]Result[8, 1]
 SELECT COUNT(*) FROM t1;
-count(*)
+COUNT(*)
 2
+
+#SQL[@42,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@44,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@45,N100]Result[]
 create table t3 (col1 bigint primary key,col2 char(25), col3 float, col4 char(50), key num_id(col4));
+
+#SQL[@46,N71]Result[]
 insert into t3 values (1,'',20.23,'5678'),(2,'13873458290',100.00,'23');
+
+#SQL[@47,N81]Result[]
 insert into t3 values (67834,'13456789872',20.23,'5678'),(56473,'',100.00,'5678');
+
+#SQL[@48,N98]Error[47]
 ALTER TABLE t3 ADD UNIQUE KEY `unique_empty_char`(col2) COMMENT 'Unique constraint for empty char';
 Duplicate entry '' for key '__mo_index_idx_col'
+
+#SQL[@49,N13]Result[]
 DROP TABLE t3;
+

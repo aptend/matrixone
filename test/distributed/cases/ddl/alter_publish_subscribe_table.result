@@ -1,7 +1,16 @@
+#SQL[@1,N28]Result[]
 drop database if exists test;
+
+#SQL[@2,N20]Result[]
 create database test;
+
+#SQL[@3,N8]Result[]
 use test;
+
+#SQL[@5,N27]Result[]
 drop table if exists test01;
+
+#SQL[@6,N187]Result[]
 create table test01(
 col1 tinyint,
 col2 smallint,
@@ -14,69 +23,228 @@ col8 bigint unsigned,
 col9 float,
 col10 double
 );
+
+#SQL[@19,N62]Result[]
 insert into test01 values (1,2,3,4,5,6,7,8,10.2131,3824.34324);
+
+#SQL[@20,N68]Result[]
 insert into test01 values (2,3,4,5,6,7,8,9,2131.3242343,-3824.34324);
+
+#SQL[@21,N24]Result[23, 372]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint DEFAULT NULL,\n  `col2` smallint DEFAULT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double DEFAULT NULL\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint DEFAULT NULL,
+  `col2` smallint DEFAULT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double DEFAULT NULL
+)
+
+#SQL[@22,N58]Result[]
 create publication publication01 database test account all;
+
+#SQL[@23,N17]Result[127, 84]
 show publications;
-publication    database    tables    sub_account    subscribed_accounts    create_time    update_time    comments
-publication01    test    *    *        2024-07-29 12:37:00    null    
+publication  ¦  database  ¦  tables  ¦  sub_account  ¦  subscribed_accounts  ¦  create_time  ¦  update_time  ¦  comments
+publication01  ¦  test  ¦  *  ¦  *  ¦    ¦  2025-09-26 17:46:37  ¦  null  ¦  
+
+#SQL[@26,N47]Result[]
 alter table test01 add primary key (col1, col2);
+
+#SQL[@27,N24]Result[23, 395]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint NOT NULL,\n  `col2` smallint NOT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double DEFAULT NULL,\n  PRIMARY KEY (`col1`,`col2`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint NOT NULL,
+  `col2` smallint NOT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double DEFAULT NULL,
+  PRIMARY KEY (`col1`,`col2`)
+)
+
+#SQL[@28,N52]Result[]
 alter table test01 add unique index `ui`(col1, col3);
+
+#SQL[@29,N24]Result[23, 430]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint NOT NULL,\n  `col2` smallint NOT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double DEFAULT NULL,\n  PRIMARY KEY (`col1`,`col2`),\n  UNIQUE KEY `ui` (`col1`,`col3`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint NOT NULL,
+  `col2` smallint NOT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double DEFAULT NULL,
+  PRIMARY KEY (`col1`,`col2`),
+  UNIQUE KEY `ui` (`col1`,`col3`)
+)
+
+#SQL[@30,N35]Result[]
 alter table test01 drop primary key;
+
+#SQL[@31,N24]Result[23, 399]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint NOT NULL,\n  `col2` smallint NOT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double DEFAULT NULL,\n  UNIQUE KEY `ui` (`col1`,`col3`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint NOT NULL,
+  `col2` smallint NOT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double DEFAULT NULL,
+  UNIQUE KEY `ui` (`col1`,`col3`)
+)
+
+#SQL[@32,N42]Result[]
 alter table test01 add primary key (col10);
+
+#SQL[@33,N24]Result[23, 420]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint NOT NULL,\n  `col2` smallint NOT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double NOT NULL,\n  PRIMARY KEY (`col10`),\n  UNIQUE KEY `ui` (`col1`,`col3`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint NOT NULL,
+  `col2` smallint NOT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double NOT NULL,
+  PRIMARY KEY (`col10`),
+  UNIQUE KEY `ui` (`col1`,`col3`)
+)
+
+#SQL[@34,N51]Result[]
 alter table test01 add column newCol int after col1;
+
+#SQL[@35,N20]Result[107, 89, 92]
 select * from test01;
-col1    newcol    col2    col3    col4    col5    col6    col7    col8    col9    col10
-1    null    2    3    4    5    6    7    8    10.2131    3824.34324
-2    null    3    4    5    6    7    8    9    2131.3242    -3824.34324
+col1  ¦  newcol  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+1  ¦  null  ¦  2  ¦  3  ¦  4  ¦  5  ¦  6  ¦  7  ¦  8  ¦  10.2131  ¦  3824.34324
+2  ¦  null  ¦  3  ¦  4  ¦  5  ¦  6  ¦  7  ¦  8  ¦  9  ¦  2131.3242  ¦  -3824.34324
+
+#SQL[@36,N24]Result[23, 449]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint NOT NULL,\n  `newCol` int DEFAULT NULL,\n  `col2` smallint NOT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double NOT NULL,\n  PRIMARY KEY (`col10`),\n  UNIQUE KEY `ui` (`col1`,`col3`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint NOT NULL,
+  `newCol` int DEFAULT NULL,
+  `col2` smallint NOT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double NOT NULL,
+  PRIMARY KEY (`col10`),
+  UNIQUE KEY `ui` (`col1`,`col3`)
+)
+
+#SQL[@37,N45]Result[]
 alter table test01 modify column col1 decimal;
+
+#SQL[@38,N24]Result[23, 459]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` decimal(38,0) DEFAULT NULL,\n  `newCol` int DEFAULT NULL,\n  `col2` smallint NOT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double NOT NULL,\n  PRIMARY KEY (`col10`),\n  UNIQUE KEY `ui` (`col1`,`col3`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` decimal(38,0) DEFAULT NULL,
+  `newCol` int DEFAULT NULL,
+  `col2` smallint NOT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double NOT NULL,
+  PRIMARY KEY (`col10`),
+  UNIQUE KEY `ui` (`col1`,`col3`)
+)
+
+#SQL[@39,N17]Result[127, 84]
 show publications;
-publication    database    tables    sub_account    subscribed_accounts    create_time    update_time    comments
-publication01    test    *    *        2024-07-29 12:37:00    null    
+publication  ¦  database  ¦  tables  ¦  sub_account  ¦  subscribed_accounts  ¦  create_time  ¦  update_time  ¦  comments
+publication01  ¦  test  ¦  *  ¦  *  ¦    ¦  2025-09-26 17:46:37  ¦  null  ¦  
+
+#SQL[@41,N30]Result[]
 drop publication publication01;
+
+#SQL[@42,N17]Result[]
 drop table test01;
+
+#SQL[@43,N18]Result[]
 drop database test;
+
+#SQL[@46,N27]Result[]
 drop account if exists acc0;
+
+#SQL[@47,N57]Result[]
 create account acc0 admin_name 'root' identified by '111';
+
+#SQL[@48,N32]Result[]
 drop database if exists sys_db_1;
+
+#SQL[@49,N24]Result[]
 create database sys_db_1;
+
+#SQL[@50,N12]Result[]
 use sys_db_1;
+
+#SQL[@51,N76]Result[]
 create table sys_tbl_1(a int primary key, b decimal, c char, d varchar(20) );
+
+#SQL[@52,N101]Result[]
 insert into sys_tbl_1 values(1,2,'a','database'),(2,3,'b','test publication'),(3, 4, 'c','324243243');
+
+#SQL[@53,N58]Result[]
 create publication sys_pub_1 database sys_db_1 account all;
+
+#SQL[@54,N23]Result[22, 29, 37, 30]
 select * from sys_tbl_1;
-a    b    c    d
-1    2    a    database
-2    3    b    test publication
-3    4    c    324243243
+a  ¦  b  ¦  c  ¦  d
+1  ¦  2  ¦  a  ¦  database
+2  ¦  3  ¦  b  ¦  test publication
+3  ¦  4  ¦  c  ¦  324243243
+
+#SQL[@55,N17]Result[127, 84]
 show publications;
-publication    database    tables    sub_account    subscribed_accounts    create_time    update_time    comments
-sys_pub_1    sys_db_1    *    *        2024-07-29 12:37:01    null    
+publication  ¦  database  ¦  tables  ¦  sub_account  ¦  subscribed_accounts  ¦  create_time  ¦  update_time  ¦  comments
+sys_pub_1  ¦  sys_db_1  ¦  *  ¦  *  ¦    ¦  2025-09-26 17:46:38  ¦  null  ¦  
+
+#SQL[@57,N68]Result[45, 32]
 select pub_name, database_name, account_list from mo_catalog.mo_pubs;
-pub_name    database_name    account_list
-sys_pub_1    sys_db_1    all
+pub_name  ¦  database_name  ¦  account_list
+sys_pub_1  ¦  sys_db_1  ¦  all
+
+#SQL[@59,N51]Result[]
 create database sub1 from sys publication sys_pub_1;
+
+#SQL[@60,N14]Result[8, 18, 10, 5, 4, 6, 14]
 show databases;
 Database
 information_schema
@@ -85,26 +253,79 @@ mysql
 sub1
 system
 system_metrics
+
+#SQL[@63,N18]Result[]
 show subscriptions;
-pub_name    pub_account    pub_database    pub_tables    pub_comment    pub_time    sub_name    sub_time    status
+
+#SQL[@65,N12]Result[]
 use sys_db_1;
+
+#SQL[@66,N38]Result[]
 alter table sys_tbl_1 drop primary key;
+
+#SQL[@67,N27]Result[23, 156]
 show create table sys_tbl_1;
-Table    Create Table
-sys_tbl_1    CREATE TABLE `sys_tbl_1` (\n  `a` int NOT NULL,\n  `b` decimal(38,0) DEFAULT NULL,\n  `c` char(1) DEFAULT NULL,\n  `d` varchar(20) DEFAULT NULL\n)
+Table  ¦  Create Table
+sys_tbl_1  ¦  CREATE TABLE `sys_tbl_1` (
+  `a` int NOT NULL,
+  `b` decimal(38,0) DEFAULT NULL,
+  `c` char(1) DEFAULT NULL,
+  `d` varchar(20) DEFAULT NULL
+)
+
+#SQL[@68,N42]Result[]
 alter table sys_tbl_1 add primary key(a,b);
+
+#SQL[@69,N27]Result[23, 177]
 show create table sys_tbl_1;
-Table    Create Table
-sys_tbl_1    CREATE TABLE `sys_tbl_1` (\n  `a` int NOT NULL,\n  `b` decimal(38,0) NOT NULL,\n  `c` char(1) DEFAULT NULL,\n  `d` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`a`,`b`)\n)
+Table  ¦  Create Table
+sys_tbl_1  ¦  CREATE TABLE `sys_tbl_1` (
+  `a` int NOT NULL,
+  `b` decimal(38,0) NOT NULL,
+  `c` char(1) DEFAULT NULL,
+  `d` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`a`,`b`)
+)
+
+#SQL[@70,N47]Result[]
 alter table sys_tbl_1 add unique index `b`(b,c);
+
+#SQL[@71,N27]Result[23, 205]
 show create table sys_tbl_1;
-Table    Create Table
-sys_tbl_1    CREATE TABLE `sys_tbl_1` (\n  `a` int NOT NULL,\n  `b` decimal(38,0) NOT NULL,\n  `c` char(1) DEFAULT NULL,\n  `d` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`a`,`b`),\n  UNIQUE KEY `b` (`b`,`c`)\n)
+Table  ¦  Create Table
+sys_tbl_1  ¦  CREATE TABLE `sys_tbl_1` (
+  `a` int NOT NULL,
+  `b` decimal(38,0) NOT NULL,
+  `c` char(1) DEFAULT NULL,
+  `d` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`a`,`b`),
+  UNIQUE KEY `b` (`b`,`c`)
+)
+
+#SQL[@72,N50]Result[]
 alter table sys_tbl_1 modify column a char after c;
+
+#SQL[@73,N27]Result[23, 209]
 show create table sys_tbl_1;
-Table    Create Table
-sys_tbl_1    CREATE TABLE `sys_tbl_1` (\n  `b` decimal(38,0) NOT NULL,\n  `c` char(1) DEFAULT NULL,\n  `a` char(1) NOT NULL,\n  `d` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`a`,`b`),\n  UNIQUE KEY `b` (`b`,`c`)\n)
+Table  ¦  Create Table
+sys_tbl_1  ¦  CREATE TABLE `sys_tbl_1` (
+  `b` decimal(38,0) NOT NULL,
+  `c` char(1) DEFAULT NULL,
+  `a` char(1) NOT NULL,
+  `d` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`a`,`b`),
+  UNIQUE KEY `b` (`b`,`c`)
+)
+
+#SQL[@75,N18]Result[]
 drop database sub1;
+
+#SQL[@77,N17]Result[]
 drop account acc0;
+
+#SQL[@78,N26]Result[]
 drop publication sys_pub_1;
+
+#SQL[@79,N22]Result[]
 drop database sys_db_1;
+

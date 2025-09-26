@@ -1,348 +1,638 @@
+#SQL[@1,N27]Result[]
 drop database if exists db7;
+
+#SQL[@2,N19]Result[]
 create database db7;
+
+#SQL[@3,N7]Result[]
 use db7;
+
+#SQL[@5,N25]Result[]
 drop table if exists dept;
+
+#SQL[@6,N292]Result[]
 create table dept(
-deptno int unsigned auto_increment COMMENT '部门编号',
-dname varchar(15) COMMENT '部门名称',
-loc varchar(50)  COMMENT '部门所在位置',
-primary key(deptno)
+                     deptno int unsigned auto_increment COMMENT '部门编号',
+                     dname varchar(15) COMMENT '部门名称',
+                     loc varchar(50)  COMMENT '部门所在位置',
+                     primary key(deptno)
 ) COMMENT='部门表';
+
+#SQL[@13,N52]Result[]
 INSERT INTO dept VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@14,N48]Result[]
 INSERT INTO dept VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@15,N46]Result[]
 INSERT INTO dept VALUES (30,'SALES','CHICAGO');
+
+#SQL[@16,N50]Result[]
 INSERT INTO dept VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@18,N24]Result[]
 drop table if exists emp;
+
+#SQL[@19,N676]Result[]
 create table emp(
-empno int unsigned auto_increment COMMENT '雇员编号',
-ename varchar(15) COMMENT '雇员姓名',
-job varchar(10) COMMENT '雇员职位',
-mgr int unsigned COMMENT '雇员对应的领导的编号',
-hiredate date COMMENT '雇员的雇佣日期',
-sal decimal(7,2) COMMENT '雇员的基本工资',
-comm decimal(7,2) COMMENT '奖金',
-deptno int unsigned COMMENT '所在部门',
-primary key(empno),
-constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
+                    empno int unsigned auto_increment COMMENT '雇员编号',
+                    ename varchar(15) COMMENT '雇员姓名',
+                    job varchar(10) COMMENT '雇员职位',
+                    mgr int unsigned COMMENT '雇员对应的领导的编号',
+                    hiredate date COMMENT '雇员的雇佣日期',
+                    sal decimal(7,2) COMMENT '雇员的基本工资',
+                    comm decimal(7,2) COMMENT '奖金',
+                    deptno int unsigned COMMENT '所在部门',
+                    primary key(empno),
+                    constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
 );
+
+#SQL[@32,N75]Result[]
 INSERT INTO emp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+
+#SQL[@33,N78]Result[]
 INSERT INTO emp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-02-20',1600,300,30);
+
+#SQL[@34,N77]Result[]
 INSERT INTO emp VALUES (7521,'WARD','SALESMAN',7698,'1981-02-22',1250,500,30);
+
+#SQL[@35,N78]Result[]
 INSERT INTO emp VALUES (7566,'JONES','MANAGER',7839,'1981-04-02',2975,NULL,20);
+
+#SQL[@36,N80]Result[]
 INSERT INTO emp VALUES (7654,'MARTIN','SALESMAN',7698,'1981-09-28',1250,1400,30);
+
+#SQL[@37,N78]Result[]
 INSERT INTO emp VALUES (7698,'BLAKE','MANAGER',7839,'1981-05-01',2850,NULL,30);
+
+#SQL[@38,N78]Result[]
 INSERT INTO emp VALUES (7782,'CLARK','MANAGER',7839,'1981-06-09',2450,NULL,10);
+
+#SQL[@39,N78]Result[]
 INSERT INTO emp VALUES (7788,'SCOTT','ANALYST',7566,'0087-07-13',3000,NULL,20);
+
+#SQL[@40,N79]Result[]
 INSERT INTO emp VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+
+#SQL[@41,N77]Result[]
 INSERT INTO emp VALUES (7844,'TURNER','SALESMAN',7698,'1981-09-08',1500,0,30);
+
+#SQL[@42,N76]Result[]
 INSERT INTO emp VALUES (7876,'ADAMS','CLERK',7788,'0087-07-13',1100,NULL,20);
+
+#SQL[@43,N75]Result[]
 INSERT INTO emp VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30);
+
+#SQL[@44,N77]Result[]
 INSERT INTO emp VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20);
+
+#SQL[@45,N77]Result[]
 INSERT INTO emp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@49,N55]Error[87]
 alter table dept modify deptno int unsigned after dname;
 Cannot change column 'deptno': used in a foreign key constraint 'c1' of table 'db7.emp'
+
+#SQL[@52,N43]Error[87]
 alter table dept modify deptno int unsigned;
 Cannot change column 'deptno': used in a foreign key constraint 'c1' of table 'db7.emp'
+
+#SQL[@55,N62]Error[50]
 alter table dept change deptno deptId int unsigned after dname;
 Columns participating in a foreign key are renamed
+
+#SQL[@58,N50]Error[50]
 alter table dept change deptno deptId int unsigned;
 Columns participating in a foreign key are renamed
+
+#SQL[@61,N50]Error[87]
 alter table dept change deptno deptno int unsigned;
 Cannot change column 'deptno': used in a foreign key constraint 'c1' of table 'db7.emp'
+
+#SQL[@64,N62]Error[87]
 alter table dept change deptno deptno int unsigned after dname;
 Cannot change column 'deptno': used in a foreign key constraint 'c1' of table 'db7.emp'
+
+#SQL[@67,N58]Result[]
 alter table dept modify deptno int unsigned auto_increment;
+
+#SQL[@69,N9]Result[71, 81, 71, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-deptno    INT UNSIGNED(32)    NO    PRI    null    auto_increment    
-dname    VARCHAR(15)    YES        null        部门名称
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@70,N18]Result[26, 32, 28, 26, 30]
 select * from dept;
-deptno    dname    loc
-10    ACCOUNTING    NEW YORK
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
+deptno  ¦  dname  ¦  loc
+10  ¦  ACCOUNTING  ¦  NEW YORK
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+
+#SQL[@72,N70]Result[]
 alter table dept modify deptno int unsigned auto_increment after dname;
+
+#SQL[@74,N9]Result[71, 71, 81, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-dname    VARCHAR(15)    YES        null        部门名称
-deptno    INT UNSIGNED(32)    NO    PRI    null    auto_increment    
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@75,N18]Result[26, 32, 28, 26, 30]
 select * from dept;
-dname    deptno    loc
-ACCOUNTING    10    NEW YORK
-RESEARCH    20    DALLAS
-SALES    30    CHICAGO
-OPERATIONS    40    BOSTON
+dname  ¦  deptno  ¦  loc
+ACCOUNTING  ¦  10  ¦  NEW YORK
+RESEARCH  ¦  20  ¦  DALLAS
+SALES  ¦  30  ¦  CHICAGO
+OPERATIONS  ¦  40  ¦  BOSTON
+
+#SQL[@77,N78]Error[80]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,100);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@80,N77]Result[]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@81,N17]Result[79, 82, 88, 87, 85, 90, 85, 85, 85, 86, 87, 83, 82, 84, 84, 84]
 select * from emp;
-empno    ename    job    mgr    hiredate    sal    comm    deptno
-7369    SMITH    CLERK    7902    1980-12-17    800.00    null    20
-7499    ALLEN    SALESMAN    7698    1981-02-20    1600.00    300.00    30
-7521    WARD    SALESMAN    7698    1981-02-22    1250.00    500.00    30
-7566    JONES    MANAGER    7839    1981-04-02    2975.00    null    20
-7654    MARTIN    SALESMAN    7698    1981-09-28    1250.00    1400.00    30
-7698    BLAKE    MANAGER    7839    1981-05-01    2850.00    null    30
-7782    CLARK    MANAGER    7839    1981-06-09    2450.00    null    10
-7788    SCOTT    ANALYST    7566    0087-07-13    3000.00    null    20
-7839    KING    PRESIDENT    null    1981-11-17    5000.00    null    10
-7844    TURNER    SALESMAN    7698    1981-09-08    1500.00    0.00    30
-7876    ADAMS    CLERK    7788    0087-07-13    1100.00    null    20
-7900    JAMES    CLERK    7698    1981-12-03    950.00    null    30
-7902    FORD    ANALYST    7566    1981-12-03    3000.00    null    20
-7934    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
-7990    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
+empno  ¦  ename  ¦  job  ¦  mgr  ¦  hiredate  ¦  sal  ¦  comm  ¦  deptno
+7369  ¦  SMITH  ¦  CLERK  ¦  7902  ¦  1980-12-17  ¦  800.00  ¦  null  ¦  20
+7499  ¦  ALLEN  ¦  SALESMAN  ¦  7698  ¦  1981-02-20  ¦  1600.00  ¦  300.00  ¦  30
+7521  ¦  WARD  ¦  SALESMAN  ¦  7698  ¦  1981-02-22  ¦  1250.00  ¦  500.00  ¦  30
+7566  ¦  JONES  ¦  MANAGER  ¦  7839  ¦  1981-04-02  ¦  2975.00  ¦  null  ¦  20
+7654  ¦  MARTIN  ¦  SALESMAN  ¦  7698  ¦  1981-09-28  ¦  1250.00  ¦  1400.00  ¦  30
+7698  ¦  BLAKE  ¦  MANAGER  ¦  7839  ¦  1981-05-01  ¦  2850.00  ¦  null  ¦  30
+7782  ¦  CLARK  ¦  MANAGER  ¦  7839  ¦  1981-06-09  ¦  2450.00  ¦  null  ¦  10
+7788  ¦  SCOTT  ¦  ANALYST  ¦  7566  ¦  0087-07-13  ¦  3000.00  ¦  null  ¦  20
+7839  ¦  KING  ¦  PRESIDENT  ¦  null  ¦  1981-11-17  ¦  5000.00  ¦  null  ¦  10
+7844  ¦  TURNER  ¦  SALESMAN  ¦  7698  ¦  1981-09-08  ¦  1500.00  ¦  0.00  ¦  30
+7876  ¦  ADAMS  ¦  CLERK  ¦  7788  ¦  0087-07-13  ¦  1100.00  ¦  null  ¦  20
+7900  ¦  JAMES  ¦  CLERK  ¦  7698  ¦  1981-12-03  ¦  950.00  ¦  null  ¦  30
+7902  ¦  FORD  ¦  ANALYST  ¦  7566  ¦  1981-12-03  ¦  3000.00  ¦  null  ¦  20
+7934  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+7990  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+
+#SQL[@83,N14]Result[]
 drop table emp;
+
+#SQL[@84,N15]Result[]
 drop table dept;
+
+#SQL[@86,N25]Result[]
 drop table if exists dept;
+
+#SQL[@87,N277]Result[]
 create table dept(
-deptno int unsigned COMMENT '部门编号',
-dname varchar(15) COMMENT '部门名称',
-loc varchar(50)  COMMENT '部门所在位置',
-primary key(deptno)
+                     deptno int unsigned COMMENT '部门编号',
+                     dname varchar(15) COMMENT '部门名称',
+                     loc varchar(50)  COMMENT '部门所在位置',
+                     primary key(deptno)
 ) COMMENT='部门表';
+
+#SQL[@94,N52]Result[]
 INSERT INTO dept VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@95,N48]Result[]
 INSERT INTO dept VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@96,N46]Result[]
 INSERT INTO dept VALUES (30,'SALES','CHICAGO');
+
+#SQL[@97,N50]Result[]
 INSERT INTO dept VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@99,N24]Result[]
 drop table if exists emp;
+
+#SQL[@100,N676]Result[]
 create table emp(
-empno int unsigned auto_increment COMMENT '雇员编号',
-ename varchar(15) COMMENT '雇员姓名',
-job varchar(10) COMMENT '雇员职位',
-mgr int unsigned COMMENT '雇员对应的领导的编号',
-hiredate date COMMENT '雇员的雇佣日期',
-sal decimal(7,2) COMMENT '雇员的基本工资',
-comm decimal(7,2) COMMENT '奖金',
-deptno int unsigned COMMENT '所在部门',
-primary key(empno),
-constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
+                    empno int unsigned auto_increment COMMENT '雇员编号',
+                    ename varchar(15) COMMENT '雇员姓名',
+                    job varchar(10) COMMENT '雇员职位',
+                    mgr int unsigned COMMENT '雇员对应的领导的编号',
+                    hiredate date COMMENT '雇员的雇佣日期',
+                    sal decimal(7,2) COMMENT '雇员的基本工资',
+                    comm decimal(7,2) COMMENT '奖金',
+                    deptno int unsigned COMMENT '所在部门',
+                    primary key(empno),
+                    constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
 );
+
+#SQL[@113,N75]Result[]
 INSERT INTO emp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+
+#SQL[@114,N78]Result[]
 INSERT INTO emp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-02-20',1600,300,30);
+
+#SQL[@115,N77]Result[]
 INSERT INTO emp VALUES (7521,'WARD','SALESMAN',7698,'1981-02-22',1250,500,30);
+
+#SQL[@116,N78]Result[]
 INSERT INTO emp VALUES (7566,'JONES','MANAGER',7839,'1981-04-02',2975,NULL,20);
+
+#SQL[@117,N80]Result[]
 INSERT INTO emp VALUES (7654,'MARTIN','SALESMAN',7698,'1981-09-28',1250,1400,30);
+
+#SQL[@118,N78]Result[]
 INSERT INTO emp VALUES (7698,'BLAKE','MANAGER',7839,'1981-05-01',2850,NULL,30);
+
+#SQL[@119,N78]Result[]
 INSERT INTO emp VALUES (7782,'CLARK','MANAGER',7839,'1981-06-09',2450,NULL,10);
+
+#SQL[@120,N78]Result[]
 INSERT INTO emp VALUES (7788,'SCOTT','ANALYST',7566,'0087-07-13',3000,NULL,20);
+
+#SQL[@121,N79]Result[]
 INSERT INTO emp VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+
+#SQL[@122,N77]Result[]
 INSERT INTO emp VALUES (7844,'TURNER','SALESMAN',7698,'1981-09-08',1500,0,30);
+
+#SQL[@123,N76]Result[]
 INSERT INTO emp VALUES (7876,'ADAMS','CLERK',7788,'0087-07-13',1100,NULL,20);
+
+#SQL[@124,N75]Result[]
 INSERT INTO emp VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30);
+
+#SQL[@125,N77]Result[]
 INSERT INTO emp VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20);
+
+#SQL[@126,N77]Result[]
 INSERT INTO emp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@128,N58]Error[87]
 alter table dept modify deptno int unsigned auto_increment;
 Cannot change column 'deptno': used in a foreign key constraint 'c1' of table 'db7.emp'
+
+#SQL[@131,N70]Error[87]
 alter table dept modify deptno int unsigned auto_increment after dname;
 Cannot change column 'deptno': used in a foreign key constraint 'c1' of table 'db7.emp'
+
+#SQL[@134,N77]Error[50]
 alter table dept change deptno deptId int unsigned auto_increment after dname;
 Columns participating in a foreign key are renamed
+
+#SQL[@137,N65]Error[50]
 alter table dept change deptno deptId int unsigned auto_increment;
 Columns participating in a foreign key are renamed
+
+#SQL[@140,N62]Result[]
 alter table dept change deptno deptId int unsigned after dname;
+
+#SQL[@142,N9]Result[71, 71, 67, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-dname    VARCHAR(15)    YES        null        部门名称
-deptId    INT UNSIGNED(32)    NO    PRI    null        
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+deptId  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@144,N78]Error[80]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,100);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@146,N77]Result[]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@148,N17]Result[79, 82, 88, 87, 85, 90, 85, 85, 85, 86, 87, 83, 82, 84, 84, 84]
 select * from emp;
-empno    ename    job    mgr    hiredate    sal    comm    deptno
-7369    SMITH    CLERK    7902    1980-12-17    800.00    null    20
-7499    ALLEN    SALESMAN    7698    1981-02-20    1600.00    300.00    30
-7521    WARD    SALESMAN    7698    1981-02-22    1250.00    500.00    30
-7566    JONES    MANAGER    7839    1981-04-02    2975.00    null    20
-7654    MARTIN    SALESMAN    7698    1981-09-28    1250.00    1400.00    30
-7698    BLAKE    MANAGER    7839    1981-05-01    2850.00    null    30
-7782    CLARK    MANAGER    7839    1981-06-09    2450.00    null    10
-7788    SCOTT    ANALYST    7566    0087-07-13    3000.00    null    20
-7839    KING    PRESIDENT    null    1981-11-17    5000.00    null    10
-7844    TURNER    SALESMAN    7698    1981-09-08    1500.00    0.00    30
-7876    ADAMS    CLERK    7788    0087-07-13    1100.00    null    20
-7900    JAMES    CLERK    7698    1981-12-03    950.00    null    30
-7902    FORD    ANALYST    7566    1981-12-03    3000.00    null    20
-7934    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
-7990    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
+empno  ¦  ename  ¦  job  ¦  mgr  ¦  hiredate  ¦  sal  ¦  comm  ¦  deptno
+7369  ¦  SMITH  ¦  CLERK  ¦  7902  ¦  1980-12-17  ¦  800.00  ¦  null  ¦  20
+7499  ¦  ALLEN  ¦  SALESMAN  ¦  7698  ¦  1981-02-20  ¦  1600.00  ¦  300.00  ¦  30
+7521  ¦  WARD  ¦  SALESMAN  ¦  7698  ¦  1981-02-22  ¦  1250.00  ¦  500.00  ¦  30
+7566  ¦  JONES  ¦  MANAGER  ¦  7839  ¦  1981-04-02  ¦  2975.00  ¦  null  ¦  20
+7654  ¦  MARTIN  ¦  SALESMAN  ¦  7698  ¦  1981-09-28  ¦  1250.00  ¦  1400.00  ¦  30
+7698  ¦  BLAKE  ¦  MANAGER  ¦  7839  ¦  1981-05-01  ¦  2850.00  ¦  null  ¦  30
+7782  ¦  CLARK  ¦  MANAGER  ¦  7839  ¦  1981-06-09  ¦  2450.00  ¦  null  ¦  10
+7788  ¦  SCOTT  ¦  ANALYST  ¦  7566  ¦  0087-07-13  ¦  3000.00  ¦  null  ¦  20
+7839  ¦  KING  ¦  PRESIDENT  ¦  null  ¦  1981-11-17  ¦  5000.00  ¦  null  ¦  10
+7844  ¦  TURNER  ¦  SALESMAN  ¦  7698  ¦  1981-09-08  ¦  1500.00  ¦  0.00  ¦  30
+7876  ¦  ADAMS  ¦  CLERK  ¦  7788  ¦  0087-07-13  ¦  1100.00  ¦  null  ¦  20
+7900  ¦  JAMES  ¦  CLERK  ¦  7698  ¦  1981-12-03  ¦  950.00  ¦  null  ¦  30
+7902  ¦  FORD  ¦  ANALYST  ¦  7566  ¦  1981-12-03  ¦  3000.00  ¦  null  ¦  20
+7934  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+7990  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+
+#SQL[@150,N14]Result[]
 drop table emp;
+
+#SQL[@151,N15]Result[]
 drop table dept;
+
+#SQL[@153,N25]Result[]
 drop table if exists dept;
+
+#SQL[@154,N277]Result[]
 create table dept(
-deptno int unsigned COMMENT '部门编号',
-dname varchar(15) COMMENT '部门名称',
-loc varchar(50)  COMMENT '部门所在位置',
-primary key(deptno)
+                     deptno int unsigned COMMENT '部门编号',
+                     dname varchar(15) COMMENT '部门名称',
+                     loc varchar(50)  COMMENT '部门所在位置',
+                     primary key(deptno)
 ) COMMENT='部门表';
+
+#SQL[@161,N52]Result[]
 INSERT INTO dept VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@162,N48]Result[]
 INSERT INTO dept VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@163,N46]Result[]
 INSERT INTO dept VALUES (30,'SALES','CHICAGO');
+
+#SQL[@164,N50]Result[]
 INSERT INTO dept VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@166,N24]Result[]
 drop table if exists emp;
+
+#SQL[@167,N676]Result[]
 create table emp(
-empno int unsigned auto_increment COMMENT '雇员编号',
-ename varchar(15) COMMENT '雇员姓名',
-job varchar(10) COMMENT '雇员职位',
-mgr int unsigned COMMENT '雇员对应的领导的编号',
-hiredate date COMMENT '雇员的雇佣日期',
-sal decimal(7,2) COMMENT '雇员的基本工资',
-comm decimal(7,2) COMMENT '奖金',
-deptno int unsigned COMMENT '所在部门',
-primary key(empno),
-constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
+                    empno int unsigned auto_increment COMMENT '雇员编号',
+                    ename varchar(15) COMMENT '雇员姓名',
+                    job varchar(10) COMMENT '雇员职位',
+                    mgr int unsigned COMMENT '雇员对应的领导的编号',
+                    hiredate date COMMENT '雇员的雇佣日期',
+                    sal decimal(7,2) COMMENT '雇员的基本工资',
+                    comm decimal(7,2) COMMENT '奖金',
+                    deptno int unsigned COMMENT '所在部门',
+                    primary key(empno),
+                    constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
 );
+
+#SQL[@180,N75]Result[]
 INSERT INTO emp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+
+#SQL[@181,N78]Result[]
 INSERT INTO emp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-02-20',1600,300,30);
+
+#SQL[@182,N77]Result[]
 INSERT INTO emp VALUES (7521,'WARD','SALESMAN',7698,'1981-02-22',1250,500,30);
+
+#SQL[@183,N78]Result[]
 INSERT INTO emp VALUES (7566,'JONES','MANAGER',7839,'1981-04-02',2975,NULL,20);
+
+#SQL[@184,N80]Result[]
 INSERT INTO emp VALUES (7654,'MARTIN','SALESMAN',7698,'1981-09-28',1250,1400,30);
+
+#SQL[@185,N78]Result[]
 INSERT INTO emp VALUES (7698,'BLAKE','MANAGER',7839,'1981-05-01',2850,NULL,30);
+
+#SQL[@186,N78]Result[]
 INSERT INTO emp VALUES (7782,'CLARK','MANAGER',7839,'1981-06-09',2450,NULL,10);
+
+#SQL[@187,N78]Result[]
 INSERT INTO emp VALUES (7788,'SCOTT','ANALYST',7566,'0087-07-13',3000,NULL,20);
+
+#SQL[@188,N79]Result[]
 INSERT INTO emp VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+
+#SQL[@189,N77]Result[]
 INSERT INTO emp VALUES (7844,'TURNER','SALESMAN',7698,'1981-09-08',1500,0,30);
+
+#SQL[@190,N76]Result[]
 INSERT INTO emp VALUES (7876,'ADAMS','CLERK',7788,'0087-07-13',1100,NULL,20);
+
+#SQL[@191,N75]Result[]
 INSERT INTO emp VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30);
+
+#SQL[@192,N77]Result[]
 INSERT INTO emp VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20);
+
+#SQL[@193,N77]Result[]
 INSERT INTO emp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@195,N54]Result[]
 alter table dept modify deptno int unsigned default 10;
+
+#SQL[@196,N9]Result[71, 65, 71, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-deptno    INT UNSIGNED(32)    NO    PRI    10        
-dname    VARCHAR(15)    YES        null        部门名称
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  10  ¦    ¦  
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@197,N18]Result[26, 32, 28, 26, 30]
 select * from dept;
-deptno    dname    loc
-10    ACCOUNTING    NEW YORK
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
+deptno  ¦  dname  ¦  loc
+10  ¦  ACCOUNTING  ¦  NEW YORK
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+
+#SQL[@200,N55]Result[]
 alter table dept modify deptno int unsigned after dname;
+
+#SQL[@201,N9]Result[71, 71, 67, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-dname    VARCHAR(15)    YES        null        部门名称
-deptno    INT UNSIGNED(32)    NO    PRI    null        
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@202,N18]Result[26, 32, 28, 26, 30]
 select * from dept;
-dname    deptno    loc
-ACCOUNTING    10    NEW YORK
-RESEARCH    20    DALLAS
-SALES    30    CHICAGO
-OPERATIONS    40    BOSTON
+dname  ¦  deptno  ¦  loc
+ACCOUNTING  ¦  10  ¦  NEW YORK
+RESEARCH  ¦  20  ¦  DALLAS
+SALES  ¦  30  ¦  CHICAGO
+OPERATIONS  ¦  40  ¦  BOSTON
+
+#SQL[@205,N78]Error[80]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,100);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@207,N77]Result[]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@209,N17]Result[79, 82, 88, 87, 85, 90, 85, 85, 85, 86, 87, 83, 82, 84, 84, 84]
 select * from emp;
-empno    ename    job    mgr    hiredate    sal    comm    deptno
-7369    SMITH    CLERK    7902    1980-12-17    800.00    null    20
-7499    ALLEN    SALESMAN    7698    1981-02-20    1600.00    300.00    30
-7521    WARD    SALESMAN    7698    1981-02-22    1250.00    500.00    30
-7566    JONES    MANAGER    7839    1981-04-02    2975.00    null    20
-7654    MARTIN    SALESMAN    7698    1981-09-28    1250.00    1400.00    30
-7698    BLAKE    MANAGER    7839    1981-05-01    2850.00    null    30
-7782    CLARK    MANAGER    7839    1981-06-09    2450.00    null    10
-7788    SCOTT    ANALYST    7566    0087-07-13    3000.00    null    20
-7839    KING    PRESIDENT    null    1981-11-17    5000.00    null    10
-7844    TURNER    SALESMAN    7698    1981-09-08    1500.00    0.00    30
-7876    ADAMS    CLERK    7788    0087-07-13    1100.00    null    20
-7900    JAMES    CLERK    7698    1981-12-03    950.00    null    30
-7902    FORD    ANALYST    7566    1981-12-03    3000.00    null    20
-7934    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
-7990    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
+empno  ¦  ename  ¦  job  ¦  mgr  ¦  hiredate  ¦  sal  ¦  comm  ¦  deptno
+7369  ¦  SMITH  ¦  CLERK  ¦  7902  ¦  1980-12-17  ¦  800.00  ¦  null  ¦  20
+7499  ¦  ALLEN  ¦  SALESMAN  ¦  7698  ¦  1981-02-20  ¦  1600.00  ¦  300.00  ¦  30
+7521  ¦  WARD  ¦  SALESMAN  ¦  7698  ¦  1981-02-22  ¦  1250.00  ¦  500.00  ¦  30
+7566  ¦  JONES  ¦  MANAGER  ¦  7839  ¦  1981-04-02  ¦  2975.00  ¦  null  ¦  20
+7654  ¦  MARTIN  ¦  SALESMAN  ¦  7698  ¦  1981-09-28  ¦  1250.00  ¦  1400.00  ¦  30
+7698  ¦  BLAKE  ¦  MANAGER  ¦  7839  ¦  1981-05-01  ¦  2850.00  ¦  null  ¦  30
+7782  ¦  CLARK  ¦  MANAGER  ¦  7839  ¦  1981-06-09  ¦  2450.00  ¦  null  ¦  10
+7788  ¦  SCOTT  ¦  ANALYST  ¦  7566  ¦  0087-07-13  ¦  3000.00  ¦  null  ¦  20
+7839  ¦  KING  ¦  PRESIDENT  ¦  null  ¦  1981-11-17  ¦  5000.00  ¦  null  ¦  10
+7844  ¦  TURNER  ¦  SALESMAN  ¦  7698  ¦  1981-09-08  ¦  1500.00  ¦  0.00  ¦  30
+7876  ¦  ADAMS  ¦  CLERK  ¦  7788  ¦  0087-07-13  ¦  1100.00  ¦  null  ¦  20
+7900  ¦  JAMES  ¦  CLERK  ¦  7698  ¦  1981-12-03  ¦  950.00  ¦  null  ¦  30
+7902  ¦  FORD  ¦  ANALYST  ¦  7566  ¦  1981-12-03  ¦  3000.00  ¦  null  ¦  20
+7934  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+7990  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+
+#SQL[@211,N14]Result[]
 drop table emp;
+
+#SQL[@212,N15]Result[]
 drop table dept;
+
+#SQL[@214,N25]Result[]
 drop table if exists dept;
+
+#SQL[@215,N292]Result[]
 create table dept(
-deptno int unsigned auto_increment COMMENT '部门编号',
-dname varchar(15) COMMENT '部门名称',
-loc varchar(50)  COMMENT '部门所在位置',
-primary key(deptno)
+                     deptno int unsigned auto_increment COMMENT '部门编号',
+                     dname varchar(15) COMMENT '部门名称',
+                     loc varchar(50)  COMMENT '部门所在位置',
+                     primary key(deptno)
 ) COMMENT='部门表';
+
+#SQL[@222,N52]Result[]
 INSERT INTO dept VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@223,N48]Result[]
 INSERT INTO dept VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@224,N46]Result[]
 INSERT INTO dept VALUES (30,'SALES','CHICAGO');
+
+#SQL[@225,N50]Result[]
 INSERT INTO dept VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@227,N24]Result[]
 drop table if exists emp;
+
+#SQL[@228,N676]Result[]
 create table emp(
-empno int unsigned auto_increment COMMENT '雇员编号',
-ename varchar(15) COMMENT '雇员姓名',
-job varchar(10) COMMENT '雇员职位',
-mgr int unsigned COMMENT '雇员对应的领导的编号',
-hiredate date COMMENT '雇员的雇佣日期',
-sal decimal(7,2) COMMENT '雇员的基本工资',
-comm decimal(7,2) COMMENT '奖金',
-deptno int unsigned COMMENT '所在部门',
-primary key(empno),
-constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
+                    empno int unsigned auto_increment COMMENT '雇员编号',
+                    ename varchar(15) COMMENT '雇员姓名',
+                    job varchar(10) COMMENT '雇员职位',
+                    mgr int unsigned COMMENT '雇员对应的领导的编号',
+                    hiredate date COMMENT '雇员的雇佣日期',
+                    sal decimal(7,2) COMMENT '雇员的基本工资',
+                    comm decimal(7,2) COMMENT '奖金',
+                    deptno int unsigned COMMENT '所在部门',
+                    primary key(empno),
+                    constraint `c1` FOREIGN KEY (deptno) REFERENCES dept(deptno)
 );
+
+#SQL[@241,N75]Result[]
 INSERT INTO emp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+
+#SQL[@242,N78]Result[]
 INSERT INTO emp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-02-20',1600,300,30);
+
+#SQL[@243,N77]Result[]
 INSERT INTO emp VALUES (7521,'WARD','SALESMAN',7698,'1981-02-22',1250,500,30);
+
+#SQL[@244,N78]Result[]
 INSERT INTO emp VALUES (7566,'JONES','MANAGER',7839,'1981-04-02',2975,NULL,20);
+
+#SQL[@245,N80]Result[]
 INSERT INTO emp VALUES (7654,'MARTIN','SALESMAN',7698,'1981-09-28',1250,1400,30);
+
+#SQL[@246,N78]Result[]
 INSERT INTO emp VALUES (7698,'BLAKE','MANAGER',7839,'1981-05-01',2850,NULL,30);
+
+#SQL[@247,N78]Result[]
 INSERT INTO emp VALUES (7782,'CLARK','MANAGER',7839,'1981-06-09',2450,NULL,10);
+
+#SQL[@248,N78]Result[]
 INSERT INTO emp VALUES (7788,'SCOTT','ANALYST',7566,'0087-07-13',3000,NULL,20);
+
+#SQL[@249,N79]Result[]
 INSERT INTO emp VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+
+#SQL[@250,N77]Result[]
 INSERT INTO emp VALUES (7844,'TURNER','SALESMAN',7698,'1981-09-08',1500,0,30);
+
+#SQL[@251,N76]Result[]
 INSERT INTO emp VALUES (7876,'ADAMS','CLERK',7788,'0087-07-13',1100,NULL,20);
+
+#SQL[@252,N75]Result[]
 INSERT INTO emp VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30);
+
+#SQL[@253,N77]Result[]
 INSERT INTO emp VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20);
+
+#SQL[@254,N77]Result[]
 INSERT INTO emp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@257,N51]Result[]
 alter table dept ALTER COLUMN deptno SET DEFAULT 10;
+
+#SQL[@259,N9]Result[71, 93, 71, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-deptno    INT UNSIGNED(32)    NO    PRI    null    auto_increment    部门编号
-dname    VARCHAR(15)    YES        null        部门名称
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  部门编号
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@261,N50]Result[]
 alter table dept ALTER COLUMN deptno SET INVISIBLE;
+
+#SQL[@263,N9]Result[71, 93, 71, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-deptno    INT UNSIGNED(32)    NO    PRI    null    auto_increment    部门编号
-dname    VARCHAR(15)    YES        null        部门名称
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  部门编号
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@265,N49]Result[]
 alter table dept ALTER COLUMN deptno drop default;
+
+#SQL[@267,N9]Result[71, 93, 71, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-deptno    INT UNSIGNED(32)    NO    PRI    null    auto_increment    部门编号
-dname    VARCHAR(15)    YES        null        部门名称
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+deptno  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  部门编号
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@269,N47]Result[]
 alter table dept rename column deptno to deptid;
+
+#SQL[@271,N9]Result[71, 93, 71, 75]
 desc dept;
-Field    Type    Null    Key    Default    Extra    Comment
-deptid    INT UNSIGNED(32)    NO    PRI    null    auto_increment    部门编号
-dname    VARCHAR(15)    YES        null        部门名称
-loc    VARCHAR(50)    YES        null        部门所在位置
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+deptid  ¦  INT UNSIGNED(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  部门编号
+dname  ¦  VARCHAR(15)  ¦  YES  ¦    ¦  null  ¦    ¦  部门名称
+loc  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  部门所在位置
+
+#SQL[@272,N18]Result[26, 32, 28, 26, 30]
 select * from dept;
-deptid    dname    loc
-10    ACCOUNTING    NEW YORK
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
+deptid  ¦  dname  ¦  loc
+10  ¦  ACCOUNTING  ¦  NEW YORK
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+
+#SQL[@275,N78]Error[80]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,100);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@277,N77]Result[]
 INSERT INTO emp VALUES (7990,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@278,N17]Result[79, 82, 88, 87, 85, 90, 85, 85, 85, 86, 87, 83, 82, 84, 84, 84]
 select * from emp;
-empno    ename    job    mgr    hiredate    sal    comm    deptno
-7369    SMITH    CLERK    7902    1980-12-17    800.00    null    20
-7499    ALLEN    SALESMAN    7698    1981-02-20    1600.00    300.00    30
-7521    WARD    SALESMAN    7698    1981-02-22    1250.00    500.00    30
-7566    JONES    MANAGER    7839    1981-04-02    2975.00    null    20
-7654    MARTIN    SALESMAN    7698    1981-09-28    1250.00    1400.00    30
-7698    BLAKE    MANAGER    7839    1981-05-01    2850.00    null    30
-7782    CLARK    MANAGER    7839    1981-06-09    2450.00    null    10
-7788    SCOTT    ANALYST    7566    0087-07-13    3000.00    null    20
-7839    KING    PRESIDENT    null    1981-11-17    5000.00    null    10
-7844    TURNER    SALESMAN    7698    1981-09-08    1500.00    0.00    30
-7876    ADAMS    CLERK    7788    0087-07-13    1100.00    null    20
-7900    JAMES    CLERK    7698    1981-12-03    950.00    null    30
-7902    FORD    ANALYST    7566    1981-12-03    3000.00    null    20
-7934    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
-7990    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
+empno  ¦  ename  ¦  job  ¦  mgr  ¦  hiredate  ¦  sal  ¦  comm  ¦  deptno
+7369  ¦  SMITH  ¦  CLERK  ¦  7902  ¦  1980-12-17  ¦  800.00  ¦  null  ¦  20
+7499  ¦  ALLEN  ¦  SALESMAN  ¦  7698  ¦  1981-02-20  ¦  1600.00  ¦  300.00  ¦  30
+7521  ¦  WARD  ¦  SALESMAN  ¦  7698  ¦  1981-02-22  ¦  1250.00  ¦  500.00  ¦  30
+7566  ¦  JONES  ¦  MANAGER  ¦  7839  ¦  1981-04-02  ¦  2975.00  ¦  null  ¦  20
+7654  ¦  MARTIN  ¦  SALESMAN  ¦  7698  ¦  1981-09-28  ¦  1250.00  ¦  1400.00  ¦  30
+7698  ¦  BLAKE  ¦  MANAGER  ¦  7839  ¦  1981-05-01  ¦  2850.00  ¦  null  ¦  30
+7782  ¦  CLARK  ¦  MANAGER  ¦  7839  ¦  1981-06-09  ¦  2450.00  ¦  null  ¦  10
+7788  ¦  SCOTT  ¦  ANALYST  ¦  7566  ¦  0087-07-13  ¦  3000.00  ¦  null  ¦  20
+7839  ¦  KING  ¦  PRESIDENT  ¦  null  ¦  1981-11-17  ¦  5000.00  ¦  null  ¦  10
+7844  ¦  TURNER  ¦  SALESMAN  ¦  7698  ¦  1981-09-08  ¦  1500.00  ¦  0.00  ¦  30
+7876  ¦  ADAMS  ¦  CLERK  ¦  7788  ¦  0087-07-13  ¦  1100.00  ¦  null  ¦  20
+7900  ¦  JAMES  ¦  CLERK  ¦  7698  ¦  1981-12-03  ¦  950.00  ¦  null  ¦  30
+7902  ¦  FORD  ¦  ANALYST  ¦  7566  ¦  1981-12-03  ¦  3000.00  ¦  null  ¦  20
+7934  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+7990  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+
+#SQL[@280,N14]Result[]
 drop table emp;
+
+#SQL[@281,N15]Result[]
 drop table dept;
+
+#SQL[@283,N27]Result[]
 drop database if exists db7;
+

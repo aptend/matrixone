@@ -1,540 +1,1184 @@
+#SQL[@5,N28]Result[]
 drop database if exists test;
+
+#SQL[@6,N20]Result[]
 create database test;
+
+#SQL[@7,N8]Result[]
 use test;
+
+#SQL[@10,N33]Result[]
 drop table if exists samecolumn01;
+
+#SQL[@11,N47]Result[]
 create table samecolumn01 (col1 int, col2 char);
+
+#SQL[@12,N56]Result[]
 alter table samecolumn01 rename column col1 to newColumn;
+
+#SQL[@13,N56]Error[33]
 alter table samecolumn01 rename column col2 to newcolumn;
 Duplicate column name 'newcolumn'
+
+#SQL[@14,N30]Result[23, 111]
 show create table samecolumn01;
-Table    Create Table
-samecolumn01    CREATE TABLE `samecolumn01` (\n  `newColumn` int DEFAULT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+samecolumn01  ¦  CREATE TABLE `samecolumn01` (
+  `newColumn` int DEFAULT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@15,N30]Result[71, 59, 54]
 show columns from samecolumn01;
-Field    Type    Null    Key    Default    Extra    Comment
-newColumn    INT(32)    YES        null        
-col2    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+newColumn  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@16,N23]Result[]
 drop table samecolumn01;
+
+#SQL[@19,N29]Result[]
 drop table if exists rename01;
+
+#SQL[@20,N46]Result[]
 create table rename01 (col1 int, col2 decimal);
+
+#SQL[@21,N50]Result[]
 alter table rename01 rename column col1 to col1New;
+
+#SQL[@22,N26]Result[23, 107]
 show create table rename01;
-Table    Create Table
-rename01    CREATE TABLE `rename01` (\n  `col1New` int DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+rename01  ¦  CREATE TABLE `rename01` (
+  `col1New` int DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@23,N26]Result[71, 57, 60]
 show columns from rename01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1New    INT(32)    YES        null        
-col2    DECIMAL(38,0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1New  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@24,N148]Result[]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'name01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
+
+#SQL[@25,N19]Result[]
 drop table rename01;
+
+#SQL[@29,N29]Result[]
 drop table if exists rename02;
+
+#SQL[@30,N61]Result[]
 create table rename02 (`colcolcol1` int, `colcolcol2` binary);
+
+#SQL[@31,N36]Result[]
 insert into rename02 values (1, '2');
+
+#SQL[@32,N36]Result[]
 insert into rename02 values (2, 'g');
+
+#SQL[@33,N63]Result[]
 alter table rename02 rename column `colcolcol1` to `colcolcol1`;
+
+#SQL[@34,N26]Result[23, 112]
 show create table rename02;
-Table    Create Table
-rename02    CREATE TABLE `rename02` (\n  `colcolcol1` int DEFAULT NULL,\n  `colcolcol2` binary(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+rename02  ¦  CREATE TABLE `rename02` (
+  `colcolcol1` int DEFAULT NULL,
+  `colcolcol2` binary(1) DEFAULT NULL
+)
+
+#SQL[@35,N61]Result[]
 insert into rename02 (colcolcol1, colcolcol2) values (3, '7');
+
+#SQL[@36,N41]Result[]
 delete from rename02 where colcolcol1 = 1;
+
+#SQL[@37,N57]Result[]
 update rename02 set colcolcol2 = '&' where colcolcol1 = 2;
+
+#SQL[@38,N22]Result[26, 8, 8]
 select * from rename02;
-colcolcol1    colcolcol2
-3    7
-2    &
+colcolcol1  ¦  colcolcol2
+3  ¦  7
+2  ¦  &
+
+#SQL[@39,N26]Result[71, 60, 62]
 show columns from rename02;
-Field    Type    Null    Key    Default    Extra    Comment
-colcolcol1    INT(32)    YES        null        
-colcolcol2    BINARY(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+colcolcol1  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+colcolcol2  ¦  BINARY(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@40,N150]Result[59, 42, 45]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'rename02' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-rename02    colcolcol1    INT    YES
-rename02    colcolcol2    BINARY    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+rename02  ¦  colcolcol1  ¦  INT  ¦  YES
+rename02  ¦  colcolcol2  ¦  BINARY  ¦  YES
+
+#SQL[@41,N19]Result[]
 drop table rename02;
+
+#SQL[@45,N29]Result[]
 drop table if exists rename03;
+
+#SQL[@46,N59]Result[]
 create table rename03(col1 int, col2 int, col3 varchar(20));
+
+#SQL[@47,N45]Result[]
 insert into rename03 values (1,2,'cfewquier');
+
+#SQL[@48,N42]Result[]
 insert into rename03 values (2,3,'329382');
+
+#SQL[@49,N41]Result[]
 insert into rename03 values (3, 10, null);
+
+#SQL[@50,N22]Result[24, 23, 20, 19]
 select * from rename03;
-col1    col2    col3
-1    2    cfewquier
-2    3    329382
-3    10    null
+col1  ¦  col2  ¦  col3
+1  ¦  2  ¦  cfewquier
+2  ¦  3  ¦  329382
+3  ¦  10  ¦  null
+
+#SQL[@51,N50]Result[]
 alter table rename03 rename column col1 to col1New;
+
+#SQL[@52,N50]Result[]
 alter table rename03 rename column col3 to col3New;
+
+#SQL[@53,N26]Result[23, 135]
 show create table rename03;
-Table    Create Table
-rename03    CREATE TABLE `rename03` (\n  `col1New` int DEFAULT NULL,\n  `col2` int DEFAULT NULL,\n  `col3New` varchar(20) DEFAULT NULL\n)
+Table  ¦  Create Table
+rename03  ¦  CREATE TABLE `rename03` (
+  `col1New` int DEFAULT NULL,
+  `col2` int DEFAULT NULL,
+  `col3New` varchar(20) DEFAULT NULL
+)
+
+#SQL[@54,N64]Error[35]
 insert into rename03 (col1, col2, col3) values (3,4,'121131312');
 Unknown column 'col1' in 'rename03'
+
+#SQL[@55,N70]Result[]
 insert into rename03 (col1New, col2, col3New) values (3,4,'121131312');
+
+#SQL[@56,N22]Result[30, 23, 20, 19, 23]
 select * from rename03;
-col1new    col2    col3new
-1    2    cfewquier
-2    3    329382
-3    10    null
-3    4    121131312
+col1new  ¦  col2  ¦  col3new
+1  ¦  2  ¦  cfewquier
+2  ¦  3  ¦  329382
+3  ¦  10  ¦  null
+3  ¦  4  ¦  121131312
+
+#SQL[@57,N51]Result[]
 update rename03 set col1New = 100 where col1New = 1;
+
+#SQL[@58,N64]Result[]
 update rename03 set col3New = '2798u3d3frew' where col3New = '6';
+
+#SQL[@59,N42]Result[]
 delete from rename03 where col3New is null;
+
+#SQL[@60,N22]Result[30, 20, 23, 25]
 select * from rename03;
-col1new    col2    col3new
-2    3    329382
-3    4    121131312
-100    2    cfewquier
+col1new  ¦  col2  ¦  col3new
+2  ¦  3  ¦  329382
+3  ¦  4  ¦  121131312
+100  ¦  2  ¦  cfewquier
+
+#SQL[@61,N26]Result[71, 57, 54, 61]
 show columns from rename03;
-Field    Type    Null    Key    Default    Extra    Comment
-col1New    INT(32)    YES        null        
-col2    INT(32)    YES        null        
-col3New    VARCHAR(20)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1New  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col3New  ¦  VARCHAR(20)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@62,N150]Result[59, 39, 36, 43]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'rename03' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-rename03    col1New    INT    YES
-rename03    col2    INT    YES
-rename03    col3New    VARCHAR    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+rename03  ¦  col1New  ¦  INT  ¦  YES
+rename03  ¦  col2  ¦  INT  ¦  YES
+rename03  ¦  col3New  ¦  VARCHAR  ¦  YES
+
+#SQL[@63,N19]Result[]
 drop table rename03;
+
+#SQL[@67,N29]Result[]
 drop table if exists rename04;
+
+#SQL[@68,N34]Result[]
 create table rename04(a int,b int);
+
+#SQL[@69,N32]Result[]
 insert into rename04 values(1,1);
+
+#SQL[@70,N44]Result[]
 alter table rename04 rename column a to newA;
+
+#SQL[@71,N26]Result[23, 91]
 show create table rename04;
-Table    Create Table
-rename04    CREATE TABLE `rename04` (\n  `newA` int DEFAULT NULL,\n  `b` int DEFAULT NULL\n)
+Table  ¦  Create Table
+rename04  ¦  CREATE TABLE `rename04` (
+  `newA` int DEFAULT NULL,
+  `b` int DEFAULT NULL
+)
+
+#SQL[@72,N42]Result[]
 update rename04 set newA = 100 where b = 1;
+
+#SQL[@73,N22]Result[11, 10]
 select * from rename04;
-newa    b
-100    1
+newa  ¦  b
+100  ¦  1
+
+#SQL[@74,N50]Result[]
 alter table rename04 rename column newA to newnewA;
+
+#SQL[@75,N26]Result[23, 94]
 show create table rename04;
-Table    Create Table
-rename04    CREATE TABLE `rename04` (\n  `newnewA` int DEFAULT NULL,\n  `b` int DEFAULT NULL\n)
+Table  ¦  Create Table
+rename04  ¦  CREATE TABLE `rename04` (
+  `newnewA` int DEFAULT NULL,
+  `b` int DEFAULT NULL
+)
+
+#SQL[@76,N34]Result[]
 insert into rename04 values (1, 3);
+
+#SQL[@77,N38]Result[]
 insert into rename04 values (1289,232);
+
+#SQL[@78,N41]Error[45]
 update rename04 set a = 10000 where b = 1;
-internal error: column 'a' not found in table 
+internal error: column 'a' not found in table
+
+#SQL[@79,N47]Result[]
 update rename04 set newnewA = 10000 where b = 1;
+
+#SQL[@80,N22]Result[14, 8, 13, 12]
 select * from rename04;
-newnewa    b
-1    3
-1289    232
-10000    1
+newnewa  ¦  b
+1  ¦  3
+1289  ¦  232
+10000  ¦  1
+
+#SQL[@81,N41]Error[235]
 delet from rename04 where newnewa = 10000;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 5 near "delet from rename04 where newnewa = 10000;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 5 near \"delet from rename04 where newnewa = 10000\";
+
+#SQL[@82,N22]Result[14, 8, 13, 12]
 select * from rename04;
-newnewa    b
-1    3
-1289    232
-10000    1
+newnewa  ¦  b
+1  ¦  3
+1289  ¦  232
+10000  ¦  1
+
+#SQL[@83,N26]Result[71, 57, 51]
 show columns from rename04;
-Field    Type    Null    Key    Default    Extra    Comment
-newnewA    INT(32)    YES        null        
-b    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+newnewA  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@84,N150]Result[59, 33, 39]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'rename04' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-rename04    b    INT    YES
-rename04    newnewA    INT    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+rename04  ¦  b  ¦  INT  ¦  YES
+rename04  ¦  newnewA  ¦  INT  ¦  YES
+
+#SQL[@85,N19]Result[]
 drop table rename04;
+
+#SQL[@89,N29]Result[]
 drop table if exists rename06;
+
+#SQL[@90,N31]Result[]
 create table rename06(col1 int);
+
+#SQL[@91,N34]Result[]
 insert into rename06 values(1),(2);
+
+#SQL[@92,N45]Error[198]
 alter table rename06 rename column col1 to '';
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 45 near " '';";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 45 near \" ''\";
+
+#SQL[@93,N46]Error[199]
 alter table rename06 rename column col1 to ' ';
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 46 near " ' ';";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 46 near \" ' '\";
+
+#SQL[@94,N58]Error[211]
 alter table rename06 rename column col1 to 数据库系统;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 44 near " 数据库系统;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 44 near \" 数据库系统\";
+
+#SQL[@95,N63]Result[]
 alter table rename06 rename column col1 to 7327323467dhhjfkrnfe;
+
+#SQL[@96,N55]Error[208]
 alter table rename06 rename column col1 to **&&^^%%^&**;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 44 near " **&&^^%%^&**;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 44 near \" **&&^^%%^&**\";
+
+#SQL[@97,N19]Result[]
 drop table rename06;
+
+#SQL[@101,N29]Result[]
 drop table if exists rename06;
+
+#SQL[@102,N31]Result[]
 create table rename06(col1 int);
+
+#SQL[@103,N34]Result[]
 insert into rename06 values(1),(2);
+
+#SQL[@104,N60]Result[]
 alter table rename06 rename column col1 to `数据库系统`;
+
+#SQL[@105,N92]Error[35]
 alter table rename06 rename column col1 to `数据操作，数据收集7327323467dhhjfkrnfe`;
 Unknown column 'col1' in 'rename06'
+
+#SQL[@106,N150]Result[59, 47]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'rename06' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-rename06    数据库系统    INT    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+rename06  ¦  数据库系统  ¦  INT  ¦  YES
+
+#SQL[@107,N26]Result[71, 65]
 show columns from rename06;
-Field    Type    Null    Key    Default    Extra    Comment
-数据库系统    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+数据库系统  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@108,N19]Result[]
 drop table rename06;
+
+#SQL[@111,N69]Error[62]
 alter table system.statement_info rename column role_id to role_idNew;
 internal error: do not have privilege to execute the statement
+
+#SQL[@112,N72]Error[62]
 alter table mo_catalog.mo_database rename column dat_type to newdat_type;
 internal error: do not have privilege to execute the statement
+
+#SQL[@113,N64]Error[62]
 alter table mysql.procs_priv rename column grantor to newGrantor;
 internal error: do not have privilege to execute the statement
+
+#SQL[@117,N30]Result[]
 drop table if exists primary01;
+
+#SQL[@118,N60]Result[]
 create table primary01 (col1 int primary key , col2 decimal);
+
+#SQL[@119,N56]Result[]
 insert into primary01 values (2389324, 32784329.4309403);
+
+#SQL[@120,N45]Result[]
 insert into primary01 values (3287, 89384038);
+
+#SQL[@121,N51]Result[]
 alter table primary01 rename column col1 to col1New;
+
+#SQL[@122,N27]Result[23, 132]
 show create table primary01;
-Table    Create Table
-primary01    CREATE TABLE `primary01` (\n  `col1New` int NOT NULL,\n  `col2` decimal(38,0) DEFAULT NULL,\n  PRIMARY KEY (`col1New`)\n)
+Table  ¦  Create Table
+primary01  ¦  CREATE TABLE `primary01` (
+  `col1New` int NOT NULL,
+  `col2` decimal(38,0) DEFAULT NULL,
+  PRIMARY KEY (`col1New`)
+)
+
+#SQL[@123,N57]Result[]
 insert into primary01 values (-2839, 8239802839.00000000);
+
+#SQL[@125,N65]Error[40]
 insert into primary01 (col1New, col2) values (3287, 3293892.3232);
-Duplicate entry '3287' for key 'col1[Nn]ew'
+Duplicate entry '3287' for key 'col1new'
+
+#SQL[@126,N43]Result[]
 delete from primary01 where col1New = -2839;
+
+#SQL[@127,N59]Error[48]
 update primary01 set col1 = 2873892 where col1New = 2389324;
-internal error: column 'col1' not found in table 
+internal error: column 'col1' not found in table
+
+#SQL[@128,N62]Result[]
 update primary01 set col1New = 2873892 where col1New = 2389324;
+
+#SQL[@129,N23]Result[17, 18, 21]
 select * from primary01;
-col1new    col2
-3287    89384038
-2873892    32784329
+col1new  ¦  col2
+3287  ¦  89384038
+2873892  ¦  32784329
+
+#SQL[@130,N27]Result[71, 59, 60]
 show columns from primary01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1New    INT(32)    NO    PRI    null        
-col2    DECIMAL(38,0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1New  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@131,N151]Result[59, 39, 41]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'primary01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-primary01    col1New    INT    NO
-primary01    col2    DECIMAL    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+primary01  ¦  col1New  ¦  INT  ¦  NO
+primary01  ¦  col2  ¦  DECIMAL  ¦  YES
+
+#SQL[@132,N20]Result[]
 drop table primary01;
+
+#SQL[@136,N30]Result[]
 drop table if exists foreign01;
+
+#SQL[@137,N154]Result[]
 create table foreign01(col1 int primary key,
-col2 varchar(20),
-col3 int,
-col4 bigint);
+                       col2 varchar(20),
+                       col3 int,
+                       col4 bigint);
+
+#SQL[@141,N30]Result[]
 drop table if exists foreign02;
+
+#SQL[@142,N195]Result[]
 create table foreign02(col1 int,
-col2 int,
-col3 int primary key,
-constraint `c1` foreign key(col1) references foreign01(col1));
+                       col2 int,
+                       col3 int primary key,
+                       constraint `c1` foreign key(col1) references foreign01(col1));
+
+#SQL[@146,N27]Result[23, 181]
 show create table foreign01;
-Table    Create Table
-foreign01    CREATE TABLE `foreign01` (\n  `col1` int NOT NULL,\n  `col2` varchar(20) DEFAULT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+foreign01  ¦  CREATE TABLE `foreign01` (
+  `col1` int NOT NULL,
+  `col2` varchar(20) DEFAULT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@147,N27]Result[23, 253]
 show create table foreign02;
-Table    Create Table
-foreign02    CREATE TABLE `foreign02` (\n  `col1` int DEFAULT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` int NOT NULL,\n  PRIMARY KEY (`col3`),\n  CONSTRAINT `c1` FOREIGN KEY (`col1`) REFERENCES `foreign01` (`col1`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+foreign02  ¦  CREATE TABLE `foreign02` (
+  `col1` int DEFAULT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` int NOT NULL,
+  PRIMARY KEY (`col3`),
+  CONSTRAINT `c1` FOREIGN KEY (`col1`) REFERENCES `foreign01` (`col1`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@148,N44]Result[]
 insert into foreign01 values(1,'sfhuwe',1,1);
+
+#SQL[@149,N49]Result[]
 insert into foreign01 values(2,'37829901k3d',2,2);
+
+#SQL[@150,N35]Result[]
 insert into foreign02 values(1,1,1);
+
+#SQL[@151,N35]Result[]
 insert into foreign02 values(2,2,2);
+
+#SQL[@152,N23]Result[34, 27, 32]
 select * from foreign01;
-col1    col2    col3    col4
-1    sfhuwe    1    1
-2    37829901k3d    2    2
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  sfhuwe  ¦  1  ¦  1
+2  ¦  37829901k3d  ¦  2  ¦  2
+
+#SQL[@153,N23]Result[24, 15, 15]
 select * from foreign02;
-col1    col2    col3
-1    1    1
-2    2    2
+col1  ¦  col2  ¦  col3
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+
+#SQL[@154,N51]Result[]
 alter table foreign01 rename column col1 to col1New;
+
+#SQL[@155,N58]Result[]
 alter table foreign02 rename column col1 to `Colnewcolumn`;
+
+#SQL[@156,N27]Result[23, 187]
 show create table foreign01;
-Table    Create Table
-foreign01    CREATE TABLE `foreign01` (\n  `col1New` int NOT NULL,\n  `col2` varchar(20) DEFAULT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  PRIMARY KEY (`col1New`)\n)
+Table  ¦  Create Table
+foreign01  ¦  CREATE TABLE `foreign01` (
+  `col1New` int NOT NULL,
+  `col2` varchar(20) DEFAULT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  PRIMARY KEY (`col1New`)
+)
+
+#SQL[@157,N27]Result[23, 272]
 show create table foreign02;
-Table    Create Table
-foreign02    CREATE TABLE `foreign02` (\n  `Colnewcolumn` int DEFAULT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` int NOT NULL,\n  PRIMARY KEY (`col3`),\n  CONSTRAINT `c1` FOREIGN KEY (`Colnewcolumn`) REFERENCES `foreign01` (`col1New`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+foreign02  ¦  CREATE TABLE `foreign02` (
+  `Colnewcolumn` int DEFAULT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` int NOT NULL,
+  PRIMARY KEY (`col3`),
+  CONSTRAINT `c1` FOREIGN KEY (`Colnewcolumn`) REFERENCES `foreign01` (`col1New`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@158,N54]Result[]
 alter table foreign01 change col2 col2New varchar(100);
+
+#SQL[@159,N59]Result[]
 alter table foreign02 change col2 col2new double after col3;
+
+#SQL[@160,N57]Result[]
 insert into foreign01 values(3,'bcguwgheinwqneku678',2,2);
+
+#SQL[@161,N35]Error[80]
 insert into foreign02 values(6,6,6);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@162,N46]Error[84]
 delete from foreign01 where col2New = 'sfhuwe';
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@163,N39]Result[]
 delete from foreign02 where col2New = 2;
+
+#SQL[@164,N60]Error[49]
 update foreign01 set col2 = 'database ewueh ' where col1 = 1;
 internal error: column 'col2' not found in table 
+
+#SQL[@165,N56]Error[84]
 update foreign01 set col1new = 9283923 where col1new = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@166,N23]Result[40, 27, 32, 40]
 select * from foreign01;
-col1new    col2new    col3    col4
-1    sfhuwe    1    1
-2    37829901k3d    2    2
-3    bcguwgheinwqneku678    2    2
+col1new  ¦  col2new  ¦  col3  ¦  col4
+1  ¦  sfhuwe  ¦  1  ¦  1
+2  ¦  37829901k3d  ¦  2  ¦  2
+3  ¦  bcguwgheinwqneku678  ¦  2  ¦  2
+
+#SQL[@167,N23]Result[35, 15]
 select * from foreign02;
-colnewcolumn    col3    col2new
-1    1    1.0
+colnewcolumn  ¦  col3  ¦  col2new
+1  ¦  1  ¦  1
+
+#SQL[@168,N27]Result[23, 191]
 show create table foreign01;
-Table    Create Table
-foreign01    CREATE TABLE `foreign01` (\n  `col1New` int NOT NULL,\n  `col2New` varchar(100) DEFAULT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  PRIMARY KEY (`col1New`)\n)
+Table  ¦  Create Table
+foreign01  ¦  CREATE TABLE `foreign01` (
+  `col1New` int NOT NULL,
+  `col2New` varchar(100) DEFAULT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  PRIMARY KEY (`col1New`)
+)
+
+#SQL[@169,N27]Result[23, 278]
 show create table foreign02;
-Table    Create Table
-foreign02    CREATE TABLE `foreign02` (\n  `Colnewcolumn` int DEFAULT NULL,\n  `col3` int NOT NULL,\n  `col2new` double DEFAULT NULL,\n  PRIMARY KEY (`col3`),\n  CONSTRAINT `c1` FOREIGN KEY (`Colnewcolumn`) REFERENCES `foreign01` (`col1New`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+foreign02  ¦  CREATE TABLE `foreign02` (
+  `Colnewcolumn` int DEFAULT NULL,
+  `col3` int NOT NULL,
+  `col2new` double DEFAULT NULL,
+  PRIMARY KEY (`col3`),
+  CONSTRAINT `c1` FOREIGN KEY (`Colnewcolumn`) REFERENCES `foreign01` (`col1New`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@170,N27]Result[71, 59, 62, 54, 57]
 show columns from foreign01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1New    INT(32)    NO    PRI    null        
-col2New    VARCHAR(100)    YES        null        
-col3    INT(32)    YES        null        
-col4    BIGINT(64)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1New  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2New  ¦  VARCHAR(100)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col3  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col4  ¦  BIGINT(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@171,N27]Result[71, 65, 56, 59]
 show columns from foreign02;
-Field    Type    Null    Key    Default    Extra    Comment
-Colnewcolumn    INT(32)    YES    MUL    null        
-col3    INT(32)    NO    PRI    null        
-col2new    DOUBLE(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+Colnewcolumn  ¦  INT(32)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+col3  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2new  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@172,N151]Result[59, 39, 44, 37, 40]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'foreign01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-foreign01    col1New    INT    NO
-foreign01    col2New    VARCHAR    YES
-foreign01    col3    INT    YES
-foreign01    col4    BIGINT    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+foreign01  ¦  col1New  ¦  INT  ¦  NO
+foreign01  ¦  col2New  ¦  VARCHAR  ¦  YES
+foreign01  ¦  col3  ¦  INT  ¦  YES
+foreign01  ¦  col4  ¦  BIGINT  ¦  YES
+
+#SQL[@173,N151]Result[59, 45, 43, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'foreign02' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-foreign02    Colnewcolumn    INT    YES
-foreign02    col2new    DOUBLE    YES
-foreign02    col3    INT    NO
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+foreign02  ¦  Colnewcolumn  ¦  INT  ¦  YES
+foreign02  ¦  col2new  ¦  DOUBLE  ¦  YES
+foreign02  ¦  col3  ¦  INT  ¦  NO
+
+#SQL[@174,N20]Result[]
 drop table foreign02;
+
+#SQL[@175,N20]Result[]
 drop table foreign01;
+
+#SQL[@179,N28]Result[]
 drop table if exists index01;
+
+#SQL[@180,N95]Result[]
 CREATE TABLE index01(a INTEGER not null , b CHAR(10), c date, d decimal(7,2), UNIQUE KEY(a, b));
+
+#SQL[@181,N25]Result[23, 173]
 show create table index01;
-Table    Create Table
-index01    CREATE TABLE `index01` (\n  `a` int NOT NULL,\n  `b` char(10) DEFAULT NULL,\n  `c` date DEFAULT NULL,\n  `d` decimal(7,2) DEFAULT NULL,\n  UNIQUE KEY `a` (`a`,`b`)\n)
+Table  ¦  Create Table
+index01  ¦  CREATE TABLE `index01` (
+  `a` int NOT NULL,
+  `b` char(10) DEFAULT NULL,
+  `c` date DEFAULT NULL,
+  `d` decimal(7,2) DEFAULT NULL,
+  UNIQUE KEY `a` (`a`,`b`)
+)
+
+#SQL[@182,N54]Result[]
 insert into index01 values(1, 'ab', '1980-12-17', 800);
+
+#SQL[@183,N55]Result[]
 insert into index01 values(2, 'ac', '1981-02-20', 1600);
+
+#SQL[@184,N54]Result[]
 insert into index01 values(3, 'ad', '1981-02-22', 500);
+
+#SQL[@185,N21]Result[22, 37, 38, 37]
 select * from index01;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@186,N43]Result[]
 alter table index01 rename column b to bNew;
+
+#SQL[@187,N25]Result[23, 179]
 show create table index01;
-Table    Create Table
-index01    CREATE TABLE `index01` (\n  `a` int NOT NULL,\n  `bNew` char(10) DEFAULT NULL,\n  `c` date DEFAULT NULL,\n  `d` decimal(7,2) DEFAULT NULL,\n  UNIQUE KEY `a` (`a`,`bNew`)\n)
+Table  ¦  Create Table
+index01  ¦  CREATE TABLE `index01` (
+  `a` int NOT NULL,
+  `bNew` char(10) DEFAULT NULL,
+  `c` date DEFAULT NULL,
+  `d` decimal(7,2) DEFAULT NULL,
+  UNIQUE KEY `a` (`a`,`bNew`)
+)
+
+#SQL[@188,N23]Result[233, 115, 124]
 show index from index01;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-index01    0    a    1    a    A    0    NULL    NULL                        YES    a
-index01    0    a    2    bNew    A    0    NULL    NULL    YES                    YES    bNew
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+index01  ¦  0  ¦  a  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+index01  ¦  0  ¦  a  ¦  2  ¦  bNew  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  bNew
+
+#SQL[@189,N69]Error[31]
 insert into index01 (a, b, c, d) values (5, 'bh', '1999-01-01', 3000);
 Unknown column 'b' in 'index01'
+
+#SQL[@190,N72]Result[]
 insert into index01 (a, bnew, c, d) values (5, 'bh', '1999-01-01', 3000);
+
+#SQL[@191,N21]Result[25, 37, 38, 37, 38]
 select * from index01;
-a    bnew    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
-5    bh    1999-01-01    3000.00
+a  ¦  bnew  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+5  ¦  bh  ¦  1999-01-01  ¦  3000.00
+
+#SQL[@192,N34]Error[38]
 delete from index01 where b = 'ab';
 invalid input: column b does not exist
+
+#SQL[@193,N37]Result[]
 delete from index01 where bneW = 'ab';
+
+#SQL[@194,N21]Result[25, 38, 37, 38]
 select * from index01;
-a    bnew    c    d
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
-5    bh    1999-01-01    3000.00
+a  ¦  bnew  ¦  c  ¦  d
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+5  ¦  bh  ¦  1999-01-01  ¦  3000.00
+
+#SQL[@195,N53]Result[]
 update index01 set c = '2022-12-12' where bNew = 'ac';
+
+#SQL[@196,N21]Result[25, 37, 38, 38]
 select * from index01;
-a    bnew    c    d
-3    ad    1981-02-22    500.00
-5    bh    1999-01-01    3000.00
-2    ac    2022-12-12    1600.00
+a  ¦  bnew  ¦  c  ¦  d
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+5  ¦  bh  ¦  1999-01-01  ¦  3000.00
+2  ¦  ac  ¦  2022-12-12  ¦  1600.00
+
+#SQL[@197,N25]Result[71, 53, 55, 51, 56]
 show columns from index01;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    MUL    null        
-bNew    CHAR(10)    YES        null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  MUL  ¦  null  ¦    ¦  
+bNew  ¦  CHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@198,N149]Result[59, 31, 36, 33, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'index01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-index01    a    INT    NO
-index01    bNew    CHAR    YES
-index01    c    DATE    YES
-index01    d    DECIMAL    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+index01  ¦  a  ¦  INT  ¦  NO
+index01  ¦  bNew  ¦  CHAR  ¦  YES
+index01  ¦  c  ¦  DATE  ¦  YES
+index01  ¦  d  ¦  DECIMAL  ¦  YES
+
+#SQL[@199,N18]Result[]
 drop table index01;
+
+#SQL[@203,N28]Result[]
 drop table if exists index02;
+
+#SQL[@204,N100]Result[]
 CREATE TABLE index02(a INTEGER PRIMARY KEY, b CHAR(10), c date, d decimal(7,2), INDEX(a, b), KEY(c));
+
+#SQL[@205,N54]Result[]
 insert into index02 values(1, 'ab', '1980-12-17', 800);
+
+#SQL[@206,N55]Result[]
 insert into index02 values(2, 'ac', '1981-02-20', 1600);
+
+#SQL[@207,N54]Result[]
 insert into index02 values(3, 'ad', '1981-02-22', 500);
+
+#SQL[@208,N21]Result[22, 37, 38, 37]
 select * from index02;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@209,N46]Result[]
 alter table index02 rename column b to bNewNew;
+
+#SQL[@210,N25]Result[23, 216]
 show create table index02;
-Table    Create Table
-index02    CREATE TABLE `index02` (\n  `a` int NOT NULL,\n  `bNewNew` char(10) DEFAULT NULL,\n  `c` date DEFAULT NULL,\n  `d` decimal(7,2) DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  KEY `a` (`a`,`bNewNew`),\n  KEY `c` (`c`)\n)
+Table  ¦  Create Table
+index02  ¦  CREATE TABLE `index02` (
+  `a` int NOT NULL,
+  `bNewNew` char(10) DEFAULT NULL,
+  `c` date DEFAULT NULL,
+  `d` decimal(7,2) DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  KEY `a` (`a`,`bNewNew`),
+  KEY `c` (`c`)
+)
+
+#SQL[@211,N57]Result[]
 insert into index02 values (4, 'ab', '2000-10-10', 10000);
+
+#SQL[@212,N57]Result[]
 insert into index02 values (5, 'gh', '1999-12-31', 20000);
+
+#SQL[@213,N40]Result[]
 delete from index02 where bnewnew = 'ab';
+
+#SQL[@214,N60]Result[]
 update index02 set bnewnew = 'database' where bnewnEW = 'ad';
+
+#SQL[@215,N21]Result[28, 38, 39, 43]
 select * from index02;
-a    bnewnew    c    d
-2    ac    1981-02-20    1600.00
-5    gh    1999-12-31    20000.00
-3    database    1981-02-22    500.00
+a  ¦  bnewnew  ¦  c  ¦  d
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+5  ¦  gh  ¦  1999-12-31  ¦  20000.00
+3  ¦  database  ¦  1981-02-22  ¦  500.00
+
+#SQL[@216,N23]Result[233, 115, 118, 121, 130]
 show index from index02;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-index02    1    a    1    a    A    0    NULL    NULL                        YES    a
-index02    1    a    2    bNewNew    A    0    NULL    NULL    YES                    YES    bNewNew
-index02    1    c    1    c    A    0    NULL    NULL    YES                    YES    c
-index02    0    PRIMARY    1    a    A    0    NULL    NULL                        YES    a
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+index02  ¦  1  ¦  a  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+index02  ¦  1  ¦  c  ¦  1  ¦  c  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  c
+index02  ¦  0  ¦  PRIMARY  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+index02  ¦  1  ¦  a  ¦  2  ¦  bNewNew  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  bNewNew
+
+#SQL[@217,N25]Result[71, 53, 58, 54, 56]
 show columns from index02;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-bNewNew    CHAR(10)    YES        null        
-c    DATE(0)    YES    MUL    null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+bNewNew  ¦  CHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@218,N149]Result[59, 31, 39, 33, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'index02' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-index02    a    INT    NO
-index02    bNewNew    CHAR    YES
-index02    c    DATE    YES
-index02    d    DECIMAL    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+index02  ¦  a  ¦  INT  ¦  NO
+index02  ¦  bNewNew  ¦  CHAR  ¦  YES
+index02  ¦  c  ¦  DATE  ¦  YES
+index02  ¦  d  ¦  DECIMAL  ¦  YES
+
+#SQL[@219,N21]Result[28, 38, 39, 43]
 select * from index02;
-a    bnewnew    c    d
-2    ac    1981-02-20    1600.00
-5    gh    1999-12-31    20000.00
-3    database    1981-02-22    500.00
+a  ¦  bnewnew  ¦  c  ¦  d
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+5  ¦  gh  ¦  1999-12-31  ¦  20000.00
+3  ¦  database  ¦  1981-02-22  ¦  500.00
+
+#SQL[@223,N30]Result[]
 drop table if exists cluster01;
+
+#SQL[@224,N98]Result[]
 create table cluster01(a tinyint primary key, b smallint signed, c int unsigned,d bigint not null);
+
+#SQL[@225,N67]Result[]
 insert into cluster01 (a, b, c, d) values (1, 255, 438, 7328832832);
+
+#SQL[@226,N47]Result[]
 alter table cluster01 rename column a to `NewA`;
+
+#SQL[@227,N59]Result[]
 alter table cluster01 rename column `newa` to `NewAAAAAAAA`;
+
+#SQL[@228,N27]Result[23, 192]
 show create table cluster01;
-Table    Create Table
-cluster01    CREATE TABLE `cluster01` (\n  `NewAAAAAAAA` tinyint NOT NULL,\n  `b` smallint DEFAULT NULL,\n  `c` int unsigned DEFAULT NULL,\n  `d` bigint NOT NULL,\n  PRIMARY KEY (`NewAAAAAAAA`)\n)
+Table  ¦  Create Table
+cluster01  ¦  CREATE TABLE `cluster01` (
+  `NewAAAAAAAA` tinyint NOT NULL,
+  `b` smallint DEFAULT NULL,
+  `c` int unsigned DEFAULT NULL,
+  `d` bigint NOT NULL,
+  PRIMARY KEY (`NewAAAAAAAA`)
+)
+
+#SQL[@229,N68]Error[33]
 insert into cluster01 (a, b, c, d) values (-32, 32832, 8329, 893434);
 Unknown column 'a' in 'cluster01'
+
+#SQL[@230,N75]Result[]
 insert into cluster01 (NewAAAAAAAA, b, c, d) values (-32, 32, 8329, 893434);
+
+#SQL[@231,N23]Result[32, 35, 33]
 select * from cluster01;
-newaaaaaaaa    b    c    d
-1    255    438    7328832832
--32    32    8329    893434
+newaaaaaaaa  ¦  b  ¦  c  ¦  d
+1  ¦  255  ¦  438  ¦  7328832832
+-32  ¦  32  ¦  8329  ¦  893434
+
+#SQL[@232,N27]Result[71, 66, 56, 60, 53]
 show columns from cluster01;
-Field    Type    Null    Key    Default    Extra    Comment
-NewAAAAAAAA    TINYINT(8)    NO    PRI    null        
-b    SMALLINT(16)    YES        null        
-c    INT UNSIGNED(32)    YES        null        
-d    BIGINT(64)    NO        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+NewAAAAAAAA  ¦  TINYINT(8)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  SMALLINT(16)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  INT UNSIGNED(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  BIGINT(64)  ¦  NO  ¦    ¦  null  ¦    ¦  
+
+#SQL[@233,N151]Result[59, 47, 39, 43, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'cluster01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-cluster01    NewAAAAAAAA    TINYINT    NO
-cluster01    b    SMALLINT    YES
-cluster01    c    INT UNSIGNED    YES
-cluster01    d    BIGINT    NO
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+cluster01  ¦  NewAAAAAAAA  ¦  TINYINT  ¦  NO
+cluster01  ¦  b  ¦  SMALLINT  ¦  YES
+cluster01  ¦  c  ¦  INT UNSIGNED  ¦  YES
+cluster01  ¦  d  ¦  BIGINT  ¦  NO
+
+#SQL[@234,N20]Result[]
 drop table cluster01;
+
+#SQL[@238,N32]Result[]
 drop table if exists temporary01;
+
+#SQL[@239,N49]Result[]
 create table temporary01 (col1 int, col2 decimal);
+
+#SQL[@240,N65]Result[]
 insert into temporary01 (col1, col2) values (3728937, 37283.3232);
+
+#SQL[@241,N59]Result[]
 alter table temporary01 rename column col1 to `UUUYGGBBJBJ`;
+
+#SQL[@242,N60]Error[38]
 insert into temporary01 (col1, col2) values (-32893, -89232);
 Unknown column 'col1' in 'temporary01'
+
+#SQL[@243,N69]Result[]
 insert into temporary01 (`UUUYGGBBJBJ`, col2) values (-32893, -89232);
+
+#SQL[@244,N25]Result[21, 18, 18]
 select * from temporary01;
-uuuyggbbjbj    col2
-3728937    37283
--32893    -89232
+uuuyggbbjbj  ¦  col2
+3728937  ¦  37283
+-32893  ¦  -89232
+
+#SQL[@245,N29]Result[71, 61, 60]
 show columns from temporary01;
-Field    Type    Null    Key    Default    Extra    Comment
-UUUYGGBBJBJ    INT(32)    YES        null        
-col2    DECIMAL(38,0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+UUUYGGBBJBJ  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@246,N153]Result[59, 46, 43]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'temporary01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-temporary01    UUUYGGBBJBJ    INT    YES
-temporary01    col2    DECIMAL    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+temporary01  ¦  UUUYGGBBJBJ  ¦  INT  ¦  YES
+temporary01  ¦  col2  ¦  DECIMAL  ¦  YES
+
+#SQL[@247,N22]Result[]
 drop table temporary01;
+
+#SQL[@251,N33]Result[]
 drop table if exists ex_table_2_1;
+
+#SQL[@252,N402]Result[]
 create external table ex_table_2_1(num_col1 tinyint,num_col2 smallint,num_col3 int,num_col4 bigint,num_col5 tinyint unsigned,num_col6 smallint unsigned,num_col7 int unsigned,num_col8 bigint unsigned ,num_col9 float(5,3),num_col10 double(6,5),num_col11 decimal(38,19))infile{"filepath"='$resources/external_table_file/ex_table_2_1.csv'} fields terminated by ',' enclosed by '\"' lines terminated by '\n';
+
+#SQL[@253,N62]Error[62]
 alter table ex_table_2_1 rename column num_col1 to newnum_col1;
 invalid input: cannot insert/update/delete from external table
+
+#SQL[@254,N70]Error[62]
 alter table ex_table_2_1 rename column num_col2 to `shurhenwjkrferveg`;
 invalid input: cannot insert/update/delete from external table
+
+#SQL[@255,N30]Result[23, 620]
 show create table ex_table_2_1;
-Table    Create Table
-ex_table_2_1    CREATE EXTERNAL TABLE `ex_table_2_1` (\n  `num_col1` tinyint DEFAULT NULL,\n  `num_col2` smallint DEFAULT NULL,\n  `num_col3` int DEFAULT NULL,\n  `num_col4` bigint DEFAULT NULL,\n  `num_col5` tinyint unsigned DEFAULT NULL,\n  `num_col6` smallint unsigned DEFAULT NULL,\n  `num_col7` int unsigned DEFAULT NULL,\n  `num_col8` bigint unsigned DEFAULT NULL,\n  `num_col9` float(5,3) DEFAULT NULL,\n  `num_col10` double(6,5) DEFAULT NULL,\n  `num_col11` decimal(38,19) DEFAULT NULL\n) INFILE{'FILEPATH'='','COMPRESSION'='','FORMAT'='csv','JSONDATA'=''} FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
+Table  ¦  Create Table
+ex_table_2_1  ¦  CREATE EXTERNAL TABLE `ex_table_2_1` (
+  `num_col1` tinyint DEFAULT NULL,
+  `num_col2` smallint DEFAULT NULL,
+  `num_col3` int DEFAULT NULL,
+  `num_col4` bigint DEFAULT NULL,
+  `num_col5` tinyint unsigned DEFAULT NULL,
+  `num_col6` smallint unsigned DEFAULT NULL,
+  `num_col7` int unsigned DEFAULT NULL,
+  `num_col8` bigint unsigned DEFAULT NULL,
+  `num_col9` float(5,3) DEFAULT NULL,
+  `num_col10` double(6,5) DEFAULT NULL,
+  `num_col11` decimal(38,19) DEFAULT NULL
+) INFILE{'FILEPATH'='','COMPRESSION'='','FORMAT'='csv','JSONDATA'=''} FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
+
+#SQL[@256,N26]Error[67]
 select * from ex_table_2_1;
 internal error: the input value 'abc' is not int8 type for column 0
+
+#SQL[@260,N27]Result[]
 drop table if exists view01;
+
+#SQL[@261,N27]Result[]
 drop table if exists view02;
+
+#SQL[@262,N22]Result[]
 drop view if exists v0;
+
+#SQL[@263,N27]Result[]
 create table view01 (a int);
+
+#SQL[@264,N33]Result[]
 insert into view01 values (1),(2);
+
+#SQL[@265,N27]Result[]
 create table view02 (a int);
+
+#SQL[@266,N29]Result[]
 insert into view02 values (1);
+
+#SQL[@267,N61]Result[]
 alter table view01 rename column a to `cwhuenwjfdwcweffcfwef`;
+
+#SQL[@268,N61]Result[]
 alter table view02 rename column a to `cwhuenwjfdwcweffcfwef`;
+
+#SQL[@269,N24]Result[71, 71]
 show columns from view01;
-Field    Type    Null    Key    Default    Extra    Comment
-cwhuenwjfdwcweffcfwef    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+cwhuenwjfdwcweffcfwef  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@270,N24]Result[71, 71]
 show columns from view02;
-Field    Type    Null    Key    Default    Extra    Comment
-cwhuenwjfdwcweffcfwef    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+cwhuenwjfdwcweffcfwef  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@271,N24]Result[23, 80]
 show create table view01;
-Table    Create Table
-view01    CREATE TABLE `view01` (\n  `cwhuenwjfdwcweffcfwef` int DEFAULT NULL\n)
+Table  ¦  Create Table
+view01  ¦  CREATE TABLE `view01` (
+  `cwhuenwjfdwcweffcfwef` int DEFAULT NULL
+)
+
+#SQL[@272,N24]Result[23, 80]
 show create table view02;
-Table    Create Table
-view02    CREATE TABLE `view02` (\n  `cwhuenwjfdwcweffcfwef` int DEFAULT NULL\n)
+Table  ¦  Create Table
+view02  ¦  CREATE TABLE `view02` (
+  `cwhuenwjfdwcweffcfwef` int DEFAULT NULL
+)
+
+#SQL[@273,N86]Error[80]
 create view v0 as select view01.a, view02.a as b from view01 left join view02 using(a);
 invalid input: column 'a' specified in USING clause does not exist in left table
+
+#SQL[@274,N146]Result[]
 create view v0 as select view01.cwhuenwjfdwcweffcfwef, view02.cwhuenwjfdwcweffcfwef as b from view01 left join view02 using(cwhuenwjfdwcweffcfwef);
+
+#SQL[@275,N19]Result[73, 191]
 show create view v0;
-View    Create View    character_set_client    collation_connection
-v0    create view v0 as select view01.cwhuenwjfdwcweffcfwef, view02.cwhuenwjfdwcweffcfwef as b from view01 left join view02 using(cwhuenwjfdwcweffcfwef);    utf8mb4    utf8mb4_general_ci
+View  ¦  Create View  ¦  character_set_client  ¦  collation_connection
+v0  ¦  create view v0 as select view01.cwhuenwjfdwcweffcfwef, view02.cwhuenwjfdwcweffcfwef as b from view01 left join view02 using(cwhuenwjfdwcweffcfwef)  ¦  utf8mb4  ¦  utf8mb4_general_ci
+
+#SQL[@276,N17]Result[]
 drop table view01;
+
+#SQL[@277,N17]Result[]
 drop table view02;
+
+#SQL[@280,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@281,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@282,N19]Result[]
 create role role_r1;
+
+#SQL[@283,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@284,N29]Result[]
 drop table if exists rename01;
+
+#SQL[@285,N31]Result[]
 create table rename01(col1 int);
+
+#SQL[@286,N30]Result[]
 insert into rename01 values(1);
+
+#SQL[@287,N30]Result[]
 insert into rename01 values(2);
+
+#SQL[@288,N45]Result[]
 grant create database on account * to role_r1;
+
+#SQL[@289,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@290,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@291,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@292,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@294,N8]Result[]
 use test;
+
+#SQL[@295,N50]Error[62]
 alter table rename01 rename column col1 to newCol1;
 internal error: do not have privilege to execute the statement
+
+#SQL[@297,N42]Result[]
 grant alter table on database * to role_r1;
+
+#SQL[@299,N8]Result[]
 use test;
+
+#SQL[@300,N52]Result[]
 alter table rename01 rename column col1 to newRename;
+
+#SQL[@301,N62]Result[]
 alter table rename01 rename column newRename to `newNewRename`;
+
+#SQL[@302,N26]Result[23, 75]
 show create table rename01;
-Table    Create Table
-rename01    CREATE TABLE `rename01` (\n  `newNewRename` int DEFAULT NULL\n)
+Table  ¦  Create Table
+rename01  ¦  CREATE TABLE `rename01` (
+  `newNewRename` int DEFAULT NULL
+)
+
+#SQL[@303,N26]Result[71, 62]
 show columns from rename01;
-Field    Type    Null    Key    Default    Extra    Comment
-newNewRename    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+newNewRename  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@305,N19]Result[]
 drop table rename01;
+
+#SQL[@306,N17]Result[]
 drop role role_r1;
+
+#SQL[@307,N17]Result[]
 drop user role_u1;
+
+#SQL[@311,N30]Result[]
 drop table if exists prepare01;
+
+#SQL[@312,N43]Result[]
 create table prepare01(col1 int, col2 char);
+
+#SQL[@313,N52]Result[]
 insert into prepare01 values (1,'a'),(2,'b'),(3,'c');
+
+#SQL[@314,N76]Result[]
 prepare s1 from 'alter table prepare01 rename column col1 to col1dheuwhvcer';
+
+#SQL[@315,N10]Result[]
 execute s1;
+
+#SQL[@316,N27]Result[23, 110]
 show create table prepare01;
-Table    Create Table
-prepare01    CREATE TABLE `prepare01` (\n  `col1dheuwhvcer` int DEFAULT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+prepare01  ¦  CREATE TABLE `prepare01` (
+  `col1dheuwhvcer` int DEFAULT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@317,N76]Result[]
 prepare s2 from 'alter table prepare01 rename column col1dheuwhvcer to col1';
+
+#SQL[@318,N10]Result[]
 execute s2;
+
+#SQL[@319,N27]Result[23, 100]
 show create table prepare01;
-Table    Create Table
-prepare01    CREATE TABLE `prepare01` (\n  `col1` int DEFAULT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+prepare01  ¦  CREATE TABLE `prepare01` (
+  `col1` int DEFAULT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@320,N27]Result[71, 54, 54]
 show columns from prepare01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    YES        null        
-col2    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@321,N55]Result[]
 update prepare01 set col1 = 2147483647 where col2 = 'c';
+
+#SQL[@322,N38]Result[]
 delete from prepare01 where col2 = 'b';
+
+#SQL[@323,N41]Result[]
 insert into prepare01 values (42342, '3');
+
+#SQL[@324,N23]Result[14, 8, 17, 12]
 select * from prepare01;
-col1    col2
-1    a
-2147483647    c
-42342    3
+col1  ¦  col2
+1  ¦  a
+2147483647  ¦  c
+42342  ¦  3
+
+#SQL[@325,N20]Result[]
 drop table prepare01;
+
+#SQL[@328,N28]Result[]
 drop table if exists table03;
+
+#SQL[@329,N5]Result[]
 begin;
+
+#SQL[@330,N41]Result[]
 create table table03(col1 int, col2 char);
+
+#SQL[@331,N37]Result[]
 alter table table03 rename to NewCol1;
+
+#SQL[@332,N6]Result[]
 commit;
+
+#SQL[@333,N21]Result[]
 select * from NewCol1;
-col1    col2
+
+#SQL[@334,N24]Result[]
 select col1 from NewCol1;
-col1
+
+#SQL[@335,N18]Result[]
 drop table NewCol1;
+
+#SQL[@336,N18]Result[]
 drop database test;
+

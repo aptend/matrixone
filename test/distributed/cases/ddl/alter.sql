@@ -523,7 +523,6 @@ load data infile  '$resources/load_data/dup_load.csv' into table v3 fields termi
 
 insert into v3 values (1, 1, "boroborodesu"); -- dup
 insert into v3 values (10, 2, "boroborodesu"); -- dup
-| @regex(pattern=r"");
 
 alter table v3 add column d int; -- no dup because we have skipped pk and unique index dedup
 

@@ -1,53 +1,95 @@
+#SQL[@1,N165]Result[]
 CREATE TABLE employees (
-id INT AUTO_INCREMENT PRIMARY KEY,
-first_name VARCHAR(50) NOT NULL,
-last_name VARCHAR(50) NOT NULL,
-department VARCHAR(50)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department VARCHAR(50)
 );
+
+#SQL[@8,N158]Result[]
 INSERT INTO employees (first_name, last_name, department)
 VALUES ('John', 'Doe', 'IT'),
-('Jane', 'Smith', 'HR'),
-('Michael', 'Johnson', 'Sales');
+       ('Jane', 'Smith', 'HR'),
+       ('Michael', 'Johnson', 'Sales');
+
+#SQL[@13,N31]Result[]
 RENAME TABLE employees TO staff;
+
+#SQL[@14,N11]Result[38, 5]
 show tables;
 Tables_in_alter_table_rename_new_synax
 staff
+
+#SQL[@15,N10]Result[71, 68, 63, 62, 64]
 desc staff;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null    auto_increment    
-first_name    VARCHAR(50)    NO        null        
-last_name    VARCHAR(50)    NO        null        
-department    VARCHAR(50)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  
+first_name  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  null  ¦    ¦  
+last_name  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  null  ¦    ¦  
+department  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@17,N20]Error[52]
 drop table employees;
 no such table alter_table_rename_new_synax.employees
+
+#SQL[@18,N16]Result[]
 drop table staff;
+
+#SQL[@21,N20]Result[]
 create database test;
+
+#SQL[@22,N8]Result[]
 use test;
+
+#SQL[@23,N165]Result[]
 CREATE TABLE employees (
-id INT AUTO_INCREMENT PRIMARY KEY,
-first_name VARCHAR(50) NOT NULL,
-last_name VARCHAR(50) NOT NULL,
-department VARCHAR(50)
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department VARCHAR(50)
 );
+
+#SQL[@30,N158]Result[]
 INSERT INTO employees (first_name, last_name, department)
 VALUES ('John', 'Doe', 'IT'),
-('Jane', 'Smith', 'HR'),
-('Michael', 'Johnson', 'Sales');
+       ('Jane', 'Smith', 'HR'),
+       ('Michael', 'Johnson', 'Sales');
+
+#SQL[@35,N41]Result[]
 RENAME TABLE test.employees TO test.staff;
+
+#SQL[@36,N11]Result[14, 5]
 show tables;
 Tables_in_test
 staff
+
+#SQL[@37,N10]Result[71, 68, 63, 62, 64]
 desc staff;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null    auto_increment    
-first_name    VARCHAR(50)    NO        null        
-last_name    VARCHAR(50)    NO        null        
-department    VARCHAR(50)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  
+first_name  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  null  ¦    ¦  
+last_name  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  null  ¦    ¦  
+department  ¦  VARCHAR(50)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@39,N18]Result[]
 drop database test;
+
+#SQL[@41,N20]Result[]
 create database test;
+
+#SQL[@42,N8]Result[]
 use test;
+
+#SQL[@43,N22]Result[]
 create table t1(a int);
+
+#SQL[@44,N22]Result[]
 create table t2(a int);
+
+#SQL[@45,N21]Error[23]
 rename table t2 to t1;
 table t1 already exists
+
+#SQL[@46,N18]Result[]
 drop database test;
+

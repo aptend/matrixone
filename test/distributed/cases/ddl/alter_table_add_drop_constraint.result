@@ -1,78 +1,122 @@
+#SQL[@2,N23]Result[]
 drop table if exists t1;
+
+#SQL[@3,N80]Result[]
 CREATE TABLE t1(a INTEGER, b CHAR(10), c date, d decimal(7,2), UNIQUE KEY(a, b));
+
+#SQL[@4,N7]Result[71, 54, 52, 51, 56]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES    MUL    null        
-b    CHAR(10)    YES        null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@6,N49]Result[]
 insert into t1 values(1, 'ab', '1980-12-17', 800);
+
+#SQL[@7,N50]Result[]
 insert into t1 values(2, 'ac', '1981-02-20', 1600);
+
+#SQL[@8,N49]Result[]
 insert into t1 values(3, 'ad', '1981-02-22', 500);
+
+#SQL[@9,N16]Result[22, 37, 38, 37]
 select * from t1;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@11,N40]Result[]
 alter table t1 add primary key pk1(a, b);
+
+#SQL[@12,N7]Result[71, 53, 54, 51, 56]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    CHAR(10)    NO    PRI    null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@13,N16]Result[22, 37, 38, 37]
 select * from t1;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@16,N51]Error[28]
 alter table t1 add constraint pk primary key pk1(c);
 Multiple primary key defined
+
+#SQL[@17,N7]Result[71, 53, 54, 51, 56]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    CHAR(10)    NO    PRI    null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@18,N16]Result[22, 37, 38, 37]
 select * from t1;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@21,N31]Result[]
 alter table t1 drop primary key;
+
+#SQL[@22,N7]Result[71, 53, 54, 51, 56]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    CHAR(10)    NO    PRI    null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@23,N16]Result[22, 37, 38, 37]
 select * from t1;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@26,N31]Error[50]
 alter table t1 drop primary key;
 Can't DROP 'PRIMARY'; check that column/key exists
+
+#SQL[@27,N7]Result[71, 53, 54, 51, 56]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    CHAR(10)    NO    PRI    null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@28,N16]Result[22, 37, 38, 37]
 select * from t1;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+
+#SQL[@30,N51]Result[]
 alter table t1 add constraint pk primary key pk1(a);
+
+#SQL[@31,N7]Result[71, 53, 51, 51, 56]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    CHAR(10)    NO        null        
-c    DATE(0)    YES        null        
-d    DECIMAL(7,2)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  NO  ¦    ¦  null  ¦    ¦  
+c  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  DECIMAL(7,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@32,N16]Result[22, 37, 38, 37]
 select * from t1;
-a    b    c    d
-1    ab    1980-12-17    800.00
-2    ac    1981-02-20    1600.00
-3    ad    1981-02-22    500.00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  ab  ¦  1980-12-17  ¦  800.00
+2  ¦  ac  ¦  1981-02-20  ¦  1600.00
+3  ¦  ad  ¦  1981-02-22  ¦  500.00
+

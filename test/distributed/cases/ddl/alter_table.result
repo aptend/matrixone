@@ -1,44 +1,103 @@
+#SQL[@1,N23]Result[]
 drop table if exists f1;
+
+#SQL[@2,N23]Result[]
 drop table if exists c1;
+
+#SQL[@3,N54]Result[]
 create table f1(fa int primary key, fb int unique key);
+
+#SQL[@4,N32]Result[]
 create table c1 (ca int, cb int);
+
+#SQL[@5,N71]Result[]
 alter table c1 add constraint ffa foreign key f_a(ca) references f1(fa);
+
+#SQL[@6,N27]Result[]
 insert into f1 values (2,2);
+
+#SQL[@7,N27]Error[80]
 insert into c1 values (1,1);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@8,N27]Result[]
 insert into c1 values (2,2);
+
+#SQL[@9,N33]Result[10, 8]
 select ca, cb from c1 order by ca;
-ca    cb
-2    2
+ca  ¦  cb
+2  ¦  2
+
+#SQL[@10,N35]Result[]
 alter table c1 drop foreign key ffa;
+
+#SQL[@11,N27]Result[]
 insert into c1 values (1,1);
+
+#SQL[@12,N33]Result[10, 8, 8]
 select ca, cb from c1 order by ca;
-ca    cb
-1    1
-2    2
+ca  ¦  cb
+1  ¦  1
+2  ¦  2
+
+#SQL[@13,N13]Result[]
 drop table c1;
+
+#SQL[@14,N13]Result[]
 drop table f1;
+
+#SQL[@15,N54]Result[]
 create table f1(fa int primary key, fb int unique key);
+
+#SQL[@16,N86]Result[]
 create table c1 (ca int, cb int, constraint ffb foreign key f_a(cb) references f1(fb));
+
+#SQL[@17,N27]Result[]
 insert into f1 values (2,2);
+
+#SQL[@18,N27]Error[80]
 insert into c1 values (2,1);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@19,N71]Result[]
 alter table c1 add constraint ffa foreign key f_a(ca) references f1(fa);
+
+#SQL[@20,N27]Error[80]
 insert into c1 values (1,2);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@21,N35]Result[]
 alter table c1 drop foreign key ffb;
+
+#SQL[@22,N27]Result[]
 insert into c1 values (2,1);
+
+#SQL[@23,N27]Error[80]
 insert into c1 values (1,2);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@24,N35]Result[]
 alter table c1 drop foreign key ffa;
+
+#SQL[@25,N27]Result[]
 insert into c1 values (1,2);
+
+#SQL[@26,N33]Result[10, 8, 8]
 select ca, cb from c1 order by ca;
-ca    cb
-1    2
-2    1
+ca  ¦  cb
+1  ¦  2
+2  ¦  1
+
+#SQL[@27,N13]Result[]
 drop table c1;
+
+#SQL[@28,N13]Result[]
 drop table f1;
+
+#SQL[@31,N23]Result[]
 drop table if exists t1;
+
+#SQL[@32,N121]Result[]
 CREATE TABLE t1(
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -46,62 +105,112 @@ col3 VARCHAR(16) NOT NULL,
 col4 INT NOT NULL,
 PRIMARY KEY(col1)
 );
+
+#SQL[@40,N49]Result[]
 insert into t1 values(1, '1980-12-17','Abby', 21);
+
+#SQL[@41,N48]Result[]
 insert into t1 values(2, '1981-02-20','Bob', 22);
+
+#SQL[@42,N50]Result[]
 insert into t1 values(3, '1981-02-22','Carol', 23);
+
+#SQL[@43,N49]Result[]
 insert into t1 values(4, '1981-04-02','Dora', 24);
+
+#SQL[@44,N50]Result[]
 insert into t1 values(5, '1981-09-28','bcvdf', 25);
+
+#SQL[@45,N50]Result[]
 insert into t1 values(6, '1981-05-01','green', 26);
+
+#SQL[@47,N43]Result[]
 ALTER TABLE t1 ADD UNIQUE idx1 (col2, col3);
+
+#SQL[@48,N50]Error[58]
 insert into t1 values(7, '1981-05-01','green', 26);
-Duplicate entry ('\(\d{4}-\d{2}-\d{2},\w{5}\)'|'\d{5}\w\d{17}\w\d{2}') for key '(.*)'
+Duplicate entry '(1981-05-01,green)' for key '(col2,col3)'
+
+#SQL[@49,N18]Result[233, 122, 119, 119]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t1    0    idx1    1    col2    A    0    NULL    NULL                        YES    col2
-t1    0    idx1    2    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t1  ¦  0  ¦  idx1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t1  ¦  0  ¦  idx1  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@50,N16]Result[34, 35, 34, 36, 35, 36, 36]
 select * from t1;
-col1    col2    col3    col4
-1    1980-12-17    Abby    21
-2    1981-02-20    Bob    22
-3    1981-02-22    Carol    23
-4    1981-04-02    Dora    24
-5    1981-09-28    bcvdf    25
-6    1981-05-01    green    26
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  1980-12-17  ¦  Abby  ¦  21
+2  ¦  1981-02-20  ¦  Bob  ¦  22
+3  ¦  1981-02-22  ¦  Carol  ¦  23
+4  ¦  1981-04-02  ¦  Dora  ¦  24
+5  ¦  1981-09-28  ¦  bcvdf  ¦  25
+6  ¦  1981-05-01  ¦  green  ¦  26
+
+#SQL[@51,N41]Result[]
 alter table t1 alter index idx1 invisible;
+
+#SQL[@52,N18]Result[233, 122, 118, 118]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t1    0    idx1    1    col2    A    0    NULL    NULL                        NO    col2
-t1    0    idx1    2    col3    A    0    NULL    NULL                        NO    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t1  ¦  0  ¦  idx1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col2
+t1  ¦  0  ¦  idx1  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col3
+
+#SQL[@53,N39]Result[]
 alter table t1 alter index idx1 visible;
+
+#SQL[@54,N18]Result[233, 122, 119, 119]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t1    0    idx1    1    col2    A    0    NULL    NULL                        YES    col2
-t1    0    idx1    2    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t1  ¦  0  ¦  idx1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t1  ¦  0  ¦  idx1  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@55,N30]Result[]
 ALTER TABLE t1 DROP INDEX idx1;
+
+#SQL[@56,N18]Result[233, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+
+#SQL[@58,N49]Result[]
 ALTER TABLE t1 ADD UNIQUE INDEX idx2 (col2, col3);
+
+#SQL[@59,N18]Result[233, 122, 119, 119]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t1    0    idx2    1    col2    A    0    NULL    NULL                        YES    col2
-t1    0    idx2    2    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t1  ¦  0  ¦  idx2  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t1  ¦  0  ¦  idx2  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@60,N41]Result[]
 alter table t1 alter index idx2 invisible;
+
+#SQL[@61,N18]Result[233, 122, 118, 118]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t1    0    idx2    1    col2    A    0    NULL    NULL                        NO    col2
-t1    0    idx2    2    col3    A    0    NULL    NULL                        NO    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t1  ¦  0  ¦  idx2  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col2
+t1  ¦  0  ¦  idx2  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col3
+
+#SQL[@62,N30]Result[]
 ALTER TABLE t1 DROP INDEX idx2;
+
+#SQL[@63,N18]Result[233, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+
+#SQL[@64,N13]Result[]
 drop table t1;
+
+#SQL[@67,N23]Result[]
 drop table if exists t2;
+
+#SQL[@68,N121]Result[]
 CREATE TABLE t2(
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -109,52 +218,96 @@ col3 VARCHAR(16) NOT NULL,
 col4 INT NOT NULL,
 PRIMARY KEY(col1)
 );
+
+#SQL[@76,N49]Result[]
 insert into t2 values(1, '1980-12-17','Abby', 21);
+
+#SQL[@77,N48]Result[]
 insert into t2 values(2, '1981-02-20','Bob', 22);
+
+#SQL[@78,N50]Result[]
 insert into t2 values(3, '1981-02-22','Carol', 23);
+
+#SQL[@79,N49]Result[]
 insert into t2 values(4, '1981-04-02','Dora', 24);
+
+#SQL[@80,N50]Result[]
 insert into t2 values(5, '1981-09-28','bcvdf', 25);
+
+#SQL[@81,N50]Result[]
 insert into t2 values(6, '1981-05-01','green', 26);
+
+#SQL[@83,N38]Result[]
 ALTER TABLE t2 ADD INDEX index1 (col2);
+
+#SQL[@84,N18]Result[233, 122, 121]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t2    1    index1    1    col2    A    0    NULL    NULL                        YES    col2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t2  ¦  1  ¦  index1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+
+#SQL[@85,N43]Result[]
 alter table t2 alter index index1 invisible;
+
+#SQL[@86,N18]Result[233, 122, 120]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t2    1    index1    1    col2    A    0    NULL    NULL                        NO    col2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t2  ¦  1  ¦  index1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col2
+
+#SQL[@87,N16]Result[34, 35, 34, 36, 35, 36, 36]
 select * from t2;
-col1    col2    col3    col4
-1    1980-12-17    Abby    21
-2    1981-02-20    Bob    22
-3    1981-02-22    Carol    23
-4    1981-04-02    Dora    24
-5    1981-09-28    bcvdf    25
-6    1981-05-01    green    26
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  1980-12-17  ¦  Abby  ¦  21
+2  ¦  1981-02-20  ¦  Bob  ¦  22
+3  ¦  1981-02-22  ¦  Carol  ¦  23
+4  ¦  1981-04-02  ¦  Dora  ¦  24
+5  ¦  1981-09-28  ¦  bcvdf  ¦  25
+6  ¦  1981-05-01  ¦  green  ¦  26
+
+#SQL[@88,N32]Result[]
 ALTER TABLE t2 DROP INDEX index1;
+
+#SQL[@89,N18]Result[233, 122]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+
+#SQL[@91,N43]Result[]
 ALTER TABLE t2 ADD INDEX index2 (col2,col3);
+
+#SQL[@92,N18]Result[233, 122, 121, 121]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t2    1    index2    1    col2    A    0    NULL    NULL                        YES    col2
-t2    1    index2    2    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t2  ¦  1  ¦  index2  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t2  ¦  1  ¦  index2  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@93,N43]Result[]
 alter table t2 alter index index2 invisible;
+
+#SQL[@94,N18]Result[233, 122, 120, 120]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t2    1    index2    1    col2    A    0    NULL    NULL                        NO    col2
-t2    1    index2    2    col3    A    0    NULL    NULL                        NO    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t2  ¦  1  ¦  index2  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col2
+t2  ¦  1  ¦  index2  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col3
+
+#SQL[@95,N32]Result[]
 ALTER TABLE t2 DROP INDEX index2;
+
+#SQL[@96,N18]Result[233, 122]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+
+#SQL[@97,N13]Result[]
 drop table t2;
+
+#SQL[@99,N23]Result[]
 drop table if exists t3;
+
+#SQL[@100,N127]Result[]
 CREATE TABLE t3(
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -162,65 +315,113 @@ col3 VARCHAR(16) NOT NULL,
 col4 INT NOT NULL,
 PRIMARY KEY(col1, col2)
 );
+
+#SQL[@108,N49]Result[]
 insert into t3 values(1, '1980-12-17','Abby', 21);
+
+#SQL[@109,N48]Result[]
 insert into t3 values(2, '1981-02-20','Bob', 22);
+
+#SQL[@110,N50]Result[]
 insert into t3 values(3, '1981-02-22','Carol', 23);
+
+#SQL[@111,N49]Result[]
 insert into t3 values(4, '1981-04-02','Dora', 24);
+
+#SQL[@112,N50]Result[]
 insert into t3 values(5, '1981-09-28','bcvdf', 25);
+
+#SQL[@113,N50]Result[]
 insert into t3 values(6, '1981-05-01','green', 26);
+
+#SQL[@115,N38]Result[]
 ALTER TABLE t3 ADD INDEX index1 (col2);
+
+#SQL[@116,N18]Result[233, 122, 122, 121]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
-t3    1    index1    1    col2    A    0    NULL    NULL                        YES    col2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  1  ¦  index1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+
+#SQL[@117,N43]Result[]
 alter table t3 alter index index1 invisible;
+
+#SQL[@118,N18]Result[233, 122, 122, 120]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
-t3    1    index1    1    col2    A    0    NULL    NULL                        NO    col2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  1  ¦  index1  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col2
+
+#SQL[@119,N16]Result[34, 35, 34, 36, 35, 36, 36]
 select * from t3;
-col1    col2    col3    col4
-1    1980-12-17    Abby    21
-2    1981-02-20    Bob    22
-3    1981-02-22    Carol    23
-4    1981-04-02    Dora    24
-5    1981-09-28    bcvdf    25
-6    1981-05-01    green    26
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  1980-12-17  ¦  Abby  ¦  21
+2  ¦  1981-02-20  ¦  Bob  ¦  22
+3  ¦  1981-02-22  ¦  Carol  ¦  23
+4  ¦  1981-04-02  ¦  Dora  ¦  24
+5  ¦  1981-09-28  ¦  bcvdf  ¦  25
+6  ¦  1981-05-01  ¦  green  ¦  26
+
+#SQL[@120,N32]Result[]
 ALTER TABLE t3 DROP INDEX index1;
+
+#SQL[@121,N18]Result[233, 122, 122]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+
+#SQL[@123,N50]Result[]
 ALTER TABLE t3 ADD UNIQUE INDEX index2 (col2,col3);
+
+#SQL[@124,N18]Result[233, 122, 122, 121, 121]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
-t3    0    index2    1    col2    A    0    NULL    NULL                        YES    col2
-t3    0    index2    2    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  0  ¦  index2  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  0  ¦  index2  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@125,N43]Result[]
 alter table t3 alter index index2 invisible;
+
+#SQL[@126,N18]Result[233, 122, 122, 120, 120]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
-t3    0    index2    1    col2    A    0    NULL    NULL                        NO    col2
-t3    0    index2    2    col3    A    0    NULL    NULL                        NO    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  0  ¦  index2  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col2
+t3  ¦  0  ¦  index2  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  NO  ¦  col3
+
+#SQL[@127,N32]Result[]
 ALTER TABLE t3 DROP INDEX index2;
+
+#SQL[@128,N18]Result[233, 122, 122]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+
+#SQL[@130,N41]Result[]
 create unique index idx3 on t3(col2,col3);
+
+#SQL[@131,N18]Result[233, 122, 122, 119, 119]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t3    0    PRIMARY    2    col2    A    0    NULL    NULL                        YES    col2
-t3    0    idx3    1    col2    A    0    NULL    NULL                        YES    col2
-t3    0    idx3    2    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t3  ¦  0  ¦  PRIMARY  ¦  2  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  0  ¦  idx3  ¦  1  ¦  col2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col2
+t3  ¦  0  ¦  idx3  ¦  2  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@132,N13]Result[]
 drop table t3;
+
+#SQL[@134,N23]Result[]
 drop table if exists t4;
+
+#SQL[@135,N130]Result[]
 CREATE TABLE t4(
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -228,28 +429,58 @@ col3 VARCHAR(16) NOT NULL,
 col4 int unsigned NOT NULL,
 PRIMARY KEY(col1)
 );
+
+#SQL[@143,N49]Result[]
 insert into t4 values(1, '1980-12-17','Abby', 21);
+
+#SQL[@144,N48]Result[]
 insert into t4 values(2, '1981-02-20','Bob', 22);
+
+#SQL[@145,N50]Result[]
 insert into t4 values(3, '1981-02-22','Carol', 23);
+
+#SQL[@146,N49]Result[]
 insert into t4 values(4, '1981-04-02','Dora', 24);
+
+#SQL[@147,N50]Result[]
 insert into t4 values(5, '1981-09-28','bcvdf', 25);
+
+#SQL[@148,N50]Result[]
 insert into t4 values(6, '1981-05-01','green', 26);
+
+#SQL[@150,N48]Error[214]
 alter table t4 add constraint index (col3, col4);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 35 near " index (col3, col4);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 35 near \" index (col3, col4)\";
+
+#SQL[@151,N54]Error[220]
 alter table t4 add constraint index wwwww (col3, col4);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 35 near " index wwwww (col3, col4);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 35 near \" index wwwww (col3, col4)\";
+
+#SQL[@152,N79]Error[215]
 alter table t4 add constraint idx_6dotkott2kjsp8vw4d0m25fb7 index zxxxxx (col3);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 65 near " index zxxxxx (col3);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 65 near \" index zxxxxx (col3)\";
+
+#SQL[@153,N18]Result[233, 122]
 show index from t4;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t4    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t4  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+
+#SQL[@154,N37]Result[]
 alter table t4 add index zxxxxx(col3);
+
+#SQL[@155,N18]Result[233, 122, 121]
 show index from t4;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t4    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t4    1    zxxxxx    1    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t4  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t4  ¦  1  ¦  zxxxxx  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@156,N13]Result[]
 drop table t4;
+
+#SQL[@158,N23]Result[]
 drop table if exists t5;
+
+#SQL[@159,N130]Result[]
 CREATE TABLE t5(
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -257,257 +488,491 @@ col3 VARCHAR(16) NOT NULL,
 col4 int unsigned NOT NULL,
 PRIMARY KEY(col1)
 );
+
+#SQL[@167,N49]Result[]
 insert into t5 values(1, '1980-12-17','Abby', 21);
+
+#SQL[@168,N48]Result[]
 insert into t5 values(2, '1981-02-20','Bob', 22);
+
+#SQL[@169,N50]Result[]
 insert into t5 values(3, '1981-02-22','Carol', 23);
+
+#SQL[@170,N49]Result[]
 insert into t5 values(4, '1981-04-02','Dora', 24);
+
+#SQL[@171,N50]Result[]
 insert into t5 values(5, '1981-09-28','bcvdf', 25);
+
+#SQL[@172,N50]Result[]
 insert into t5 values(6, '1981-05-01','green', 26);
+
+#SQL[@174,N53]Result[]
 alter table t5 add constraint unique key (col3, col4);
+
+#SQL[@175,N59]Result[]
 alter table t5 add constraint unique key wwwww (col3, col4);
+
+#SQL[@176,N84]Result[]
 alter table t5 add constraint idx_6dotkott2kjsp8vw4d0m25fb7 unique key zxxxxx (col3);
+
+#SQL[@177,N18]Result[233, 122, 119, 119, 120, 120, 121]
 show index from t5;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t5    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t5    0    col3    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    col3    2    col4    A    0    NULL    NULL                        YES    col4
-t5    0    wwwww    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    wwwww    2    col4    A    0    NULL    NULL                        YES    col4
-t5    0    zxxxxx    1    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t5  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t5  ¦  0  ¦  col3  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  col3  ¦  2  ¦  col4  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col4
+t5  ¦  0  ¦  wwwww  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  wwwww  ¦  2  ¦  col4  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col4
+t5  ¦  0  ¦  zxxxxx  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@178,N42]Error[27]
 alter table t5 add unique key zxxxxx(col3);
 duplicate key name 'zxxxxx'
+
+#SQL[@179,N18]Result[233, 122, 119, 119, 120, 120, 121]
 show index from t5;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t5    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t5    0    col3    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    col3    2    col4    A    0    NULL    NULL                        YES    col4
-t5    0    wwwww    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    wwwww    2    col4    A    0    NULL    NULL                        YES    col4
-t5    0    zxxxxx    1    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t5  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t5  ¦  0  ¦  col3  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  col3  ¦  2  ¦  col4  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col4
+t5  ¦  0  ¦  wwwww  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  wwwww  ¦  2  ¦  col4  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col4
+t5  ¦  0  ¦  zxxxxx  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@180,N67]Result[]
 alter table t5 add constraint idx_6dotkott2kjsp8v unique key (col3);
+
+#SQL[@181,N67]Error[40]
 alter table t5 add constraint idx_6dotkott2kjsp8v unique key (col4);
 duplicate key name 'idx_6dotkott2kjsp8v'
+
+#SQL[@182,N18]Result[233, 122, 119, 119, 120, 120, 121, 134]
 show index from t5;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t5    0    PRIMARY    1    col1    A    0    NULL    NULL                        YES    col1
-t5    0    col3    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    col3    2    col4    A    0    NULL    NULL                        YES    col4
-t5    0    wwwww    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    wwwww    2    col4    A    0    NULL    NULL                        YES    col4
-t5    0    zxxxxx    1    col3    A    0    NULL    NULL                        YES    col3
-t5    0    idx_6dotkott2kjsp8v    1    col3    A    0    NULL    NULL                        YES    col3
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t5  ¦  0  ¦  PRIMARY  ¦  1  ¦  col1  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col1
+t5  ¦  0  ¦  col3  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  col3  ¦  2  ¦  col4  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col4
+t5  ¦  0  ¦  wwwww  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  wwwww  ¦  2  ¦  col4  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col4
+t5  ¦  0  ¦  zxxxxx  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+t5  ¦  0  ¦  idx_6dotkott2kjsp8v  ¦  1  ¦  col3  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  col3
+
+#SQL[@183,N13]Result[]
 drop table t5;
+
+#SQL[@185,N22]Result[]
 create table t5(a int);
+
+#SQL[@186,N36]Result[]
 alter table t5 comment = "comment_1";
+
+#SQL[@187,N20]Result[23, 72]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL\n) COMMENT='comment_1'
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL
+) COMMENT='comment_1'
+
+#SQL[@188,N59]Result[]
 alter table t5 comment = "comment_2", comment = "comment_3";
+
+#SQL[@189,N20]Result[23, 72]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL\n) COMMENT='comment_3'
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL
+) COMMENT='comment_3'
+
+#SQL[@190,N31]Error[25]
 alter table t5 add column a int;
 Duplicate column name 'a'
+
+#SQL[@191,N128]Result[]
 alter table t5 add column b tinyint, add column c smallint, add column d int, add column e bigint, add column f tinyint unsigned;
+
+#SQL[@192,N143]Result[]
 alter table t5 add column g smallint unsigned, add column h int unsigned, add column i bigint unsigned, add column j float, add column k double;
+
+#SQL[@193,N125]Result[]
 alter table t5 add column l varchar(255), add column m Date, add column n DateTime, add column o timestamp, add column p bool;
+
+#SQL[@194,N59]Result[]
 alter table t5 add column q decimal(5,2), add column r text;
+
+#SQL[@195,N20]Result[23, 582]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL,\n  `b` tinyint DEFAULT NULL,\n  `c` smallint DEFAULT NULL,\n  `d` int DEFAULT NULL,\n  `e` bigint DEFAULT NULL,\n  `f` tinyint unsigned DEFAULT NULL,\n  `g` smallint unsigned DEFAULT NULL,\n  `h` int unsigned DEFAULT NULL,\n  `i` bigint unsigned DEFAULT NULL,\n  `j` float DEFAULT NULL,\n  `k` double DEFAULT NULL,\n  `l` varchar(255) DEFAULT NULL,\n  `m` date DEFAULT NULL,\n  `n` datetime DEFAULT NULL,\n  `o` timestamp NULL DEFAULT NULL,\n  `p` bool DEFAULT NULL,\n  `q` decimal(5,2) DEFAULT NULL,\n  `r` text DEFAULT NULL\n) COMMENT='comment_3'
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL,
+  `b` tinyint DEFAULT NULL,
+  `c` smallint DEFAULT NULL,
+  `d` int DEFAULT NULL,
+  `e` bigint DEFAULT NULL,
+  `f` tinyint unsigned DEFAULT NULL,
+  `g` smallint unsigned DEFAULT NULL,
+  `h` int unsigned DEFAULT NULL,
+  `i` bigint unsigned DEFAULT NULL,
+  `j` float DEFAULT NULL,
+  `k` double DEFAULT NULL,
+  `l` varchar(255) DEFAULT NULL,
+  `m` date DEFAULT NULL,
+  `n` datetime DEFAULT NULL,
+  `o` timestamp NULL DEFAULT NULL,
+  `p` bool DEFAULT NULL,
+  `q` decimal(5,2) DEFAULT NULL,
+  `r` text DEFAULT NULL
+) COMMENT='comment_3'
+
+#SQL[@196,N20]Result[71, 51, 54, 56, 51, 54, 63, 65, 60, 63, 52, 53, 56, 51, 55, 56, 51, 56, 51]
 show columns from t5;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null        
-b    TINYINT(8)    YES        null        
-c    SMALLINT(16)    YES        null        
-d    INT(32)    YES        null        
-e    BIGINT(64)    YES        null        
-f    TINYINT UNSIGNED(8)    YES        null        
-g    SMALLINT UNSIGNED(16)    YES        null        
-h    INT UNSIGNED(32)    YES        null        
-i    BIGINT UNSIGNED(64)    YES        null        
-j    FLOAT(0)    YES        null        
-k    DOUBLE(0)    YES        null        
-l    VARCHAR(255)    YES        null        
-m    DATE(0)    YES        null        
-n    DATETIME(0)    YES        null        
-o    TIMESTAMP(0)    YES        null        
-p    BOOL(0)    YES        null        
-q    DECIMAL(5,2)    YES        null        
-r    TEXT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  TINYINT(8)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  SMALLINT(16)  ¦  YES  ¦    ¦  null  ¦    ¦  
+d  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+e  ¦  BIGINT(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TINYINT UNSIGNED(8)  ¦  YES  ¦    ¦  null  ¦    ¦  
+g  ¦  SMALLINT UNSIGNED(16)  ¦  YES  ¦    ¦  null  ¦    ¦  
+h  ¦  INT UNSIGNED(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+i  ¦  BIGINT UNSIGNED(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+j  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+k  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+l  ¦  VARCHAR(255)  ¦  YES  ¦    ¦  null  ¦    ¦  
+m  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+n  ¦  DATETIME(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+o  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+p  ¦  BOOL(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+q  ¦  DECIMAL(5,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+r  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@197,N118]Result[]
 alter table t5 drop column b, drop column c, drop column d, drop column e, drop column f, drop column g, drop column h;
+
+#SQL[@198,N20]Result[71, 51, 63, 52, 53, 56, 51, 55, 56, 51, 56, 51]
 show columns from t5;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null        
-i    BIGINT UNSIGNED(64)    YES        null        
-j    FLOAT(0)    YES        null        
-k    DOUBLE(0)    YES        null        
-l    VARCHAR(255)    YES        null        
-m    DATE(0)    YES        null        
-n    DATETIME(0)    YES        null        
-o    TIMESTAMP(0)    YES        null        
-p    BOOL(0)    YES        null        
-q    DECIMAL(5,2)    YES        null        
-r    TEXT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+i  ¦  BIGINT UNSIGNED(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+j  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+k  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+l  ¦  VARCHAR(255)  ¦  YES  ¦    ¦  null  ¦    ¦  
+m  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+n  ¦  DATETIME(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+o  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+p  ¦  BOOL(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+q  ¦  DECIMAL(5,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+r  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@199,N118]Result[]
 alter table t5 drop column i, drop column j, drop column k, drop column l, drop column m, drop column n, drop column o;
+
+#SQL[@200,N20]Result[71, 51, 51, 56, 51]
 show columns from t5;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null        
-p    BOOL(0)    YES        null        
-q    DECIMAL(5,2)    YES        null        
-r    TEXT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+p  ¦  BOOL(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+q  ¦  DECIMAL(5,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+r  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@201,N58]Result[]
 alter table t5 drop column p, drop column q, drop column r;
+
+#SQL[@202,N20]Result[71, 51]
 show columns from t5;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@203,N28]Error[35]
 alter table t5 drop column a;
 A table must have at least 1 column
+
+#SQL[@204,N113]Result[]
 alter table t5 add column b int first, add column c int after b, add column d int first, add column f int after b;
+
+#SQL[@205,N20]Result[71, 51, 51, 51, 51, 51]
 show columns from t5;
-Field    Type    Null    Key    Default    Extra    Comment
-d    INT(32)    YES        null        
-b    INT(32)    YES        null        
-f    INT(32)    YES        null        
-c    INT(32)    YES        null        
-a    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+d  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@208,N13]Result[]
 drop table t5;
+
+#SQL[@209,N59]Result[]
 create table t5(a int primary key, b int, c int unique key);
+
+#SQL[@210,N28]Result[]
 alter table t5 drop column a;
+
+#SQL[@211,N28]Result[]
 alter table t5 drop column c;
+
+#SQL[@213,N13]Result[]
 drop table t5;
+
+#SQL[@214,N48]Result[]
 create table t5(a int, b int, primary key(a, b));
+
+#SQL[@215,N28]Result[]
 alter table t5 drop column a;
+
+#SQL[@217,N13]Result[]
 drop table t5;
+
+#SQL[@218,N41]Result[]
 create table t5(a int primary key, b int);
+
+#SQL[@219,N78]Result[]
 create table t6(b int, c int, constraint `c1` foreign key(b) references t5(a));
+
+#SQL[@220,N28]Result[]
 alter table t5 drop column b;
+
+#SQL[@221,N31]Result[]
 alter table t5 add column c int;
+
+#SQL[@222,N28]Error[63]
 alter table t6 drop column b;
 Cannot drop column 'b': needed in a foreign key constraint 'c1'
+
+#SQL[@223,N31]Result[]
 alter table t6 add column d int;
+
+#SQL[@224,N13]Result[]
 drop table t6;
+
+#SQL[@225,N13]Result[]
 drop table t5;
-create table t5(a tinyint, b smallint, primary key(a))partition by hash(a) partitions 4;
-alter table t5 add column c int;
-invalid input: can't add/drop column for partition table now
-alter table t5 drop column a;
-invalid input: can't add/drop column for partition table now
-drop table t5;
+
+#SQL[@234,N42]Result[]
 create table t5(a int, b int) cluster by a;
+
+#SQL[@235,N31]Result[]
 alter table t5 add column c int;
+
+#SQL[@236,N28]Result[]
 alter table t5 drop column a;
+
+#SQL[@237,N13]Result[]
 drop table t5;
+
+#SQL[@239,N23]Result[]
 drop table if exists t6;
+
+#SQL[@240,N31]Result[]
 create table t6(a int not null);
+
+#SQL[@241,N28]Result[]
 insert into t6 values(1),(2);
+
+#SQL[@242,N16]Result[1, 1, 1]
 select * from t6;
 a
 1
 2
+
+#SQL[@243,N46]Result[]
 alter table t6 add column b timestamp not null;
+
+#SQL[@244,N16]Result[8, 26, 26]
 select * from t6;
-a    b
-1    0001-01-01 00:00:00
-2    0001-01-01 00:00:00
+a  ¦  b
+1  ¦  0001-01-01 00:00:00
+2  ¦  0001-01-01 00:00:00
+
+#SQL[@245,N41]Result[]
 alter table t6 add column c time not null;
+
+#SQL[@246,N16]Result[15, 40, 40]
 select * from t6;
-a    b    c
-1    0001-01-01 00:00:00    00:00:00
-2    0001-01-01 00:00:00    00:00:00
+a  ¦  b  ¦  c
+1  ¦  0001-01-01 00:00:00  ¦  00:00:00
+2  ¦  0001-01-01 00:00:00  ¦  00:00:00
+
+#SQL[@247,N45]Result[]
 alter table t6 add column d datetime not null;
+
+#SQL[@248,N16]Result[22, 65, 65]
 select * from t6;
-a    b    c    d
-1    0001-01-01 00:00:00    00:00:00    0001-01-01 00:00:00
-2    0001-01-01 00:00:00    00:00:00    0001-01-01 00:00:00
+a  ¦  b  ¦  c  ¦  d
+1  ¦  0001-01-01 00:00:00  ¦  00:00:00  ¦  0001-01-01 00:00:00
+2  ¦  0001-01-01 00:00:00  ¦  00:00:00  ¦  0001-01-01 00:00:00
+
+#SQL[@249,N41]Result[]
 alter table t6 add column e date not null;
+
+#SQL[@250,N16]Result[29, 81, 81]
 select * from t6;
-a    b    c    d    e
-1    0001-01-01 00:00:00    00:00:00    0001-01-01 00:00:00    0001-01-01
-2    0001-01-01 00:00:00    00:00:00    0001-01-01 00:00:00    0001-01-01
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  0001-01-01 00:00:00  ¦  00:00:00  ¦  0001-01-01 00:00:00  ¦  0001-01-01
+2  ¦  0001-01-01 00:00:00  ¦  00:00:00  ¦  0001-01-01 00:00:00  ¦  0001-01-01
+
+#SQL[@251,N44]Result[]
 alter table t6 add column f datetime after a;
+
+#SQL[@252,N16]Result[36, 91, 91]
 select * from t6;
-a    f    b    c    d    e
-1    null    0001-01-01 00:00:00    00:00:00    0001-01-01 00:00:00    0001-01-01
-2    null    0001-01-01 00:00:00    00:00:00    0001-01-01 00:00:00    0001-01-01
+a  ¦  f  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  null  ¦  0001-01-01 00:00:00  ¦  00:00:00  ¦  0001-01-01 00:00:00  ¦  0001-01-01
+2  ¦  null  ¦  0001-01-01 00:00:00  ¦  00:00:00  ¦  0001-01-01 00:00:00  ¦  0001-01-01
+
+#SQL[@253,N13]Result[]
 drop table t6;
+
+#SQL[@256,N23]Result[]
 drop table if exists t7;
+
+#SQL[@257,N31]Result[]
 create table t7(a int not null);
+
+#SQL[@258,N28]Result[]
 insert into t7 values(1),(2);
+
+#SQL[@259,N16]Result[1, 1, 1]
 select * from t7;
 a
 1
 2
+
+#SQL[@260,N40]Result[]
 alter table t7 add column b int not null;
+
+#SQL[@261,N16]Result[8, 8, 8]
 select * from t7;
-a    b
-1    0
-2    0
+a  ¦  b
+1  ¦  0
+2  ¦  0
+
+#SQL[@262,N42]Result[]
 alter table t7 add column c float not null;
+
+#SQL[@263,N16]Result[15, 15, 15]
 select * from t7;
-a    b    c
-1    0    0.0
-2    0    0.0
+a  ¦  b  ¦  c
+1  ¦  0  ¦  0
+2  ¦  0  ¦  0
+
+#SQL[@264,N49]Result[]
 alter table t7 add column d int unsigned not null;
+
+#SQL[@265,N16]Result[22, 22, 22]
 select * from t7;
-a    b    c    d
-1    0    0.0    0
-2    0    0.0    0
+a  ¦  b  ¦  c  ¦  d
+1  ¦  0  ¦  0  ¦  0
+2  ¦  0  ¦  0  ¦  0
+
+#SQL[@266,N49]Result[]
 alter table t7 add column e decimal(7,2) not null;
+
+#SQL[@267,N16]Result[29, 32, 32]
 select * from t7;
-a    b    c    d    e
-1    0    0.0    0    0.00
-2    0    0.0    0    0.00
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  0  ¦  0  ¦  0  ¦  0.00
+2  ¦  0  ¦  0  ¦  0  ¦  0.00
+
+#SQL[@268,N41]Result[]
 alter table t7 add column f bool not null;
+
+#SQL[@269,N16]Result[36, 43, 43]
 select * from t7;
-a    b    c    d    e    f
-1    0    0.0    0    0.00    false
-2    0    0.0    0    0.00    false
+a  ¦  b  ¦  c  ¦  d  ¦  e  ¦  f
+1  ¦  0  ¦  0  ¦  0  ¦  0.00  ¦  false
+2  ¦  0  ¦  0  ¦  0  ¦  0.00  ¦  false
+
+#SQL[@270,N42]Result[]
 alter table t7 add column g double after a;
+
+#SQL[@271,N16]Result[43, 53, 53]
 select * from t7;
-a    g    b    c    d    e    f
-1    null    0    0.0    0    0.00    false
-2    null    0    0.0    0    0.00    false
+a  ¦  g  ¦  b  ¦  c  ¦  d  ¦  e  ¦  f
+1  ¦  null  ¦  0  ¦  0  ¦  0  ¦  0.00  ¦  false
+2  ¦  null  ¦  0  ¦  0  ¦  0  ¦  0.00  ¦  false
+
+#SQL[@272,N13]Result[]
 drop table t7;
+
+#SQL[@274,N23]Result[]
 drop table if exists t8;
+
+#SQL[@275,N31]Result[]
 create table t8(a int not null);
+
+#SQL[@276,N28]Result[]
 insert into t8 values(1),(2);
+
+#SQL[@277,N16]Result[1, 1, 1]
 select * from t8;
 a
 1
 2
+
+#SQL[@278,N45]Result[]
 alter table t8 add column b char(20) not null;
+
+#SQL[@279,N16]Result[8, 7, 7]
 select * from t8;
-a    b
-1    
-2    
+a  ¦  b
+1  ¦  
+2  ¦  
+
+#SQL[@280,N48]Result[]
 alter table t8 add column c varchar(20) not null;
+
+#SQL[@281,N16]Result[15, 13, 13]
 select * from t8;
-a    b    c
-1        
-2        
+a  ¦  b  ¦  c
+1  ¦    ¦  
+2  ¦    ¦  
+
+#SQL[@282,N41]Result[]
 alter table t8 add column d text not null;
+
+#SQL[@283,N16]Result[22, 19, 19]
 select * from t8;
-a    b    c    d
-1            
-2            
+a  ¦  b  ¦  c  ¦  d
+1  ¦    ¦    ¦  
+2  ¦    ¦    ¦  
+
+#SQL[@284,N46]Result[]
 alter table t8 add column e binary(2) not null;
+
+#SQL[@285,N16]Result[29, 27, 27]
 select * from t8;
-a    b    c    d    e
-1                  
-2                  
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦    ¦    ¦    ¦    
+2  ¦    ¦    ¦    ¦    
+
+#SQL[@286,N41]Result[]
 alter table t8 add column f blob not null;
+
+#SQL[@287,N16]Result[36, 33, 33]
 select * from t8;
-a    b    c    d    e    f
-1                      
-2                      
+a  ¦  b  ¦  c  ¦  d  ¦  e  ¦  f
+1  ¦    ¦    ¦    ¦      ¦  
+2  ¦    ¦    ¦    ¦      ¦  
+
+#SQL[@288,N47]Result[]
 alter table t8 add column g varchar(50) after a;
+
+#SQL[@289,N16]Result[43, 43, 43]
 select * from t8;
-a    g    b    c    d    e    f
-1    null                      
-2    null                      
+a  ¦  g  ¦  b  ¦  c  ¦  d  ¦  e  ¦  f
+1  ¦  null  ¦    ¦    ¦    ¦      ¦  
+2  ¦  null  ¦    ¦    ¦    ¦      ¦  
+
+#SQL[@290,N41]Result[]
 alter table t8 add column h json not null;
+
+#SQL[@291,N16]Result[50, 51, 51]
 select * from t8;
-a    g    b    c    d    e    f    h
-1    null                          {}
-2    null                          {}
+a  ¦  g  ¦  b  ¦  c  ¦  d  ¦  e  ¦  f  ¦  h
+1  ¦  null  ¦    ¦    ¦    ¦      ¦    ¦  {}
+2  ¦  null  ¦    ¦    ¦    ¦      ¦    ¦  {}
+
+#SQL[@292,N13]Result[]
 drop table t8;
+

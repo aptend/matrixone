@@ -1,532 +1,1188 @@
+#SQL[@7,N26]Result[]
 drop table if exists pri01;
+
+#SQL[@8,N43]Result[]
 create table pri01 (col1 int, col2 decimal);
+
+#SQL[@9,N56]Result[]
 insert into pri01 (col1, col2) values (1,2378.328839842);
+
+#SQL[@10,N45]Result[]
 insert into pri01 values (234, -3923.2342342);
+
+#SQL[@11,N19]Result[14, 11, 14]
 select * from pri01;
-col1    col2
-1    2378
-234    -3923
+col1  ¦  col2
+1  ¦  2378
+234  ¦  -3923
+
+#SQL[@12,N23]Result[23, 98]
 show create table pri01;
-Table    Create Table
-pri01    CREATE TABLE `pri01` (\n  `col1` int DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+pri01  ¦  CREATE TABLE `pri01` (
+  `col1` int DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@13,N50]Result[]
 alter table pri01 add constraint primary key(col1);
+
+#SQL[@14,N47]Result[]
 insert into pri01 values (23423, 32432543.3242);
+
+#SQL[@15,N45]Error[36]
 insert into pri01 values (234, -3923.2342342);
 Duplicate entry '234' for key 'col1'
+
+#SQL[@16,N23]Result[71, 56, 60]
 show columns from pri01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
-col2    DECIMAL(38,0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@17,N147]Result[59, 32, 37]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri01    col1    INT    NO
-pri01    col2    DECIMAL    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri01  ¦  col1  ¦  INT  ¦  NO
+pri01  ¦  col2  ¦  DECIMAL  ¦  YES
+
+#SQL[@18,N16]Result[]
 drop table pri01;
+
+#SQL[@22,N26]Result[]
 drop table if exists pri02;
+
+#SQL[@23,N52]Result[]
 create table pri02 (col1 char, col2 bigint unsigned);
+
+#SQL[@24,N63]Result[]
 insert into pri02 (col1, col2) values ('a', 327349284903284032);
+
+#SQL[@25,N42]Result[]
 insert into pri02 values ('*', 3289323423);
+
+#SQL[@26,N47]Result[]
 insert into pri02 values ('*', 328932342342424);
+
+#SQL[@27,N19]Result[14, 25, 17, 22]
 select * from pri02;
-col1    col2
-a    327349284903284032
-*    3289323423
-*    328932342342424
+col1  ¦  col2
+a  ¦  327349284903284032
+*  ¦  3289323423
+*  ¦  328932342342424
+
+#SQL[@28,N51]Error[34]
 alter table pri02 add constraint primary key (col1);
 Duplicate entry '*' for key 'col1'
+
+#SQL[@29,N23]Result[23, 104]
 show create table pri02;
-Table    Create Table
-pri02    CREATE TABLE `pri02` (\n  `col1` char(1) DEFAULT NULL,\n  `col2` bigint unsigned DEFAULT NULL\n)
+Table  ¦  Create Table
+pri02  ¦  CREATE TABLE `pri02` (
+  `col1` char(1) DEFAULT NULL,
+  `col2` bigint unsigned DEFAULT NULL
+)
+
+#SQL[@30,N23]Result[71, 54, 66]
 show columns from pri02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    CHAR(1)    YES        null        
-col2    BIGINT UNSIGNED(64)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  BIGINT UNSIGNED(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@31,N147]Result[59, 34, 45]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri02' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri02    col1    CHAR    YES
-pri02    col2    BIGINT UNSIGNED    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri02  ¦  col1  ¦  CHAR  ¦  YES
+pri02  ¦  col2  ¦  BIGINT UNSIGNED  ¦  YES
+
+#SQL[@32,N16]Result[]
 drop table pri02;
+
+#SQL[@36,N26]Result[]
 drop table if exists pri03;
+
+#SQL[@37,N52]Result[]
 create table pri03 (col1 char, col2 bigint unsigned);
+
+#SQL[@38,N63]Result[]
 insert into pri03 (col1, col2) values ('a', 327349284903284032);
+
+#SQL[@39,N42]Result[]
 insert into pri03 values ('*', 3289323423);
+
+#SQL[@40,N19]Result[14, 25, 17]
 select * from pri03;
-col1    col2
-a    327349284903284032
-*    3289323423
+col1  ¦  col2
+a  ¦  327349284903284032
+*  ¦  3289323423
+
+#SQL[@41,N51]Result[]
 alter table pri03 add constraint primary key (col1);
+
+#SQL[@42,N23]Result[23, 124]
 show create table pri03;
-Table    Create Table
-pri03    CREATE TABLE `pri03` (\n  `col1` char(1) NOT NULL,\n  `col2` bigint unsigned DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri03  ¦  CREATE TABLE `pri03` (
+  `col1` char(1) NOT NULL,
+  `col2` bigint unsigned DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@43,N23]Result[71, 56, 66]
 show columns from pri03;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    CHAR(1)    NO    PRI    null        
-col2    BIGINT UNSIGNED(64)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  CHAR(1)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  BIGINT UNSIGNED(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@44,N147]Result[59, 33, 45]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri03' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri03    col1    CHAR    NO
-pri03    col2    BIGINT UNSIGNED    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri03  ¦  col1  ¦  CHAR  ¦  NO
+pri03  ¦  col2  ¦  BIGINT UNSIGNED  ¦  YES
+
+#SQL[@45,N16]Result[]
 drop table pri03;
+
+#SQL[@49,N26]Result[]
 drop table if exists pri04;
+
+#SQL[@50,N50]Result[]
 create table pri04 (col1 varchar(100), col2 float);
+
+#SQL[@51,N105]Result[]
 insert into pri04 (col1, col2) values ('databaseDATABASE 数据库数据库系统', -32734928490.3284032);
+
+#SQL[@52,N87]Result[]
 insert into pri04 values ('3782973804u2databasejnwfhui34数据库endfcioc', 3289323423);
+
+#SQL[@53,N48]Result[]
 insert into pri04 values (null, 378270389824324);
+
+#SQL[@54,N19]Result[14, 59, 62, 25]
 select * from pri04;
-col1    col2
-databaseDATABASE 数据库数据库系统    -3.2734929E10
-3782973804u2databasejnwfhui34数据库endfcioc    3.2893235E9
-null    3.782704E14
+col1  ¦  col2
+databaseDATABASE 数据库数据库系统  ¦  -32734929000
+3782973804u2databasejnwfhui34数据库endfcioc  ¦  3289323500
+null  ¦  378270400000000
+
+#SQL[@55,N51]Error[50]
 alter table pri04 add constraint primary key (col1);
 constraint violation: Column 'col1' cannot be null
+
+#SQL[@56,N23]Result[23, 99]
 show create table pri04;
-Table    Create Table
-pri04    CREATE TABLE `pri04` (\n  `col1` varchar(100) DEFAULT NULL,\n  `col2` float DEFAULT NULL\n)
+Table  ¦  Create Table
+pri04  ¦  CREATE TABLE `pri04` (
+  `col1` varchar(100) DEFAULT NULL,
+  `col2` float DEFAULT NULL
+)
+
+#SQL[@57,N23]Result[71, 59, 55]
 show columns from pri04;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    VARCHAR(100)    YES        null        
-col2    FLOAT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  VARCHAR(100)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@58,N147]Result[59, 37, 35]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri04' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri04    col1    VARCHAR    YES
-pri04    col2    FLOAT    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri04  ¦  col1  ¦  VARCHAR  ¦  YES
+pri04  ¦  col2  ¦  FLOAT  ¦  YES
+
+#SQL[@59,N16]Result[]
 drop table pri04;
+
+#SQL[@63,N26]Result[]
 drop table if exists pri05;
+
+#SQL[@64,N43]Result[]
 create table pri05 (col1 date, col2 double);
+
+#SQL[@65,N74]Result[]
 insert into pri05 (col1, col2) values ('1997-01-13', -32734928490.3284032);
+
+#SQL[@66,N51]Result[]
 insert into pri05 values ('2023-08-18', 3289323423);
+
+#SQL[@67,N19]Result[14, 35, 26]
 select * from pri05;
-col1    col2
-1997-01-13    -3.2734928490328403E10
-2023-08-18    3.289323423E9
+col1  ¦  col2
+1997-01-13  ¦  -32734928490.328403
+2023-08-18  ¦  3289323423
+
+#SQL[@68,N51]Result[]
 alter table pri05 add constraint primary key (col1);
+
+#SQL[@69,N23]Result[23, 112]
 show create table pri05;
-Table    Create Table
-pri05    CREATE TABLE `pri05` (\n  `col1` date NOT NULL,\n  `col2` double DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri05  ¦  CREATE TABLE `pri05` (
+  `col1` date NOT NULL,
+  `col2` double DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@70,N23]Result[71, 56, 56]
 show columns from pri05;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    DATE(0)    NO    PRI    null        
-col2    DOUBLE(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  DATE(0)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@71,N147]Result[59, 33, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri05' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri05    col1    DATE    NO
-pri05    col2    DOUBLE    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri05  ¦  col1  ¦  DATE  ¦  NO
+pri05  ¦  col2  ¦  DOUBLE  ¦  YES
+
+#SQL[@72,N16]Result[]
 drop table pri05;
+
+#SQL[@76,N26]Result[]
 drop table if exists pri06;
+
+#SQL[@77,N60]Result[]
 create table pri06 (col1 smallint default null, col2 double);
+
+#SQL[@78,N65]Result[]
 insert into pri06 (col1, col2) values (100, -32734928490.3284032);
+
+#SQL[@79,N42]Result[]
 insert into pri06 values (200, 3289323423);
+
+#SQL[@80,N19]Result[14, 28, 19]
 select * from pri06;
-col1    col2
-100    -3.2734928490328403E10
-200    3.289323423E9
+col1  ¦  col2
+100  ¦  -32734928490.328403
+200  ¦  3289323423
+
+#SQL[@81,N51]Result[]
 alter table pri06 add constraint primary key (col1);
+
+#SQL[@82,N23]Result[23, 116]
 show create table pri06;
-Table    Create Table
-pri06    CREATE TABLE `pri06` (\n  `col1` smallint NOT NULL,\n  `col2` double DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri06  ¦  CREATE TABLE `pri06` (
+  `col1` smallint NOT NULL,
+  `col2` double DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@83,N147]Result[59, 37, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri06' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri06    col1    SMALLINT    NO
-pri06    col2    DOUBLE    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri06  ¦  col1  ¦  SMALLINT  ¦  NO
+pri06  ¦  col2  ¦  DOUBLE  ¦  YES
+
+#SQL[@84,N23]Result[71, 61, 56]
 show columns from pri06;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    SMALLINT(16)    NO    PRI    null        
-col2    DOUBLE(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  SMALLINT(16)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@85,N16]Result[]
 drop table pri06;
+
+#SQL[@89,N26]Result[]
 drop table if exists pri07;
+
+#SQL[@90,N46]Result[]
 create table pri07 (col1 decimal, col2 double);
+
+#SQL[@91,N80]Result[]
 insert into pri07 (col1, col2) values (12.213231000021312, -32734928490.3284032);
+
+#SQL[@92,N64]Result[]
 insert into pri07 values (32784234.4234243243243242, 3289323423);
+
+#SQL[@93,N19]Result[14, 27, 24]
 select * from pri07;
-col1    col2
-12    -3.2734928490328403E10
-32784234    3.289323423E9
+col1  ¦  col2
+12  ¦  -32734928490.328403
+32784234  ¦  3289323423
+
+#SQL[@94,N51]Result[]
 alter table pri07 add constraint primary key (col1);
+
+#SQL[@95,N23]Result[23, 121]
 show create table pri07;
-Table    Create Table
-pri07    CREATE TABLE `pri07` (\n  `col1` decimal(38,0) NOT NULL,\n  `col2` double DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri07  ¦  CREATE TABLE `pri07` (
+  `col1` decimal(38,0) NOT NULL,
+  `col2` double DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@96,N23]Result[71, 62, 56]
 show columns from pri07;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    DECIMAL(38,0)    NO    PRI    null        
-col2    DOUBLE(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  DECIMAL(38,0)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@97,N55]Result[]
 update pri07 set col1 = 1000000 where col2 = 3289323423;
+
+#SQL[@98,N66]Error[35]
 update pri07 set col1 = 12.213231000021312 where col2 = 3289323423;
 Duplicate entry '12' for key 'col1'
+
+#SQL[@99,N49]Result[]
 delete from pri07 where col1 = 12.213231000021312;
+
+#SQL[@100,N19]Result[14, 27, 23]
 select * from pri07;
-col1    col2
-12    -3.2734928490328403E10
-1000000    3.289323423E9
+col1  ¦  col2
+12  ¦  -32734928490.328403
+1000000  ¦  3289323423
+
+#SQL[@101,N147]Result[59, 36, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri07' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri07    col1    DECIMAL    NO
-pri07    col2    DOUBLE    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri07  ¦  col1  ¦  DECIMAL  ¦  NO
+pri07  ¦  col2  ¦  DOUBLE  ¦  YES
+
+#SQL[@102,N16]Result[]
 drop table pri07;
+
+#SQL[@106,N26]Result[]
 drop table if exists pri08;
+
+#SQL[@107,N51]Result[]
 create table pri08 (col1 binary, col2 int unsigned);
+
+#SQL[@108,N47]Result[]
 insert into pri08 values ('ewfijew', 372984324);
+
+#SQL[@109,N54]Result[]
 insert into pri08 values ('ew8u3ejkfcwev', 2147483647);
+
+#SQL[@110,N19]Result[14, 22, 29]
 select * from pri08;
-col1    col2
-ewfijew    372984324
-ew8u3ejkfcwev    2147483647
+col1  ¦  col2
+ewfijew  ¦  372984324
+ew8u3ejkfcwev  ¦  2147483647
+
+#SQL[@111,N51]Result[]
 alter table pri08 add constraint primary key (col1);
+
+#SQL[@112,N23]Result[23, 123]
 show create table pri08;
-Table    Create Table
-pri08    CREATE TABLE `pri08` (\n  `col1` binary(1) NOT NULL,\n  `col2` int unsigned DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri08  ¦  CREATE TABLE `pri08` (
+  `col1` binary(1) NOT NULL,
+  `col2` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@113,N23]Result[71, 58, 63]
 show columns from pri08;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    BINARY(1)    NO    PRI    null        
-col2    INT UNSIGNED(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  BINARY(1)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  INT UNSIGNED(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@114,N51]Error[28]
 alter table pri08 add constraint primary key (col2);
 Multiple primary key defined
+
+#SQL[@115,N23]Result[23, 123]
 show create table pri08;
-Table    Create Table
-pri08    CREATE TABLE `pri08` (\n  `col1` binary(1) NOT NULL,\n  `col2` int unsigned DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri08  ¦  CREATE TABLE `pri08` (
+  `col1` binary(1) NOT NULL,
+  `col2` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@116,N23]Result[71, 58, 63]
 show columns from pri08;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    BINARY(1)    NO    PRI    null        
-col2    INT UNSIGNED(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  BINARY(1)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  INT UNSIGNED(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@117,N147]Result[59, 35, 42]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri08' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri08    col1    BINARY    NO
-pri08    col2    INT UNSIGNED    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri08  ¦  col1  ¦  BINARY  ¦  NO
+pri08  ¦  col2  ¦  INT UNSIGNED  ¦  YES
+
+#SQL[@118,N16]Result[]
 drop table pri08;
+
+#SQL[@122,N26]Result[]
 drop table if exists pri09;
+
+#SQL[@123,N51]Result[]
 create table pri09 (col1 binary, col2 int unsigned);
+
+#SQL[@124,N41]Result[]
 insert into pri09 values ('a', 372893243);
+
+#SQL[@125,N43]Result[]
 insert into pri09 values (null, 2147483647);
+
+#SQL[@126,N19]Result[14, 16, 20]
 select * from pri09;
-col1    col2
-a    372893243
-null    2147483647
+col1  ¦  col2
+a  ¦  372893243
+null  ¦  2147483647
+
+#SQL[@127,N57]Error[50]
 alter table pri09 add constraint primary key (col1, col2);
 constraint violation: Column 'col1' cannot be null
+
+#SQL[@128,N23]Result[23, 103]
 show create table pri09;
-Table    Create Table
-pri09    CREATE TABLE `pri09` (\n  `col1` binary(1) DEFAULT NULL,\n  `col2` int unsigned DEFAULT NULL\n)
+Table  ¦  Create Table
+pri09  ¦  CREATE TABLE `pri09` (
+  `col1` binary(1) DEFAULT NULL,
+  `col2` int unsigned DEFAULT NULL
+)
+
+#SQL[@129,N23]Result[71, 56, 63]
 show columns from pri09;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    BINARY(1)    YES        null        
-col2    INT UNSIGNED(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  BINARY(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  INT UNSIGNED(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@130,N147]Result[59, 36, 42]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri09' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri09    col1    BINARY    YES
-pri09    col2    INT UNSIGNED    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri09  ¦  col1  ¦  BINARY  ¦  YES
+pri09  ¦  col2  ¦  INT UNSIGNED  ¦  YES
+
+#SQL[@131,N16]Result[]
 drop table pri09;
+
+#SQL[@135,N26]Result[]
 drop table if exists pri10;
+
+#SQL[@136,N43]Result[]
 create table pri10 (col1 int, col2 char(1));
+
+#SQL[@137,N46]Result[]
 insert into pri10 (col1, col2) values (1, 'a');
+
+#SQL[@138,N34]Result[]
 insert into pri10 values (-2, '*');
+
+#SQL[@139,N19]Result[14, 8, 9]
 select * from pri10;
-col1    col2
-1    a
--2    *
+col1  ¦  col2
+1  ¦  a
+-2  ¦  *
+
+#SQL[@140,N57]Result[]
 alter table pri10 add constraint primary key (col1, col2);
+
+#SQL[@141,N23]Result[23, 115]
 show create table pri10;
-Table    Create Table
-pri10    CREATE TABLE `pri10` (\n  `col1` int NOT NULL,\n  `col2` char(1) NOT NULL,\n  PRIMARY KEY (`col1`,`col2`)\n)
+Table  ¦  Create Table
+pri10  ¦  CREATE TABLE `pri10` (
+  `col1` int NOT NULL,
+  `col2` char(1) NOT NULL,
+  PRIMARY KEY (`col1`,`col2`)
+)
+
+#SQL[@142,N23]Result[71, 56, 56]
 show columns from pri10;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
-col2    CHAR(1)    NO    PRI    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+
+#SQL[@143,N47]Error[50]
 insert into pri10 (col1, col2) values (1, null);
 constraint violation: Column 'col2' cannot be null
+
+#SQL[@144,N34]Result[]
 insert into pri10 values (-2, 'p');
+
+#SQL[@145,N46]Error[45]
 insert into pri10 (col1, col2) values (1, 'a');
-Duplicate entry ('\(1\,a\)'|'\d\w\d{12}') for key '(.*)'
+Duplicate entry '(1,a)' for key '(col1,col2)'
+
+#SQL[@147,N19]Result[14, 8, 9, 9]
 select * from pri10;
-col1    col2
-1    a
--2    *
--2    p
+col1  ¦  col2
+1  ¦  a
+-2  ¦  *
+-2  ¦  p
+
+#SQL[@148,N147]Result[59, 32, 33]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri10' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri10    col1    INT    NO
-pri10    col2    CHAR    NO
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri10  ¦  col1  ¦  INT  ¦  NO
+pri10  ¦  col2  ¦  CHAR  ¦  NO
+
+#SQL[@149,N16]Result[]
 drop table pri10;
+
+#SQL[@153,N26]Result[]
 drop table if exists pri11;
+
+#SQL[@154,N67]Result[]
 create table pri11 (col1 int primary key , col2 decimal, col3 char);
+
+#SQL[@155,N66]Result[]
 insert into pri11 (col1, col2, col3) values (1, 3289034.3232, 'q');
+
+#SQL[@156,N44]Result[]
 insert into pri11 values (2, 3829.3232, 'a');
+
+#SQL[@157,N57]Error[28]
 alter table pri11 add constraint primary key (col1, col2);
 Multiple primary key defined
+
+#SQL[@158,N23]Result[23, 149]
 show create table pri11;
-Table    Create Table
-pri11    CREATE TABLE `pri11` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) DEFAULT NULL,\n  `col3` char(1) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri11  ¦  CREATE TABLE `pri11` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) DEFAULT NULL,
+  `col3` char(1) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@159,N23]Result[71, 56, 60, 54]
 show columns from pri11;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
-col2    DECIMAL(38,0)    YES        null        
-col3    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col3  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@160,N19]Result[24, 21, 18]
 select * from pri11;
-col1    col2    col3
-1    3289034    q
-2    3829    a
+col1  ¦  col2  ¦  col3
+1  ¦  3289034  ¦  q
+2  ¦  3829  ¦  a
+
+#SQL[@161,N147]Result[59, 32, 37, 34]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri11' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri11    col1    INT    NO
-pri11    col2    DECIMAL    YES
-pri11    col3    CHAR    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri11  ¦  col1  ¦  INT  ¦  NO
+pri11  ¦  col2  ¦  DECIMAL  ¦  YES
+pri11  ¦  col3  ¦  CHAR  ¦  YES
+
+#SQL[@162,N16]Result[]
 drop table pri11;
+
+#SQL[@166,N27]Result[]
 drop table if exists temp01;
+
+#SQL[@167,N56]Result[]
 create temporary table temp01 (col1 datetime, col2 blob);
+
+#SQL[@168,N105]Result[]
 insert into temp01 values ('1997-01-13 00:00:00', '342ewfyuehcdeiuopwu4jo3lekwdfhiu48woi3jrdnefrbwui34f');
+
+#SQL[@169,N108]Result[]
 insert into temp01 values ('2012-01-13 23:23:59', '63298ufh3jcweuiv4h32jhf432ouy4hu3enjwfnwje4n3bj24f34573');
+
+#SQL[@170,N20]Result[14, 77, 80]
 select * from temp01;
-col1    col2
-1997-01-13 00:00:00    342ewfyuehcdeiuopwu4jo3lekwdfhiu48woi3jrdnefrbwui34f
-2012-01-13 23:23:59    63298ufh3jcweuiv4h32jhf432ouy4hu3enjwfnwje4n3bj24f34573
+col1  ¦  col2
+1997-01-13 00:00:00  ¦  342ewfyuehcdeiuopwu4jo3lekwdfhiu48woi3jrdnefrbwui34f
+2012-01-13 23:23:59  ¦  63298ufh3jcweuiv4h32jhf432ouy4hu3enjwfnwje4n3bj24f34573
+
+#SQL[@171,N52]Error[54]
 alter table temp01 add constraint primary key (col2);
 alter table for temporary table is not yet implemented
+
+#SQL[@172,N20]Result[14, 77, 80]
 select * from temp01;
-col1    col2
-1997-01-13 00:00:00    342ewfyuehcdeiuopwu4jo3lekwdfhiu48woi3jrdnefrbwui34f
-2012-01-13 23:23:59    63298ufh3jcweuiv4h32jhf432ouy4hu3enjwfnwje4n3bj24f34573
+col1  ¦  col2
+1997-01-13 00:00:00  ¦  342ewfyuehcdeiuopwu4jo3lekwdfhiu48woi3jrdnefrbwui34f
+2012-01-13 23:23:59  ¦  63298ufh3jcweuiv4h32jhf432ouy4hu3enjwfnwje4n3bj24f34573
+
+#SQL[@173,N24]Result[23, 96]
 show create table temp01;
-Table    Create Table
-temp01    CREATE TABLE `temp01` (\n  `col1` datetime DEFAULT NULL,\n  `col2` blob DEFAULT NULL\n)
+Table  ¦  Create Table
+temp01  ¦  CREATE TABLE `temp01` (
+  `col1` datetime DEFAULT NULL,
+  `col2` blob DEFAULT NULL
+)
+
+#SQL[@174,N24]Result[]
 show columns from temp01;
-Field    Type    Null    Key    Default    Extra    Comment
+
+#SQL[@175,N148]Result[]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'temp01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
+
+#SQL[@176,N17]Result[]
 drop table temp01;
+
+#SQL[@180,N33]Result[]
 drop table if exists ex_table_2_1;
+
+#SQL[@181,N402]Result[]
 create external table ex_table_2_1(num_col1 tinyint,num_col2 smallint,num_col3 int,num_col4 bigint,num_col5 tinyint unsigned,num_col6 smallint unsigned,num_col7 int unsigned,num_col8 bigint unsigned ,num_col9 float(5,3),num_col10 double(6,5),num_col11 decimal(38,19))infile{"filepath"='$resources/external_table_file/ex_table_2_1.csv'} fields terminated by ',' enclosed by '\"' lines terminated by '\n';
+
+#SQL[@182,N72]Error[62]
 alter table ex_table_2_1 add constraint primary key (num_col1, num_col2);
 invalid input: cannot insert/update/delete from external table
+
+#SQL[@183,N30]Result[23, 620]
 show create table ex_table_2_1;
-Table    Create Table
-ex_table_2_1    CREATE EXTERNAL TABLE `ex_table_2_1` (\n  `num_col1` tinyint DEFAULT NULL,\n  `num_col2` smallint DEFAULT NULL,\n  `num_col3` int DEFAULT NULL,\n  `num_col4` bigint DEFAULT NULL,\n  `num_col5` tinyint unsigned DEFAULT NULL,\n  `num_col6` smallint unsigned DEFAULT NULL,\n  `num_col7` int unsigned DEFAULT NULL,\n  `num_col8` bigint unsigned DEFAULT NULL,\n  `num_col9` float(5,3) DEFAULT NULL,\n  `num_col10` double(6,5) DEFAULT NULL,\n  `num_col11` decimal(38,19) DEFAULT NULL\n) INFILE{'FILEPATH'='','COMPRESSION'='','FORMAT'='csv','JSONDATA'=''} FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
+Table  ¦  Create Table
+ex_table_2_1  ¦  CREATE EXTERNAL TABLE `ex_table_2_1` (
+  `num_col1` tinyint DEFAULT NULL,
+  `num_col2` smallint DEFAULT NULL,
+  `num_col3` int DEFAULT NULL,
+  `num_col4` bigint DEFAULT NULL,
+  `num_col5` tinyint unsigned DEFAULT NULL,
+  `num_col6` smallint unsigned DEFAULT NULL,
+  `num_col7` int unsigned DEFAULT NULL,
+  `num_col8` bigint unsigned DEFAULT NULL,
+  `num_col9` float(5,3) DEFAULT NULL,
+  `num_col10` double(6,5) DEFAULT NULL,
+  `num_col11` decimal(38,19) DEFAULT NULL
+) INFILE{'FILEPATH'='','COMPRESSION'='','FORMAT'='csv','JSONDATA'=''} FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n'
+
+#SQL[@184,N26]Error[67]
 select * from ex_table_2_1;
 internal error: the input value 'abc' is not int8 type for column 0
+
+#SQL[@188,N30]Result[]
 drop table if exists droppri01;
+
+#SQL[@189,N60]Result[]
 create table droppri01 (col1 int primary key , col2 decimal);
+
+#SQL[@190,N63]Result[]
 insert into droppri01 (col1, col2) values (1, 234324234.234242);
+
+#SQL[@191,N61]Result[]
 insert into droppri01 values (32894324,4234294023.4324324234);
+
+#SQL[@192,N38]Result[]
 alter table droppri01 drop primary key;
+
+#SQL[@193,N27]Result[23, 102]
 show create table droppri01;
-Table    Create Table
-droppri01    CREATE TABLE `droppri01` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+droppri01  ¦  CREATE TABLE `droppri01` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@194,N27]Result[71, 53, 60]
 show columns from droppri01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    DECIMAL(38,0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@195,N57]Result[]
 insert into droppri01 (col1, col2) values (1, 3489372843);
+
+#SQL[@196,N24]Result[]
 truncate table droppri01;
+
+#SQL[@197,N55]Result[]
 alter table droppri01 add constraint primary key (col2);
+
+#SQL[@198,N27]Result[23, 122]
 show create table droppri01;
-Table    Create Table
-droppri01    CREATE TABLE `droppri01` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) NOT NULL,\n  PRIMARY KEY (`col2`)\n)
+Table  ¦  Create Table
+droppri01  ¦  CREATE TABLE `droppri01` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) NOT NULL,
+  PRIMARY KEY (`col2`)
+)
+
+#SQL[@199,N38]Result[]
 alter table droppri01 drop primary key;
+
+#SQL[@200,N27]Result[23, 98]
 show create table droppri01;
-Table    Create Table
-droppri01    CREATE TABLE `droppri01` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) NOT NULL\n)
+Table  ¦  Create Table
+droppri01  ¦  CREATE TABLE `droppri01` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) NOT NULL
+)
+
+#SQL[@201,N27]Result[71, 53, 59]
 show columns from droppri01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    DECIMAL(38,0)    NO        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  NO  ¦    ¦  null  ¦    ¦  
+
+#SQL[@202,N23]Result[]
 select * from droppri01;
-col1    col2
+
+#SQL[@203,N151]Result[59, 36, 40]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'droppri01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-droppri01    col1    INT    NO
-droppri01    col2    DECIMAL    NO
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+droppri01  ¦  col1  ¦  INT  ¦  NO
+droppri01  ¦  col2  ¦  DECIMAL  ¦  NO
+
+#SQL[@204,N20]Result[]
 drop table droppri01;
+
+#SQL[@208,N26]Result[]
 drop table if exists pri01;
+
+#SQL[@209,N42]Result[]
 create table pri01(col1 int, col2 decimal);
+
+#SQL[@210,N50]Result[]
 alter table pri01 add constraint primary key(col1);
+
+#SQL[@211,N23]Result[23, 118]
 show create table pri01;
-Table    Create Table
-pri01    CREATE TABLE `pri01` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+pri01  ¦  CREATE TABLE `pri01` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@212,N34]Result[]
 alter table pri01 drop primary key;
+
+#SQL[@213,N23]Result[23, 94]
 show create table pri01;
-Table    Create Table
-pri01    CREATE TABLE `pri01` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+pri01  ¦  CREATE TABLE `pri01` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@214,N50]Result[]
 alter table pri01 add constraint primary key(col2);
+
+#SQL[@215,N23]Result[23, 114]
 show create table pri01;
-Table    Create Table
-pri01    CREATE TABLE `pri01` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) NOT NULL,\n  PRIMARY KEY (`col2`)\n)
+Table  ¦  Create Table
+pri01  ¦  CREATE TABLE `pri01` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) NOT NULL,
+  PRIMARY KEY (`col2`)
+)
+
+#SQL[@216,N23]Result[71, 53, 62]
 show columns from pri01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    DECIMAL(38,0)    NO    PRI    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  DECIMAL(38,0)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+
+#SQL[@217,N147]Result[59, 32, 36]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri01' and COLUMN_NAME not like '__mo%';
-table_name    COLUMN_NAME    data_type    is_nullable
-pri01    col1    INT    NO
-pri01    col2    DECIMAL    NO
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri01  ¦  col1  ¦  INT  ¦  NO
+pri01  ¦  col2  ¦  DECIMAL  ¦  NO
+
+#SQL[@218,N16]Result[]
 drop table pri01;
+
+#SQL[@222,N30]Result[]
 drop table if exists droppri02;
+
+#SQL[@223,N140]Result[]
 create table droppri02 (col1 int auto_increment, col2 decimal, col3 char, col4 varchar not null, col5 float, primary key (col1, col2, col3));
+
+#SQL[@224,N27]Result[23, 241]
 show create table droppri02;
-Table    Create Table
-droppri02    CREATE TABLE `droppri02` (\n  `col1` int NOT NULL AUTO_INCREMENT,\n  `col2` decimal(38,0) NOT NULL,\n  `col3` char(1) NOT NULL,\n  `col4` varchar(65535) NOT NULL,\n  `col5` float DEFAULT NULL,\n  PRIMARY KEY (`col1`,`col2`,`col3`)\n)
+Table  ¦  Create Table
+droppri02  ¦  CREATE TABLE `droppri02` (
+  `col1` int NOT NULL AUTO_INCREMENT,
+  `col2` decimal(38,0) NOT NULL,
+  `col3` char(1) NOT NULL,
+  `col4` varchar(65535) NOT NULL,
+  `col5` float DEFAULT NULL,
+  PRIMARY KEY (`col1`,`col2`,`col3`)
+)
+
+#SQL[@225,N27]Result[71, 70, 62, 56, 60, 55]
 show columns from droppri02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null    auto_increment    
-col2    DECIMAL(38,0)    NO    PRI    null        
-col3    CHAR(1)    NO    PRI    null        
-col4    VARCHAR(65535)    NO        null        
-col5    FLOAT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  
+col2  ¦  DECIMAL(38,0)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col3  ¦  CHAR(1)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col4  ¦  VARCHAR(65535)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col5  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@226,N38]Result[]
 alter table droppri02 drop primary key;
+
+#SQL[@227,N27]Result[23, 203]
 show create table droppri02;
-Table    Create Table
-droppri02    CREATE TABLE `droppri02` (\n  `col1` int NOT NULL AUTO_INCREMENT,\n  `col2` decimal(38,0) NOT NULL,\n  `col3` char(1) NOT NULL,\n  `col4` varchar(65535) NOT NULL,\n  `col5` float DEFAULT NULL\n)
+Table  ¦  Create Table
+droppri02  ¦  CREATE TABLE `droppri02` (
+  `col1` int NOT NULL AUTO_INCREMENT,
+  `col2` decimal(38,0) NOT NULL,
+  `col3` char(1) NOT NULL,
+  `col4` varchar(65535) NOT NULL,
+  `col5` float DEFAULT NULL
+)
+
+#SQL[@228,N27]Result[71, 67, 59, 53, 60, 55]
 show columns from droppri02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null    auto_increment    
-col2    DECIMAL(38,0)    NO        null        
-col3    CHAR(1)    NO        null        
-col4    VARCHAR(65535)    NO        null        
-col5    FLOAT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦  auto_increment  ¦  
+col2  ¦  DECIMAL(38,0)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col3  ¦  CHAR(1)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col4  ¦  VARCHAR(65535)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col5  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@229,N20]Result[]
 drop table droppri02;
+
+#SQL[@233,N30]Result[]
 drop table if exists prepare01;
+
+#SQL[@234,N56]Result[]
 create table prepare01(col1 int primary key , col2 char);
+
+#SQL[@235,N52]Result[]
 insert into prepare01 values (1,'a'),(2,'b'),(3,'c');
+
+#SQL[@236,N27]Result[23, 120]
 show create table prepare01;
-Table    Create Table
-prepare01    CREATE TABLE `prepare01` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+prepare01  ¦  CREATE TABLE `prepare01` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@237,N27]Result[71, 56, 54]
 show columns from prepare01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
-col2    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@238,N56]Result[]
 prepare s1 from 'alter table prepare01 drop primary key';
+
+#SQL[@239,N10]Result[]
 execute s1;
+
+#SQL[@240,N27]Result[23, 96]
 show create table prepare01;
-Table    Create Table
-prepare01    CREATE TABLE `prepare01` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+prepare01  ¦  CREATE TABLE `prepare01` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@241,N27]Result[71, 53, 54]
 show columns from prepare01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@242,N73]Result[]
 prepare s2 from 'alter table prepare01 add constraint primary key(col2) ';
+
+#SQL[@243,N10]Result[]
 execute s2;
+
+#SQL[@244,N27]Result[23, 116]
 show create table prepare01;
-Table    Create Table
-prepare01    CREATE TABLE `prepare01` (\n  `col1` int NOT NULL,\n  `col2` char(1) NOT NULL,\n  PRIMARY KEY (`col2`)\n)
+Table  ¦  Create Table
+prepare01  ¦  CREATE TABLE `prepare01` (
+  `col1` int NOT NULL,
+  `col2` char(1) NOT NULL,
+  PRIMARY KEY (`col2`)
+)
+
+#SQL[@245,N27]Result[71, 53, 56]
 show columns from prepare01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    CHAR(1)    NO    PRI    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+
+#SQL[@246,N20]Result[]
 drop table prepare01;
+
+#SQL[@250,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@251,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@252,N27]Result[]
 drop table if exists test01;
+
+#SQL[@253,N19]Result[]
 create role role_r1;
+
+#SQL[@254,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@255,N47]Result[]
 create table test01(col1 int, col2 varchar(10));
+
+#SQL[@256,N41]Result[]
 insert into test01 values(1, 'ewuijernf');
+
+#SQL[@257,N38]Result[]
 insert into test01 values(2, 'abscde');
+
+#SQL[@258,N45]Result[]
 grant create database on account * to role_r1;
+
+#SQL[@259,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@260,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@261,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@262,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@264,N36]Result[]
 use alter_table_add_drop_primary_key;
+
+#SQL[@265,N51]Error[62]
 alter table test01 add constraint primary key(col1);
 internal error: do not have privilege to execute the statement
+
+#SQL[@267,N42]Result[]
 grant alter table on database * to role_r1;
+
+#SQL[@269,N36]Result[]
 use alter_table_add_drop_primary_key;
+
+#SQL[@270,N51]Result[]
 alter table test01 add constraint primary key(col1);
+
+#SQL[@271,N24]Result[23, 118]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` int NOT NULL,\n  `col2` varchar(10) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` int NOT NULL,
+  `col2` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@272,N24]Result[71, 56, 58]
 show columns from test01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
-col2    VARCHAR(10)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  VARCHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@273,N35]Result[]
 alter table test01 drop primary key;
+
+#SQL[@274,N24]Result[23, 94]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` int NOT NULL,\n  `col2` varchar(10) DEFAULT NULL\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` int NOT NULL,
+  `col2` varchar(10) DEFAULT NULL
+)
+
+#SQL[@275,N24]Result[71, 53, 58]
 show columns from test01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    VARCHAR(10)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  VARCHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@277,N24]Result[23, 94]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` int NOT NULL,\n  `col2` varchar(10) DEFAULT NULL\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` int NOT NULL,
+  `col2` varchar(10) DEFAULT NULL
+)
+
+#SQL[@278,N24]Result[71, 53, 58]
 show columns from test01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    VARCHAR(10)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  VARCHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@279,N17]Result[]
 drop table test01;
+
+#SQL[@280,N17]Result[]
 drop role role_r1;
+
+#SQL[@281,N17]Result[]
 drop user role_u1;
+
+#SQL[@286,N26]Result[]
 drop table if exists mix01;
+
+#SQL[@287,N73]Result[]
 create table mix01 (col1 int, col2 decimal, col3 char, col4 varchar(100));
+
+#SQL[@288,N82]Result[]
 insert into mix01 (col1, col2, col3, col4) values (1, 2, 'a', 'w3uir34jn2k48ujf4');
+
+#SQL[@289,N79]Result[]
 insert into mix01 (col1, col2, col3, col4) values (2, 3, 'd', '3289u3ji2dff43');
+
+#SQL[@290,N146]Result[]
 alter table mix01 modify col1 float after col3, change column col2 col2New double, rename column col3 to newCol3, add constraint primary key(col1);
+
+#SQL[@291,N84]Error[32]
 insert into mix01 (col1, col2, col3, col4) values (3, 'w', 37283.323, 'dswhjkfrewr');
 Unknown column 'col2' in 'mix01'
+
+#SQL[@292,N85]Result[]
 alter table mix01 add column col5 int after col1, rename column col2new to newnewCol2;
+
+#SQL[@293,N19]Result[53, 48, 45]
 select * from mix01;
-newnewcol2    newcol3    col1    col5    col4
-2.0    a    1.0    null    w3uir34jn2k48ujf4
-3.0    d    2.0    null    3289u3ji2dff43
+newnewcol2  ¦  newcol3  ¦  col1  ¦  col5  ¦  col4
+2  ¦  a  ¦  1  ¦  null  ¦  w3uir34jn2k48ujf4
+3  ¦  d  ¦  2  ¦  null  ¦  3289u3ji2dff43
+
+#SQL[@294,N71]Error[35]
 alter table mix01 rename column col2new to newnewCol2, drop primary key;
 Unknown column 'col2new' in 'mix01'
+
+#SQL[@295,N23]Result[23, 216]
 show create table mix01;
-Table    Create Table
-mix01    CREATE TABLE `mix01` (\n  `newnewCol2` double DEFAULT NULL,\n  `newCol3` char(1) DEFAULT NULL,\n  `col1` float NOT NULL,\n  `col5` int DEFAULT NULL,\n  `col4` varchar(100) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+mix01  ¦  CREATE TABLE `mix01` (
+  `newnewCol2` double DEFAULT NULL,
+  `newCol3` char(1) DEFAULT NULL,
+  `col1` float NOT NULL,
+  `col5` int DEFAULT NULL,
+  `col4` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@296,N38]Result[]
 delete from mix01 where newnewcol2 = 2;
+
+#SQL[@297,N61]Result[]
 update mix01 set newnewcol2 = 8290432.324 where newcol3 = 'd';
+
+#SQL[@298,N19]Result[53, 55]
 select * from mix01;
-newnewcol2    newcol3    col1    col5    col4
-8290432.324    d    2.0    null    3289u3ji2dff43
+newnewcol2  ¦  newcol3  ¦  col1  ¦  col5  ¦  col4
+8290432.324  ¦  d  ¦  2  ¦  null  ¦  3289u3ji2dff43
+
+#SQL[@299,N23]Result[23, 216]
 show create table mix01;
-Table    Create Table
-mix01    CREATE TABLE `mix01` (\n  `newnewCol2` double DEFAULT NULL,\n  `newCol3` char(1) DEFAULT NULL,\n  `col1` float NOT NULL,\n  `col5` int DEFAULT NULL,\n  `col4` varchar(100) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+mix01  ¦  CREATE TABLE `mix01` (
+  `newnewCol2` double DEFAULT NULL,
+  `newCol3` char(1) DEFAULT NULL,
+  `col1` float NOT NULL,
+  `col5` int DEFAULT NULL,
+  `col4` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@300,N23]Result[71, 62, 57, 57, 54, 59]
 show columns from mix01;
-Field    Type    Null    Key    Default    Extra    Comment
-newnewCol2    DOUBLE(0)    YES        null        
-newCol3    CHAR(1)    YES        null        
-col1    FLOAT(0)    NO    PRI    null        
-col5    INT(32)    YES        null        
-col4    VARCHAR(100)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+newnewCol2  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+newCol3  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col1  ¦  FLOAT(0)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col5  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col4  ¦  VARCHAR(100)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@301,N16]Result[]
 drop table mix01;
+
+#SQL[@304,N28]Result[]
 drop table if exists table01;
+
+#SQL[@305,N5]Result[]
 begin;
+
+#SQL[@306,N44]Result[]
 create table table01(col1 int, col2 decimal);
+
+#SQL[@307,N35]Result[]
 insert into table01 values(100,200);
+
+#SQL[@308,N35]Result[]
 insert into table01 values(200,300);
+
+#SQL[@309,N53]Result[]
 alter table table01 add constraint primary key (col2);
+
+#SQL[@310,N6]Result[]
 commit;
+
+#SQL[@311,N21]Result[14, 12, 12]
 select * from table01;
-col1    col2
-100    200
-200    300
+col1  ¦  col2
+100  ¦  200
+200  ¦  300
+
+#SQL[@312,N24]Result[4, 3, 3]
 select col1 from table01;
 col1
 100
 200
+
+#SQL[@313,N18]Result[]
 drop table table01;
+
+#SQL[@315,N28]Result[]
 drop table if exists table01;
+
+#SQL[@316,N5]Result[]
 begin;
+
+#SQL[@317,N56]Result[]
 create table table01(col1 int primary key, col2 decimal);
+
+#SQL[@318,N35]Result[]
 insert into table01 values(100,200);
+
+#SQL[@319,N35]Result[]
 insert into table01 values(200,300);
+
+#SQL[@320,N36]Result[]
 alter table table01 drop primary key;
+
+#SQL[@321,N6]Result[]
 commit;
+
+#SQL[@322,N21]Result[14, 12, 12]
 select * from table01;
-col1    col2
-100    200
-200    300
+col1  ¦  col2
+100  ¦  200
+200  ¦  300
+
+#SQL[@323,N24]Result[4, 3, 3]
 select col1 from table01;
 col1
 100
 200
+
+#SQL[@324,N18]Result[]
 drop table table01;
+
+#SQL[@326,N23]Result[]
 drop table if exists t1;
+
+#SQL[@327,N41]Result[]
 create table t1(a int primary key, b int);
+
+#SQL[@328,N72]Result[]
 insert into t1 select result ,result from generate_series(1, 20000000) g;
+
+#SQL[@329,N31]Result[]
 alter table t1 drop primary key;
+
+#SQL[@330,N5]Result[]
 begin;
+
+#SQL[@331,N29]Result[]
 create table t2(a int, b int);
+
+#SQL[@332,N33]Result[]
 insert into t2 select a,b from t1;
+
+#SQL[@333,N23]Result[8, 8]
 select count(*) from t2;
 count(*)
 20000000
+
+#SQL[@334,N13]Result[]
 drop table t2;
+
+#SQL[@335,N6]Result[]
 commit;
+

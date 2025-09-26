@@ -582,7 +582,7 @@ insert into primary01 values (2, '243ewfvefreverewfcwr');
 alter table primary01 change col1 col1New float primary key;
 show create table primary01;
 insert into primary01 values (1, '432r2f234day89ujfw42342');
-| @regex(pattern=r"");
+-- + Duplicate entry '1' for key 'col1[Nn]ew'
 insert into primary01 values (2378.32423, '234242))())_');
 select * from primary01;
 show columns from primary01;
@@ -623,7 +623,6 @@ alter table primary03 change col1 col1New int primary key;
 show create table primary03;
 insert into primary03 (col1New, col2) values (3, '*');
 insert into primary03 values (3, 'assad');
-| @regex(pattern=r"");
 update from primary03 set col2 = 'database' where col1New = 3;
 select * from primary03;
 show columns from primary03;
@@ -640,7 +639,6 @@ alter table primary04 change col1 col1New float;
 alter table primary04 change col2 col2New varbinary(50);
 show create table primary04;
 insert into primary04 values (1, '324342__');
-| @regex(pattern=r"");
 insert into primary04 values (3, 'qw');
 delete from primary04 where col2 = 'qfreqvreq';
 delete from primary04 where col2New = 'qfreqvreq';
@@ -709,7 +707,7 @@ show create table primary09;
 insert into primary09 values(1, 3412.324);
 insert into primary09 values (-10, 323943.2343);
 alter table primary09 change col1 col1New float default null;
-drop table primary09
+drop table primary09;
 
 
 -- unique key
@@ -751,7 +749,6 @@ alter table index02 change b bnewNew VARCHAR(20) UNIQUE KEY;
 show index from index02;
 show create table index02;
 insert into index02 values (4, 'ab', '2000-10-10', 10000);
-| @regex(pattern=r"");
 insert into index02 values (5, 'gh', '1999-12-31', 20000);
 delete from index02 where bnewnew = 'ab';
 update index02 set bnewnew = 'database' where bnewnEW = 'ad';

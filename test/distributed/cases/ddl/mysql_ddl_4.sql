@@ -204,7 +204,7 @@ where (now() between `b`.`CONTRACT_EFFECTIVE_START` and `b`.`CONTRACT_EFFECTIVE_
 
 SHOW CREATE VIEW mysql_ddl_test_v41;
 
--- @bvt:issue#moc 1229
+-- @bvt:issue#"moc1229"
 DROP VIEW IF EXISTS mysql_ddl_test_v42;
 /*!50001 CREATE ALGORITHM=UNDEFINED */
 /*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */

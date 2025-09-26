@@ -30,4 +30,3 @@ select * from t1;
 alter table t1 add constraint pk primary key pk1(a);
 desc t1;
 select * from t1;
-------------------------------------------------------------------------------------------

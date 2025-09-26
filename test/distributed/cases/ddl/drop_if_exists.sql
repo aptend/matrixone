@@ -27,6 +27,8 @@ show index from t1;
 create view v1 as select * from t1;
 show tables;
 
+-- @session
+
 -- @session:id=2&user=acc101:root&password=123456
 
 -- 如果创建新的session后，没有显式选择数据库，执行drop index 报错

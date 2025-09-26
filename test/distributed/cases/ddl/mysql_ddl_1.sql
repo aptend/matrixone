@@ -27,7 +27,7 @@ create database /* this is another comment */ if not exists mysql_ddl_test_db_3;
 use mysql_ddl_test_db_3;
 select database();
 
--- @bvt:issue#moc 1231
+-- @bvt:issue#"moc1231"
 CREATE DATABASE /*!32312 IF NOT EXISTS*/ `mysql_ddl_test_db_4` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 /*!40101 use mysql_ddl_test_db_4; */
 select database();

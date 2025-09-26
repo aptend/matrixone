@@ -1,132 +1,327 @@
+#SQL[@1,N23]Result[]
 drop table if exists t1;
+
+#SQL[@2,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@3,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@4,N34]Result[]
 insert into t1 values(2,"Bob", 25);
+
+#SQL[@5,N36]Result[]
 insert into t1 values(3,"Carol", 23);
+
+#SQL[@6,N35]Result[]
 insert into t1 values(4,"Dora", 29);
+
+#SQL[@7,N35]Result[]
 create unique index idx on t1(name);
+
+#SQL[@8,N16]Result[21, 19, 18, 20, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Bob    25
-3    Carol    23
-4    Dora    29
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+3  ¦  Carol  ¦  23
+4  ¦  Dora  ¦  29
+
+#SQL[@9,N13]Result[]
 drop table t1;
+
+#SQL[@11,N91]Result[]
 create table t2 (
 col1 bigint primary key,
 col2 varchar(25),
 col3 float,
 col4 varchar(50)
 );
+
+#SQL[@17,N66]Result[]
 create unique index idx on t2(col2) comment 'create varchar index';
+
+#SQL[@18,N44]Result[]
 insert into t2 values(1,"Abby", 24,'zbcvdf');
+
+#SQL[@19,N43]Result[]
 insert into t2 values(2,"Bob", 25,'zbcvdf');
+
+#SQL[@20,N45]Result[]
 insert into t2 values(3,"Carol", 23,'zbcvdf');
+
+#SQL[@21,N44]Result[]
 insert into t2 values(4,"Dora", 29,'zbcvdf');
+
+#SQL[@22,N16]Result[34, 31, 30, 32, 31]
 select * from t2;
-col1    col2    col3    col4
-1    Abby    24.0    zbcvdf
-2    Bob    25.0    zbcvdf
-3    Carol    23.0    zbcvdf
-4    Dora    29.0    zbcvdf
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  Abby  ¦  24  ¦  zbcvdf
+2  ¦  Bob  ¦  25  ¦  zbcvdf
+3  ¦  Carol  ¦  23  ¦  zbcvdf
+4  ¦  Dora  ¦  29  ¦  zbcvdf
+
+#SQL[@23,N13]Result[]
 drop table t2;
+
+#SQL[@25,N91]Result[]
 create table t3 (
 col1 bigint primary key,
 col2 varchar(25),
 col3 float,
 col4 varchar(50)
 );
+
+#SQL[@31,N40]Result[]
 create unique index idx on t3(col2,col3);
+
+#SQL[@32,N44]Result[]
 insert into t3 values(1,"Abby", 24,'zbcvdf');
+
+#SQL[@33,N43]Result[]
 insert into t3 values(2,"Bob", 25,'zbcvdf');
+
+#SQL[@34,N45]Result[]
 insert into t3 values(3,"Carol", 23,'zbcvdf');
+
+#SQL[@35,N44]Result[]
 insert into t3 values(4,"Dora", 29,'zbcvdf');
+
+#SQL[@36,N16]Result[34, 31, 30, 32, 31]
 select * from t3;
-col1    col2    col3    col4
-1    Abby    24.0    zbcvdf
-2    Bob    25.0    zbcvdf
-3    Carol    23.0    zbcvdf
-4    Dora    29.0    zbcvdf
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  Abby  ¦  24  ¦  zbcvdf
+2  ¦  Bob  ¦  25  ¦  zbcvdf
+3  ¦  Carol  ¦  23  ¦  zbcvdf
+4  ¦  Dora  ¦  29  ¦  zbcvdf
+
+#SQL[@37,N44]Error[34]
 insert into t3 values(4,"Dora", 28,'zbcvdf');
 Duplicate entry '4' for key 'col1'
+
+#SQL[@38,N44]Error[49]
 insert into t3 values(5,"Dora", 29,'zbcvdf');
-Duplicate entry ('\(\w{4}\,\d{2}\)'|'\d{7}\w\d{8}\w\d\w\d{5}') for key '(.*)'
+Duplicate entry '(Dora,29)' for key '(col2,col3)'
+
+#SQL[@40,N13]Result[]
 drop table t3;
+
+#SQL[@42,N37]Error[38]
 create table t4(a int, b int, key(c));
 invalid input: column 'c' is not exist
+
+#SQL[@44,N44]Result[]
 create table t5(a int, b int, unique key(a));
+
+#SQL[@45,N20]Result[23, 100]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`)\n)
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`)
+)
+
+#SQL[@46,N23]Result[]
 create index b on t5(b);
+
+#SQL[@47,N20]Result[23, 117]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`),\n  KEY `b` (`b`)\n)
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`),
+  KEY `b` (`b`)
+)
+
+#SQL[@48,N18]Result[]
 drop index b on t5;
+
+#SQL[@49,N20]Result[23, 100]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`)\n)
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`)
+)
+
+#SQL[@50,N13]Result[]
 drop table t5;
+
+#SQL[@52,N44]Result[]
 create table t6(a int, b int, unique key(a));
+
+#SQL[@53,N20]Result[23, 100]
 show create table t6;
-Table    Create Table
-t6    CREATE TABLE `t6` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`)\n)
+Table  ¦  Create Table
+t6  ¦  CREATE TABLE `t6` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`)
+)
+
+#SQL[@54,N26]Result[]
 create index b on t6(a, b);
+
+#SQL[@55,N20]Result[23, 121]
 show create table t6;
-Table    Create Table
-t6    CREATE TABLE `t6` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`),\n  KEY `b` (`a`,`b`)\n)
+Table  ¦  Create Table
+t6  ¦  CREATE TABLE `t6` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`),
+  KEY `b` (`a`,`b`)
+)
+
+#SQL[@56,N18]Result[]
 drop index b on t6;
+
+#SQL[@57,N20]Result[23, 100]
 show create table t6;
-Table    Create Table
-t6    CREATE TABLE `t6` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`)\n)
+Table  ¦  Create Table
+t6  ¦  CREATE TABLE `t6` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`)
+)
+
+#SQL[@58,N13]Result[]
 drop table t6;
+
+#SQL[@60,N29]Result[]
 create table t7(a int, b int);
+
+#SQL[@61,N42]Result[]
 create unique index x ON t7(a) comment 'x';
+
+#SQL[@62,N20]Result[23, 112]
 show create table t7;
-Table    Create Table
-t7    CREATE TABLE `t7` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `x` (`a`) COMMENT 'x'\n)
+Table  ¦  Create Table
+t7  ¦  CREATE TABLE `t7` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `x` (`a`) COMMENT 'x'
+)
+
+#SQL[@63,N13]Result[]
 drop table t7;
+
+#SQL[@65,N29]Result[]
 create table t8(a int, b int);
+
+#SQL[@66,N35]Result[]
 create index x ON t8(a) comment 'x';
+
+#SQL[@67,N20]Result[23, 105]
 show create table t8;
-Table    Create Table
-t8    CREATE TABLE `t8` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  KEY `x` (`a`) COMMENT 'x'\n)
+Table  ¦  Create Table
+t8  ¦  CREATE TABLE `t8` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  KEY `x` (`a`) COMMENT 'x'
+)
+
+#SQL[@68,N13]Result[]
 drop table t8;
+
+#SQL[@70,N56]Result[]
 create table t9(a int, b int, unique key(a) comment 'a');
+
+#SQL[@71,N20]Result[23, 112]
 show create table t9;
-Table    Create Table
-t9    CREATE TABLE `t9` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`) COMMENT 'a'\n)
+Table  ¦  Create Table
+t9  ¦  CREATE TABLE `t9` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`) COMMENT 'a'
+)
+
+#SQL[@72,N13]Result[]
 drop table t9;
+
+#SQL[@74,N50]Result[]
 create table t10(a int, b int, key(a) comment 'a');
+
+#SQL[@75,N21]Result[23, 107]
 show create table t10;
-Table    Create Table
-t10    CREATE TABLE `t10` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  KEY `a` (`a`) COMMENT 'a'\n)
+Table  ¦  Create Table
+t10  ¦  CREATE TABLE `t10` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  KEY `a` (`a`) COMMENT 'a'
+)
+
+#SQL[@76,N14]Result[]
 drop table t10;
+
+#SQL[@78,N57]Result[]
 create table t11(a int, b int, unique key(a) comment 'a');
+
+#SQL[@79,N43]Result[]
 create unique index x ON t11(a) comment 'x';
+
+#SQL[@80,N38]Result[]
 create index xx ON t11(a) comment 'xx';
+
+#SQL[@81,N21]Result[23, 181]
 show create table t11;
-Table    Create Table
-t11    CREATE TABLE `t11` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`) COMMENT 'a',\n  UNIQUE KEY `x` (`a`) COMMENT 'x',\n  KEY `xx` (`a`) COMMENT 'xx'\n)
+Table  ¦  Create Table
+t11  ¦  CREATE TABLE `t11` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`) COMMENT 'a',
+  UNIQUE KEY `x` (`a`) COMMENT 'x',
+  KEY `xx` (`a`) COMMENT 'xx'
+)
+
+#SQL[@82,N14]Result[]
 drop table t11;
+
+#SQL[@84,N24]Result[]
 create table t12(a text);
+
+#SQL[@85,N31]Error[49]
 create unique index x on t12(a);
 not supported: TEXT column 'a' cannot be in index
+
+#SQL[@86,N25]Error[49]
 create index x2 on t12(a);
 not supported: TEXT column 'a' cannot be in index
+
+#SQL[@87,N14]Result[]
 drop table t12;
+
+#SQL[@89,N24]Result[]
 create table t13(a blob);
+
+#SQL[@90,N31]Error[49]
 create unique index x on t13(a);
 not supported: BLOB column 'a' cannot be in index
+
+#SQL[@91,N25]Error[49]
 create index x2 on t13(a);
 not supported: BLOB column 'a' cannot be in index
+
+#SQL[@92,N14]Result[]
 drop table t13;
+
+#SQL[@94,N24]Result[]
 create table t14(a json);
+
+#SQL[@95,N31]Error[49]
 create unique index x on t14(a);
 not supported: JSON column 'a' cannot be in index
+
+#SQL[@96,N25]Error[49]
 create index x2 on t14(a);
 not supported: JSON column 'a' cannot be in index
+
+#SQL[@97,N14]Result[]
 drop table t14;
+
+#SQL[@99,N195]Result[]
 create table t15(
 col1 int unsigned,
 col2 varchar(15),
@@ -138,54 +333,113 @@ col7 decimal(7,2),
 col8 int unsigned,
 unique index(col1,col2,col3,col6)
 );
+
+#SQL[@110,N75]Result[]
 INSERT INTO t15 VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+
+#SQL[@111,N78]Result[]
 INSERT INTO t15 VALUES (7499,'ALLEN','SALESMAN',7698,'1981-02-20',1600,300,30);
+
+#SQL[@112,N77]Result[]
 INSERT INTO t15 VALUES (7521,'WARD','SALESMAN',7698,'1981-02-22',1250,500,30);
+
+#SQL[@113,N78]Result[]
 INSERT INTO t15 VALUES (7566,'JONES','MANAGER',7839,'1981-04-02',2975,NULL,20);
+
+#SQL[@114,N80]Result[]
 INSERT INTO t15 VALUES (7654,'MARTIN','SALESMAN',7698,'1981-09-28',1250,1400,30);
+
+#SQL[@115,N78]Result[]
 INSERT INTO t15 VALUES (7698,'BLAKE','MANAGER',7839,'1981-05-01',2850,NULL,30);
+
+#SQL[@116,N78]Result[]
 INSERT INTO t15 VALUES (7782,'CLARK','MANAGER',7839,'1981-06-09',2450,NULL,10);
+
+#SQL[@117,N78]Result[]
 INSERT INTO t15 VALUES (7788,'SCOTT','ANALYST',7566,'0087-07-13',3000,NULL,20);
+
+#SQL[@118,N79]Result[]
 INSERT INTO t15 VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+
+#SQL[@119,N77]Result[]
 INSERT INTO t15 VALUES (7844,'TURNER','SALESMAN',7698,'1981-09-08',1500,0,30);
+
+#SQL[@120,N76]Result[]
 INSERT INTO t15 VALUES (7876,'ADAMS','CLERK',7788,'0087-07-13',1100,NULL,20);
+
+#SQL[@121,N75]Result[]
 INSERT INTO t15 VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30);
+
+#SQL[@122,N77]Result[]
 INSERT INTO t15 VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20);
+
+#SQL[@123,N77]Result[]
 INSERT INTO t15 VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@125,N53]Result[]
 create unique index idx_1 on t15(col1,col2,col3,col6);
+
+#SQL[@126,N17]Result[74, 82, 88, 87, 85, 90, 85, 85, 85, 86, 87, 83, 82, 84, 84]
 select * from t15;
-col1    col2    col3    col4    col5    col6    col7    col8
-7369    SMITH    CLERK    7902    1980-12-17    800.00    null    20
-7499    ALLEN    SALESMAN    7698    1981-02-20    1600.00    300.00    30
-7521    WARD    SALESMAN    7698    1981-02-22    1250.00    500.00    30
-7566    JONES    MANAGER    7839    1981-04-02    2975.00    null    20
-7654    MARTIN    SALESMAN    7698    1981-09-28    1250.00    1400.00    30
-7698    BLAKE    MANAGER    7839    1981-05-01    2850.00    null    30
-7782    CLARK    MANAGER    7839    1981-06-09    2450.00    null    10
-7788    SCOTT    ANALYST    7566    0087-07-13    3000.00    null    20
-7839    KING    PRESIDENT    null    1981-11-17    5000.00    null    10
-7844    TURNER    SALESMAN    7698    1981-09-08    1500.00    0.00    30
-7876    ADAMS    CLERK    7788    0087-07-13    1100.00    null    20
-7900    JAMES    CLERK    7698    1981-12-03    950.00    null    30
-7902    FORD    ANALYST    7566    1981-12-03    3000.00    null    20
-7934    MILLER    CLERK    7782    1982-01-23    1300.00    null    10
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+7369  ¦  SMITH  ¦  CLERK  ¦  7902  ¦  1980-12-17  ¦  800.00  ¦  null  ¦  20
+7499  ¦  ALLEN  ¦  SALESMAN  ¦  7698  ¦  1981-02-20  ¦  1600.00  ¦  300.00  ¦  30
+7521  ¦  WARD  ¦  SALESMAN  ¦  7698  ¦  1981-02-22  ¦  1250.00  ¦  500.00  ¦  30
+7566  ¦  JONES  ¦  MANAGER  ¦  7839  ¦  1981-04-02  ¦  2975.00  ¦  null  ¦  20
+7654  ¦  MARTIN  ¦  SALESMAN  ¦  7698  ¦  1981-09-28  ¦  1250.00  ¦  1400.00  ¦  30
+7698  ¦  BLAKE  ¦  MANAGER  ¦  7839  ¦  1981-05-01  ¦  2850.00  ¦  null  ¦  30
+7782  ¦  CLARK  ¦  MANAGER  ¦  7839  ¦  1981-06-09  ¦  2450.00  ¦  null  ¦  10
+7788  ¦  SCOTT  ¦  ANALYST  ¦  7566  ¦  0087-07-13  ¦  3000.00  ¦  null  ¦  20
+7839  ¦  KING  ¦  PRESIDENT  ¦  null  ¦  1981-11-17  ¦  5000.00  ¦  null  ¦  10
+7844  ¦  TURNER  ¦  SALESMAN  ¦  7698  ¦  1981-09-08  ¦  1500.00  ¦  0.00  ¦  30
+7876  ¦  ADAMS  ¦  CLERK  ¦  7788  ¦  0087-07-13  ¦  1100.00  ¦  null  ¦  20
+7900  ¦  JAMES  ¦  CLERK  ¦  7698  ¦  1981-12-03  ¦  950.00  ¦  null  ¦  30
+7902  ¦  FORD  ¦  ANALYST  ¦  7566  ¦  1981-12-03  ¦  3000.00  ¦  null  ¦  20
+7934  ¦  MILLER  ¦  CLERK  ¦  7782  ¦  1982-01-23  ¦  1300.00  ¦  null  ¦  10
+
+#SQL[@127,N14]Result[]
 drop table t15;
+
+#SQL[@130,N77]Result[]
 create table aerr (uid varchar(120), email varchar(20), lmethod varchar(100));
+
+#SQL[@132,N118]Result[]
 insert into aerr values ("user1", 'xx@yeah.net', 'basic'),('user2', 'xx@mo.cn','basic'),('user3', '11@tt.cn', 'basic');
+
+#SQL[@134,N82]Result[27, 30]
 select uid,lmethod,email from aerr where lmethod = 'basic' and  email = 'xx@mo.cn';
-uid    lmethod    email
-user2    basic    xx@mo.cn
+uid  ¦  lmethod  ¦  email
+user2  ¦  basic  ¦  xx@mo.cn
+
+#SQL[@136,N58]Result[]
 create unique index mail_method_idx on aerr(email,lmethod);
+
+#SQL[@137,N38]Result[]
 alter table aerr add primary key (uid);
+
+#SQL[@139,N82]Result[27, 30]
 select uid,lmethod,email from aerr where lmethod = 'basic' and  email = 'xx@mo.cn';
-uid    lmethod    email
-user2    basic    xx@mo.cn
+uid  ¦  lmethod  ¦  email
+user2  ¦  basic  ¦  xx@mo.cn
+
+#SQL[@141,N135]Result[]
 set @idxsql = concat("select count(*) from `", (SELECT index_table_name FROM mo_catalog.mo_indexes WHERE column_name = 'lmethod'), "`");
+
+#SQL[@142,N24]Error[54]
 prepare err1 from @novar;
 internal error: the user variable novar does not exist
+
+#SQL[@143,N23]Result[]
 prepare s1 from @idxsql;
+
+#SQL[@144,N10]Result[8, 1]
 execute s1;
 count(*)
 3
+
+#SQL[@145,N15]Result[]
 drop prepare s1;
+
+#SQL[@146,N15]Result[]
 drop table aerr;
+

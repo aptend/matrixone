@@ -1,13 +1,34 @@
+#SQL[@1,N30]Result[]
 drop database if exists test01;
+
+#SQL[@2,N22]Result[]
 create database test01;
+
+#SQL[@3,N30]Result[]
 drop database if exists test02;
+
+#SQL[@4,N22]Result[]
 create database test02;
+
+#SQL[@5,N30]Result[]
 drop database if exists test03;
+
+#SQL[@6,N22]Result[]
 create database test03;
+
+#SQL[@7,N30]Result[]
 drop database if exists test04;
+
+#SQL[@8,N22]Result[]
 create database test04;
+
+#SQL[@9,N30]Result[]
 drop database if exists test05;
+
+#SQL[@10,N22]Result[]
 create database test05;
+
+#SQL[@11,N14]Result[8, 25, 18, 10, 8, 7, 5, 6, 14, 6, 6, 6, 6, 6]
 show databases;
 Database
 create_table_and_database
@@ -23,19 +44,47 @@ test02
 test03
 test04
 test05
+
+#SQL[@13,N10]Result[]
 use test01;
+
+#SQL[@14,N27]Result[]
 drop table if exists test01;
+
+#SQL[@15,N40]Result[]
 create table test01(col1 int, col2 char);
+
+#SQL[@16,N27]Result[]
 drop table if exists test02;
+
+#SQL[@17,N40]Result[]
 create table test02(col1 int, col2 char);
+
+#SQL[@18,N27]Result[]
 drop table if exists test03;
+
+#SQL[@19,N40]Result[]
 create table test03(col1 int, col2 char);
+
+#SQL[@20,N27]Result[]
 drop table if exists test04;
+
+#SQL[@21,N40]Result[]
 create table test04(col1 int, col2 char);
+
+#SQL[@22,N27]Result[]
 drop table if exists test05;
+
+#SQL[@23,N40]Result[]
 create table test05(col1 int, col2 char);
+
+#SQL[@24,N27]Result[]
 drop table if exists test06;
+
+#SQL[@25,N40]Result[]
 create table test06(col1 int, col2 char);
+
+#SQL[@26,N11]Result[16, 6, 6, 6, 6, 6, 6]
 show tables;
 Tables_in_test01
 test01
@@ -44,23 +93,64 @@ test03
 test04
 test05
 test06
+
+#SQL[@28,N17]Result[]
 drop table test01;
+
+#SQL[@29,N17]Result[]
 drop table test02;
+
+#SQL[@30,N17]Result[]
 drop table test03;
+
+#SQL[@31,N17]Result[]
 drop table test04;
+
+#SQL[@32,N17]Result[]
 drop table test05;
+
+#SQL[@33,N17]Result[]
 drop table test06;
+
+#SQL[@34,N20]Result[]
 drop database test01;
+
+#SQL[@35,N20]Result[]
 drop database test02;
+
+#SQL[@36,N20]Result[]
 drop database test03;
+
+#SQL[@37,N20]Result[]
 drop database test04;
+
+#SQL[@38,N20]Result[]
 drop database test05;
+
+#SQL[@39,N26]Result[]
 drop user if exists uuu123;
+
+#SQL[@40,N30]Result[]
 drop role if exists role112233;
+
+#SQL[@41,N22]Result[]
 create role role112233;
+
+#SQL[@42,N88]Result[]
 grant SHOW DATABASES, CREATE DATABASE, DROP DATABASE, CONNECT on account * to role112233;
+
+#SQL[@43,N62]Result[]
 create user uuu123 identified by "111" default role role112233;
+
+#SQL[@45,N27]Result[]
 create database `中文库`;
+
+#SQL[@46,N25]Result[]
 drop database `中文库`;
+
+#SQL[@48,N16]Result[]
 drop user uuu123;
+
+#SQL[@49,N20]Result[]
 drop role role112233;
+

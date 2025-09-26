@@ -1,288 +1,514 @@
+#SQL[@1,N20]Result[]
 create database test;
+
+#SQL[@2,N8]Result[]
 use test;
+
+#SQL[@4,N45]Result[]
 create table t1(a int default 123, b char(5));
+
+#SQL[@5,N7]Result[71, 50, 51]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        123        
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@6,N30]Result[]
 INSERT INTO t1 values (1, '1');
+
+#SQL[@7,N30]Result[]
 INSERT INTO t1 values (2, '2');
+
+#SQL[@8,N41]Result[]
 INSERT INTO t1 values (0x7fffffff, 'max');
+
+#SQL[@9,N16]Result[8, 8, 8, 19]
 select * from t1;
-a    b
-1    1
-2    2
-2147483647    max
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+
+#SQL[@11,N48]Result[]
 CREATE table t2 (c float) as select b, a from t1;
+
+#SQL[@12,N7]Result[71, 52, 51, 50]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-c    FLOAT(0)    YES        null        
-b    CHAR(5)    YES        null        
-a    INT(32)    YES        123        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+c  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+
+#SQL[@13,N16]Result[15, 18, 18, 29]
 select * from t2;
-c    b    a
-null    1    1
-null    2    2
-null    max    2147483647
+c  ¦  b  ¦  a
+null  ¦  1  ¦  1
+null  ¦  2  ¦  2
+null  ¦  max  ¦  2147483647
+
+#SQL[@15,N62]Result[]
 CREATE table if not exists t2 (d float) as select b, a from t1;
+
+#SQL[@16,N7]Result[71, 52, 51, 50]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-c    FLOAT(0)    YES        null        
-b    CHAR(5)    YES        null        
-a    INT(32)    YES        123        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+c  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+
+#SQL[@18,N103]Result[]
 CREATE table t3 (a bigint unsigned not null auto_increment primary key, c float) as select a, b from t1;
+
+#SQL[@19,N7]Result[71, 52, 79, 51]
 desc t3;
-Field    Type    Null    Key    Default    Extra    Comment
-c    FLOAT(0)    YES        null        
-a    BIGINT UNSIGNED(64)    NO    PRI    null    auto_increment    
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+c  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  BIGINT UNSIGNED(64)  ¦  NO  ¦  PRI  ¦  null  ¦  auto_increment  ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@20,N16]Result[15, 18, 18, 29]
 select * from t3;
-c    a    b
-null    1    1
-null    2    2
-null    2147483647    max
+c  ¦  a  ¦  b
+null  ¦  1  ¦  1
+null  ¦  2  ¦  2
+null  ¦  2147483647  ¦  max
+
+#SQL[@22,N47]Error[53]
 CREATE table t4 (a tinyint) as select * from t1;
-Data truncation: data out of range: data type int8, value '2147483647'
+data out of range: data type int8, value '2147483647'
+
+#SQL[@24,N48]Result[]
 CREATE table t5 (a char(10)) as select * from t1;
+
+#SQL[@25,N7]Result[71, 52, 51]
 desc t5;
-Field    Type    Null    Key    Default    Extra    Comment
-a    CHAR(10)    YES        null        
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  CHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@26,N16]Result[8, 8, 8, 19]
 select * from t5;
-a    b
-1    1
-2    2
-2147483647    max
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+
+#SQL[@28,N32]Result[]
 insert into t1 values (1, '1_1');
+
+#SQL[@29,N16]Result[8, 8, 8, 19, 10]
 select * from t1;
-a    b
-1    1
-2    2
-2147483647    max
-1    1_1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+1  ¦  1_1
+
+#SQL[@30,N50]Error[31]
 CREATE table t6 (a int unique) as select * from t1;
 Duplicate entry '1' for key 'a'
+
+#SQL[@31,N13]Result[]
 drop table t6;
+
+#SQL[@33,N40]Result[]
 CREATE table t6 as select max(a) from t1;
+
+#SQL[@34,N7]Result[71, 56]
 desc t6;
-Field    Type    Null    Key    Default    Extra    Comment
-max(a)    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+max(a)  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@35,N16]Result[6, 10]
 select * from t6;
 max(a)
 2147483647
+
+#SQL[@37,N56]Result[]
 CREATE table t7 as select * from (select * from t1) as t;
+
+#SQL[@38,N7]Result[71, 51, 51]
 desc t7;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null        
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@39,N16]Result[8, 8, 8, 19, 10]
 select * from t7;
-a    b
-1    1
-2    2
-2147483647    max
-1    1_1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+1  ¦  1_1
+
+#SQL[@41,N49]Result[]
 CREATE table t8 as select a as alias_a, 1 from t1;
+
+#SQL[@42,N7]Result[71, 56, 52]
 desc t8;
-Field    Type    Null    Key    Default    Extra    Comment
-alias_a    INT(32)    YES        123        
-1    BIGINT(0)    NO        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+alias_a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+1  ¦  BIGINT(0)  ¦  NO  ¦    ¦  null  ¦    ¦  
+
+#SQL[@43,N16]Result[14, 8, 8, 17, 8]
 select * from t8;
-alias_a    1
-1    1
-2    1
-2147483647    1
-1    1
+alias_a  ¦  1
+1  ¦  1
+2  ¦  1
+2147483647  ¦  1
+1  ¦  1
+
+#SQL[@45,N47]Result[]
 CREATE table t9 (index (a)) as select * from t1;
+
+#SQL[@46,N7]Result[71, 53, 51]
 desc t9;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES    MUL    123        
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦  MUL  ¦  123  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@47,N16]Result[8, 8, 8, 19, 10]
 select * from t9;
-a    b
-1    1
-2    2
-2147483647    max
-1    1_1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+1  ¦  1_1
+
+#SQL[@49,N13]Result[]
 drop table t1;
+
+#SQL[@50,N13]Result[]
 drop table t2;
+
+#SQL[@51,N13]Result[]
 drop table t3;
+
+#SQL[@52,N13]Result[]
 drop table t5;
+
+#SQL[@53,N13]Result[]
 drop table t6;
+
+#SQL[@54,N13]Result[]
 drop table t7;
+
+#SQL[@55,N13]Result[]
 drop table t8;
+
+#SQL[@56,N13]Result[]
 drop table t9;
+
+#SQL[@59,N28]Result[]
 drop table if exists table01;
+
+#SQL[@60,N50]Result[]
 create table table01(a int default 123, b char(5));
+
+#SQL[@61,N12]Result[71, 50, 51]
 desc table01;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        123        
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@62,N35]Result[]
 insert into table01 values (1, '1');
+
+#SQL[@63,N35]Result[]
 insert into table01 values (2, '2');
+
+#SQL[@64,N46]Result[]
 insert into table01 values (0x7fffffff, 'max');
+
+#SQL[@65,N21]Result[8, 8, 8, 19]
 select * from table01;
-a    b
-1    1
-2    2
-2147483647    max
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+
+#SQL[@67,N28]Result[]
 drop table if exists table02;
+
+#SQL[@68,N58]Result[]
 create table table02 (c float) as select b, a from table01;
+
+#SQL[@69,N12]Result[71, 52, 51, 50]
 desc table02;
-Field    Type    Null    Key    Default    Extra    Comment
-c    FLOAT(0)    YES        null        
-b    CHAR(5)    YES        null        
-a    INT(32)    YES        123        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+c  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+
+#SQL[@70,N21]Result[15, 18, 18, 29]
 select * from table02;
-c    b    a
-null    1    1
-null    2    2
-null    max    2147483647
+c  ¦  b  ¦  a
+null  ¦  1  ¦  1
+null  ¦  2  ¦  2
+null  ¦  max  ¦  2147483647
+
+#SQL[@72,N28]Result[]
 drop table if exists table02;
+
+#SQL[@73,N58]Result[]
 create table table02 (d float) as select b, a from table01;
+
+#SQL[@74,N12]Result[71, 52, 51, 50]
 desc table02;
-Field    Type    Null    Key    Default    Extra    Comment
-d    FLOAT(0)    YES        null        
-b    CHAR(5)    YES        null        
-a    INT(32)    YES        123        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+d  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+
+#SQL[@75,N21]Result[15, 18, 18, 29]
 select * from table02;
-d    b    a
-null    1    1
-null    2    2
-null    max    2147483647
+d  ¦  b  ¦  a
+null  ¦  1  ¦  1
+null  ¦  2  ¦  2
+null  ¦  max  ¦  2147483647
+
+#SQL[@76,N18]Result[]
 drop table table01;
+
+#SQL[@77,N18]Result[]
 drop table table02;
+
+#SQL[@79,N28]Result[]
 drop table if exists table03;
+
+#SQL[@80,N145]Result[]
 create table table03(col1 int, col2 char, col3 varchar(10), col4 text, col5 tinyint unsigned, col6 bigint, col7 decimal, col8 float, col9 double);
+
+#SQL[@81,N121]Result[]
 insert into table03 values (1, 'a', 'database', 'cover all data types', 12, 372743927942, 3232.000, -1489.1231, 72392342);
+
+#SQL[@82,N115]Result[]
 insert into table03 values (2, 'b', 'table', 'database management system', 1, 324214, 0.0001, 32932.000, -321342.0);
+
+#SQL[@83,N81]Result[]
 insert into table03 values (null, null, null, null, null, null, null, null, null);
+
+#SQL[@84,N21]Result[84, 113, 101, 84]
 select * from table03;
-col1    col2    col3    col4    col5    col6    col7    col8    col9
-1    a    database    cover all data types    12    372743927942    3232    -1489.123    7.2392342E7
-2    b    table    database management system    1    324214    0    32932.0    -321342.0
-null    null    null    null    null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9
+1  ¦  a  ¦  database  ¦  cover all data types  ¦  12  ¦  372743927942  ¦  3232  ¦  -1489.123  ¦  72392342
+2  ¦  b  ¦  table  ¦  database management system  ¦  1  ¦  324214  ¦  0  ¦  32932  ¦  -321342
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@86,N28]Result[]
 drop table if exists table04;
+
+#SQL[@87,N45]Result[]
 create table table04 as select * from table03;
-show create table table04;
 
+#SQL[@91,N21]Result[84, 113, 101, 84]
 select * from table04;
-col1    col2    col3    col4    col5    col6    col7    col8    col9
-1    a    database    cover all data types    12    372743927942    3232    -1489.123    7.2392342E7
-2    b    table    database management system    1    324214    0    32932.0    -321342.0
-null    null    null    null    null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9
+1  ¦  a  ¦  database  ¦  cover all data types  ¦  12  ¦  372743927942  ¦  3232  ¦  -1489.123  ¦  72392342
+2  ¦  b  ¦  table  ¦  database management system  ¦  1  ¦  324214  ¦  0  ¦  32932  ¦  -321342
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@93,N28]Result[]
 drop table if exists table05;
+
+#SQL[@94,N66]Result[]
 create table table05 as select col1, col3, col5, col7 from table03;
+
+#SQL[@95,N25]Result[23, 177]
 show create table table05;
-Table    Create Table
-table05    CREATE TABLE `table05` (\n  `col1` int DEFAULT NULL,\n  `col3` varchar(10) DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col7` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+table05  ¦  CREATE TABLE `table05` (
+  `col1` int DEFAULT NULL,
+  `col3` varchar(10) DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col7` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@96,N21]Result[34, 33, 26, 34]
 select * from table05;
-col1    col3    col5    col7
-1    database    12    3232
-2    table    1    0
-null    null    null    null
+col1  ¦  col3  ¦  col5  ¦  col7
+1  ¦  database  ¦  12  ¦  3232
+2  ¦  table  ¦  1  ¦  0
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@98,N28]Result[]
 drop table if exists table06;
+
+#SQL[@99,N86]Result[]
 create table table06(col10 binary) as select col2, col4, col6, col8, col9 from table03;
-show create table table06;
 
+#SQL[@103,N12]Result[71, 57, 54, 54, 57, 55, 56]
 desc table06;
-Field    Type    Null    Key    Default    Extra    Comment
-col10    BINARY(1)    YES        null        
-col2    CHAR(1)    YES        null        
-col4    TEXT(0)    YES        null        
-col6    BIGINT(64)    YES        null        
-col8    FLOAT(0)    YES        null        
-col9    DOUBLE(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col10  ¦  BINARY(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col4  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col6  ¦  BIGINT(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col8  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col9  ¦  DOUBLE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@104,N21]Result[55, 84, 79, 54]
 select * from table06;
-col10    col2    col4    col6    col8    col9
-null    a    cover all data types    372743927942    -1489.123    7.2392342E7
-null    b    database management system    324214    32932.0    -321342.0
-null    null    null    null    null    null
+col10  ¦  col2  ¦  col4  ¦  col6  ¦  col8  ¦  col9
+null  ¦  a  ¦  cover all data types  ¦  372743927942  ¦  -1489.123  ¦  72392342
+null  ¦  b  ¦  database management system  ¦  324214  ¦  32932  ¦  -321342
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@106,N18]Result[]
 drop table table03;
+
+#SQL[@107,N18]Result[]
 drop table table04;
+
+#SQL[@108,N18]Result[]
 drop table table05;
+
+#SQL[@109,N18]Result[]
 drop table table06;
+
+#SQL[@111,N23]Result[]
 drop table if exists t1;
+
+#SQL[@112,N45]Result[]
 create table t1(a int default 123, b char(5));
+
+#SQL[@113,N7]Result[71, 50, 51]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        123        
-b    CHAR(5)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@114,N30]Result[]
 INSERT INTO t1 values (1, '1');
+
+#SQL[@115,N30]Result[]
 INSERT INTO t1 values (2, '2');
+
+#SQL[@116,N41]Result[]
 INSERT INTO t1 values (0x7fffffff, 'max');
+
+#SQL[@117,N16]Result[8, 8, 8, 19]
 select * from t1;
-a    b
-1    1
-2    2
-2147483647    max
+a  ¦  b
+1  ¦  1
+2  ¦  2
+2147483647  ¦  max
+
+#SQL[@119,N48]Result[]
 create table t2 (c float) as select b, a from t1;
+
+#SQL[@120,N7]Result[71, 52, 51, 50]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-c    FLOAT(0)    YES        null        
-b    CHAR(5)    YES        null        
-a    INT(32)    YES        123        
-select * from t2;
-c    b    a
-null    1    1
-null    2    2
-null    max    2147483647
-CREATE table if not exists t2 (d float) as select b, a from t1;
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+c  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  123  ¦    ¦  
 
+#SQL[@121,N16]Result[15, 18, 18, 29]
 select * from t2;
-c    b    a
-null    1    1
-null    2    2
-null    max    2147483647
+c  ¦  b  ¦  a
+null  ¦  1  ¦  1
+null  ¦  2  ¦  2
+null  ¦  max  ¦  2147483647
+
+#SQL[@125,N16]Result[15, 18, 18, 29]
+select * from t2;
+c  ¦  b  ¦  a
+null  ¦  1  ¦  1
+null  ¦  2  ¦  2
+null  ¦  max  ¦  2147483647
+
+#SQL[@126,N13]Result[]
 drop table t1;
+
+#SQL[@127,N13]Result[]
 drop table t2;
+
+#SQL[@129,N28]Result[]
 drop table if exists table07;
+
+#SQL[@130,N84]Result[]
 create table table07(col1 date, col2 datetime, col3 timestamp, col4 blob, col5 json);
+
+#SQL[@131,N126]Result[]
 insert into table07 values ('2020-10-11', '2023-11-11 10:00:01', '1997-01-13 12:12:12.000', 'abcdef', '{"x": 17, "x": "red"}');
+
+#SQL[@132,N114]Result[]
 insert into table07 values ('1919-12-01', '1990-10-10 01:01:01', '2001-12-12 01:01:01.000', 'xxxx', '{"t1": "a"}');
+
+#SQL[@133,N57]Result[]
 insert into table07 values (null, null, null, null, null);
+
+#SQL[@134,N21]Result[44, 90, 87, 44]
 select * from table07;
-col1    col2    col3    col4    col5
-2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    abcdef    {"x": "red"}
-1919-12-01    1990-10-10 01:01:01    2001-12-12 01:01:01    xxxx    {"t1": "a"}
-null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  abcdef  ¦  {"x": "red"}
+1919-12-01  ¦  1990-10-10 01:01:01  ¦  2001-12-12 01:01:01  ¦  xxxx  ¦  {"t1": "a"}
+null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@136,N28]Result[]
 drop table if exists table08;
+
+#SQL[@137,N79]Result[]
 create table table08(col6 int, col7 bigint, col8 char) as select * from table07;
-show create table table08;
 
+#SQL[@141,N21]Result[74, 120, 117, 74]
 select * from table08;
-col6    col7    col8    col1    col2    col3    col4    col5
-null    null    null    2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    abcdef    {"x": "red"}
-null    null    null    1919-12-01    1990-10-10 01:01:01    2001-12-12 01:01:01    xxxx    {"t1": "a"}
-null    null    null    null    null    null    null    null
+col6  ¦  col7  ¦  col8  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  null  ¦  null  ¦  2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  abcdef  ¦  {"x": "red"}
+null  ¦  null  ¦  null  ¦  1919-12-01  ¦  1990-10-10 01:01:01  ¦  2001-12-12 01:01:01  ¦  xxxx  ¦  {"t1": "a"}
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@142,N18]Result[]
 drop table table08;
+
+#SQL[@144,N28]Result[]
 drop table if exists table09;
+
+#SQL[@145,N71]Result[]
 create table table09 as select col1, col2, col4 as newCol4 from table07;
-show create table table09;
 
+#SQL[@149,N21]Result[27, 47, 45, 24]
 select * from table09;
-col1    col2    newcol4
-2020-10-11    2023-11-11 10:00:01    abcdef
-1919-12-01    1990-10-10 01:01:01    xxxx
-null    null    null
-drop table table09;
-drop table if exists table12;
-create table table12 (col1 date) as select * from table07;
-show create table table12;
+col1  ¦  col2  ¦  newcol4
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  abcdef
+1919-12-01  ¦  1990-10-10 01:01:01  ¦  xxxx
+null  ¦  null  ¦  null
 
+#SQL[@150,N18]Result[]
+drop table table09;
+
+#SQL[@153,N28]Result[]
+drop table if exists table12;
+
+#SQL[@154,N57]Result[]
+create table table12 (col1 date) as select * from table07;
+
+#SQL[@158,N21]Result[44, 90, 87, 44]
 select * from table12;
-col1    col2    col3    col4    col5
-2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    abcdef    {"x": "red"}
-1919-12-01    1990-10-10 01:01:01    2001-12-12 01:01:01    xxxx    {"t1": "a"}
-null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  abcdef  ¦  {"x": "red"}
+1919-12-01  ¦  1990-10-10 01:01:01  ¦  2001-12-12 01:01:01  ¦  xxxx  ¦  {"t1": "a"}
+null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@159,N18]Result[]
 drop table table12;
+
+#SQL[@160,N18]Result[]
 drop table table07;
+
+#SQL[@163,N31]Result[]
 drop table if exists distinct01;
+
+#SQL[@164,N118]Result[]
 create table distinct01 (
-id int,
-first_name varchar(50),
-last_name varchar(50),
-course varchar(100)
+    id int,
+    first_name varchar(50),
+    last_name varchar(50),
+    course varchar(100)
 );
+
+#SQL[@171,N305]Result[]
 insert into distinct01 (id, first_name, last_name, course)  values
 (1, 'John', 'Doe', 'Computer Science'),
 (2, 'Jane', 'Smith', 'Mathematics'),
@@ -290,1167 +516,2275 @@ insert into distinct01 (id, first_name, last_name, course)  values
 (4, 'Bob', 'Brown', 'Physics'),
 (5, 'Charlie', 'Doe', 'Computer Science'),
 (5, 'Charlie', 'Doe', 'Computer Science');
+
+#SQL[@179,N35]Result[]
 drop table if exists unique_courses;
+
+#SQL[@180,N69]Result[]
 create table unique_courses as select distinct course from distinct01;
+
+#SQL[@181,N32]Result[23, 90]
 show create table unique_courses;
-Table    Create Table
-unique_courses    CREATE TABLE `unique_courses` (\n  `course` varchar(100) DEFAULT NULL\n)
+Table  ¦  Create Table
+unique_courses  ¦  CREATE TABLE `unique_courses` (
+  `course` varchar(100) DEFAULT NULL
+)
+
+#SQL[@182,N28]Result[6, 16, 11, 7]
 select * from unique_courses;
 course
 Computer Science
 Mathematics
 Physics
+
+#SQL[@184,N35]Result[]
 drop table if exists unique_courses;
+
+#SQL[@185,N64]Result[]
 create table unique_courses as select distinct * from distinct01;
+
+#SQL[@186,N32]Result[23, 196]
 show create table unique_courses;
-Table    Create Table
-unique_courses    CREATE TABLE `unique_courses` (\n  `id` int DEFAULT NULL,\n  `first_name` varchar(50) DEFAULT NULL,\n  `last_name` varchar(50) DEFAULT NULL,\n  `course` varchar(100) DEFAULT NULL\n)
+Table  ¦  Create Table
+unique_courses  ¦  CREATE TABLE `unique_courses` (
+  `id` int DEFAULT NULL,
+  `first_name` varchar(50) DEFAULT NULL,
+  `last_name` varchar(50) DEFAULT NULL,
+  `course` varchar(100) DEFAULT NULL
+)
+
+#SQL[@187,N28]Result[45, 42, 39, 47, 34, 45]
 select * from unique_courses;
-id    first_name    last_name    course
-1    John    Doe    Computer Science
-2    Jane    Smith    Mathematics
-3    Alice    Johnson    Computer Science
-4    Bob    Brown    Physics
-5    Charlie    Doe    Computer Science
+id  ¦  first_name  ¦  last_name  ¦  course
+1  ¦  John  ¦  Doe  ¦  Computer Science
+2  ¦  Jane  ¦  Smith  ¦  Mathematics
+3  ¦  Alice  ¦  Johnson  ¦  Computer Science
+4  ¦  Bob  ¦  Brown  ¦  Physics
+5  ¦  Charlie  ¦  Doe  ¦  Computer Science
+
+#SQL[@188,N25]Result[]
 drop table unique_courses;
+
+#SQL[@191,N27]Result[]
 drop table if exists cast01;
+
+#SQL[@192,N45]Result[]
 create table cast01 (col1 float, col2 double);
+
+#SQL[@193,N56]Result[]
 insert into cast01 values (2617481243.2114, 372534.4353);
+
+#SQL[@194,N47]Result[]
 insert into cast01 values (-3628742.3223252, 0);
+
+#SQL[@195,N38]Result[]
 insert into cast01 values (null, null);
+
+#SQL[@196,N20]Result[14, 27, 17, 14]
 select * from cast01;
-col1    col2
-2.6174812E9    372534.4353
--3628742.2    0.0
-null    null
+col1  ¦  col2
+2617481200  ¦  372534.4353
+-3628742.2  ¦  0
+null  ¦  null
+
+#SQL[@198,N27]Result[]
 drop table if exists cast02;
+
+#SQL[@199,N65]Result[]
 create table cast02(col1 double, col2 float) select * from cast01;
+
+#SQL[@200,N24]Result[23, 95]
 show create table cast02;
-Table    Create Table
-cast02    CREATE TABLE `cast02` (\n  `col1` double DEFAULT NULL,\n  `col2` float DEFAULT NULL\n)
+Table  ¦  Create Table
+cast02  ¦  CREATE TABLE `cast02` (
+  `col1` double DEFAULT NULL,
+  `col2` float DEFAULT NULL
+)
+
+#SQL[@201,N20]Result[14, 25, 18, 14]
 select * from cast02;
-col1    col2
-2.617481216E9    372534.44
--3628742.25    0.0
-null    null
+col1  ¦  col2
+2617481216  ¦  372534.44
+-3628742.25  ¦  0
+null  ¦  null
+
+#SQL[@202,N17]Result[]
 drop table cast01;
+
+#SQL[@203,N17]Result[]
 drop table cast02;
+
+#SQL[@206,N27]Result[]
 drop table if exists cast03;
+
+#SQL[@207,N55]Result[]
 create table cast03 (col1 int, col2 float, col3 double);
+
+#SQL[@208,N58]Result[]
 insert into cast03 values (321424, 213412.23142, -100.313);
+
+#SQL[@209,N45]Result[]
 insert into cast03 values (-1241, 2314321, 0);
+
+#SQL[@210,N35]Result[]
 insert into cast03 values (0, 0, 0);
+
+#SQL[@211,N20]Result[24, 35, 25, 15]
 select * from cast03;
-col1    col2    col3
-321424    213412.23    -100.313
--1241    2314321.0    0.0
-0    0.0    0.0
+col1  ¦  col2  ¦  col3
+321424  ¦  213412.23  ¦  -100.313
+-1241  ¦  2314321  ¦  0
+0  ¦  0  ¦  0
+
+#SQL[@213,N27]Result[]
 drop table if exists cast04;
+
+#SQL[@214,N88]Result[]
 create table cast04(col1 char(10), col2 char(10), col3 char(10)) as select * from cast03;
+
+#SQL[@215,N20]Result[24, 35, 25, 15]
 select * from cast04;
-col1    col2    col3
-321424    213412.23    -100.313
--1241    2314321    0
-0    0    0
+col1  ¦  col2  ¦  col3
+321424  ¦  213412.23  ¦  -100.313
+-1241  ¦  2314321  ¦  0
+0  ¦  0  ¦  0
+
+#SQL[@216,N17]Result[]
 drop table cast03;
+
+#SQL[@217,N17]Result[]
 drop table cast04;
+
+#SQL[@220,N27]Result[]
 drop table if exists cast05;
+
+#SQL[@221,N49]Result[]
 create table cast05 (col1 char, col2 varchar(10));
+
+#SQL[@222,N41]Result[]
 insert into cast05 values ('9', '-32824');
+
+#SQL[@223,N40]Result[]
 insert into cast05 values ('0', '32422');
+
+#SQL[@224,N38]Result[]
 insert into cast05 values (null, null);
+
+#SQL[@225,N20]Result[14, 13, 12, 14]
 select * from cast05;
-col1    col2
-9    -32824
-0    32422
-null    null
+col1  ¦  col2
+9  ¦  -32824
+0  ¦  32422
+null  ¦  null
+
+#SQL[@227,N27]Result[]
 drop table if exists cast06;
+
+#SQL[@228,N66]Result[]
 create table cast06(col1 int, col2 bigint) as select * from cast05;
+
+#SQL[@229,N20]Result[14, 13, 12, 14]
 select * from cast06;
-col1    col2
-9    -32824
-0    32422
-null    null
+col1  ¦  col2
+9  ¦  -32824
+0  ¦  32422
+null  ¦  null
+
+#SQL[@230,N24]Result[23, 93]
 show create table cast06;
-Table    Create Table
-cast06    CREATE TABLE `cast06` (\n  `col1` int DEFAULT NULL,\n  `col2` bigint DEFAULT NULL\n)
+Table  ¦  Create Table
+cast06  ¦  CREATE TABLE `cast06` (
+  `col1` int DEFAULT NULL,
+  `col2` bigint DEFAULT NULL
+)
+
+#SQL[@231,N17]Result[]
 drop table cast05;
+
+#SQL[@232,N17]Result[]
 drop table cast06;
+
+#SQL[@235,N27]Result[]
 drop table if exists time01;
+
+#SQL[@236,N73]Result[]
 create table time01 (col1 date, col2 datetime, col3 timestamp, col4 time);
+
+#SQL[@237,N102]Result[]
 insert into time01 values ('2020-01-01', '2020-12-12 00:00:01', '1997-01-01 10:10:10.000', '12:12:12');
+
+#SQL[@238,N102]Result[]
 insert into time01 values ('1996-12-11', '1989-12-09 00:01:01', '2000-05-06 01:01:01.000', '00:01:01');
+
+#SQL[@239,N50]Result[]
 insert into time01 values (null, null, null, null);
+
+#SQL[@240,N20]Result[34, 74, 74, 34]
 select * from time01;
-col1    col2    col3    col4
-2020-01-01    2020-12-12 00:00:01    1997-01-01 10:10:10    12:12:12
-1996-12-11    1989-12-09 00:01:01    2000-05-06 01:01:01    00:01:01
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+2020-01-01  ¦  2020-12-12 00:00:01  ¦  1997-01-01 10:10:10  ¦  12:12:12
+1996-12-11  ¦  1989-12-09 00:01:01  ¦  2000-05-06 01:01:01  ¦  00:01:01
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@242,N27]Result[]
 drop table if exists time02;
+
+#SQL[@243,N74]Result[]
 create table time02 (col1 int, col2 int, col4 int) as select * from time01;
+
+#SQL[@244,N24]Result[23, 155]
 show create table time02;
-Table    Create Table
-time02    CREATE TABLE `time02` (\n  `col1` int DEFAULT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` timestamp NULL DEFAULT NULL,\n  `col4` int DEFAULT NULL\n)
+Table  ¦  Create Table
+time02  ¦  CREATE TABLE `time02` (
+  `col1` int DEFAULT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` timestamp NULL DEFAULT NULL,
+  `col4` int DEFAULT NULL
+)
+
+#SQL[@245,N20]Result[34, 58, 53, 34]
 select * from time02;
-col1    col2    col3    col4
-18262    1607731201    1997-01-01 10:10:10    121212
-9841    629164861    2000-05-06 01:01:01    101
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+18262  ¦  1607731201  ¦  1997-01-01 10:10:10  ¦  121212
+9841  ¦  629164861  ¦  2000-05-06 01:01:01  ¦  101
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@246,N17]Result[]
 drop table time02;
+
+#SQL[@249,N27]Result[]
 drop table if exists time03;
+
+#SQL[@250,N94]Result[]
 create table time03 (col2 decimal(38, 0), col4 decimal) as select col2, col3, col4 from time01;
+
+#SQL[@251,N24]Result[23, 148]
 show create table time03;
-Table    Create Table
-time03    CREATE TABLE `time03` (\n  `col2` decimal(38,0) DEFAULT NULL,\n  `col3` timestamp NULL DEFAULT NULL,\n  `col4` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+time03  ¦  CREATE TABLE `time03` (
+  `col2` decimal(38,0) DEFAULT NULL,
+  `col3` timestamp NULL DEFAULT NULL,
+  `col4` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@252,N20]Result[24, 47, 43, 24]
 select * from time03;
-col2    col3    col4
-1607731201    1997-01-01 10:10:10    121212
-629164861    2000-05-06 01:01:01    101
-null    null    null
+col2  ¦  col3  ¦  col4
+1607731201  ¦  1997-01-01 10:10:10  ¦  121212
+629164861  ¦  2000-05-06 01:01:01  ¦  101
+null  ¦  null  ¦  null
+
+#SQL[@253,N17]Result[]
 drop table time03;
+
+#SQL[@256,N28]Result[]
 drop table if exists table01;
+
+#SQL[@257,N90]Result[]
 create table table01 (col1 int primary key , col2 char default 'c', col3 decimal not null);
+
+#SQL[@258,N45]Result[]
 insert into table01 values (1, 'a', 3728.424);
+
+#SQL[@259,N49]Result[]
 insert into table01 values (3131, 'b', -32832.43);
+
+#SQL[@260,N39]Result[]
 insert into table01 values (-1, '' , 0);
+
+#SQL[@261,N21]Result[24, 18, 23, 15]
 select * from table01;
-col1    col2    col3
-1    a    3728
-3131    b    -32832
--1        0
+col1  ¦  col2  ¦  col3
+1  ¦  a  ¦  3728
+3131  ¦  b  ¦  -32832
+-1  ¦    ¦  0
+
+#SQL[@263,N28]Result[]
 drop table if exists table02;
+
+#SQL[@264,N45]Result[]
 create table table02 as select * from table01;
+
+#SQL[@265,N25]Result[23, 124]
 show create table table02;
-Table    Create Table
-table02    CREATE TABLE `table02` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT 'c',\n  `col3` decimal(38,0) NOT NULL\n)
+Table  ¦  Create Table
+table02  ¦  CREATE TABLE `table02` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT 'c',
+  `col3` decimal(38,0) NOT NULL
+)
+
+#SQL[@266,N12]Result[71, 53, 51, 59]
 desc table02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO        null        
-col2    CHAR(1)    YES        c        
-col3    DECIMAL(38,0)    NO        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  c  ¦    ¦  
+col3  ¦  DECIMAL(38,0)  ¦  NO  ¦    ¦  null  ¦    ¦  
+
+#SQL[@267,N21]Result[24, 18, 23, 15]
 select * from table02;
-col1    col2    col3
-1    a    3728
-3131    b    -32832
--1        0
+col1  ¦  col2  ¦  col3
+1  ¦  a  ¦  3728
+3131  ¦  b  ¦  -32832
+-1  ¦    ¦  0
+
+#SQL[@268,N18]Result[]
 drop table table01;
+
+#SQL[@269,N18]Result[]
 drop table table02;
+
+#SQL[@271,N28]Result[]
 drop table if exists table04;
+
+#SQL[@272,N28]Result[]
 drop table if exists table03;
+
+#SQL[@273,N65]Result[]
 create table table03 (a int primary key, b varchar(5) unique key);
+
+#SQL[@274,N87]Result[]
 create table table04 (a int ,b varchar(5), c int, foreign key(c) references table03(a));
+
+#SQL[@275,N50]Result[]
 insert into table03 values (101,'abc'),(102,'def');
+
+#SQL[@276,N54]Result[]
 insert into table04 values (1,'zs1',101),(2,'zs2',102);
+
+#SQL[@278,N28]Result[]
 drop table if exists table05;
+
+#SQL[@279,N45]Result[]
 create table table05 as select * from table04;
+
+#SQL[@280,N25]Result[23, 117]
 show create table table05;
-Table    Create Table
-table05    CREATE TABLE `table05` (\n  `a` int DEFAULT NULL,\n  `b` varchar(5) DEFAULT NULL,\n  `c` int DEFAULT NULL\n)
+Table  ¦  Create Table
+table05  ¦  CREATE TABLE `table05` (
+  `a` int DEFAULT NULL,
+  `b` varchar(5) DEFAULT NULL,
+  `c` int DEFAULT NULL
+)
+
+#SQL[@281,N21]Result[15, 19, 19]
 select * from table05;
-a    b    c
-1    zs1    101
-2    zs2    102
+a  ¦  b  ¦  c
+1  ¦  zs1  ¦  101
+2  ¦  zs2  ¦  102
+
+#SQL[@282,N28]Result[]
 drop table if exists table06;
+
+#SQL[@283,N75]Result[]
 create table table06 (d char not null default 'a') as select a from table03;
-show create table table06;
 
+#SQL[@287,N21]Result[8, 10, 10]
 select * from table06;
-d    a
-a    101
-a    102
+d  ¦  a
+a  ¦  101
+a  ¦  102
+
+#SQL[@288,N18]Result[]
 drop table table04;
+
+#SQL[@289,N18]Result[]
 drop table table03;
+
+#SQL[@290,N18]Result[]
 drop table table05;
+
+#SQL[@291,N18]Result[]
 drop table table06;
+
+#SQL[@294,N27]Result[]
 drop table if exists math01;
+
+#SQL[@295,N88]Result[]
 create table math01 (col1 int default 0, col2 decimal, col3 float, col4 double not null);
+
+#SQL[@296,N67]Result[]
 insert into math01 values (1, 7382.4324, 432453.3243, -2930.321323);
+
+#SQL[@297,N64]Result[]
 insert into math01 values (-100, 3283.32324, 328932.0, -9392032);
+
+#SQL[@298,N58]Result[]
 insert into math01 values (22813, -241, 932342.4324, -0.1);
+
+#SQL[@299,N48]Result[]
 insert into math01 values (null, null, null, 10);
+
+#SQL[@301,N26]Result[]
 drop table if exists agg01;
-create table agg01 as select avg(col1) as avgCol, sum(col2) as sumcol, count(col3) as countCol, max(col4) as maxCol, min(col4) as minCol from math01;
 
-show create table agg01;
-
-select * from agg01;
-
-drop table agg01;
-
+#SQL[@309,N26]Result[]
 drop table if exists bit01;
+
+#SQL[@310,N43]Result[]
 create table bit01 (col1 char(1), col2 int);
+
+#SQL[@311,N84]Result[]
 insert into bit01 values ('a',111),('a',110),('a',100),('a',000),('b',001),('b',011);
+
+#SQL[@312,N19]Result[14, 10, 10, 10, 8, 8, 9]
 select * from bit01;
-col1    col2
-a    111
-a    110
-a    100
-a    0
-b    1
-b    11
+col1  ¦  col2
+a  ¦  111
+a  ¦  110
+a  ¦  100
+a  ¦  0
+b  ¦  1
+b  ¦  11
+
+#SQL[@314,N26]Result[]
 drop table if exists bit02;
+
+#SQL[@315,N100]Result[]
 create table bit02 as select bit_and(col2), bit_or(col2), bit_xor(col2), stddev_pop(col2) from bit01;
-desc bit02;
 
-show create table bit02;
-
+#SQL[@320,N26]Result[8, 1]
 select count(*) from bit02;
 count(*)
 1
-select * from bit02;
-bit_and(col2)    bit_or(col2)    bit_xor(col2)    stddev_pop(col2)
-0    111    111    51.73892796209317
-drop table bit02;
-drop table bit01;
-drop table if exists math01;
-create table math01 (col1 int, col2 decimal, col3 bigint, col4 double, col5 float);
-insert into math01 values (1, 10.50, 1234567890, 123.45, 678.90),
-(2, 20.75, 9876543210, 234.56, 789.01),
-(3, 30.10, 1122334455, 345.67, 890.12),
-(4, 40.25, 2233445566, 456.78, 901.23),
-(5, 50.40, -3344556677, 567.89, 101.24),
-(6, 60.55, -4455667788, 678.90, 112.35),
-(7, 70.70, 5566778899, 789.01, 123.46),
-(8, 80.85, -6677889900, 890.12, 134.57),
-(9, 90.00, 7788990011, 901.23, 145.68),
-(10, 100.00, 8899001122, 101.24, 156.79);
-drop table if exists math02;
-create table math02 as select abs(col3), sin(col1), cos(col2), tan(col1), round(col4) from math01;
-select * from math02;
-abs(col3)    sin(col1)    cos(col2)    tan(col1)    round(col4)
-1234567890    0.8414709848078965    0.004425697988050786    1.557407724654902    123.0
-9876543210    0.9092974268256816    -0.5477292602242685    -2.185039863261519    235.0
-1122334455    0.1411200080598672    0.15425144988758405    -0.1425465430742778    346.0
-2233445566    -0.7568024953079282    -0.6669380616522619    1.1578212823495775    457.0
-3344556677    -0.9589242746631385    0.9649660284921132    -3.3805150062465854    568.0
-4455667788    -0.27941549819892586    -0.25810163593826746    -0.29100619138474915    679.0
-5566778899    0.6569865987187891    -0.3090227281660707    0.8714479827243188    789.0
-6677889900    0.9893582466233817    0.7766859820216312    -6.799711455220378    890.0
-7788990011    0.4121184852417566    -0.4480736161291701    -0.45231565944180985    901.0
-8899001122    -0.5440211108893699    0.8623188722876839    0.6483608274590867    101.0
-drop table if exists math03;
-create table math03 as select cot(col1), atan(col1), sinh(col1), floor(col5) from math01;
-select * from math02;
-abs(col3)    sin(col1)    cos(col2)    tan(col1)    round(col4)
-1234567890    0.8414709848078965    0.004425697988050786    1.557407724654902    123.0
-9876543210    0.9092974268256816    -0.5477292602242685    -2.185039863261519    235.0
-1122334455    0.1411200080598672    0.15425144988758405    -0.1425465430742778    346.0
-2233445566    -0.7568024953079282    -0.6669380616522619    1.1578212823495775    457.0
-3344556677    -0.9589242746631385    0.9649660284921132    -3.3805150062465854    568.0
-4455667788    -0.27941549819892586    -0.25810163593826746    -0.29100619138474915    679.0
-5566778899    0.6569865987187891    -0.3090227281660707    0.8714479827243188    789.0
-6677889900    0.9893582466233817    0.7766859820216312    -6.799711455220378    890.0
-7788990011    0.4121184852417566    -0.4480736161291701    -0.45231565944180985    901.0
-8899001122    -0.5440211108893699    0.8623188722876839    0.6483608274590867    101.0
-drop table if exists math04;
-create table math04 as select ceil(col4), power(col5, 2), pi() * col1, log(col2), ln(col2), exp(col1) from math01;
-select * from math04;
-ceil(col4)    power(col5, 2)    pi() * col1    log(col2)    ln(col2)    exp(col1)
-124.0    460905.24314941466    3.141592653589793    2.3978952727983707    2.3978952727983707    2.718281828459045
-235.0    622536.7955103517    6.283185307179586    3.044522437723423    3.044522437723423    7.38905609893065
-346.0    792313.6057074219    9.42477796076938    3.4011973816621555    3.4011973816621555    20.085536923187668
-457.0    812215.4776957035    12.566370614359172    3.6888794541139363    3.6888794541139363    54.598150033144236
-568.0    10249.53716745606    15.707963267948966    3.912023005428146    3.912023005428146    148.4131591025766
-679.0    12622.522157135012    18.84955592153876    4.110873864173311    4.110873864173311    403.4287934927351
-790.0    15242.37137393799    21.991148575128552    4.2626798770413155    4.2626798770413155    1096.6331584284585
-891.0    18109.086871240288    25.132741228718345    4.394449154672439    4.394449154672439    2980.9579870417283
-902.0    21222.66026601568    28.274333882308138    4.499809670330265    4.499809670330265    8103.083927575384
-102.0    24583.101994665572    31.41592653589793    4.605170185988092    4.605170185988092    22026.465794806718
-drop table math01;
-drop table math02;
-drop table math03;
-drop table math04;
-drop table if exists string01;
-create table string01 (col1 varchar(40), col2 char, col3 text default null);
-insert into string01 values ('  database system', '2', '云原生数据库');
-insert into string01 values (' string function ', '1', '字符串函数');
-insert into string01 values ('test create table as select', '0', null);
-drop table if exists string02;
-create table string02 as select concat_ws(',', col1, 'abcde') from string01;
-show create table string02;
 
+#SQL[@321,N19]Result[72, 42]
+select * from bit02;
+bit_and(col2)  ¦  bit_or(col2)  ¦  bit_xor(col2)  ¦  stddev_pop(col2)
+0  ¦  111  ¦  111  ¦  51.73892796209317
+
+#SQL[@322,N16]Result[]
+drop table bit02;
+
+#SQL[@323,N16]Result[]
+drop table bit01;
+
+#SQL[@326,N27]Result[]
+drop table if exists math01;
+
+#SQL[@327,N82]Result[]
+create table math01 (col1 int, col2 decimal, col3 bigint, col4 double, col5 float);
+
+#SQL[@328,N681]Result[]
+insert into math01 values (1, 10.50, 1234567890, 123.45, 678.90),
+                            (2, 20.75, 9876543210, 234.56, 789.01),
+                            (3, 30.10, 1122334455, 345.67, 890.12),
+                            (4, 40.25, 2233445566, 456.78, 901.23),
+                            (5, 50.40, -3344556677, 567.89, 101.24),
+                            (6, 60.55, -4455667788, 678.90, 112.35),
+                            (7, 70.70, 5566778899, 789.01, 123.46),
+                            (8, 80.85, -6677889900, 890.12, 134.57),
+                            (9, 90.00, 7788990011, 901.23, 145.68),
+                            (10, 100.00, 8899001122, 101.24, 156.79);
+
+#SQL[@338,N27]Result[]
+drop table if exists math02;
+
+#SQL[@339,N97]Result[]
+create table math02 as select abs(col3), sin(col1), cos(col2), tan(col1), round(col4) from math01;
+
+#SQL[@340,N20]Result[71, 92, 92, 93, 93, 93, 97, 92, 91, 94, 92]
+select * from math02;
+abs(col3)  ¦  sin(col1)  ¦  cos(col2)  ¦  tan(col1)  ¦  round(col4)
+1234567890  ¦  0.8414709848078965  ¦  0.004425697988050786  ¦  1.557407724654902  ¦  123
+9876543210  ¦  0.9092974268256816  ¦  -0.5477292602242685  ¦  -2.185039863261519  ¦  235
+1122334455  ¦  0.1411200080598672  ¦  0.15425144988758405  ¦  -0.1425465430742778  ¦  346
+2233445566  ¦  -0.7568024953079282  ¦  -0.6669380616522619  ¦  1.1578212823495775  ¦  457
+3344556677  ¦  -0.9589242746631385  ¦  0.9649660284921132  ¦  -3.3805150062465854  ¦  568
+4455667788  ¦  -0.27941549819892586  ¦  -0.25810163593826746  ¦  -0.29100619138474915  ¦  679
+5566778899  ¦  0.6569865987187891  ¦  -0.3090227281660707  ¦  0.8714479827243188  ¦  789
+6677889900  ¦  0.9893582466233817  ¦  0.7766859820216312  ¦  -6.799711455220378  ¦  890
+7788990011  ¦  0.4121184852417566  ¦  -0.4480736161291701  ¦  -0.45231565944180985  ¦  901
+8899001122  ¦  -0.5440211108893699  ¦  0.8623188722876839  ¦  0.6483608274590867  ¦  101
+
+#SQL[@341,N27]Result[]
+drop table if exists math03;
+
+#SQL[@342,N88]Result[]
+create table math03 as select cot(col1), atan(col1), sinh(col1), floor(col5) from math01;
+
+#SQL[@343,N20]Result[71, 92, 92, 93, 93, 93, 97, 92, 91, 94, 92]
+select * from math02;
+abs(col3)  ¦  sin(col1)  ¦  cos(col2)  ¦  tan(col1)  ¦  round(col4)
+1234567890  ¦  0.8414709848078965  ¦  0.004425697988050786  ¦  1.557407724654902  ¦  123
+9876543210  ¦  0.9092974268256816  ¦  -0.5477292602242685  ¦  -2.185039863261519  ¦  235
+1122334455  ¦  0.1411200080598672  ¦  0.15425144988758405  ¦  -0.1425465430742778  ¦  346
+2233445566  ¦  -0.7568024953079282  ¦  -0.6669380616522619  ¦  1.1578212823495775  ¦  457
+3344556677  ¦  -0.9589242746631385  ¦  0.9649660284921132  ¦  -3.3805150062465854  ¦  568
+4455667788  ¦  -0.27941549819892586  ¦  -0.25810163593826746  ¦  -0.29100619138474915  ¦  679
+5566778899  ¦  0.6569865987187891  ¦  -0.3090227281660707  ¦  0.8714479827243188  ¦  789
+6677889900  ¦  0.9893582466233817  ¦  0.7766859820216312  ¦  -6.799711455220378  ¦  890
+7788990011  ¦  0.4121184852417566  ¦  -0.4480736161291701  ¦  -0.45231565944180985  ¦  901
+8899001122  ¦  -0.5440211108893699  ¦  0.8623188722876839  ¦  0.6483608274590867  ¦  101
+
+#SQL[@344,N27]Result[]
+drop table if exists math04;
+
+#SQL[@345,N113]Result[]
+create table math04 as select ceil(col4), power(col5, 2), pi() * col1, log(col2), ln(col2), exp(col1) from math01;
+
+#SQL[@346,N20]Result[91, 121, 117, 120, 122, 119, 119, 122, 121, 119, 120]
+select * from math04;
+ceil(col4)  ¦  power(col5, 2)  ¦  pi() * col1  ¦  log(col2)  ¦  ln(col2)  ¦  exp(col1)
+124  ¦  460905.24314941466  ¦  3.141592653589793  ¦  2.3978952727983707  ¦  2.3978952727983707  ¦  2.718281828459045
+235  ¦  622536.7955103517  ¦  6.283185307179586  ¦  3.044522437723423  ¦  3.044522437723423  ¦  7.38905609893065
+346  ¦  792313.6057074219  ¦  9.42477796076938  ¦  3.4011973816621555  ¦  3.4011973816621555  ¦  20.085536923187668
+457  ¦  812215.4776957035  ¦  12.566370614359172  ¦  3.6888794541139363  ¦  3.6888794541139363  ¦  54.598150033144236
+568  ¦  10249.53716745606  ¦  15.707963267948966  ¦  3.912023005428146  ¦  3.912023005428146  ¦  148.4131591025766
+679  ¦  12622.522157135012  ¦  18.84955592153876  ¦  4.110873864173311  ¦  4.110873864173311  ¦  403.4287934927351
+790  ¦  15242.37137393799  ¦  21.991148575128552  ¦  4.2626798770413155  ¦  4.2626798770413155  ¦  1096.6331584284585
+891  ¦  18109.086871240288  ¦  25.132741228718345  ¦  4.394449154672439  ¦  4.394449154672439  ¦  2980.9579870417283
+902  ¦  21222.66026601568  ¦  28.274333882308138  ¦  4.499809670330265  ¦  4.499809670330265  ¦  8103.083927575384
+102  ¦  24583.101994665572  ¦  31.41592653589793  ¦  4.605170185988092  ¦  4.605170185988092  ¦  22026.465794806718
+
+#SQL[@348,N17]Result[]
+drop table math01;
+
+#SQL[@349,N17]Result[]
+drop table math02;
+
+#SQL[@350,N17]Result[]
+drop table math03;
+
+#SQL[@351,N17]Result[]
+drop table math04;
+
+#SQL[@354,N29]Result[]
+drop table if exists string01;
+
+#SQL[@355,N75]Result[]
+create table string01 (col1 varchar(40), col2 char, col3 text default null);
+
+#SQL[@356,N76]Result[]
+insert into string01 values ('  database system', '2', '云原生数据库');
+
+#SQL[@357,N73]Result[]
+insert into string01 values (' string function ', '1', '字符串函数');
+
+#SQL[@358,N70]Result[]
+insert into string01 values ('test create table as select', '0', null);
+
+#SQL[@360,N29]Result[]
+drop table if exists string02;
+
+#SQL[@361,N75]Result[]
+create table string02 as select concat_ws(',', col1, 'abcde') from string01;
+
+#SQL[@365,N22]Result[25, 23, 23, 33]
 select * from string02;
 concat_ws(,, col1, abcde)
   database system,abcde
  string function ,abcde
 test create table as select,abcde
-drop table string02;
-drop table if exists string03;
-create table string03 as select find_in_set(col2, col1) from string01;
-show create table string03;
 
+#SQL[@366,N19]Result[]
+drop table string02;
+
+#SQL[@368,N29]Result[]
+drop table if exists string03;
+
+#SQL[@369,N69]Result[]
+create table string03 as select find_in_set(col2, col1) from string01;
+
+#SQL[@373,N22]Result[23, 1, 1, 1]
 select * from string03;
 find_in_set(col2, col1)
 0
 0
 0
+
+#SQL[@374,N19]Result[]
 drop table string03;
+
+#SQL[@376,N29]Result[]
 drop table if exists string04;
+
+#SQL[@377,N82]Result[]
 create table string04 as select oct(col2), empty(col3), length(col1) from string01;
-show create table string04;
 
+#SQL[@381,N22]Result[44, 20, 20, 19]
 select * from string04;
-oct(col2)    empty(col3)    length(col1)
-2    false    17
-1    false    17
-0    null    27
-drop table string04;
-drop table if exists string05;
-create table string05 as select trim(col1), ltrim(col1), rtrim(col1) from string01;
-show create table string05;
-Table    Create Table
-string05    CREATE TABLE `string05` (\n  `trim(col1)` varchar(65535) DEFAULT NULL,\n  `ltrim(col1)` varchar(65535) DEFAULT NULL,\n  `rtrim(col1)` varchar(65535) DEFAULT NULL\n)
-select * from string05;
-trim(col1)    ltrim(col1)    rtrim(col1)
-database system    database system      database system
-string function    string function      string function
-test create table as select    test create table as select    test create table as select
-drop table string05;
-drop table if exists string06;
-create table string06 as select lpad(col1, 5, '-'), rpad(col1, 1, '-') from string01;
-show create table string06;
+oct(col2)  ¦  empty(col3)  ¦  length(col1)
+2  ¦  false  ¦  17
+1  ¦  false  ¦  17
+0  ¦  null  ¦  27
 
+#SQL[@382,N19]Result[]
+drop table string04;
+
+#SQL[@384,N29]Result[]
+drop table if exists string05;
+
+#SQL[@385,N82]Result[]
+create table string05 as select trim(col1), ltrim(col1), rtrim(col1) from string01;
+
+#SQL[@386,N26]Result[23, 174]
+show create table string05;
+Table  ¦  Create Table
+string05  ¦  CREATE TABLE `string05` (
+  `trim(col1)` varchar(65535) DEFAULT NULL,
+  `ltrim(col1)` varchar(65535) DEFAULT NULL,
+  `rtrim(col1)` varchar(65535) DEFAULT NULL
+)
+
+#SQL[@387,N22]Result[44, 59, 59, 93]
+select * from string05;
+trim(col1)  ¦  ltrim(col1)  ¦  rtrim(col1)
+database system  ¦  database system  ¦    database system
+string function  ¦  string function   ¦   string function
+test create table as select  ¦  test create table as select  ¦  test create table as select
+
+#SQL[@388,N19]Result[]
+drop table string05;
+
+#SQL[@390,N29]Result[]
+drop table if exists string06;
+
+#SQL[@391,N84]Result[]
+create table string06 as select lpad(col1, 5, '-'), rpad(col1, 1, '-') from string01;
+
+#SQL[@395,N22]Result[38, 12, 12, 12]
 select * from string06;
-lpad(col1, 5, -)    rpad(col1, 1, -)
-  dat     
- stri     
-test     t
+lpad(col1, 5, -)  ¦  rpad(col1, 1, -)
+  dat  ¦   
+ stri  ¦   
+test   ¦  t
+
+#SQL[@396,N19]Result[]
 drop table string06;
+
+#SQL[@398,N29]Result[]
 drop table if exists string07;
+
+#SQL[@399,N88]Result[]
 create table string07 as select startswith(col1, ' '), endswith(col1, ' ') from string01;
+
+#SQL[@400,N26]Result[23, 124]
 show create table string07;
-Table    Create Table
-string07    CREATE TABLE `string07` (\n  `startswith(col1,  )` bool DEFAULT NULL,\n  `endswith(col1,  )` bool DEFAULT NULL\n)
+Table  ¦  Create Table
+string07  ¦  CREATE TABLE `string07` (
+  `startswith(col1,  )` bool DEFAULT NULL,
+  `endswith(col1,  )` bool DEFAULT NULL
+)
+
+#SQL[@401,N22]Result[42, 15, 14, 16]
 select * from string07;
-startswith(col1,  )    endswith(col1,  )
-true    false
-true    true
-false    false
+startswith(col1,  )  ¦  endswith(col1,  )
+true  ¦  false
+true  ¦  true
+false  ¦  false
+
+#SQL[@402,N19]Result[]
 drop table string07;
+
+#SQL[@404,N29]Result[]
 drop table if exists string08;
+
+#SQL[@405,N55]Result[]
 create table string08 as select hex(col2) from string01;
+
+#SQL[@406,N26]Result[23, 83]
 show create table string08;
-Table    Create Table
-string08    CREATE TABLE `string08` (\n  `hex(col2)` varchar(65535) DEFAULT NULL\n)
+Table  ¦  Create Table
+string08  ¦  CREATE TABLE `string08` (
+  `hex(col2)` varchar(65535) DEFAULT NULL
+)
+
+#SQL[@407,N22]Result[9, 2, 2, 2]
 select * from string08;
 hex(col2)
 32
 31
 30
+
+#SQL[@408,N19]Result[]
 drop table string08;
+
+#SQL[@410,N29]Result[]
 drop table if exists string09;
+
+#SQL[@411,N82]Result[]
 create table string09 as select substring(col1, 3, 4), reverse(col2) from string01;
+
+#SQL[@412,N26]Result[23, 142]
 show create table string09;
-Table    Create Table
-string09    CREATE TABLE `string09` (\n  `substring(col1, 3, 4)` varchar(65535) DEFAULT NULL,\n  `reverse(col2)` varchar(65535) DEFAULT NULL\n)
+Table  ¦  Create Table
+string09  ¦  CREATE TABLE `string09` (
+  `substring(col1, 3, 4)` varchar(65535) DEFAULT NULL,
+  `reverse(col2)` varchar(65535) DEFAULT NULL
+)
+
+#SQL[@413,N22]Result[40, 11, 11, 11]
 select * from string09;
-substring(col1, 3, 4)    reverse(col2)
-data    2
-trin    1
-st c    0
+substring(col1, 3, 4)  ¦  reverse(col2)
+data  ¦  2
+trin  ¦  1
+st c  ¦  0
+
+#SQL[@414,N19]Result[]
 drop table string09;
+
+#SQL[@416,N29]Result[]
 drop table if exists string10;
+
+#SQL[@417,N35]Result[]
 create table string10 (col1 bigint);
+
+#SQL[@418,N48]Result[]
 insert into string10 values (2319318313), (null);
+
+#SQL[@419,N29]Result[]
 drop table if exists string11;
+
+#SQL[@420,N55]Result[]
 create table string11 as select bin(col1) from string10;
+
+#SQL[@421,N26]Result[23, 83]
 show create table string11;
-Table    Create Table
-string11    CREATE TABLE `string11` (\n  `bin(col1)` varchar(65535) DEFAULT NULL\n)
+Table  ¦  Create Table
+string11  ¦  CREATE TABLE `string11` (
+  `bin(col1)` varchar(65535) DEFAULT NULL
+)
+
+#SQL[@422,N22]Result[9, 32, 4]
 select * from string11;
 bin(col1)
 10001010001111011111110100101001
 null
+
+#SQL[@423,N19]Result[]
 drop table string10;
+
+#SQL[@424,N19]Result[]
 drop table string11;
+
+#SQL[@426,N29]Result[]
 drop table if exists string12;
+
+#SQL[@427,N19]Error[27]
 drop table string12;
 no such table test.string12
+
+#SQL[@428,N70]Result[]
 create table string12 (col1 varchar(100) not null, col2 date not null);
+
+#SQL[@429,N131]Result[]
 insert into string12 values ('   Deepak Sharma', '2014-12-01'  ), ('   Ankana Jana', '2018-08-17'),('  Shreya Ghosh', '2020-09-10');
+
+#SQL[@430,N22]Result[14, 32, 30, 30]
 select * from string12;
-col1    col2
-   Deepak Sharma    2014-12-01
-   Ankana Jana    2018-08-17
-  Shreya Ghosh    2020-09-10
+col1  ¦  col2
+   Deepak Sharma  ¦  2014-12-01
+   Ankana Jana  ¦  2018-08-17
+  Shreya Ghosh  ¦  2020-09-10
+
+#SQL[@431,N29]Result[]
 drop table if exists string13;
+
+#SQL[@432,N69]Result[]
 create table string13 as select * from string12 where col1 = space(5);
+
+#SQL[@433,N26]Result[23, 96]
 show create table string13;
-Table    Create Table
-string13    CREATE TABLE `string13` (\n  `col1` varchar(100) NOT NULL,\n  `col2` date NOT NULL\n)
+Table  ¦  Create Table
+string13  ¦  CREATE TABLE `string13` (
+  `col1` varchar(100) NOT NULL,
+  `col2` date NOT NULL
+)
+
+#SQL[@434,N22]Result[]
 select * from string13;
-col1    col2
+
+#SQL[@435,N19]Result[]
 drop table string12;
+
+#SQL[@436,N19]Result[]
 drop table string13;
+
+#SQL[@437,N19]Result[]
 drop table string01;
+
+#SQL[@440,N27]Result[]
 drop table if exists time01;
+
+#SQL[@441,N72]Result[]
 create table time01(col1 date, col2 datetime, col3 timestamp, col4 time);
+
+#SQL[@442,N102]Result[]
 insert into time01 values ('2020-10-11', '2023-11-11 10:00:01', '1997-01-13 12:12:12.000', '12:12:12');
+
+#SQL[@443,N102]Result[]
 insert into time01 values ('1919-12-01', '1990-10-10 01:01:01', '2001-12-12 01:01:01.000', '10:59:59');
+
+#SQL[@444,N50]Result[]
 insert into time01 values (null, null, null, null);
+
+#SQL[@445,N20]Result[34, 74, 74, 34]
 select * from time01;
-col1    col2    col3    col4
-2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    12:12:12
-1919-12-01    1990-10-10 01:01:01    2001-12-12 01:01:01    10:59:59
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  12:12:12
+1919-12-01  ¦  1990-10-10 01:01:01  ¦  2001-12-12 01:01:01  ¦  10:59:59
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@447,N27]Result[]
 drop table if exists time02;
+
+#SQL[@448,N71]Result[]
 create table time02 as select date_format(col2, '%W %M %Y') from time01;
-show create table time02;
 
-desc time02;
-
+#SQL[@453,N20]Result[27, 22, 22, 4]
 select * from time02;
 date_format(col2, %w %m %y)
 Saturday November 2023
 Wednesday October 1990
 null
+
+#SQL[@454,N17]Result[]
 drop table time02;
+
+#SQL[@456,N27]Result[]
 drop table if exists time03;
+
+#SQL[@457,N126]Result[]
 create table time03 as select date(col1), date(col2), year(col1), day(col1), weekday(col1), dayofyear(col1) as dya from time01;
-desc time03;
 
-show create table time03;
-
+#SQL[@462,N20]Result[85, 60, 59, 54]
 select * from time03;
-date(col1)    date(col2)    year(col1)    day(col1)    weekday(col1)    dya
-2020-10-11    2023-11-11    2020    11    6    285
-1919-12-01    1990-10-10    1919    1    0    335
-null    null    null    null    null    null
+date(col1)  ¦  date(col2)  ¦  year(col1)  ¦  day(col1)  ¦  weekday(col1)  ¦  dya
+2020-10-11  ¦  2023-11-11  ¦  2020  ¦  11  ¦  6  ¦  285
+1919-12-01  ¦  1990-10-10  ¦  1919  ¦  1  ¦  0  ¦  335
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@463,N17]Result[]
 drop table time03;
+
+#SQL[@465,N27]Result[]
 drop table if exists time04;
+
+#SQL[@466,N105]Result[]
 create table time04 as select date_add(col2, interval 45 day), date_sub(col2, interval 5 day) from time01;
+
+#SQL[@467,N24]Result[23, 157]
 show create table time04;
-Table    Create Table
-time04    CREATE TABLE `time04` (\n  `date_add(col2, interval(45, day))` datetime DEFAULT NULL,\n  `date_sub(col2, interval(5, day))` datetime DEFAULT NULL\n)
+Table  ¦  Create Table
+time04  ¦  CREATE TABLE `time04` (
+  `date_add(col2, interval(45, day))` datetime DEFAULT NULL,
+  `date_sub(col2, interval(5, day))` datetime DEFAULT NULL
+)
+
+#SQL[@468,N20]Result[71, 44, 44, 14]
 select * from time04;
-date_add(col2, interval(45, day))    date_sub(col2, interval(5, day))
-2023-12-26 10:00:01    2023-11-06 10:00:01
-1990-11-24 01:01:01    1990-10-05 01:01:01
-null    null
+date_add(col2, interval(45, day))  ¦  date_sub(col2, interval(5, day))
+2023-12-26 10:00:01  ¦  2023-11-06 10:00:01
+1990-11-24 01:01:01  ¦  1990-10-05 01:01:01
+null  ¦  null
+
+#SQL[@469,N17]Result[]
 drop table time04;
+
+#SQL[@471,N27]Result[]
 drop table if exists time05;
 
+#SQL[@472,N62]Result[]
 create table time05 as select unix_timestamp(col1) from time01;
 
+#SQL[@473,N24]Result[23, 82]
 show create table time05;
-Table    Create Table
-time05    CREATE TABLE `time05` (\n  `unix_timestamp(col1)` bigint DEFAULT NULL\n)
+Table  ¦  Create Table
+time05  ¦  CREATE TABLE `time05` (
+  `unix_timestamp(col1)` bigint DEFAULT NULL
+)
+
+#SQL[@474,N27]Result[8, 1]
 select count(*) from time05;
 count(*)
 3
+
+#SQL[@475,N17]Result[]
 drop table time05;
 
+#SQL[@477,N27]Result[]
 drop table if exists time06;
-create table time06 as select datediff('2007-12-31 23:59:59', col1) as timedifferent from time01;
-show create table time06;
 
+#SQL[@478,N96]Result[]
+create table time06 as select datediff('2007-12-31 23:59:59', col1) as timedifferent from time01;
+
+#SQL[@482,N20]Result[13, 5, 5, 4]
 select * from time06;
 timedifferent
 -4668
 32172
 null
+
+#SQL[@483,N17]Result[]
 drop table time06;
+
+#SQL[@485,N27]Result[]
 drop table if exists time07;
+
+#SQL[@486,N85]Result[]
 create table time07 as select timediff("22:22:22", col4) as timedifferent from time01;
+
+#SQL[@487,N24]Result[23, 73]
 show create table time07;
-Table    Create Table
-time07    CREATE TABLE `time07` (\n  `timedifferent` time DEFAULT NULL\n)
+Table  ¦  Create Table
+time07  ¦  CREATE TABLE `time07` (
+  `timedifferent` time DEFAULT NULL
+)
+
+#SQL[@488,N20]Result[13, 15, 15, 4]
 select * from time07;
 timedifferent
-10:10:10
-11:22:23
+10:10:10.000000
+11:22:23.000000
 null
+
+#SQL[@489,N17]Result[]
 drop table time07;
+
+#SQL[@491,N27]Result[]
 drop table if exists test01;
+
+#SQL[@492,N72]Result[]
 create table test01 as select col1 from time01 order by col1 nulls first;
+
+#SQL[@493,N20]Result[4, 4, 10, 10]
 select * from test01;
 col1
 null
 1919-12-01
 2020-10-11
+
+#SQL[@494,N17]Result[]
 drop table test01;
+
+#SQL[@496,N27]Result[]
 drop table if exists test02;
+
+#SQL[@497,N74]Result[]
 create table test02 as select * from time01 order by col2 desc nulls first;
+
+#SQL[@498,N20]Result[34, 34, 74, 74]
 select * from test02;
-col1    col2    col3    col4
-null    null    null    null
-2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    12:12:12
-1919-12-01    1990-10-10 01:01:01    2001-12-12 01:01:01    10:59:59
+col1  ¦  col2  ¦  col3  ¦  col4
+null  ¦  null  ¦  null  ¦  null
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  12:12:12
+1919-12-01  ¦  1990-10-10 01:01:01  ¦  2001-12-12 01:01:01  ¦  10:59:59
+
+#SQL[@499,N17]Result[]
 drop table test02;
+
+#SQL[@501,N27]Result[]
 drop table if exists test03;
+
+#SQL[@502,N73]Result[]
 create table test03 as select * from time01 order by col2 desc nulls last;
+
+#SQL[@503,N20]Result[34, 74, 74, 34]
 select * from test03;
-col1    col2    col3    col4
-2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    12:12:12
-1919-12-01    1990-10-10 01:01:01    2001-12-12 01:01:01    10:59:59
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  12:12:12
+1919-12-01  ¦  1990-10-10 01:01:01  ¦  2001-12-12 01:01:01  ¦  10:59:59
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@504,N17]Result[]
 drop table test03;
+
+#SQL[@506,N27]Result[]
 drop table if exists test04;
+
+#SQL[@507,N72]Result[]
 create table test04 as select col1 from time01 order by col1 nulls first;
+
+#SQL[@508,N20]Result[4, 4, 10, 10]
 select * from test04;
 col1
 null
 1919-12-01
 2020-10-11
+
+#SQL[@509,N17]Result[]
 drop table test04;
+
+#SQL[@511,N102]Result[]
 insert into time01 values ('2014-10-11', '2021-11-11 10:00:01', '1989-01-13 12:12:12.000', '12:11:12');
+
+#SQL[@512,N102]Result[]
 insert into time01 values ('2014-12-11', '2021-01-11 10:00:02', '1981-02-13 12:12:12.000', '14:12:12');
+
+#SQL[@513,N102]Result[]
 insert into time01 values ('2015-10-11', '2021-11-11 10:00:03', '1982-01-13 12:12:12.000', '15:12:12');
+
+#SQL[@514,N102]Result[]
 insert into time01 values ('2016-10-11', '2021-11-11 10:00:04', '1983-01-13 12:12:12.000', '16:12:12');
+
+#SQL[@515,N102]Result[]
 insert into time01 values ('2017-10-11', '2021-11-11 10:00:05', '1984-01-13 12:12:12.000', '17:12:12');
+
+#SQL[@516,N102]Result[]
 insert into time01 values ('2018-10-11', '2021-11-11 10:00:06', '1985-01-13 12:12:12.000', '18:12:12');
+
+#SQL[@517,N102]Result[]
 insert into time01 values ('2019-10-11', '2021-11-11 10:00:07', '1986-01-13 12:12:12.000', '19:12:12');
+
+#SQL[@518,N102]Result[]
 insert into time01 values ('2010-10-11', '2021-11-11 10:00:08', '1987-01-13 12:12:12.000', '20:12:12');
+
+#SQL[@519,N102]Result[]
 insert into time01 values ('2033-10-11', '2021-11-11 10:00:09', '1988-01-13 12:12:12.000', '21:12:12');
+
+#SQL[@520,N102]Result[]
 insert into time01 values ('2014-10-12', '2021-11-11 10:00:20', '1989-02-13 12:12:12.000', '22:12:12');
+
+#SQL[@522,N30]Result[]
 drop table if exists new_table;
+
+#SQL[@523,N78]Result[]
 create table new_table as
 select *
 from time01
 order by col1
 limit 5
 offset 10;
+
+#SQL[@529,N23]Result[34, 74, 74, 74]
 select * from new_table;
-col1    col2    col3    col4
-2019-10-11    2021-11-11 10:00:07    1986-01-13 12:12:12    19:12:12
-2020-10-11    2023-11-11 10:00:01    1997-01-13 12:12:12    12:12:12
-2033-10-11    2021-11-11 10:00:09    1988-01-13 12:12:12    21:12:12
+col1  ¦  col2  ¦  col3  ¦  col4
+2019-10-11  ¦  2021-11-11 10:00:07  ¦  1986-01-13 12:12:12  ¦  19:12:12
+2020-10-11  ¦  2023-11-11 10:00:01  ¦  1997-01-13 12:12:12  ¦  12:12:12
+2033-10-11  ¦  2021-11-11 10:00:09  ¦  1988-01-13 12:12:12  ¦  21:12:12
+
+#SQL[@530,N20]Result[]
 drop table new_table;
+
+#SQL[@532,N32]Result[]
 drop table if exists new_table01;
+
+#SQL[@533,N96]Result[]
 create table new_table01 as
 select col2, col3
 from time01
 order by col1 desc
 limit 100
 offset 10;
+
+#SQL[@539,N25]Result[14, 44, 44, 14]
 select * from new_table01;
-col2    col3
-2021-11-11 10:00:08    1987-01-13 12:12:12
-1990-10-10 01:01:01    2001-12-12 01:01:01
-null    null
+col2  ¦  col3
+2021-11-11 10:00:08  ¦  1987-01-13 12:12:12
+1990-10-10 01:01:01  ¦  2001-12-12 01:01:01
+null  ¦  null
+
+#SQL[@540,N22]Result[]
 drop table new_table01;
+
+#SQL[@541,N17]Result[]
 drop table time01;
+
+#SQL[@544,N27]Result[]
 drop table if exists orders;
+
+#SQL[@545,N103]Result[]
 create table orders (order_id int primary key , customer_id int, order_date date, total_amount decimal);
+
+#SQL[@546,N460]Result[]
 insert into orders values (1, 101, '2023-01-01', 100.00),
-(2, 101, '2023-01-05', 150.00),
-(3, 102, '2023-01-02', 200.00),
-(4, 103, '2023-01-03', 50.00),
-(5, 101, '2023-01-04', 75.00),
-(6, 104, '2023-01-06', 300.00),
-(7, 104, '2023-01-07', 200.00),
-(8, 105, '2023-01-08', 100.00);
+                          (2, 101, '2023-01-05', 150.00),
+                          (3, 102, '2023-01-02', 200.00),
+                          (4, 103, '2023-01-03', 50.00),
+                          (5, 101, '2023-01-04', 75.00),
+                          (6, 104, '2023-01-06', 300.00),
+                          (7, 104, '2023-01-07', 200.00),
+                          (8, 105, '2023-01-08', 100.00);
+
+#SQL[@554,N20]Result[59, 35, 35, 35, 34, 34, 35, 35, 35]
 select * from orders;
-order_id    customer_id    order_date    total_amount
-1    101    2023-01-01    100
-2    101    2023-01-05    150
-3    102    2023-01-02    200
-4    103    2023-01-03    50
-5    101    2023-01-04    75
-6    104    2023-01-06    300
-7    104    2023-01-07    200
-8    105    2023-01-08    100
+order_id  ¦  customer_id  ¦  order_date  ¦  total_amount
+1  ¦  101  ¦  2023-01-01  ¦  100
+2  ¦  101  ¦  2023-01-05  ¦  150
+3  ¦  102  ¦  2023-01-02  ¦  200
+4  ¦  103  ¦  2023-01-03  ¦  50
+5  ¦  101  ¦  2023-01-04  ¦  75
+6  ¦  104  ¦  2023-01-06  ¦  300
+7  ¦  104  ¦  2023-01-07  ¦  200
+8  ¦  105  ¦  2023-01-08  ¦  100
+
+#SQL[@556,N36]Result[]
 drop table if exists customer_totals;
+
+#SQL[@557,N208]Result[]
 create table customer_totals as select customer_id, count(order_id) as total_orders, sum(total_amount) as total_amount from orders group by customer_id having count(order_id) > 1 and sum(total_amount) > 150.0;
-show create table customer_totals;
 
+#SQL[@561,N29]Result[47, 19, 19]
 select * from customer_totals;
-customer_id    total_orders    total_amount
-101    3    325
-104    2    500
+customer_id  ¦  total_orders  ¦  total_amount
+101  ¦  3  ¦  325
+104  ¦  2  ¦  500
+
+#SQL[@563,N31]Result[]
 drop table if exists max_totals;
+
+#SQL[@564,N115]Result[]
 create table max_totals as select customer_id, total_orders from customer_totals order by total_orders desc limit 1;
-desc max_totals;
 
+#SQL[@568,N24]Result[29, 10]
 select * from max_totals;
-customer_id    total_orders
-101    3
+customer_id  ¦  total_orders
+101  ¦  3
+
+#SQL[@570,N33]Result[]
 drop table if exists max_customer;
+
+#SQL[@571,N116]Result[]
 create table max_customer as select customer_id, total_amount from customer_totals order by total_amount asc limit 1;
+
+#SQL[@572,N30]Result[23, 127]
 show create table max_customer;
-Table    Create Table
-max_customer    CREATE TABLE `max_customer` (\n  `customer_id` int DEFAULT NULL,\n  `total_amount` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+max_customer  ¦  CREATE TABLE `max_customer` (
+  `customer_id` int DEFAULT NULL,
+  `total_amount` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@573,N26]Result[29, 12]
 select * from max_customer;
-customer_id    total_amount
-101    325
+customer_id  ¦  total_amount
+101  ¦  325
+
+#SQL[@575,N17]Result[]
 drop table orders;
+
+#SQL[@576,N26]Result[]
 drop table customer_totals;
+
+#SQL[@577,N21]Result[]
 drop table max_totals;
+
+#SQL[@578,N23]Result[]
 drop table max_customer;
+
+#SQL[@581,N35]Result[]
 drop table if exists original_table;
+
+#SQL[@582,N107]Result[]
 create table original_table (id int primary key, name varchar(50), age int, salary decimal, hire_date date);
+
+#SQL[@583,N546]Result[]
 insert into original_table (id, name, age, salary, hire_date) values (1, 'Alice', 30, 5000.00, '2020-01-01'),
-(2, 'Bob', 35, 6000.00, '2021-05-15'),
-(3, 'Charlie', 28, 4500.00, '2022-02-20'),
-(4, 'David', 40, 7000.00, '2021-10-01'),
-(5, 'Eve', 25, 4000.00, '2020-07-15');
+                                                                     (2, 'Bob', 35, 6000.00, '2021-05-15'),
+                                                                     (3, 'Charlie', 28, 4500.00, '2022-02-20'),
+                                                                     (4, 'David', 40, 7000.00, '2021-10-01'),
+                                                                     (5, 'Eve', 25, 4000.00, '2020-07-15');
+
+#SQL[@589,N39]Result[]
 drop table if exists selected_employees;
-create table selected_employees as select * from original_table where
-salary >= 5500.00
-and salary < 7000.00
-and age > 29
-and hire_date >= '2021-01-01'
-and name not like 'A%'
-and id not in (1, 3)
-and salary between 5000.00 and 6500.00;
 
-show create table selected_employees;
-
-select * from selected_employees;
-
-drop table selected_employees;
-
+#SQL[@603,N25]Result[]
 drop table original_table;
+
+#SQL[@606,N27]Result[]
 drop table if exists view01;
+
+#SQL[@607,N27]Result[]
 drop table if exists view02;
+
+#SQL[@608,N22]Result[]
 drop view if exists v1;
+
+#SQL[@609,N34]Result[]
 create table view01 (a int, b int);
+
+#SQL[@610,N37]Result[]
 insert into view01 values (1,2),(3,4);
+
+#SQL[@611,N40]Result[]
 create table view02 select * from view01;
+
+#SQL[@612,N38]Result[]
 create view v1 as select * from view02;
+
+#SQL[@613,N16]Result[8, 8, 8]
 select * from v1;
-a    b
-1    2
-3    4
+a  ¦  b
+1  ¦  2
+3  ¦  4
+
+#SQL[@614,N12]Result[]
 drop view v1;
+
+#SQL[@615,N17]Result[]
 drop table view01;
+
+#SQL[@616,N17]Result[]
 drop table view02;
+
+#SQL[@619,N28]Result[]
 drop table if exists table01;
+
+#SQL[@620,N308]Result[]
 create table table01 (
-id int auto_increment primary key,
-col1 varchar(255) not null ,
-col2 int,
-col3 decimal(10, 2),
-col4 date,
-col5 boolean,
-col6 enum('apple', 'banana', 'orange'),
-col7 text,
-col8 timestamp,
-col9 blob,
-col10 char,
-unique index(col8, col10)
+    id int auto_increment primary key,
+    col1 varchar(255) not null ,
+    col2 int,
+    col3 decimal(10, 2),
+    col4 date,
+    col5 boolean,
+    col6 enum('apple', 'banana', 'orange'),
+    col7 text,
+    col8 timestamp,
+    col9 blob,
+    col10 char,
+    unique index(col8, col10)
 );
+
+#SQL[@634,N341]Result[]
 insert into table01 (col1, col2, col3, col4, col5, col6, col7, col8, col9, col10) values
 ('Value2', 456, 78.90, '2023-10-24', false, 'banana', 'Another text', '2022-01-01 01:01:01.000', 'More binary data', 'D'),
 ('Value3', 789, 12.34, '2023-10-25', true, 'orange', 'Yet another text', '1979-01-01 01:01:01.123', 'Even more binary data', 'E');
+
+#SQL[@637,N50]Result[]
 create table test.table02 as select * from table01;
+
+#SQL[@638,N25]Result[23, 407]
 show create table table02;
-Table    Create Table
-table02    CREATE TABLE `table02` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `col1` varchar(255) NOT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` decimal(10,2) DEFAULT NULL,\n  `col4` date DEFAULT NULL,\n  `col5` bool DEFAULT NULL,\n  `col6` enum('apple','banana','orange') DEFAULT NULL,\n  `col7` text DEFAULT NULL,\n  `col8` timestamp NULL DEFAULT NULL,\n  `col9` blob DEFAULT NULL,\n  `col10` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+table02  ¦  CREATE TABLE `table02` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `col1` varchar(255) NOT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` decimal(10,2) DEFAULT NULL,
+  `col4` date DEFAULT NULL,
+  `col5` bool DEFAULT NULL,
+  `col6` enum('apple','banana','orange') DEFAULT NULL,
+  `col7` text DEFAULT NULL,
+  `col8` timestamp NULL DEFAULT NULL,
+  `col9` blob DEFAULT NULL,
+  `col10` char(1) DEFAULT NULL
+)
+
+#SQL[@639,N21]Result[103, 144, 152]
 select * from table02;
-id    col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-1    Value2    456    78.90    2023-10-24    false    banana    Another text    2022-01-01 01:01:01    More binary data    D
-2    Value3    789    12.34    2023-10-25    true    orange    Yet another text    1979-01-01 01:01:01    Even more binary data    E
+id  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+1  ¦  Value2  ¦  456  ¦  78.90  ¦  2023-10-24  ¦  false  ¦  banana  ¦  Another text  ¦  2022-01-01 01:01:01  ¦  More binary data  ¦  D
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  2023-10-25  ¦  true  ¦  orange  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+
+#SQL[@640,N152]Result[]
 insert into table02 values (12, 'Value1', 123, 45.67, '2023-10-23', TRUE, 'apple', 'This is a text', '2019-01-01 01:01:01.000', 'Some binary data', 'C');
+
+#SQL[@641,N21]Result[103, 144, 152, 145]
 select * from table02;
-id    col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-1    Value2    456    78.90    2023-10-24    false    banana    Another text    2022-01-01 01:01:01    More binary data    D
-2    Value3    789    12.34    2023-10-25    true    orange    Yet another text    1979-01-01 01:01:01    Even more binary data    E
-12    Value1    123    45.67    2023-10-23    true    apple    This is a text    2019-01-01 01:01:01    Some binary data    C
+id  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+1  ¦  Value2  ¦  456  ¦  78.90  ¦  2023-10-24  ¦  false  ¦  banana  ¦  Another text  ¦  2022-01-01 01:01:01  ¦  More binary data  ¦  D
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  2023-10-25  ¦  true  ¦  orange  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+12  ¦  Value1  ¦  123  ¦  45.67  ¦  2023-10-23  ¦  true  ¦  apple  ¦  This is a text  ¦  2019-01-01 01:01:01  ¦  Some binary data  ¦  C
+
+#SQL[@642,N53]Result[]
 update table02 set col1 = 'newvalue' where col2 = 456;
+
+#SQL[@643,N37]Result[]
 delete from table02 where col10 = 'D';
+
+#SQL[@644,N21]Result[103, 152, 145]
 select * from table02;
-id    col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-2    Value3    789    12.34    2023-10-25    true    orange    Yet another text    1979-01-01 01:01:01    Even more binary data    E
-12    Value1    123    45.67    2023-10-23    true    apple    This is a text    2019-01-01 01:01:01    Some binary data    C
+id  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  2023-10-25  ¦  true  ¦  orange  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+12  ¦  Value1  ¦  123  ¦  45.67  ¦  2023-10-23  ¦  true  ¦  apple  ¦  This is a text  ¦  2019-01-01 01:01:01  ¦  Some binary data  ¦  C
+
+#SQL[@645,N73]Result[]
 alter table table02 add column newcolumn int after col3, drop column col4;
+
+#SQL[@646,N25]Result[23, 411]
 show create table table02;
-Table    Create Table
-table02    CREATE TABLE `table02` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `col1` varchar(255) NOT NULL,\n  `col2` int DEFAULT NULL,\n  `col3` decimal(10,2) DEFAULT NULL,\n  `newcolumn` int DEFAULT NULL,\n  `col5` bool DEFAULT NULL,\n  `col6` enum('apple','banana','orange') DEFAULT NULL,\n  `col7` text DEFAULT NULL,\n  `col8` timestamp NULL DEFAULT NULL,\n  `col9` blob DEFAULT NULL,\n  `col10` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+table02  ¦  CREATE TABLE `table02` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `col1` varchar(255) NOT NULL,
+  `col2` int DEFAULT NULL,
+  `col3` decimal(10,2) DEFAULT NULL,
+  `newcolumn` int DEFAULT NULL,
+  `col5` bool DEFAULT NULL,
+  `col6` enum('apple','banana','orange') DEFAULT NULL,
+  `col7` text DEFAULT NULL,
+  `col8` timestamp NULL DEFAULT NULL,
+  `col9` blob DEFAULT NULL,
+  `col10` char(1) DEFAULT NULL
+)
+
+#SQL[@647,N50]Result[]
 alter table table02 modify column newcolumn bigint;
+
+#SQL[@648,N12]Result[71, 65, 58, 54, 60, 62, 54, 78, 54, 59, 54, 55]
 desc table02;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO        null    auto_increment    
-col1    VARCHAR(255)    NO        null        
-col2    INT(32)    YES        null        
-col3    DECIMAL(10,2)    YES        null        
-newcolumn    BIGINT(64)    YES        null        
-col5    BOOL(0)    YES        null        
-col6    ENUM('apple','banana','orange')    YES        null        
-col7    TEXT(0)    YES        null        
-col8    TIMESTAMP(0)    YES        null        
-col9    BLOB(0)    YES        null        
-col10    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦    ¦  null  ¦  auto_increment  ¦  
+col1  ¦  VARCHAR(255)  ¦  NO  ¦    ¦  null  ¦    ¦  
+col2  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col3  ¦  DECIMAL(10,2)  ¦  YES  ¦    ¦  null  ¦    ¦  
+newcolumn  ¦  BIGINT(64)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col5  ¦  BOOL(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col6  ¦  ENUM('apple','banana','orange')  ¦  YES  ¦    ¦  null  ¦    ¦  
+col7  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col8  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col9  ¦  BLOB(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col10  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@649,N21]Result[108, 146, 139]
 select * from table02;
-id    col1    col2    col3    newcolumn    col5    col6    col7    col8    col9    col10
-2    Value3    789    12.34    null    true    orange    Yet another text    1979-01-01 01:01:01    Even more binary data    E
-12    Value1    123    45.67    null    true    apple    This is a text    2019-01-01 01:01:01    Some binary data    C
+id  ¦  col1  ¦  col2  ¦  col3  ¦  newcolumn  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  null  ¦  true  ¦  orange  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+12  ¦  Value1  ¦  123  ¦  45.67  ¦  null  ¦  true  ¦  apple  ¦  This is a text  ¦  2019-01-01 01:01:01  ¦  Some binary data  ¦  C
+
+#SQL[@650,N16]Result[]
 truncate table02;
+
+#SQL[@651,N21]Result[]
 select * from table02;
-id    col1    col2    col3    newcolumn    col5    col6    col7    col8    col9    col10
+
+#SQL[@652,N18]Result[]
 drop table table02;
+
+#SQL[@653,N18]Result[]
 drop table table01;
+
+#SQL[@656,N29]Result[]
 drop table if exists students;
+
+#SQL[@657,N94]Result[]
 create table students (student_id int primary key , student_name varchar(20), student_age int);
+
+#SQL[@658,N44]Result[]
 insert into students values (1, 'Alice', 20);
+
+#SQL[@659,N42]Result[]
 insert into students values (2, 'Bob', 22);
+
+#SQL[@660,N46]Result[]
 insert into students values (3, 'Charlie', 21);
+
+#SQL[@661,N43]Result[]
 insert into students values (4, 'Dave', 23);
+
+#SQL[@663,N28]Result[]
 drop table if exists courses;
+
+#SQL[@664,N61]Result[]
 create table courses (course_id int, course_name varchar(10));
+
+#SQL[@665,N94]Result[]
 insert into courses values (101, 'Math'), (102, 'English'), (103, 'History'), (104, 'Science');
+
+#SQL[@667,N32]Result[]
 drop table if exists enrollments;
+
+#SQL[@668,N56]Result[]
 create table enrollments (student_id int, course_id int);
+
+#SQL[@669,N99]Result[]
 insert into enrollments values (1, 101), (1, 103), (2, 102), (3, 101), (3, 102), (3, 103), (4, 104);
+
+#SQL[@671,N34]Result[]
 drop table if exists c_enrollments;
+
+#SQL[@672,N256]Result[]
 create table student_course_enrollments as
 select
-s.student_id,
-s.student_name,
-s.student_age,
-c.course_name
+    s.student_id,
+    s.student_name,
+    s.student_age,
+    c.course_name
 from
-students s
+    students s
 left join
-enrollments e ON s.student_id = e.student_id
+    enrollments e ON s.student_id = e.student_id
 left join
-courses c ON e.course_id = c.course_id;
-select * from student_course_enrollments;
-student_id    student_name    student_age    course_name
-1    Alice    20    Math
-1    Alice    20    History
-2    Bob    22    English
-3    Charlie    21    Math
-3    Charlie    21    English
-3    Charlie    21    History
-4    Dave    23    Science
-show create table student_course_enrollments;
+    courses c ON e.course_id = c.course_id;
 
+#SQL[@684,N40]Result[62, 30, 33, 31, 32, 35, 35, 32]
+select * from student_course_enrollments;
+student_id  ¦  student_name  ¦  student_age  ¦  course_name
+1  ¦  Alice  ¦  20  ¦  Math
+1  ¦  Alice  ¦  20  ¦  History
+2  ¦  Bob  ¦  22  ¦  English
+3  ¦  Charlie  ¦  21  ¦  Math
+3  ¦  Charlie  ¦  21  ¦  English
+3  ¦  Charlie  ¦  21  ¦  History
+4  ¦  Dave  ¦  23  ¦  Science
+
+#SQL[@689,N53]Result[]
 drop table if exists student_course_enrollments_inner;
+
+#SQL[@690,N264]Result[]
 create table student_course_enrollments_inner AS
 select
-s.student_id,
-s.student_name,
-s.student_age,
-c.course_name
+    s.student_id,
+    s.student_name,
+    s.student_age,
+    c.course_name
 from
-students s
+    students s
 inner join
-enrollments e on s.student_id = e.student_id
+    enrollments e on s.student_id = e.student_id
 inner join
-courses c on e.course_id = c.course_id;
-show create table student_course_enrollments_inner;
+    courses c on e.course_id = c.course_id;
 
+#SQL[@705,N40]Result[62, 30, 33, 31, 32, 35, 35, 32]
 select * from student_course_enrollments;
-student_id    student_name    student_age    course_name
-1    Alice    20    Math
-1    Alice    20    History
-2    Bob    22    English
-3    Charlie    21    Math
-3    Charlie    21    English
-3    Charlie    21    History
-4    Dave    23    Science
+student_id  ¦  student_name  ¦  student_age  ¦  course_name
+1  ¦  Alice  ¦  20  ¦  Math
+1  ¦  Alice  ¦  20  ¦  History
+2  ¦  Bob  ¦  22  ¦  English
+3  ¦  Charlie  ¦  21  ¦  Math
+3  ¦  Charlie  ¦  21  ¦  English
+3  ¦  Charlie  ¦  21  ¦  History
+4  ¦  Dave  ¦  23  ¦  Science
+
+#SQL[@707,N53]Result[]
 drop table if exists student_course_enrollments_right;
+
+#SQL[@708,N269]Result[]
 create table test.student_course_enrollments_right AS
 select
-s.student_id,
-s.student_name,
-s.student_age,
-c.course_name
+    s.student_id,
+    s.student_name,
+    s.student_age,
+    c.course_name
 from
-students s
+    students s
 right join
-enrollments e on s.student_id = e.student_id
+    enrollments e on s.student_id = e.student_id
 right join
-courses c on e.course_id = c.course_id;
-show create table student_course_enrollments_right;
+    courses c on e.course_id = c.course_id;
 
+#SQL[@723,N46]Result[62, 30, 32, 31, 35, 33, 35, 32]
 select * from student_course_enrollments_right;
-student_id    student_name    student_age    course_name
-1    Alice    20    Math
-3    Charlie    21    Math
-2    Bob    22    English
-3    Charlie    21    English
-1    Alice    20    History
-3    Charlie    21    History
-4    Dave    23    Science
+student_id  ¦  student_name  ¦  student_age  ¦  course_name
+1  ¦  Alice  ¦  20  ¦  Math
+3  ¦  Charlie  ¦  21  ¦  Math
+2  ¦  Bob  ¦  22  ¦  English
+3  ¦  Charlie  ¦  21  ¦  English
+1  ¦  Alice  ¦  20  ¦  History
+3  ¦  Charlie  ¦  21  ¦  History
+4  ¦  Dave  ¦  23  ¦  Science
+
+#SQL[@725,N52]Result[]
 drop table if exists student_course_enrollments_full;
+
+#SQL[@726,N263]Result[]
 create table student_course_enrollments_full AS
 select
-s.student_id,
-s.student_name,
-s.student_age,
-c.course_name
+    s.student_id,
+    s.student_name,
+    s.student_age,
+    c.course_name
 from
-students s
+    students s
 right join
-enrollments e on s.student_id = e.student_id
+    enrollments e on s.student_id = e.student_id
 right join
-courses c on e.course_id = c.course_id;
-show create table student_course_enrollments_full;
+    courses c on e.course_id = c.course_id;
 
+#SQL[@741,N45]Result[62, 30, 32, 31, 35, 33, 35, 32]
 select * from student_course_enrollments_full;
-student_id    student_name    student_age    course_name
-1    Alice    20    Math
-3    Charlie    21    Math
-2    Bob    22    English
-3    Charlie    21    English
-1    Alice    20    History
-3    Charlie    21    History
-4    Dave    23    Science
+student_id  ¦  student_name  ¦  student_age  ¦  course_name
+1  ¦  Alice  ¦  20  ¦  Math
+3  ¦  Charlie  ¦  21  ¦  Math
+2  ¦  Bob  ¦  22  ¦  English
+3  ¦  Charlie  ¦  21  ¦  English
+1  ¦  Alice  ¦  20  ¦  History
+3  ¦  Charlie  ¦  21  ¦  History
+4  ¦  Dave  ¦  23  ¦  Science
+
+#SQL[@743,N32]Result[]
 drop table if exists outerjoin01;
+
+#SQL[@744,N49]Result[]
 create table outerjoin01 (col1 int, col2 char(3));
+
+#SQL[@745,N75]Result[]
 insert into outerjoin01 values(10,'aaa'), (10,null), (10,'bbb'), (20,'zzz');
+
+#SQL[@746,N32]Result[]
 drop table if exists outerjoin02;
+
+#SQL[@747,N53]Result[]
 create table outerjoin02(a1 char(3), a2 int, a3 real);
+
+#SQL[@748,N46]Result[]
 insert into outerjoin02 values('AAA', 10, 0.5);
+
+#SQL[@749,N46]Result[]
 insert into outerjoin02 values('BBB', 20, 1.0);
+
+#SQL[@751,N25]Result[]
 drop table if exists oj01;
+
+#SQL[@752,N154]Result[]
 create table oj01 as select outerjoin01.col1, outerjoin01.col2, outerjoin02.a2 from outerjoin01 left outer join outerjoin02 on outerjoin01.col1=10 limit 3;
+
+#SQL[@753,N22]Result[23, 115]
 show create table oj01;
-Table    Create Table
-oj01    CREATE TABLE `oj01` (\n  `col1` int DEFAULT NULL,\n  `col2` char(3) DEFAULT NULL,\n  `a2` int DEFAULT NULL\n)
+Table  ¦  Create Table
+oj01  ¦  CREATE TABLE `oj01` (
+  `col1` int DEFAULT NULL,
+  `col2` char(3) DEFAULT NULL,
+  `a2` int DEFAULT NULL
+)
+
+#SQL[@754,N18]Result[22, 19, 19, 20]
 select * from oj01;
-col1    col2    a2
-10    aaa    10
-10    aaa    20
-10    null    10
+col1  ¦  col2  ¦  a2
+10  ¦  aaa  ¦  10
+10  ¦  aaa  ¦  20
+10  ¦  null  ¦  10
+
+#SQL[@756,N25]Result[]
 drop table if exists oj02;
+
+#SQL[@757,N139]Result[]
 create table oj02 as select outerjoin01.col1, outerjoin01.col2, outerjoin02.a2 from outerjoin01 natural join outerjoin02 order by col1 desc;
+
+#SQL[@758,N22]Result[23, 115]
 show create table oj02;
-Table    Create Table
-oj02    CREATE TABLE `oj02` (\n  `col1` int DEFAULT NULL,\n  `col2` char(3) DEFAULT NULL,\n  `a2` int DEFAULT NULL\n)
+Table  ¦  Create Table
+oj02  ¦  CREATE TABLE `oj02` (
+  `col1` int DEFAULT NULL,
+  `col2` char(3) DEFAULT NULL,
+  `a2` int DEFAULT NULL
+)
+
+#SQL[@759,N18]Result[22, 19, 19, 19, 20, 19, 19, 20, 19]
 select * from oj02;
-col1    col2    a2
-20    zzz    10
-20    zzz    20
-10    aaa    10
-10    null    10
-10    bbb    10
-10    aaa    20
-10    null    20
-10    bbb    20
+col1  ¦  col2  ¦  a2
+20  ¦  zzz  ¦  10
+20  ¦  zzz  ¦  20
+10  ¦  aaa  ¦  10
+10  ¦  null  ¦  10
+10  ¦  bbb  ¦  10
+10  ¦  aaa  ¦  20
+10  ¦  null  ¦  20
+10  ¦  bbb  ¦  20
+
+#SQL[@760,N15]Result[]
 drop table oj01;
+
+#SQL[@761,N15]Result[]
 drop table oj02;
+
+#SQL[@762,N22]Result[]
 drop table outerjoin01;
+
+#SQL[@763,N22]Result[]
 drop table outerjoin02;
+
+#SQL[@764,N37]Result[]
 drop table student_course_enrollments;
+
+#SQL[@765,N42]Result[]
 drop table student_course_enrollments_full;
+
+#SQL[@766,N43]Result[]
 drop table student_course_enrollments_inner;
+
+#SQL[@767,N43]Result[]
 drop table student_course_enrollments_right;
+
+#SQL[@770,N30]Result[]
 drop table if exists employees;
+
+#SQL[@771,N46]Result[]
 create table employees (col1 int, col2 bigint);
+
+#SQL[@772,N75]Result[]
 insert into employees values (1, 50000), (2, 60000), (3, 55000), (4, 70000);
+
+#SQL[@773,N24]Result[]
 drop table if exists sal;
+
+#SQL[@774,N89]Result[]
 create table sal as
 select
-col1,
-col2,
-col2 * 0.1 as bonus
+    col1,
+    col2,
+    col2 * 0.1 as bonus
 from
-employees;
+    employees;
+
+#SQL[@781,N17]Result[25, 24, 24, 24, 24]
 select * from sal;
-col1    col2    bonus
-1    50000    5000.0
-2    60000    6000.0
-3    55000    5500.0
-4    70000    7000.0
+col1  ¦  col2  ¦  bonus
+1  ¦  50000  ¦  5000.0
+2  ¦  60000  ¦  6000.0
+3  ¦  55000  ¦  5500.0
+4  ¦  70000  ¦  7000.0
+
+#SQL[@783,N24]Result[]
 drop table if exists sal;
+
+#SQL[@784,N148]Result[]
 create table test.sal as
 select
-col1,
-col2,
-(select col2 * 0.1 from employees e2 where e2.col1 = e1.col1) as bonus
+    col1,
+    col2,
+    (select col2 * 0.1 from employees e2 where e2.col1 = e1.col1) as bonus
 from
-employees e1;
+    employees e1;
+
+#SQL[@791,N17]Result[25, 24, 24, 24, 24]
 select * from sal;
-col1    col2    bonus
-1    50000    5000.0
-2    60000    6000.0
-3    55000    5500.0
-4    70000    7000.0
+col1  ¦  col2  ¦  bonus
+1  ¦  50000  ¦  5000.0
+2  ¦  60000  ¦  6000.0
+3  ¦  55000  ¦  5500.0
+4  ¦  70000  ¦  7000.0
+
+#SQL[@793,N24]Result[]
 drop table if exists sal;
+
+#SQL[@794,N133]Result[]
 create table sal as
-select
-col1,
-col2,
-(select col2 from employees where col2 = 60000)
-from employees;
+    select
+        col1,
+        col2,
+        (select col2 from employees where col2 = 60000)
+    from employees;
+
+#SQL[@800,N17]Result[67, 23, 23, 23, 23]
 select * from sal;
-col1    col2    (select col2 from employees where col2 = 60000)
-1    50000    60000
-2    60000    60000
-3    55000    60000
-4    70000    60000
+col1  ¦  col2  ¦  (select col2 from employees where col2 = 60000)
+1  ¦  50000  ¦  60000
+2  ¦  60000  ¦  60000
+3  ¦  55000  ¦  60000
+4  ¦  70000  ¦  60000
+
+#SQL[@801,N20]Result[]
 drop table employees;
+
+#SQL[@802,N14]Result[]
 drop table sal;
+
+#SQL[@805,N27]Result[]
 drop table if exists test01;
+
+#SQL[@806,N62]Result[]
 create table test01 (col1 int, col2 decimal, col3 varchar(50));
+
+#SQL[@807,N57]Result[]
 insert into test01 values (1, 3242434.423, '3224332r32r');
+
+#SQL[@808,N60]Result[]
 insert into test01 values (2, 39304.3424, '343234343213124');
+
+#SQL[@809,N44]Result[]
 insert into test01 values (3, 372.324, '00');
+
+#SQL[@811,N27]Result[]
 drop table if exists test02;
+
+#SQL[@812,N70]Result[]
 create table test02 (col1 int primary key ) as select col1 from test01;
+
+#SQL[@813,N24]Result[23, 83]
 show create table test02;
-Table    Create Table
-test02    CREATE TABLE `test02` (\n  `col1` int NOT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+test02  ¦  CREATE TABLE `test02` (
+  `col1` int NOT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@814,N11]Result[71, 56]
 desc test02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+
+#SQL[@815,N29]Error[34]
 insert into test02 values (2);
 Duplicate entry '2' for key 'col1'
+
+#SQL[@817,N27]Result[]
 drop table if exists test03;
+
+#SQL[@818,N72]Result[]
 create table test03 (col2 decimal unique key) as select col2 from test01;
+
+#SQL[@819,N24]Result[23, 103]
 show create table test03;
-Table    Create Table
-test03    CREATE TABLE `test03` (\n  `col2` decimal(38,0) DEFAULT NULL,\n  UNIQUE KEY `col2` (`col2`)\n)
+Table  ¦  Create Table
+test03  ¦  CREATE TABLE `test03` (
+  `col2` decimal(38,0) DEFAULT NULL,
+  UNIQUE KEY `col2` (`col2`)
+)
+
+#SQL[@820,N11]Result[71, 63]
 desc test03;
-Field    Type    Null    Key    Default    Extra    Comment
-col2    DECIMAL(38,0)    YES    UNI    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col2  ¦  DECIMAL(38,0)  ¦  YES  ¦  UNI  ¦  null  ¦    ¦  
+
+#SQL[@821,N35]Error[36]
 insert into test03 values (372.324);
-Duplicate entry '372' for key '(.*)'
+Duplicate entry '372' for key 'col2'
+
+#SQL[@823,N27]Result[]
 drop table if exists test04;
+
+#SQL[@824,N98]Result[]
 create table test04 (col1 int, col2 varchar(50), key(col1, col2)) as select col1, col3 from test01;
+
+#SQL[@825,N24]Result[23, 163]
 show create table test04;
-Table    Create Table
-test04    CREATE TABLE `test04` (\n  `col2` varchar(50) DEFAULT NULL,\n  `col1` int DEFAULT NULL,\n  `col3` varchar(50) DEFAULT NULL,\n  KEY `col1` (`col1`,`col2`)\n)
+Table  ¦  Create Table
+test04  ¦  CREATE TABLE `test04` (
+  `col2` varchar(50) DEFAULT NULL,
+  `col1` int DEFAULT NULL,
+  `col3` varchar(50) DEFAULT NULL,
+  KEY `col1` (`col1`,`col2`)
+)
+
+#SQL[@826,N20]Result[24, 28, 32, 19]
 select * from test04;
-col2    col1    col3
-null    1    3224332r32r
-null    2    343234343213124
-null    3    00
+col2  ¦  col1  ¦  col3
+null  ¦  1  ¦  3224332r32r
+null  ¦  2  ¦  343234343213124
+null  ¦  3  ¦  00
+
+#SQL[@828,N27]Result[]
 drop table if exists test05;
+
+#SQL[@829,N103]Result[]
 create table test05 (col1 int, col2 decimal, primary key (col1, col2)) as select col1, col2 from test01;
+
+#SQL[@830,N24]Result[23, 123]
 show create table test05;
-Table    Create Table
-test05    CREATE TABLE `test05` (\n  `col1` int NOT NULL,\n  `col2` decimal(38,0) NOT NULL,\n  PRIMARY KEY (`col1`,`col2`)\n)
+Table  ¦  Create Table
+test05  ¦  CREATE TABLE `test05` (
+  `col1` int NOT NULL,
+  `col2` decimal(38,0) NOT NULL,
+  PRIMARY KEY (`col1`,`col2`)
+)
+
+#SQL[@831,N20]Result[14, 14, 12, 10]
 select * from test05;
-col1    col2
-1    3242434
-2    39304
-3    372
+col1  ¦  col2
+1  ¦  3242434
+2  ¦  39304
+3  ¦  372
+
+#SQL[@832,N41]Error[49]
 insert into test05 values (2, 39304.3424);
-Duplicate entry ('\d\w\d{38}'|'\(2\,39304\)') for key '(.*)'
+Duplicate entry '(2,39304)' for key '(col1,col2)'
+
+#SQL[@834,N47]Result[]
 alter table test01 rename column col1 to newCol;
+
+#SQL[@835,N24]Result[23, 137]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `newCol` int DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL,\n  `col3` varchar(50) DEFAULT NULL\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `newCol` int DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL,
+  `col3` varchar(50) DEFAULT NULL
+)
+
+#SQL[@837,N27]Result[]
 drop table if exists test06;
+
+#SQL[@838,N78]Error[41]
 create table test06 (col1 int not null default 100) as select col1 from test01;
 invalid input: column col1 does not exist
+
+#SQL[@839,N80]Result[]
 create table test06 (col1 int not null default 100) as select newcol from test01;
-show create table test06;
 
+#SQL[@843,N20]Result[16, 10, 10, 10]
 select * from test06;
-col1    newcol
-100    1
-100    2
-100    3
+col1  ¦  newcol
+100  ¦  1
+100  ¦  2
+100  ¦  3
+
+#SQL[@845,N17]Result[]
 drop table test01;
+
+#SQL[@846,N17]Result[]
 drop table test02;
+
+#SQL[@847,N17]Result[]
 drop table test03;
+
+#SQL[@848,N17]Result[]
 drop table test04;
+
+#SQL[@849,N17]Result[]
 drop table test05;
+
+#SQL[@850,N17]Result[]
 drop table test06;
+
+#SQL[@853,N30]Result[]
 drop table if exists prepare01;
+
+#SQL[@854,N56]Result[]
 create table prepare01(col1 int primary key , col2 char);
+
+#SQL[@855,N52]Result[]
 insert into prepare01 values (1,'a'),(2,'b'),(3,'c');
+
+#SQL[@856,N27]Result[23, 120]
 show create table prepare01;
-Table    Create Table
-prepare01    CREATE TABLE `prepare01` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+prepare01  ¦  CREATE TABLE `prepare01` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@857,N27]Result[71, 56, 54]
 show columns from prepare01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    NO    PRI    null        
-col2    CHAR(1)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+col2  ¦  CHAR(1)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@858,N30]Result[]
 drop table if exists prepare02;
+
+#SQL[@859,N67]Result[]
 prepare s1 from 'create table prepare02 as select * from prepare01';
+
+#SQL[@860,N10]Result[]
 execute s1;
+
+#SQL[@861,N27]Result[23, 96]
 show create table prepare02;
-Table    Create Table
-prepare02    CREATE TABLE `prepare02` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+prepare02  ¦  CREATE TABLE `prepare02` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@862,N23]Result[14, 8, 8, 8]
 select * from prepare02;
-col1    col2
-1    a
-2    b
-3    c
+col1  ¦  col2
+1  ¦  a
+2  ¦  b
+3  ¦  c
+
+#SQL[@863,N30]Result[]
 drop table if exists prepare03;
+
+#SQL[@864,N108]Result[]
 prepare s2 from 'create table prepare03(col1 int, col2 char, col3 char) as select col1, col2 from prepare01';
+
+#SQL[@865,N10]Result[]
 execute s2;
+
+#SQL[@866,N23]Result[24, 18, 18, 18]
 select * from prepare03;
-col3    col1    col2
-null    1    a
-null    2    b
-null    3    c
+col3  ¦  col1  ¦  col2
+null  ¦  1  ¦  a
+null  ¦  2  ¦  b
+null  ¦  3  ¦  c
+
+#SQL[@867,N27]Result[23, 131]
 show create table prepare03;
-Table    Create Table
-prepare03    CREATE TABLE `prepare03` (\n  `col3` char(1) DEFAULT NULL,\n  `col1` int DEFAULT NULL,\n  `col2` char(1) DEFAULT NULL\n)
+Table  ¦  Create Table
+prepare03  ¦  CREATE TABLE `prepare03` (
+  `col3` char(1) DEFAULT NULL,
+  `col1` int DEFAULT NULL,
+  `col2` char(1) DEFAULT NULL
+)
+
+#SQL[@868,N20]Result[]
 drop table prepare01;
+
+#SQL[@869,N20]Result[]
 drop table prepare02;
+
+#SQL[@870,N20]Result[]
 drop table prepare03;
+
+#SQL[@873,N27]Result[]
 drop table if exists orders;
+
+#SQL[@874,N103]Result[]
 create table orders (order_id int primary key , customer_id int, order_date date, total_amount decimal);
+
+#SQL[@875,N460]Result[]
 insert into orders values (1, 101, '2023-01-01', 100.00),
-(2, 101, '2023-01-05', 150.00),
-(3, 102, '2023-01-02', 200.00),
-(4, 103, '2023-01-03', 50.00),
-(5, 101, '2023-01-04', 75.00),
-(6, 104, '2023-01-06', 300.00),
-(7, 104, '2023-01-07', 200.00),
-(8, 105, '2023-01-08', 100.00);
+                          (2, 101, '2023-01-05', 150.00),
+                          (3, 102, '2023-01-02', 200.00),
+                          (4, 103, '2023-01-03', 50.00),
+                          (5, 101, '2023-01-04', 75.00),
+                          (6, 104, '2023-01-06', 300.00),
+                          (7, 104, '2023-01-07', 200.00),
+                          (8, 105, '2023-01-08', 100.00);
+
+#SQL[@883,N20]Result[59, 35, 35, 35, 34, 34, 35, 35, 35]
 select * from orders;
-order_id    customer_id    order_date    total_amount
-1    101    2023-01-01    100
-2    101    2023-01-05    150
-3    102    2023-01-02    200
-4    103    2023-01-03    50
-5    101    2023-01-04    75
-6    104    2023-01-06    300
-7    104    2023-01-07    200
-8    105    2023-01-08    100
+order_id  ¦  customer_id  ¦  order_date  ¦  total_amount
+1  ¦  101  ¦  2023-01-01  ¦  100
+2  ¦  101  ¦  2023-01-05  ¦  150
+3  ¦  102  ¦  2023-01-02  ¦  200
+4  ¦  103  ¦  2023-01-03  ¦  50
+5  ¦  101  ¦  2023-01-04  ¦  75
+6  ¦  104  ¦  2023-01-06  ¦  300
+7  ¦  104  ¦  2023-01-07  ¦  200
+8  ¦  105  ¦  2023-01-08  ¦  100
+
+#SQL[@885,N36]Result[]
 drop table if exists customer_totals;
+
+#SQL[@886,N218]Result[]
 create temporary table customer_totals as select customer_id, count(order_id) as total_orders, sum(total_amount) as total_amount from orders group by customer_id having count(order_id) > 1 and sum(total_amount) > 150.0;
-show create table customer_totals;
 
+#SQL[@890,N29]Result[47, 19, 19]
 select * from customer_totals;
-customer_id    total_orders    total_amount
-101    3    325
-104    2    500
-drop table if exists max_totals;
-create temporary table max_totals as select customer_id, total_orders from customer_totals order by total_orders desc limit 1;
-desc max_totals;
+customer_id  ¦  total_orders  ¦  total_amount
+101  ¦  3  ¦  325
+104  ¦  2  ¦  500
 
+#SQL[@892,N31]Result[]
+drop table if exists max_totals;
+
+#SQL[@893,N125]Result[]
+create temporary table max_totals as select customer_id, total_orders from customer_totals order by total_orders desc limit 1;
+
+#SQL[@897,N24]Result[29, 10]
 select * from max_totals;
-customer_id    total_orders
-101    3
+customer_id  ¦  total_orders
+101  ¦  3
+
+#SQL[@899,N33]Result[]
 drop table if exists max_customer;
+
+#SQL[@900,N126]Result[]
 create temporary table max_customer as select customer_id, total_amount from customer_totals order by total_amount asc limit 1;
+
+#SQL[@901,N30]Result[23, 127]
 show create table max_customer;
-Table    Create Table
-max_customer    CREATE TABLE `max_customer` (\n  `customer_id` int DEFAULT NULL,\n  `total_amount` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+max_customer  ¦  CREATE TABLE `max_customer` (
+  `customer_id` int DEFAULT NULL,
+  `total_amount` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@902,N26]Result[29, 12]
 select * from max_customer;
-customer_id    total_amount
-101    325
+customer_id  ¦  total_amount
+101  ¦  325
+
+#SQL[@904,N17]Result[]
 drop table orders;
+
+#SQL[@905,N26]Result[]
 drop table customer_totals;
+
+#SQL[@906,N21]Result[]
 drop table max_totals;
+
+#SQL[@907,N23]Result[]
 drop table max_customer;
+
+#SQL[@910,N28]Result[]
 drop table if exists table10;
+
+#SQL[@911,N28]Result[]
 drop table if exists table11;
+
+#SQL[@912,N50]Error[50]
 create table table10 as select col100 from table07;
-SQL parser error: table "table07" does not exist
+SQL parser error: table \"table07\" does not exist
+
+#SQL[@913,N93]Error[50]
 create table table11 (col20 decimal, col30 char, col40 varchar) as select col100 from table07;
-SQL parser error: table "table07" does not exist
+SQL parser error: table \"table07\" does not exist
+
+#SQL[@914,N18]Error[26]
 drop table table07;
 no such table test.table07
+
+#SQL[@915,N18]Error[26]
 drop table table08;
 no such table test.table08
+
+#SQL[@916,N18]Error[26]
 drop table table09;
 no such table test.table09
+
+#SQL[@917,N18]Error[26]
 drop table table12;
 no such table test.table12
+
+#SQL[@920,N31]Result[]
 drop table if exists abnormal01;
+
+#SQL[@921,N48]Result[]
 create table abnormal01 (col1 int default null );
+
+#SQL[@922,N41]Result[]
 insert into abnormal01 values (1), (null);
+
+#SQL[@923,N31]Result[]
 drop table if exists abnormal02;
+
+#SQL[@924,N79]Error[50]
 create table test.abnormal02 (col1 int not null) as select col1 from abnormal01;
 constraint violation: Column 'col1' cannot be null
+
+#SQL[@925,N21]Result[]
 drop table abnormal01;
+
+#SQL[@928,N31]Result[]
 drop table if exists abnormal03;
+
+#SQL[@929,N47]Result[]
 create table abnormal03 (col1 int, col2 bigint);
+
+#SQL[@930,N45]Result[]
 insert into abnormal03 values (1, 8324824234);
+
+#SQL[@931,N45]Result[]
 insert into abnormal03 values (1, 8324824234);
+
+#SQL[@932,N24]Result[14, 17, 17]
 select * from abnormal03;
-col1    col2
-1    8324824234
-1    8324824234
+col1  ¦  col2
+1  ¦  8324824234
+1  ¦  8324824234
+
+#SQL[@933,N31]Result[]
 drop table if exists abnormal04;
+
+#SQL[@934,N31]Result[]
 drop table if exists abnormal05;
+
+#SQL[@935,N78]Error[34]
 create table abnormal04 (col1 int primary key ) as select col1 from abnormal03;
 Duplicate entry '1' for key 'col1'
+
+#SQL[@936,N79]Error[43]
 create table abnormal05 (col2 bigint unique key) as select col2 from abnormal03;
 Duplicate entry '8324824234' for key 'col2'
+
+#SQL[@937,N21]Result[]
 drop table abnormal03;
+
+#SQL[@940,N31]Result[]
 drop table if exists abnormal06;
+
+#SQL[@941,N51]Result[]
 create table abnormal06 (col1 bigint, col2 decimal);
+
+#SQL[@942,N65]Result[]
 insert into abnormal06 values (271928310313092, 32984832.3214214);
+
+#SQL[@943,N31]Result[]
 drop table if exists abnormal07;
+
+#SQL[@944,N65]Error[59]
 create table abnormal07 (col1 int) as select col1 from abnormal06;
-Data truncation: data out of range: data type int32, value '271928310313092'
+data out of range: data type int32, value '271928310313092'
+
+#SQL[@945,N21]Result[]
 drop table abnormal06;
+
+#SQL[@948,N31]Result[]
 drop table if exists abnormal07;
+
+#SQL[@949,N72]Result[]
 create table abnormal07 (col1 int, col2 bigint, col3 decimal, col4 char);
+
+#SQL[@950,N44]Result[]
 insert into abnormal07 values (1, 2, 3, 'a');
+
+#SQL[@951,N44]Result[]
 insert into abnormal07 values (1, 2, 3, 'b');
+
+#SQL[@952,N44]Result[]
 insert into abnormal07 values (1, 2, 3, 'c');
+
+#SQL[@953,N44]Result[]
 insert into abnormal07 values (1, 2, 3, 'd');
+
+#SQL[@954,N54]Result[]
 insert into abnormal07 values (null, null, null, null);
+
+#SQL[@956,N31]Result[]
 drop table if exists abnormal08;
+
+#SQL[@957,N78]Error[41]
 create table abnormal08 as select col1, col2, col3, col4, col5 from abnormal07;
 invalid input: column col5 does not exist
+
+#SQL[@958,N51]Error[31]
 create table abnormal07 as select * from abnormal07;
 table abnormal07 already exists
+
+#SQL[@959,N21]Result[]
 drop table abnormal07;
+
+#SQL[@962,N31]Result[]
 drop table if exists abnormal09;
+
+#SQL[@963,N48]Result[]
 create table abnormal09 (col1 int, col2 decimal);
+
+#SQL[@964,N36]Result[]
 insert into abnormal09 values (1, 2);
+
+#SQL[@965,N36]Result[]
 insert into abnormal09 values (1, 2);
+
+#SQL[@966,N31]Result[]
 drop table if exists abnormal10;
+
+#SQL[@967,N76]Error[34]
 create table abnormal10(col1 int primary key) as select col1 from abnormal09;
 Duplicate entry '1' for key 'col1'
+
+#SQL[@968,N79]Error[31]
 create table abnormal10(col2 decimal unique key) as select col2 from abnormal09;
 table abnormal10 already exists
+
+#SQL[@969,N21]Result[]
 drop table abnormal09;
+
+#SQL[@972,N31]Result[]
 drop table if exists abnormal10;
+
+#SQL[@973,N62]Result[]
 create table abnormal10 as select * from mo_catalog.mo_columns;
+
+#SQL[@976,N34]Result[]
 drop table if exists time_window01;
+
+#SQL[@977,N64]Result[]
 create table time_window01 (ts timestamp primary key , col2 int);
+
+#SQL[@978,N64]Result[]
 insert into time_window01 values ('2021-01-12 00:00:00.000', 12);
+
+#SQL[@979,N64]Result[]
 insert into time_window01 values ('2020-01-12 12:00:12.000', 24);
+
+#SQL[@980,N64]Result[]
 insert into time_window01 values ('2023-01-12 00:00:00.000', 34);
+
+#SQL[@981,N64]Result[]
 insert into time_window01 values ('2024-01-12 12:00:12.000', 20);
+
+#SQL[@982,N27]Result[12, 27, 27, 27, 27]
 select * from time_window01;
-ts    col2
-2021-01-12 00:00:00    12
-2020-01-12 12:00:12    24
-2023-01-12 00:00:00    34
-2024-01-12 12:00:12    20
+ts  ¦  col2
+2021-01-12 00:00:00  ¦  12
+2020-01-12 12:00:12  ¦  24
+2023-01-12 00:00:00  ¦  34
+2024-01-12 12:00:12  ¦  20
+
+#SQL[@983,N34]Result[]
 drop table if exists time_window02;
+
+#SQL[@984,N198]Result[]
 create table time_window02 as select _wstart, _wend, max(col2), min(col2) from time_window01 where ts > '2020-01-11 12:00:12.000' and ts < '2021-01-13 00:00:00.000' interval(ts, 100, day) fill(prev);
+
+#SQL[@985,N27]Result[48, 60, 60]
 select * from time_window02;
-_wstart    _wend    max(col2)    min(col2)
-2019-12-08 00:00:00    2020-03-17 00:00:00    24    24
-2021-01-11 00:00:00    2021-04-21 00:00:00    12    12
+_wstart  ¦  _wend  ¦  max(col2)  ¦  min(col2)
+2019-12-08 00:00:00  ¦  2020-03-17 00:00:00  ¦  24  ¦  24
+2021-01-11 00:00:00  ¦  2021-04-21 00:00:00  ¦  12  ¦  12
+
+#SQL[@986,N24]Result[]
 drop table time_window01;
+
+#SQL[@987,N24]Result[]
 drop table time_window02;
+
+#SQL[@989,N34]Result[]
 drop table if exists time_window03;
+
+#SQL[@990,N65]Result[]
 create table time_window03 (ts timestamp primary key , col2 bool);
+
+#SQL[@991,N67]Result[]
 insert into time_window03 values ('2023-10-26 10:00:00.000', false);
+
+#SQL[@992,N66]Result[]
 insert into time_window03 values ('2023-10-26 10:10:00.000', true);
+
+#SQL[@993,N66]Result[]
 insert into time_window03 values ('2023-10-26 10:20:00.000', null);
+
+#SQL[@994,N66]Result[]
 insert into time_window03 values ('2023-10-26 10:30:00.000', true);
+
+#SQL[@995,N27]Result[12, 30, 29, 29, 29]
 select * from time_window03;
-ts    col2
-2023-10-26 10:00:00    false
-2023-10-26 10:10:00    true
-2023-10-26 10:20:00    null
-2023-10-26 10:30:00    true
+ts  ¦  col2
+2023-10-26 10:00:00  ¦  false
+2023-10-26 10:10:00  ¦  true
+2023-10-26 10:20:00  ¦  null
+2023-10-26 10:30:00  ¦  true
+
+#SQL[@996,N34]Result[]
 drop table if exists time_window04;
+
+#SQL[@997,N200]Result[]
 create table time_window04 as select _wstart, _wend, max(col2), min(col2) from time_window03 where ts > '2020-01-11 12:00:12.000' and ts < '2024-01-13 00:00:00.000' interval(ts, 10, second) fill(prev);
+
+#SQL[@998,N27]Result[48, 66, 64, 64, 64]
 select * from time_window04;
-_wstart    _wend    max(col2)    min(col2)
-2023-10-26 10:00:00    2023-10-26 10:00:10    false    false
-2023-10-26 10:10:00    2023-10-26 10:10:10    true    true
-2023-10-26 10:20:00    2023-10-26 10:20:10    true    true
-2023-10-26 10:30:00    2023-10-26 10:30:10    true    true
+_wstart  ¦  _wend  ¦  max(col2)  ¦  min(col2)
+2023-10-26 10:00:00  ¦  2023-10-26 10:00:10  ¦  false  ¦  false
+2023-10-26 10:10:00  ¦  2023-10-26 10:10:10  ¦  true  ¦  true
+2023-10-26 10:20:00  ¦  2023-10-26 10:20:10  ¦  true  ¦  true
+2023-10-26 10:30:00  ¦  2023-10-26 10:30:10  ¦  true  ¦  true
+
+#SQL[@999,N27]Result[12, 30, 29, 29, 29]
 select * from time_window03;
-ts    col2
-2023-10-26 10:00:00    false
-2023-10-26 10:10:00    true
-2023-10-26 10:20:00    null
-2023-10-26 10:30:00    true
+ts  ¦  col2
+2023-10-26 10:00:00  ¦  false
+2023-10-26 10:10:00  ¦  true
+2023-10-26 10:20:00  ¦  null
+2023-10-26 10:30:00  ¦  true
+
+#SQL[@1000,N24]Result[]
 drop table time_window03;
+
+#SQL[@1001,N24]Result[]
 drop table time_window04;
+
+#SQL[@1003,N34]Result[]
 drop table if exists test.window01;
+
+#SQL[@1004,N59]Result[]
 create table window01 (user_id integer not null, date date);
+
+#SQL[@1005,N45]Result[]
 insert into window01 values (1, '2002-06-09');
+
+#SQL[@1006,N45]Result[]
 insert into window01 values (2, '2002-06-09');
+
+#SQL[@1007,N45]Result[]
 insert into window01 values (1, '2002-06-09');
+
+#SQL[@1008,N45]Result[]
 insert into window01 values (3, '2002-06-09');
+
+#SQL[@1009,N45]Result[]
 insert into window01 values (4, '2002-06-09');
+
+#SQL[@1010,N45]Result[]
 insert into window01 values (4, '2002-06-09');
+
+#SQL[@1011,N45]Result[]
 insert into window01 values (5, '2002-06-09');
+
+#SQL[@1012,N29]Result[]
 drop table if exists window02;
+
+#SQL[@1013,N62]Result[]
 create table window02 as select rank() over () r from window01;
+
+#SQL[@1014,N22]Result[1, 1, 1, 1, 1, 1, 1, 1]
 select * from window02;
 r
 1
@@ -1460,8 +2794,14 @@ r
 1
 1
 1
+
+#SQL[@1015,N29]Result[]
 drop table if exists window03;
+
+#SQL[@1016,N68]Result[]
 create table window03 as select dense_rank() over () r from window01;
+
+#SQL[@1017,N22]Result[1, 1, 1, 1, 1, 1, 1, 1]
 select * from window03;
 r
 1
@@ -1471,63 +2811,135 @@ r
 1
 1
 1
+
+#SQL[@1018,N19]Result[]
 drop table window01;
+
+#SQL[@1019,N19]Result[]
 drop table window02;
+
+#SQL[@1020,N19]Result[]
 drop table window03;
+
+#SQL[@1022,N26]Result[]
 drop table if exists row01;
+
+#SQL[@1023,N31]Result[]
 create table row01(i int,j int);
+
+#SQL[@1024,N29]Result[]
 insert into row01 values(1,1);
+
+#SQL[@1025,N29]Result[]
 insert into row01 values(1,4);
+
+#SQL[@1026,N29]Result[]
 insert into row01 values(1,2);
+
+#SQL[@1027,N29]Result[]
 insert into row01 values(1,4);
+
+#SQL[@1028,N26]Result[]
 drop table if exists row02;
+
+#SQL[@1029,N135]Result[]
 create table row02 as select i, j, sum(i+j) over (order by j rows between 2 preceding and 1 preceding) foo from row01 order by foo desc;
+
+#SQL[@1030,N19]Result[17, 15, 15, 15, 18]
 select * from row02;
-i    j    foo
-1    4    8
-1    4    5
-1    2    2
-1    1    null
+i  ¦  j  ¦  foo
+1  ¦  4  ¦  8
+1  ¦  4  ¦  5
+1  ¦  2  ¦  2
+1  ¦  1  ¦  null
+
+#SQL[@1031,N26]Result[]
 drop table if exists row03;
+
+#SQL[@1032,N135]Result[]
 create table row03 as select i, j, sum(i+j) over (order by j rows between 2 following and 1 following) foo from row01 order by foo desc;
+
+#SQL[@1033,N19]Result[17, 18, 18, 18, 18]
 select * from row03;
-i    j    foo
-1    1    null
-1    2    null
-1    4    null
-1    4    null
+i  ¦  j  ¦  foo
+1  ¦  1  ¦  null
+1  ¦  2  ¦  null
+1  ¦  4  ¦  null
+1  ¦  4  ¦  null
+
+#SQL[@1034,N16]Result[]
 drop table row01;
+
+#SQL[@1035,N16]Result[]
 drop table row02;
+
+#SQL[@1036,N16]Result[]
 drop table row03;
+
+#SQL[@1038,N33]Result[]
 drop table if exists dense_rank01;
+
+#SQL[@1039,N51]Result[]
 create table dense_rank01 (id integer, sex char(1));
+
+#SQL[@1040,N40]Result[]
 insert into dense_rank01 values (1, 'm');
+
+#SQL[@1041,N40]Result[]
 insert into dense_rank01 values (2, 'f');
+
+#SQL[@1042,N40]Result[]
 insert into dense_rank01 values (3, 'f');
+
+#SQL[@1043,N40]Result[]
 insert into dense_rank01 values (4, 'f');
+
+#SQL[@1044,N40]Result[]
 insert into dense_rank01 values (5, 'm');
+
+#SQL[@1045,N33]Result[]
 drop table if exists dense_rank02;
+
+#SQL[@1046,N110]Result[]
 create table dense_rank02 as select sex, id, rank() over (partition by sex order by id desc) from dense_rank01;
+
+#SQL[@1047,N26]Result[64, 15, 15, 15, 15, 15]
 select * from dense_rank02;
-sex    id    rank() over (partition by sex order by id desc)
-f    4    1
-f    3    2
-f    2    3
-m    5    1
-m    1    2
+sex  ¦  id  ¦  rank() over (partition by sex order by id desc)
+f  ¦  4  ¦  1
+f  ¦  3  ¦  2
+f  ¦  2  ¦  3
+m  ¦  5  ¦  1
+m  ¦  1  ¦  2
+
+#SQL[@1048,N33]Result[]
 drop table if exists dense_rank03;
+
+#SQL[@1049,N116]Result[]
 create table dense_rank03 as select sex, id, dense_rank() over (partition by sex order by id desc) from dense_rank01;
+
+#SQL[@1050,N26]Result[70, 15, 15, 15, 15, 15]
 select * from dense_rank03;
-sex    id    dense_rank() over (partition by sex order by id desc)
-f    4    1
-f    3    2
-f    2    3
-m    5    1
-m    1    2
+sex  ¦  id  ¦  dense_rank() over (partition by sex order by id desc)
+f  ¦  4  ¦  1
+f  ¦  3  ¦  2
+f  ¦  2  ¦  3
+m  ¦  5  ¦  1
+m  ¦  1  ¦  2
+
+#SQL[@1051,N23]Result[]
 drop table dense_rank01;
+
+#SQL[@1052,N23]Result[]
 drop table dense_rank02;
+
+#SQL[@1053,N23]Result[]
 drop table dense_rank03;
+
+#SQL[@1056,N27]Result[]
 drop table if exists test01;
+
+#SQL[@1057,N187]Result[]
 create table test01(
 col1 tinyint,
 col2 smallint,
@@ -1540,41 +2952,94 @@ col8 bigint unsigned,
 col9 float,
 col10 double
 );
+
+#SQL[@1070,N62]Result[]
 insert into test01 values (1,2,3,4,5,6,7,8,10.2131,3824.34324);
+
+#SQL[@1071,N68]Result[]
 insert into test01 values (2,3,4,5,6,7,8,9,2131.3242343,-3824.34324);
+
+#SQL[@1072,N24]Result[23, 372]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `col1` tinyint DEFAULT NULL,\n  `col2` smallint DEFAULT NULL,\n  `col3` int DEFAULT NULL,\n  `col4` bigint DEFAULT NULL,\n  `col5` tinyint unsigned DEFAULT NULL,\n  `col6` smallint unsigned DEFAULT NULL,\n  `col7` int unsigned DEFAULT NULL,\n  `col8` bigint unsigned DEFAULT NULL,\n  `col9` float DEFAULT NULL,\n  `col10` double DEFAULT NULL\n)
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `col1` tinyint DEFAULT NULL,
+  `col2` smallint DEFAULT NULL,
+  `col3` int DEFAULT NULL,
+  `col4` bigint DEFAULT NULL,
+  `col5` tinyint unsigned DEFAULT NULL,
+  `col6` smallint unsigned DEFAULT NULL,
+  `col7` int unsigned DEFAULT NULL,
+  `col8` bigint unsigned DEFAULT NULL,
+  `col9` float DEFAULT NULL,
+  `col10` double DEFAULT NULL
+)
+
+#SQL[@1073,N58]Result[]
 create publication publication01 database test account all;
+
+#SQL[@1074,N17]Result[127, 84]
 show publications;
-publication    database    tables    sub_account    subscribed_accounts    create_time    update_time    comments
-publication01    test    *    *        2024-10-28 17:46:53    null
+publication  ¦  database  ¦  tables  ¦  sub_account  ¦  subscribed_accounts  ¦  create_time  ¦  update_time  ¦  comments
+publication01  ¦  test  ¦  *  ¦  *  ¦    ¦  2025-09-26 18:26:06  ¦  null  ¦  
+
+#SQL[@1076,N27]Result[]
 drop table if exists test02;
+
+#SQL[@1077,N43]Result[]
 create table test02 as select * from test01;
+
+#SQL[@1078,N20]Result[95, 79, 82]
 select * from test02;
-col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-1    2    3    4    5    6    7    8    10.2131    3824.34324
-2    3    4    5    6    7    8    9    2131.3242    -3824.34324
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+1  ¦  2  ¦  3  ¦  4  ¦  5  ¦  6  ¦  7  ¦  8  ¦  10.2131  ¦  3824.34324
+2  ¦  3  ¦  4  ¦  5  ¦  6  ¦  7  ¦  8  ¦  9  ¦  2131.3242  ¦  -3824.34324
+
+#SQL[@1080,N30]Result[]
 drop publication publication01;
+
+#SQL[@1081,N17]Result[]
 drop table test01;
+
+#SQL[@1083,N27]Result[]
 drop account if exists acc0;
+
+#SQL[@1084,N57]Result[]
 create account acc0 admin_name 'root' identified by '111';
+
+#SQL[@1085,N30]Result[]
 drop table if exists sys_tbl_1;
+
+#SQL[@1086,N76]Result[]
 create table sys_tbl_1(a int primary key, b decimal, c char, d varchar(20) );
+
+#SQL[@1087,N101]Result[]
 insert into sys_tbl_1 values(1,2,'a','database'),(2,3,'b','test publication'),(3, 4, 'c','324243243');
+
+#SQL[@1088,N54]Result[]
 create publication sys_pub_1 database test account all;
+
+#SQL[@1089,N23]Result[22, 29, 37, 30]
 select * from sys_tbl_1;
-a    b    c    d
-1    2    a    database
-2    3    b    test publication
-3    4    c    324243243
+a  ¦  b  ¦  c  ¦  d
+1  ¦  2  ¦  a  ¦  database
+2  ¦  3  ¦  b  ¦  test publication
+3  ¦  4  ¦  c  ¦  324243243
+
+#SQL[@1090,N17]Result[127, 80]
 show publications;
-publication    database    tables    sub_account    subscribed_accounts    create_time    update_time    comments
-sys_pub_1    test    *    *        2024-10-28 17:46:53    null
+publication  ¦  database  ¦  tables  ¦  sub_account  ¦  subscribed_accounts  ¦  create_time  ¦  update_time  ¦  comments
+sys_pub_1  ¦  test  ¦  *  ¦  *  ¦    ¦  2025-09-26 18:26:06  ¦  null  ¦  
+
+#SQL[@1092,N68]Result[45, 28]
 select pub_name, database_name, account_list from mo_catalog.mo_pubs;
-pub_name    database_name    account_list
-sys_pub_1    test    all
+pub_name  ¦  database_name  ¦  account_list
+sys_pub_1  ¦  test  ¦  all
+
+#SQL[@1094,N51]Result[]
 create database sub1 from sys publication sys_pub_1;
+
+#SQL[@1095,N14]Result[8, 18, 10, 5, 4, 6, 14]
 show databases;
 Database
 information_schema
@@ -1583,261 +3048,712 @@ mysql
 sub1
 system
 system_metrics
+
+#SQL[@1096,N8]Result[]
 use sub1;
+
+#SQL[@1097,N25]Result[]
 drop table if exists test;
+
+#SQL[@1098,N44]Error[60]
 create table test as select * from sys_tbl_1;
 internal error: cannot create table in subscription database
+
+#SQL[@1101,N18]Result[]
 drop database sub1;
+
+#SQL[@1103,N17]Result[]
 drop account acc0;
+
+#SQL[@1104,N26]Result[]
 drop publication sys_pub_1;
+
+#SQL[@1108,N8]Result[]
 use test;
+
+#SQL[@1109,N28]Result[]
 drop table if exists alias01;
+
+#SQL[@1110,N45]Result[]
 create table alias01 (col1 int, col2 decimal);
+
+#SQL[@1111,N32]Result[]
 insert into alias01 values (1,2);
+
+#SQL[@1112,N32]Result[]
 insert into alias01 values (2,3);
+
+#SQL[@1113,N28]Result[]
 drop table if exists alias02;
+
+#SQL[@1114,N58]Result[]
 create table alias02 (NewCol int) as select * from alias01;
+
+#SQL[@1115,N25]Result[23, 131]
 show create table alias02;
-Table    Create Table
-alias02    CREATE TABLE `alias02` (\n  `NewCol` int DEFAULT NULL,\n  `col1` int DEFAULT NULL,\n  `col2` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+alias02  ¦  CREATE TABLE `alias02` (
+  `NewCol` int DEFAULT NULL,
+  `col1` int DEFAULT NULL,
+  `col2` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@1116,N21]Result[26, 18, 18]
 select * from alias02;
-newcol    col1    col2
-null    1    2
-null    2    3
+newcol  ¦  col1  ¦  col2
+null  ¦  1  ¦  2
+null  ¦  2  ¦  3
+
+#SQL[@1117,N18]Result[]
 drop table alias01;
+
+#SQL[@1119,N18]Result[]
 drop database test;
+
+#SQL[@1122,N27]Result[]
 drop database if exists db1;
+
+#SQL[@1123,N19]Result[]
 create database db1;
+
+#SQL[@1124,N7]Result[]
 use db1;
+
+#SQL[@1125,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@1126,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@1127,N19]Result[]
 create role role_r1;
+
+#SQL[@1128,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@1129,N23]Result[]
 drop table if exists t1;
+
+#SQL[@1130,N25]Result[]
 create table t1(col1 int);
+
+#SQL[@1131,N24]Result[]
 insert into t1 values(1);
+
+#SQL[@1132,N24]Result[]
 insert into t1 values(2);
+
+#SQL[@1133,N60]Result[]
 grant create database, drop database on account * to role_r1;
+
+#SQL[@1134,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@1135,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@1136,N57]Result[]
 grant create table, drop table on database *.* to role_r1;
+
+#SQL[@1137,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@1139,N7]Result[]
 use db1;
+
+#SQL[@1140,N23]Result[]
 drop table if exists t2;
+
+#SQL[@1141,N35]Error[62]
 create table t2 as select * from t1;
 internal error: do not have privilege to execute the statement
+
+#SQL[@1143,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@1144,N34]Result[]
 grant insert on table * to role_r1;
+
+#SQL[@1146,N7]Result[]
 use db1;
+
+#SQL[@1147,N23]Result[]
 drop table if exists t2;
+
+#SQL[@1148,N35]Result[]
 create table t2 as select * from t1;
+
+#SQL[@1149,N16]Result[4, 1, 1]
 select * from t2;
 col1
 1
 2
+
+#SQL[@1151,N13]Result[]
 drop table t1;
+
+#SQL[@1152,N13]Result[]
 drop table t2;
+
+#SQL[@1153,N17]Result[]
 drop database db1;
+
+#SQL[@1155,N27]Result[]
 drop database if exists db2;
+
+#SQL[@1156,N19]Result[]
 create database db2;
+
+#SQL[@1157,N7]Result[]
 use db2;
+
+#SQL[@1158,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@1159,N27]Result[]
 drop role if exists role_r2;
+
+#SQL[@1160,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@1161,N27]Result[]
 drop user if exists role_u2;
+
+#SQL[@1162,N19]Result[]
 create role role_r1;
+
+#SQL[@1163,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@1164,N19]Result[]
 create role role_r2;
+
+#SQL[@1165,N60]Result[]
 create user role_u2 identified by '111' default role role_r2;
+
+#SQL[@1166,N23]Result[]
 drop table if exists t1;
+
+#SQL[@1167,N25]Result[]
 create table t1(col1 int);
+
+#SQL[@1168,N24]Result[]
 insert into t1 values(1);
+
+#SQL[@1169,N24]Result[]
 insert into t1 values(2);
+
+#SQL[@1170,N60]Result[]
 grant create database, drop database on account * to role_r1;
+
+#SQL[@1171,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@1172,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@1173,N57]Result[]
 grant create table, drop table on database *.* to role_r1;
+
+#SQL[@1174,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@1175,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@1176,N34]Result[]
 grant insert on table * to role_r1;
+
+#SQL[@1178,N7]Result[]
 use db2;
+
+#SQL[@1179,N23]Result[]
 drop table if exists t2;
+
+#SQL[@1180,N35]Result[]
 create table t2 as select * from t1;
+
+#SQL[@1183,N7]Error[62]
 use db2;
 internal error: do not have privilege to execute the statement
+
+#SQL[@1184,N23]Error[62]
 drop table if exists t3;
 internal error: do not have privilege to execute the statement
+
+#SQL[@1185,N35]Error[62]
 create table t3 as select * from t2;
 internal error: do not have privilege to execute the statement
+
+#SQL[@1186,N16]Error[20]
 select * from t3;
 No database selected
+
+#SQL[@1188,N60]Result[]
 grant create database, drop database on account * to role_r2;
+
+#SQL[@1189,N44]Result[]
 grant show databases on account * to role_r2;
+
+#SQL[@1190,N37]Result[]
 grant connect on account * to role_r2;
+
+#SQL[@1191,N57]Result[]
 grant create table, drop table on database *.* to role_r2;
+
+#SQL[@1192,N42]Result[]
 grant show tables on database * to role_r2;
+
+#SQL[@1193,N34]Result[]
 grant select on table * to role_r2;
+
+#SQL[@1194,N34]Result[]
 grant insert on table * to role_r2;
+
+#SQL[@1196,N7]Result[]
 use db2;
+
+#SQL[@1197,N23]Result[]
 drop table if exists t3;
+
+#SQL[@1198,N35]Result[]
 create table t3 as select * from t2;
+
+#SQL[@1199,N16]Result[4, 1, 1]
 select * from t3;
 col1
 1
 2
+
+#SQL[@1201,N13]Result[]
 drop table t1;
+
+#SQL[@1202,N13]Result[]
 drop table t2;
+
+#SQL[@1203,N13]Result[]
 drop table t3;
+
+#SQL[@1204,N17]Result[]
 drop role role_r1;
+
+#SQL[@1205,N17]Result[]
 drop role role_r2;
+
+#SQL[@1206,N17]Result[]
 drop user role_u1;
+
+#SQL[@1207,N17]Result[]
 drop user role_u2;
+
+#SQL[@1208,N17]Result[]
 drop database db2;
+
+#SQL[@1211,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@1212,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@1213,N19]Result[]
 create role role_r1;
+
+#SQL[@1214,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@1215,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@1216,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@1217,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@1218,N60]Result[]
 grant create database, drop database on account * to role_r1;
+
+#SQL[@1220,N27]Result[]
 drop database if exists db3;
+
+#SQL[@1221,N19]Result[]
 create database db3;
+
+#SQL[@1222,N27]Result[]
 drop database if exists db4;
+
+#SQL[@1223,N19]Result[]
 create database db4;
+
+#SQL[@1225,N7]Result[]
 use db3;
+
+#SQL[@1226,N57]Result[]
 grant create table, drop table on database db3 to role_r1;
+
+#SQL[@1227,N57]Result[]
 grant create table, drop table on database db4 to role_r1;
+
+#SQL[@1228,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@1229,N34]Result[]
 grant insert on table * to role_r1;
+
+#SQL[@1230,N7]Result[]
 use db4;
+
+#SQL[@1231,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@1232,N34]Result[]
 grant insert on table * to role_r1;
+
+#SQL[@1234,N7]Result[]
 use db3;
+
+#SQL[@1235,N23]Result[]
 drop table if exists t1;
+
+#SQL[@1236,N25]Result[]
 create table t1(col1 int);
+
+#SQL[@1237,N24]Result[]
 insert into t1 values(1);
+
+#SQL[@1238,N24]Result[]
 insert into t1 values(2);
+
+#SQL[@1239,N27]Result[]
 drop database if exists db4;
+
+#SQL[@1240,N19]Result[]
 create database db4;
+
+#SQL[@1241,N7]Result[]
 use db4;
+
+#SQL[@1242,N23]Result[]
 drop table if exists t2;
+
+#SQL[@1243,N39]Result[]
 create table t2 as select * from db3.t1;
+
+#SQL[@1244,N7]Result[]
 use db3;
+
+#SQL[@1245,N13]Result[]
 drop table t1;
+
+#SQL[@1247,N7]Result[]
 use db4;
+
+#SQL[@1248,N16]Result[4, 1, 1]
 select * from t2;
 col1
 1
 2
+
+#SQL[@1249,N13]Result[]
 drop table t2;
+
+#SQL[@1250,N17]Result[]
 drop role role_r1;
+
+#SQL[@1251,N17]Result[]
 drop user role_u1;
+
+#SQL[@1252,N17]Result[]
 drop database db3;
+
+#SQL[@1253,N17]Result[]
 drop database db4;
+
+#SQL[@1256,N26]Result[]
 drop database if exists db;
+
+#SQL[@1257,N18]Result[]
 create database db;
+
+#SQL[@1258,N6]Result[]
 use db;
+
+#SQL[@1259,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@1260,N27]Result[]
 drop role if exists role_r2;
+
+#SQL[@1261,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@1262,N27]Result[]
 drop user if exists role_u2;
+
+#SQL[@1263,N19]Result[]
 create role role_r1;
+
+#SQL[@1264,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@1265,N19]Result[]
 create role role_r2;
+
+#SQL[@1266,N60]Result[]
 create user role_u2 identified by '111' default role role_r2;
+
+#SQL[@1267,N60]Result[]
 grant create database, drop database on account * to role_r1;
+
+#SQL[@1268,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@1269,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@1270,N57]Result[]
 grant create table, drop table on database *.* to role_r1;
+
+#SQL[@1271,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@1272,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@1273,N34]Result[]
 grant insert on table * to role_r1;
+
+#SQL[@1275,N27]Result[]
 drop database if exists db5;
+
+#SQL[@1276,N19]Result[]
 create database db5;
+
+#SQL[@1277,N7]Result[]
 use db5;
+
+#SQL[@1278,N23]Result[]
 drop table if exists t1;
+
+#SQL[@1279,N26]Result[]
 create table t1 (col1 int);
+
+#SQL[@1280,N25]Result[]
 insert into t1 values (1);
+
+#SQL[@1281,N25]Result[]
 insert into t1 values (2);
+
+#SQL[@1283,N24]Result[]
 grant role_r1 to role_r2;
+
+#SQL[@1285,N27]Result[]
 drop database if exists db6;
+
+#SQL[@1286,N19]Result[]
 create database db6;
+
+#SQL[@1287,N7]Result[]
 use db6;
+
+#SQL[@1288,N39]Result[]
 create table t2 as select * from db5.t1;
+
+#SQL[@1290,N20]Result[4, 1, 1]
 select * from db6.t2;
 col1
 1
 2
+
+#SQL[@1291,N17]Result[]
 drop role role_r1;
+
+#SQL[@1292,N17]Result[]
 drop role role_r2;
+
+#SQL[@1293,N17]Result[]
 drop user role_u1;
+
+#SQL[@1294,N17]Result[]
 drop user role_u2;
+
+#SQL[@1295,N16]Result[]
 drop database db;
+
+#SQL[@1296,N17]Result[]
 drop database db5;
+
+#SQL[@1297,N17]Result[]
 drop database db6;
+
+#SQL[@1300,N27]Result[]
 drop database if exists db7;
+
+#SQL[@1301,N19]Result[]
 create database db7;
+
+#SQL[@1302,N7]Result[]
 use db7;
+
+#SQL[@1303,N27]Result[]
 drop role if exists role_r1;
+
+#SQL[@1304,N27]Result[]
 drop user if exists role_u1;
+
+#SQL[@1305,N19]Result[]
 create role role_r1;
+
+#SQL[@1306,N60]Result[]
 create user role_u1 identified by '111' default role role_r1;
+
+#SQL[@1307,N23]Result[]
 drop table if exists t1;
+
+#SQL[@1308,N25]Result[]
 create table t1(col1 int);
+
+#SQL[@1309,N24]Result[]
 insert into t1 values(1);
+
+#SQL[@1310,N24]Result[]
 insert into t1 values(2);
+
+#SQL[@1311,N60]Result[]
 grant create database, drop database on account * to role_r1;
+
+#SQL[@1312,N44]Result[]
 grant show databases on account * to role_r1;
+
+#SQL[@1313,N37]Result[]
 grant connect on account * to role_r1;
+
+#SQL[@1314,N57]Result[]
 grant create table, drop table on database *.* to role_r1;
+
+#SQL[@1315,N42]Result[]
 grant show tables on database * to role_r1;
+
+#SQL[@1317,N35]Error[20]
 create table t2 as select * from t1;
 No database selected
+
+#SQL[@1319,N34]Result[]
 grant select on table * to role_r1;
+
+#SQL[@1320,N34]Result[]
 grant insert on table * to role_r1;
+
+#SQL[@1322,N23]Result[]
 drop table if exists t2;
+
+#SQL[@1323,N35]Error[20]
 create table t2 as select * from t1;
 No database selected
+
+#SQL[@1324,N16]Error[20]
 select * from t2;
 No database selected
+
+#SQL[@1326,N13]Result[]
 drop table t1;
+
+#SQL[@1327,N13]Error[20]
 drop table t2;
 no such table db7.t2
+
+#SQL[@1328,N17]Result[]
 drop role role_r1;
+
+#SQL[@1329,N17]Result[]
 drop user role_u1;
+
+#SQL[@1330,N17]Result[]
 drop database db7;
+
+#SQL[@1333,N27]Result[]
 drop database if exists db8;
+
+#SQL[@1334,N19]Result[]
 create database db8;
+
+#SQL[@1335,N7]Result[]
 use db8;
+
+#SQL[@1336,N27]Result[]
 drop table if exists math01;
+
+#SQL[@1337,N88]Result[]
 create table math01 (col1 int default 0, col2 decimal, col3 float, col4 double not null);
+
+#SQL[@1338,N67]Result[]
 insert into math01 values (1, 7382.4324, 432453.3243, -2930.321323);
+
+#SQL[@1339,N64]Result[]
 insert into math01 values (-100, 3283.32324, 328932.0, -9392032);
+
+#SQL[@1340,N58]Result[]
 insert into math01 values (22813, -241, 932342.4324, -0.1);
+
+#SQL[@1341,N48]Result[]
 insert into math01 values (null, null, null, 10);
+
+#SQL[@1343,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@1344,N148]Result[]
 create table agg01 as select avg(col1) as avgCol, sum(col2) as sumcol, count(col3) as countCol, max(col4) as maxCol, min(col4) as minCol from math01;
+
+#SQL[@1345,N23]Result[23, 191]
 show create table agg01;
-Table    Create Table
-agg01    CREATE TABLE `agg01` (\n  `avgcol` double DEFAULT NULL,\n  `sumcol` decimal(38,0) DEFAULT NULL,\n  `countcol` bigint NOT NULL,\n  `maxcol` double NOT NULL,\n  `mincol` double NOT NULL\n)
+Table  ¦  Create Table
+agg01  ¦  CREATE TABLE `agg01` (
+  `avgcol` double DEFAULT NULL,
+  `sumcol` decimal(38,0) DEFAULT NULL,
+  `countcol` bigint NOT NULL,
+  `maxcol` double NOT NULL,
+  `mincol` double NOT NULL
+)
+
+#SQL[@1346,N19]Result[56, 57]
 select * from agg01;
-avgcol    sumcol    countcol    maxcol    mincol
-7571.333333333333    10424    3    10.0    -9392032.0
+avgcol  ¦  sumcol  ¦  countcol  ¦  maxcol  ¦  mincol
+7571.333333333333  ¦  10424  ¦  3  ¦  10  ¦  -9392032
+
+#SQL[@1348,N16]Result[]
 drop table agg01;
+
+#SQL[@1349,N17]Result[]
 drop table math01;
+
+#SQL[@1350,N17]Result[]
 drop database db8;
+
+#SQL[@1352,N27]Result[]
 drop database if exists db9;
+
+#SQL[@1353,N19]Result[]
 create database db9;
+
+#SQL[@1354,N7]Result[]
 use db9;
+
+#SQL[@1356,N149]Result[]
 CREATE TABLE tx1 (
-category INT NOT NULL,
-id INT NOT NULL,
-name VARCHAR(20) NOT NULL,
-price DECIMAL,
-PRIMARY KEY (category, id)
+    category INT NOT NULL,
+    id INT NOT NULL,
+    name VARCHAR(20) NOT NULL,
+    price DECIMAL,
+    PRIMARY KEY (category, id)
 );
+
+#SQL[@1365,N49]Error[19]
 create dynamic table dt_test as select * from tx1;
 lack of option type
+
+#SQL[@1366,N14]Result[]
 drop table tx1;
+
+#SQL[@1367,N17]Result[]
 drop database db9;
+

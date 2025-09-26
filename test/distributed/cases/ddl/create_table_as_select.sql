@@ -819,7 +819,6 @@ create table test03 (col2 decimal unique key) as select col2 from test01;
 show create table test03;
 desc test03;
 insert into test03 values (372.324);
-| @regex(pattern=r"");
 
 drop table if exists test04;
 create table test04 (col1 int, col2 varchar(50), key(col1, col2)) as select col1, col3 from test01;
@@ -831,7 +830,6 @@ create table test05 (col1 int, col2 decimal, primary key (col1, col2)) as select
 show create table test05;
 select * from test05;
 insert into test05 values (2, 39304.3424);
-| @regex(pattern=r"");
 
 alter table test01 rename column col1 to newCol;
 show create table test01;

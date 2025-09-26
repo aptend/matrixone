@@ -36,7 +36,6 @@ insert into t3 values(4,"Dora", 29,'zbcvdf');
 select * from t3;
 insert into t3 values(4,"Dora", 28,'zbcvdf');
 insert into t3 values(5,"Dora", 29,'zbcvdf');
-| @regex(pattern=r"");
 
 drop table t3;
 

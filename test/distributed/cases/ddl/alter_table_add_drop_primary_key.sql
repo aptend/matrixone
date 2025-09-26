@@ -142,8 +142,8 @@ show create table pri10;
 show columns from pri10;
 insert into pri10 (col1, col2) values (1, null);
 insert into pri10 values (-2, 'p');
--- @pattern
 insert into pri10 (col1, col2) values (1, 'a');
+| @regex(pattern=r"");
 select * from pri10;
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'pri10' and COLUMN_NAME not like '__mo%';
 drop table pri10;
@@ -260,22 +260,20 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant select on table * to role_r1;
 grant show tables on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use alter_table_add_drop_primary_key;
-alter table test01 add constraint primary key(col1);
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use alter_table_add_drop_primary_key;
+    alter table test01 add constraint primary key(col1);
+}
 grant alter table on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use alter_table_add_drop_primary_key;
-alter table test01 add constraint primary key(col1);
-show create table test01;
-show columns from test01;
-alter table test01 drop primary key;
-show create table test01;
-show columns from test01;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use alter_table_add_drop_primary_key;
+    alter table test01 add constraint primary key(col1);
+    show create table test01;
+    show columns from test01;
+    alter table test01 drop primary key;
+    show create table test01;
+    show columns from test01;
+}
 show create table test01;
 show columns from test01;
 drop table test01;

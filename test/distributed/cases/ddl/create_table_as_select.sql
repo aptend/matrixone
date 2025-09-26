@@ -85,9 +85,9 @@ select * from table03;
 
 drop table if exists table04;
 create table table04 as select * from table03;
--- @bvt:issue#14792
-show create table table04;
--- @bvt:issue
+@issue(no=14792) {
+    show create table table04;
+}
 select * from table04;
 
 drop table if exists table05;
@@ -97,9 +97,9 @@ select * from table05;
 
 drop table if exists table06;
 create table table06(col10 binary) as select col2, col4, col6, col8, col9 from table03;
--- @bvt:issue#14792
-show create table table06;
--- @bvt:issue
+@issue(no=14792) {
+    show create table table06;
+}
 desc table06;
 select * from table06;
 
@@ -119,9 +119,9 @@ select * from t1;
 create table t2 (c float) as select b, a from t1;
 desc t2;
 select * from t2;
--- @bvt:issue#14775
-CREATE table if not exists t2 (d float) as select b, a from t1;
--- @bvt:issue
+@issue(no=14775) {
+    CREATE table if not exists t2 (d float) as select b, a from t1;
+}
 select * from t2;
 drop table t1;
 drop table t2;
@@ -135,26 +135,26 @@ select * from table07;
 
 drop table if exists table08;
 create table table08(col6 int, col7 bigint, col8 char) as select * from table07;
--- @bvt:issue#14792
-show create table table08;
--- @bvt:issue
+@issue(no=14792) {
+    show create table table08;
+}
 select * from table08;
 drop table table08;
 
 drop table if exists table09;
 create table table09 as select col1, col2, col4 as newCol4 from table07;
--- @bvt:issue#14792
-show create table table09;
--- @bvt:issue
+@issue(no=14792) {
+    show create table table09;
+}
 select * from table09;
 drop table table09;
 
 -- column duplication
 drop table if exists table12;
 create table table12 (col1 date) as select * from table07;
--- @bvt:issue#14792
-show create table table12;
--- @bvt:issue
+@issue(no=14792) {
+    show create table table12;
+}
 select * from table12;
 drop table table12;
 drop table table07;
@@ -281,9 +281,9 @@ show create table table05;
 select * from table05;
 drop table if exists table06;
 create table table06 (d char not null default 'a') as select a from table03;
--- @bvt:issue#14792
-show create table table06;
--- @bvt:issue
+@issue(no=14792) {
+    show create table table06;
+}
 select * from table06;
 drop table table04;
 drop table table03;
@@ -299,12 +299,12 @@ insert into math01 values (22813, -241, 932342.4324, -0.1);
 insert into math01 values (null, null, null, 10);
 
 drop table if exists agg01;
--- @bvt:issue#14792
-create table agg01 as select avg(col1) as avgCol, sum(col2) as sumcol, count(col3) as countCol, max(col4) as maxCol, min(col4) as minCol from math01;
-show create table agg01;
-select * from agg01;
-drop table agg01;
--- @bvt:issue
+@issue(no=14792) {
+    create table agg01 as select avg(col1) as avgCol, sum(col2) as sumcol, count(col3) as countCol, max(col4) as maxCol, min(col4) as minCol from math01;
+    show create table agg01;
+    select * from agg01;
+    drop table agg01;
+}
 
 drop table if exists bit01;
 create table bit01 (col1 char(1), col2 int);
@@ -313,10 +313,10 @@ select * from bit01;
 
 drop table if exists bit02;
 create table bit02 as select bit_and(col2), bit_or(col2), bit_xor(col2), stddev_pop(col2) from bit01;
--- @bvt:issue#14792
-desc bit02;
-show create table bit02;
--- @bvt:issue
+@issue(no=14792) {
+    desc bit02;
+    show create table bit02;
+}
 select count(*) from bit02;
 select * from bit02;
 drop table bit02;
@@ -359,25 +359,25 @@ insert into string01 values ('test create table as select', '0', null);
 
 drop table if exists string02;
 create table string02 as select concat_ws(',', col1, 'abcde') from string01;
--- @bvt:issue#14792
-show create table string02;
--- @bvt:issue
+@issue(no=14792) {
+    show create table string02;
+}
 select * from string02;
 drop table string02;
 
 drop table if exists string03;
 create table string03 as select find_in_set(col2, col1) from string01;
--- @bvt:issue#14792
-show create table string03;
--- @bvt:issue
+@issue(no=14792) {
+    show create table string03;
+}
 select * from string03;
 drop table string03;
 
 drop table if exists string04;
 create table string04 as select oct(col2), empty(col3), length(col1) from string01;
--- @bvt:issue#14792
-show create table string04;
--- @bvt:issue
+@issue(no=14792) {
+    show create table string04;
+}
 select * from string04;
 drop table string04;
 
@@ -389,9 +389,9 @@ drop table string05;
 
 drop table if exists string06;
 create table string06 as select lpad(col1, 5, '-'), rpad(col1, 1, '-') from string01;
--- @bvt:issue#14792
-show create table string06;
--- @bvt:issue
+@issue(no=14792) {
+    show create table string06;
+}
 select * from string06;
 drop table string06;
 
@@ -446,19 +446,19 @@ select * from time01;
 
 drop table if exists time02;
 create table time02 as select date_format(col2, '%W %M %Y') from time01;
--- @bvt:issue#14792
-show create table time02;
-desc time02;
--- @bvt:issue
+@issue(no=14792) {
+    show create table time02;
+    desc time02;
+}
 select * from time02;
 drop table time02;
 
 drop table if exists time03;
 create table time03 as select date(col1), date(col2), year(col1), day(col1), weekday(col1), dayofyear(col1) as dya from time01;
--- @bvt:issue#14792
-desc time03;
-show create table time03;
--- @bvt:issue
+@issue(no=14792) {
+    desc time03;
+    show create table time03;
+}
 select * from time03;
 drop table time03;
 
@@ -476,9 +476,9 @@ drop table time05;
 
 drop table if exists time06;
 create table time06 as select datediff('2007-12-31 23:59:59', col1) as timedifferent from time01;
--- @bvt:issue#14792
-show create table time06;
--- @bvt:issue
+@issue(no=14792) {
+    show create table time06;
+}
 select * from time06;
 drop table time06;
 
@@ -555,16 +555,16 @@ select * from orders;
 
 drop table if exists customer_totals;
 create table customer_totals as select customer_id, count(order_id) as total_orders, sum(total_amount) as total_amount from orders group by customer_id having count(order_id) > 1 and sum(total_amount) > 150.0;
--- @bvt:issue#14792
-show create table customer_totals;
--- @bvt:issue
+@issue(no=14792) {
+    show create table customer_totals;
+}
 select * from customer_totals;
 
 drop table if exists max_totals;
 create table max_totals as select customer_id, total_orders from customer_totals order by total_orders desc limit 1;
--- @bvt:issue#14792
-desc max_totals;
--- @bvt:issue
+@issue(no=14792) {
+    desc max_totals;
+}
 select * from max_totals;
 
 drop table if exists max_customer;
@@ -587,19 +587,19 @@ insert into original_table (id, name, age, salary, hire_date) values (1, 'Alice'
                                                                      (5, 'Eve', 25, 4000.00, '2020-07-15');
 
 drop table if exists selected_employees;
--- @bvt:issue#14775
-create table selected_employees as select * from original_table where
-salary >= 5500.00
-and salary < 7000.00
-and age > 29
-and hire_date >= '2021-01-01'
-and name not like 'A%'
-and id not in (1, 3)
-and salary between 5000.00 and 6500.00;
-show create table selected_employees;
-select * from selected_employees;
-drop table selected_employees;
--- @bvt:issue
+@issue(no=14775) {
+    create table selected_employees as select * from original_table where
+    salary >= 5500.00
+    and salary < 7000.00
+    and age > 29
+    and hire_date >= '2021-01-01'
+    and name not like 'A%'
+    and id not in (1, 3)
+    and salary between 5000.00 and 6500.00;
+    show create table selected_employees;
+    select * from selected_employees;
+    drop table selected_employees;
+}
 drop table original_table;
 
 -- after ctas, create view
@@ -682,9 +682,9 @@ left join
 left join
     courses c ON e.course_id = c.course_id;
 select * from student_course_enrollments;
--- @bvt:issue#14792
-show create table student_course_enrollments;
--- @bvt:issue
+@issue(no=14792) {
+    show create table student_course_enrollments;
+}
 
 drop table if exists student_course_enrollments_inner;
 create table student_course_enrollments_inner AS
@@ -699,9 +699,9 @@ inner join
     enrollments e on s.student_id = e.student_id
 inner join
     courses c on e.course_id = c.course_id;
--- @bvt:issue#14792
-show create table student_course_enrollments_inner;
--- @bvt:issue
+@issue(no=14792) {
+    show create table student_course_enrollments_inner;
+}
 select * from student_course_enrollments;
 
 drop table if exists student_course_enrollments_right;
@@ -717,9 +717,9 @@ right join
     enrollments e on s.student_id = e.student_id
 right join
     courses c on e.course_id = c.course_id;
--- @bvt:issue#14792
-show create table student_course_enrollments_right;
--- @bvt:issue
+@issue(no=14792) {
+    show create table student_course_enrollments_right;
+}
 select * from student_course_enrollments_right;
 
 drop table if exists student_course_enrollments_full;
@@ -735,9 +735,9 @@ right join
     enrollments e on s.student_id = e.student_id
 right join
     courses c on e.course_id = c.course_id;
--- @bvt:issue#14792
-show create table student_course_enrollments_full;
--- @bvt:issue
+@issue(no=14792) {
+    show create table student_course_enrollments_full;
+}
 select * from student_course_enrollments_full;
 
 drop table if exists outerjoin01;
@@ -818,8 +818,8 @@ drop table if exists test03;
 create table test03 (col2 decimal unique key) as select col2 from test01;
 show create table test03;
 desc test03;
--- @pattern
 insert into test03 values (372.324);
+| @regex(pattern=r"");
 
 drop table if exists test04;
 create table test04 (col1 int, col2 varchar(50), key(col1, col2)) as select col1, col3 from test01;
@@ -830,8 +830,8 @@ drop table if exists test05;
 create table test05 (col1 int, col2 decimal, primary key (col1, col2)) as select col1, col2 from test01;
 show create table test05;
 select * from test05;
--- @pattern
 insert into test05 values (2, 39304.3424);
+| @regex(pattern=r"");
 
 alter table test01 rename column col1 to newCol;
 show create table test01;
@@ -839,9 +839,9 @@ show create table test01;
 drop table if exists test06;
 create table test06 (col1 int not null default 100) as select col1 from test01;
 create table test06 (col1 int not null default 100) as select newcol from test01;
--- @bvt:issue#14792
-show create table test06;
--- @bvt:issue
+@issue(no=14792) {
+    show create table test06;
+}
 select * from test06;
 
 drop table test01;
@@ -886,16 +886,16 @@ select * from orders;
 
 drop table if exists customer_totals;
 create temporary table customer_totals as select customer_id, count(order_id) as total_orders, sum(total_amount) as total_amount from orders group by customer_id having count(order_id) > 1 and sum(total_amount) > 150.0;
--- @bvt:issue#14792
-show create table customer_totals;
--- @bvt:issue
+@issue(no=14792) {
+    show create table customer_totals;
+}
 select * from customer_totals;
 
 drop table if exists max_totals;
 create temporary table max_totals as select customer_id, total_orders from customer_totals order by total_orders desc limit 1;
--- @bvt:issue#14792
-desc max_totals;
--- @bvt:issue
+@issue(no=14792) {
+    desc max_totals;
+}
 select * from max_totals;
 
 drop table if exists max_customer;
@@ -1073,8 +1073,8 @@ insert into test01 values (1,2,3,4,5,6,7,8,10.2131,3824.34324);
 insert into test01 values (2,3,4,5,6,7,8,9,2131.3242343,-3824.34324);
 show create table test01;
 create publication publication01 database test account all;
--- @ignore:5,6
 show publications;
+| @ignore(5,6);
 drop table if exists test02;
 create table test02 as select * from test01;
 select * from test02;
@@ -1089,36 +1089,35 @@ create table sys_tbl_1(a int primary key, b decimal, c char, d varchar(20) );
 insert into sys_tbl_1 values(1,2,'a','database'),(2,3,'b','test publication'),(3, 4, 'c','324243243');
 create publication sys_pub_1 database test account all;
 select * from sys_tbl_1;
--- @ignore:5,6
 show publications;
+| @ignore(5,6);
 select pub_name, database_name, account_list from mo_catalog.mo_pubs;
--- @session:id=2&user=acc0:root&password=111
-create database sub1 from sys publication sys_pub_1;
-show databases;
-use sub1;
-drop table if exists test;
-create table test as select * from sys_tbl_1;
--- @session
-
--- @session:id=3&user=acc0:root&password=111
-drop database sub1;
--- @session
+@session(id=2, user="acc0:root", password="111") {
+    create database sub1 from sys publication sys_pub_1;
+    show databases;
+    use sub1;
+    drop table if exists test;
+    create table test as select * from sys_tbl_1;
+}
+@session(id=3, user="acc0:root", password="111") {
+    drop database sub1;
+}
 drop account acc0;
 drop publication sys_pub_1;
 
 -- alias
--- @session:id=24&user=sys:dump&password=111
-use test;
-drop table if exists alias01;
-create table alias01 (col1 int, col2 decimal);
-insert into alias01 values (1,2);
-insert into alias01 values (2,3);
-drop table if exists alias02;
-create table alias02 (NewCol int) as select * from alias01;
-show create table alias02;
-select * from alias02;
-drop table alias01;
--- @session
+@session(id=24, user="sys:dump", password="111") {
+    use test;
+    drop table if exists alias01;
+    create table alias01 (col1 int, col2 decimal);
+    insert into alias01 values (1,2);
+    insert into alias01 values (2,3);
+    drop table if exists alias02;
+    create table alias02 (NewCol int) as select * from alias01;
+    show create table alias02;
+    select * from alias02;
+    drop table alias01;
+}
 drop database test;
 
 -- privilege
@@ -1138,19 +1137,19 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant create table, drop table on database *.* to role_r1;
 grant show tables on database * to role_r1;
--- @session:id=4&user=sys:role_u1:role_r1&password=111
-use db1;
-drop table if exists t2;
-create table t2 as select * from t1;
--- @session
+@session(id=4, user="sys:role_u1:role_r1", password="111") {
+    use db1;
+    drop table if exists t2;
+    create table t2 as select * from t1;
+}
 grant select on table * to role_r1;
 grant insert on table * to role_r1;
--- @session:id=5&user=sys:role_u1:role_r1&password=111
-use db1;
-drop table if exists t2;
-create table t2 as select * from t1;
-select * from t2;
--- @session
+@session(id=5, user="sys:role_u1:role_r1", password="111") {
+    use db1;
+    drop table if exists t2;
+    create table t2 as select * from t1;
+    select * from t2;
+}
 drop table t1;
 drop table t2;
 drop database db1;
@@ -1177,17 +1176,17 @@ grant create table, drop table on database *.* to role_r1;
 grant show tables on database * to role_r1;
 grant select on table * to role_r1;
 grant insert on table * to role_r1;
--- @session:id=6&user=sys:role_u1:role_r1&password=111
-use db2;
-drop table if exists t2;
-create table t2 as select * from t1;
--- @session
--- @session:id=7&user=sys:role_u2:role_r2&password=111
-use db2;
-drop table if exists t3;
-create table t3 as select * from t2;
-select * from t3;
--- @session
+@session(id=6, user="sys:role_u1:role_r1", password="111") {
+    use db2;
+    drop table if exists t2;
+    create table t2 as select * from t1;
+}
+@session(id=7, user="sys:role_u2:role_r2", password="111") {
+    use db2;
+    drop table if exists t3;
+    create table t3 as select * from t2;
+    select * from t3;
+}
 grant create database, drop database on account * to role_r2;
 grant show databases on account * to role_r2;
 grant connect on account * to role_r2;
@@ -1195,12 +1194,12 @@ grant create table, drop table on database *.* to role_r2;
 grant show tables on database * to role_r2;
 grant select on table * to role_r2;
 grant insert on table * to role_r2;
--- @session:id=8&user=sys:role_u2:role_r2&password=111
-use db2;
-drop table if exists t3;
-create table t3 as select * from t2;
-select * from t3;
--- @session
+@session(id=8, user="sys:role_u2:role_r2", password="111") {
+    use db2;
+    drop table if exists t3;
+    create table t3 as select * from t2;
+    select * from t3;
+}
 drop table t1;
 drop table t2;
 drop table t3;
@@ -1219,12 +1218,12 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant show tables on database * to role_r1;
 grant create database, drop database on account * to role_r1;
--- @session:id=9&user=sys:role_u1:role_r1&password=111
-drop database if exists db3;
-create database db3;
-drop database if exists db4;
-create database db4;
--- @session
+@session(id=9, user="sys:role_u1:role_r1", password="111") {
+    drop database if exists db3;
+    create database db3;
+    drop database if exists db4;
+    create database db4;
+}
 use db3;
 grant create table, drop table on database db3 to role_r1;
 grant create table, drop table on database db4 to role_r1;
@@ -1233,20 +1232,20 @@ grant insert on table * to role_r1;
 use db4;
 grant select on table * to role_r1;
 grant insert on table * to role_r1;
--- @session:id=9&user=sys:role_u1:role_r1&password=111
-use db3;
-drop table if exists t1;
-create table t1(col1 int);
-insert into t1 values(1);
-insert into t1 values(2);
-drop database if exists db4;
-create database db4;
-use db4;
-drop table if exists t2;
-create table t2 as select * from db3.t1;
-use db3;
-drop table t1;
--- @session
+@session(id=9, user="sys:role_u1:role_r1", password="111") {
+    use db3;
+    drop table if exists t1;
+    create table t1(col1 int);
+    insert into t1 values(1);
+    insert into t1 values(2);
+    drop database if exists db4;
+    create database db4;
+    use db4;
+    drop table if exists t2;
+    create table t2 as select * from db3.t1;
+    use db3;
+    drop table t1;
+}
 use db4;
 select * from t2;
 drop table t2;
@@ -1274,22 +1273,22 @@ grant create table, drop table on database *.* to role_r1;
 grant show tables on database * to role_r1;
 grant select on table * to role_r1;
 grant insert on table * to role_r1;
--- @session:id=20&user=sys:role_u1:role_r1&password=111
-drop database if exists db5;
-create database db5;
-use db5;
-drop table if exists t1;
-create table t1 (col1 int);
-insert into t1 values (1);
-insert into t1 values (2);
--- @session
+@session(id=20, user="sys:role_u1:role_r1", password="111") {
+    drop database if exists db5;
+    create database db5;
+    use db5;
+    drop table if exists t1;
+    create table t1 (col1 int);
+    insert into t1 values (1);
+    insert into t1 values (2);
+}
 grant role_r1 to role_r2;
--- @session:id=22&user=sys:role_u2:role_r2&password=111
-drop database if exists db6;
-create database db6;
-use db6;
-create table t2 as select * from db5.t1;
--- @session
+@session(id=22, user="sys:role_u2:role_r2", password="111") {
+    drop database if exists db6;
+    create database db6;
+    use db6;
+    create table t2 as select * from db5.t1;
+}
 select * from db6.t2;
 drop role role_r1;
 drop role role_r2;
@@ -1316,16 +1315,16 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant create table, drop table on database *.* to role_r1;
 grant show tables on database * to role_r1;
--- @session:id=23&user=sys:role_u1:role_r1&password=111
-create table t2 as select * from t1;
--- @session
+@session(id=23, user="sys:role_u1:role_r1", password="111") {
+    create table t2 as select * from t1;
+}
 grant select on table * to role_r1;
 grant insert on table * to role_r1;
--- @session:id=24&user=sys:role_u1:role_r1&password=111
-drop table if exists t2;
-create table t2 as select * from t1;
-select * from t2;
--- @session
+@session(id=24, user="sys:role_u1:role_r1", password="111") {
+    drop table if exists t2;
+    create table t2 as select * from t1;
+    select * from t2;
+}
 drop table t1;
 drop table t2;
 drop role role_r1;

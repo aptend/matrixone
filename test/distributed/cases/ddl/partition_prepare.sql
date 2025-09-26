@@ -64,29 +64,29 @@ INSERT INTO `bmsql_oorder` VALUES (10, 10, 2344, 1590, NULL, 11, 1, '2024-05-22 
 select * from bmsql_oorder order by o_w_id, o_d_id, o_id;
 
 --------------------------------------------------------------------------
--- @session:id=1&user=dump&password=111
-use tpcc;
-prepare __mo_stmt_id_4 from 'INSERT INTO bmsql_oorder (o_id, o_d_id, o_w_id, o_c_id, o_entry_d, o_ol_cnt, o_all_local) VALUES (?, ?, ?, ?, ?, ?, ?)';
-prepare __mo_stmt_id_22 from 'SELECT o_id, o_entry_d, o_carrier_id FROM bmsql_oorder WHERE o_w_id = ? AND o_d_id = ? AND o_c_id = ? AND o_id = (SELECT max(o_id) FROM bmsql_oorder WHERE o_w_id = ? AND o_d_id = ? AND o_c_id = ?)';
-prepare __mo_stmt_id_27 from 'SELECT o_c_id FROM bmsql_oorder WHERE o_w_id = ? AND o_d_id = ? AND o_id = ?';
-prepare __mo_stmt_id_28 from 'UPDATE bmsql_oorder SET o_carrier_id = ? WHERE o_w_id = ? AND o_d_id = ? AND o_id = ?';
+@session(id=1, user="dump", password="111") {
+    use tpcc;
+    prepare __mo_stmt_id_4 from 'INSERT INTO bmsql_oorder (o_id, o_d_id, o_w_id, o_c_id, o_entry_d, o_ol_cnt, o_all_local) VALUES (?, ?, ?, ?, ?, ?, ?)';
+    prepare __mo_stmt_id_22 from 'SELECT o_id, o_entry_d, o_carrier_id FROM bmsql_oorder WHERE o_w_id = ? AND o_d_id = ? AND o_c_id = ? AND o_id = (SELECT max(o_id) FROM bmsql_oorder WHERE o_w_id = ? AND o_d_id = ? AND o_c_id = ?)';
+    prepare __mo_stmt_id_27 from 'SELECT o_c_id FROM bmsql_oorder WHERE o_w_id = ? AND o_d_id = ? AND o_id = ?';
+    prepare __mo_stmt_id_28 from 'UPDATE bmsql_oorder SET o_carrier_id = ? WHERE o_w_id = ? AND o_d_id = ? AND o_id = ?';
 
-SET @o_carrier_id = 7;
-SET @o_w_id = 2;
-SET @o_d_id = 7;
-SET @o_id = 2105;
-EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
+    SET @o_carrier_id = 7;
+    SET @o_w_id = 2;
+    SET @o_d_id = 7;
+    SET @o_id = 2105;
+    EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
 
-SET @o_carrier_id = 2;
-SET @o_w_id = 5;
-SET @o_d_id = 10;
-SET @o_id = 2101;
-EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
-begin;
-select * from bmsql_oorder order by o_w_id, o_d_id, o_id;
-commit;
-select * from bmsql_oorder order by o_w_id, o_d_id, o_id;
--- @session
+    SET @o_carrier_id = 2;
+    SET @o_w_id = 5;
+    SET @o_d_id = 10;
+    SET @o_id = 2101;
+    EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
+    begin;
+    select * from bmsql_oorder order by o_w_id, o_d_id, o_id;
+    commit;
+    select * from bmsql_oorder order by o_w_id, o_d_id, o_id;
+}
 
 -----------------------------------------------------------------------------------
 prepare __mo_stmt_id_4 from 'INSERT INTO bmsql_oorder (o_id, o_d_id, o_w_id, o_c_id, o_entry_d, o_ol_cnt, o_all_local) VALUES (?, ?, ?, ?, ?, ?, ?)';
@@ -124,37 +124,37 @@ select o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local from bm
 commit;
 select o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local from bmsql_oorder order by o_w_id, o_d_id, o_id;
 -------------------------------------------------------------------------------------------------------------------------------
--- @session:id=1&user=dump&password=111
-begin;
-SET @o_carrier_id = 1;
-SET @o_w_id = 3;
-SET @o_d_id = 10;
-SET @o_id = 2116;
-EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
+@session(id=1, user="dump", password="111") {
+    begin;
+    SET @o_carrier_id = 1;
+    SET @o_w_id = 3;
+    SET @o_d_id = 10;
+    SET @o_id = 2116;
+    EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
 
 
-SET @o_carrier_id = 4;
-SET @o_w_id = 4;
-SET @o_d_id = 9;
-SET @o_id = 2113;
-EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
+    SET @o_carrier_id = 4;
+    SET @o_w_id = 4;
+    SET @o_d_id = 9;
+    SET @o_id = 2113;
+    EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
 
 
-SET @o_carrier_id = 3;
-SET @o_w_id = 5;
-SET @o_d_id = 9;
-SET @o_id = 2113;
-EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
+    SET @o_carrier_id = 3;
+    SET @o_w_id = 5;
+    SET @o_d_id = 9;
+    SET @o_id = 2113;
+    EXECUTE __mo_stmt_id_28 USING @o_carrier_id, @o_w_id, @o_d_id, @o_id;
 
-SET @o_w_id = 3;
-SET @o_d_id = 6;
-SET @o_id = 2115;
-EXECUTE __mo_stmt_id_27 USING @o_w_id, @o_d_id, @o_id;
+    SET @o_w_id = 3;
+    SET @o_d_id = 6;
+    SET @o_id = 2115;
+    EXECUTE __mo_stmt_id_27 USING @o_w_id, @o_d_id, @o_id;
 
-select o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local from bmsql_oorder order by o_w_id, o_d_id, o_id;
-commit;
-select o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local from bmsql_oorder order by o_w_id, o_d_id, o_id;
--- @session
+    select o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local from bmsql_oorder order by o_w_id, o_d_id, o_id;
+    commit;
+    select o_w_id, o_d_id, o_id, o_c_id, o_carrier_id, o_ol_cnt, o_all_local from bmsql_oorder order by o_w_id, o_d_id, o_id;
+}
 -------------------------------------------------------------------------------------------------------------------------------
 begin;
 SET @o_w_id1 = 2;

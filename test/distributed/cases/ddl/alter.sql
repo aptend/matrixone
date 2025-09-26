@@ -66,67 +66,67 @@ drop table  ti2;
 drop table  tm2;
 
 -- alter table add/drop foreign key in temporary table
--- @bvt:issue#9282
-drop table if exists foreign01;
-create temporary table foreign01(col1 int primary key,
-					 col2 varchar(20),
-					 col3 int,
-					 col4 bigint);
-insert into foreign01 values(1,'shujuku',100,3247984);
-insert into foreign01 values(2,'数据库',328932,32324423432);
-drop table if exists foreign02;
-create temporary table foreign02(col1 int,
-					 col2 int,
-					 col3 int primary key,
-					 constraint fk foreign key fk(col1) references foreign01(col1));
-insert into foreign02 values(1,1,1);
-insert into foreign02 values(2,2,2);
-delete from foreign01 where col3 = 100;
+@issue(no=9282) {
+    drop table if exists foreign01;
+    create temporary table foreign01(col1 int primary key,
+    					 col2 varchar(20),
+    					 col3 int,
+    					 col4 bigint);
+    insert into foreign01 values(1,'shujuku',100,3247984);
+    insert into foreign01 values(2,'数据库',328932,32324423432);
+    drop table if exists foreign02;
+    create temporary table foreign02(col1 int,
+    					 col2 int,
+    					 col3 int primary key,
+    					 constraint fk foreign key fk(col1) references foreign01(col1));
+    insert into foreign02 values(1,1,1);
+    insert into foreign02 values(2,2,2);
+    delete from foreign01 where col3 = 100;
 
-show create table foreign02;
-alter table foreign02 drop foreign key fk;
-show create table foreign02;
+    show create table foreign02;
+    alter table foreign02 drop foreign key fk;
+    show create table foreign02;
 
-drop table foreign01;
-drop table foreign02;
+    drop table foreign01;
+    drop table foreign02;
 
--- alter table add/drop foreign key
-drop table if exists ti1;
-drop table if exists tm1;
-drop table if exists ti2;
-drop table if exists tm2;
+    -- alter table add/drop foreign key
+    drop table if exists ti1;
+    drop table if exists tm1;
+    drop table if exists ti2;
+    drop table if exists tm2;
 
-create temporary table ti1(a INT not null, b INT, c INT);
-create temporary table tm1(a INT not null, b INT, c INT);
-create temporary table ti2(a INT primary key AUTO_INCREMENT, b INT, c INT);
-create temporary table tm2(a INT primary key AUTO_INCREMENT, b INT, c INT);
-insert into ti1 values (1,1,1), (2,2,2);
-insert into ti2 values (1,1,1), (2,2,2);
-insert into tm1 values (1,1,1), (2,2,2);
-insert into tm2 values (1,1,1), (2,2,2);
+    create temporary table ti1(a INT not null, b INT, c INT);
+    create temporary table tm1(a INT not null, b INT, c INT);
+    create temporary table ti2(a INT primary key AUTO_INCREMENT, b INT, c INT);
+    create temporary table tm2(a INT primary key AUTO_INCREMENT, b INT, c INT);
+    insert into ti1 values (1,1,1), (2,2,2);
+    insert into ti2 values (1,1,1), (2,2,2);
+    insert into tm1 values (1,1,1), (2,2,2);
+    insert into tm2 values (1,1,1), (2,2,2);
 
-alter table ti1 add constraint fi1 foreign key (b) references ti2(a);
-alter table tm1 add constraint fm1 foreign key (b) references tm2(a);
-show create table ti1;
-show create table tm1;
+    alter table ti1 add constraint fi1 foreign key (b) references ti2(a);
+    alter table tm1 add constraint fm1 foreign key (b) references tm2(a);
+    show create table ti1;
+    show create table tm1;
 
-delete from ti2 where c = 1;
-delete from tm2 where c = 1;
+    delete from ti2 where c = 1;
+    delete from tm2 where c = 1;
 
-alter table ti1 drop foreign key fi1;
-alter table tm1 drop foreign key fm1;
+    alter table ti1 drop foreign key fi1;
+    alter table tm1 drop foreign key fm1;
 
-show create table ti1;
-show create table tm1;
+    show create table ti1;
+    show create table tm1;
 
-delete from ti2 where c = 1;
-delete from tm2 where c = 1;
+    delete from ti2 where c = 1;
+    delete from tm2 where c = 1;
 
-drop table  ti1;
-drop table  tm1;
-drop table  ti2;
-drop table  tm2;
--- @bvt:issue
+    drop table  ti1;
+    drop table  tm1;
+    drop table  ti2;
+    drop table  tm2;
+}
 
 -- alter table add index
 drop table if exists index01;
@@ -448,7 +448,7 @@ insert into t3 values (1, 'a', 'bb', 'ccc');
 insert into t3 values (2, 'aa', 'bbbb', 'cccccc');
 
 -- Should use INPLACE algorithm for multiple varchar length increases
-alter table t3 
+alter table t3
 modify column col1 varchar(50),
 modify column col2 varchar(100) not null,
 modify column col3 varchar(150);
@@ -522,8 +522,8 @@ create table v3 (a int primary key, b int, c text, unique index IdX2(b));
 load data infile  '$resources/load_data/dup_load.csv' into table v3 fields terminated by ',';
 
 insert into v3 values (1, 1, "boroborodesu"); -- dup
--- @pattern
 insert into v3 values (10, 2, "boroborodesu"); -- dup
+| @regex(pattern=r"");
 
 alter table v3 add column d int; -- no dup because we have skipped pk and unique index dedup
 

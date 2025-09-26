@@ -45,8 +45,8 @@ insert into t1 values(5, '1981-09-28','bcvdf', 25);
 insert into t1 values(6, '1981-05-01','green', 26);
 
 ALTER TABLE t1 ADD UNIQUE idx1 (col2, col3);
--- @pattern
 insert into t1 values(7, '1981-05-01','green', 26);
+| @regex(pattern=r"");
 show index from t1;
 select * from t1;
 alter table t1 alter index idx1 invisible;
@@ -225,12 +225,12 @@ alter table t6 add column d int;
 drop table t6;
 drop table t5;
 
--- @bvt:issue#16438
-create table t5(a tinyint, b smallint, primary key(a))partition by hash(a) partitions 4;
-alter table t5 add column c int;
-alter table t5 drop column a;
-drop table t5;
--- @bvt:issue
+@issue(no=16438) {
+    create table t5(a tinyint, b smallint, primary key(a))partition by hash(a) partitions 4;
+    alter table t5 add column c int;
+    alter table t5 drop column a;
+    drop table t5;
+}
 
 create table t5(a int, b int) cluster by a;
 alter table t5 add column c int;

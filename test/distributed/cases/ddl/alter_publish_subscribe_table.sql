@@ -20,8 +20,8 @@ insert into test01 values (1,2,3,4,5,6,7,8,10.2131,3824.34324);
 insert into test01 values (2,3,4,5,6,7,8,9,2131.3242343,-3824.34324);
 show create table test01;
 create publication publication01 database test account all;
--- @ignore:5,6
 show publications;
+| @ignore(5,6);
 
 alter table test01 add primary key (col1, col2);
 show create table test01;
@@ -36,8 +36,8 @@ select * from test01;
 show create table test01;
 alter table test01 modify column col1 decimal;
 show create table test01;
--- @ignore:5,6
 show publications;
+| @ignore(5,6);
 drop publication publication01;
 drop table test01;
 drop database test;
@@ -52,16 +52,16 @@ create table sys_tbl_1(a int primary key, b decimal, c char, d varchar(20) );
 insert into sys_tbl_1 values(1,2,'a','database'),(2,3,'b','test publication'),(3, 4, 'c','324243243');
 create publication sys_pub_1 database sys_db_1 account all;
 select * from sys_tbl_1;
--- @ignore:5,6
 show publications;
+| @ignore(5,6);
 select pub_name, database_name, account_list from mo_catalog.mo_pubs;
--- @session:id=2&user=acc0:root&password=111
-create database sub1 from sys publication sys_pub_1;
-show databases;
--- @session
+@session(id=2, user="acc0:root", password="111") {
+    create database sub1 from sys publication sys_pub_1;
+    show databases;
+}
 
--- @ignore:5,7
 show subscriptions;
+| @ignore(5,7);
 use sys_db_1;
 alter table sys_tbl_1 drop primary key;
 show create table sys_tbl_1;
@@ -71,10 +71,9 @@ alter table sys_tbl_1 add unique index `b`(b,c);
 show create table sys_tbl_1;
 alter table sys_tbl_1 modify column a char after c;
 show create table sys_tbl_1;
-
--- @session:id=2&user=acc0:root&password=111
-drop database sub1;
--- @session
+@session(id=2, user="acc0:root", password="111") {
+    drop database sub1;
+}
 drop account acc0;
 drop publication sys_pub_1;
 drop database sys_db_1;

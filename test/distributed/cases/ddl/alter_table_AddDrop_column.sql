@@ -232,15 +232,15 @@ show create table test01;
 select * from test01;
 drop table test01;
 
--- @bvt:issue#16438
--- partitioned tables do not support column deletion,support column add
-drop table if exists tp5;
-create table tp5 (col1 INT, col2 CHAR(5), col3 DATE) partition by LINEAR key ALGORITHM = 1 (col3) PARTITIONS 5;
-show create table tp5;
-alter table tp5 drop column col1;
-alter table tp5 add column col4 int;
-drop table tp5;
--- @bvt:issue
+@issue(no=16438) {
+    -- partitioned tables do not support column deletion,support column add
+    drop table if exists tp5;
+    create table tp5 (col1 INT, col2 CHAR(5), col3 DATE) partition by LINEAR key ALGORITHM = 1 (col3) PARTITIONS 5;
+    show create table tp5;
+    alter table tp5 drop column col1;
+    alter table tp5 add column col4 int;
+    drop table tp5;
+}
 
 -- permission
 drop role if exists role_r1;
@@ -255,21 +255,19 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant select on table * to role_r1;
 grant show tables on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use test;
-alter table test01 add column col0 int first;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use test;
+    alter table test01 add column col0 int first;
+}
 grant alter table on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use test;
-alter table test01 add column col0 int first;
-alter table test01 add column col3 int unsigned after col1;
-show create table test01;
-alter table test01 drop column col3;
-alter table test01 drop column col1;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use test;
+    alter table test01 add column col0 int first;
+    alter table test01 add column col3 int unsigned after col1;
+    show create table test01;
+    alter table test01 drop column col3;
+    alter table test01 drop column col1;
+}
 create table t(a int);
 drop table test01;
 drop role role_r1;
@@ -296,15 +294,15 @@ insert into transaction03 values(3,1);
 insert into transaction03 values(4,2);
 alter table transaction03 add column decimal after c;
 show create table transaction03;
--- @session:id=1{
-use isolation;
-show create table transaction03;
--- @session}
+@session(id=1) {
+    use isolation;
+    show create table transaction03;
+}
 commit;
--- @session:id=1{
-alter table transaction03 drop column d;
-show create table transaction03;
--- @session}
+@session(id=1) {
+    alter table transaction03 drop column d;
+    show create table transaction03;
+}
 show create table transaction03;
 select * from transaction03;
 drop table transaction03;
@@ -317,16 +315,15 @@ insert into transaction05(b,c) values ('aaaa','2020-09-08');
 
 begin;
 alter table transaction05 rename to `conflict_test`;
-
--- @session:id=1{
-use ww_conflict;
-begin;
-alter table conflict_test drop column b;
--- @session}
+@session(id=1) {
+    use ww_conflict;
+    begin;
+    alter table conflict_test drop column b;
+}
 commit;
--- @session:id=1{
-alter table conflict_test add column colf int first;
--- @session}
+@session(id=1) {
+    alter table conflict_test add column colf int first;
+}
 select * from conflict_test;
 show create table conflict_test;
 drop table conflict_test;
@@ -433,11 +430,10 @@ insert into transaction03 values(3,1);
 insert into transaction03 values(4,2);
 alter table transaction03 rename to `transaction04`;
 select * from transaction04;
-
--- @session:id=1{
-use isolation;
-select * from transaction04;
--- @session}
+@session(id=1) {
+    use isolation;
+    select * from transaction04;
+}
 commit;
 
 select * from transaction04;
@@ -451,16 +447,15 @@ insert into transaction05(b,c) values ('aaaa','2020-09-08');
 
 begin;
 alter table transaction05 rename to `conflict_test`;
-
--- @session:id=1{
-use ww_conflict;
-begin;
-alter table conflict_test add column colf int first;
--- @session}
+@session(id=1) {
+    use ww_conflict;
+    begin;
+    alter table conflict_test add column colf int first;
+}
 commit;
--- @session:id=1{
-alter table conflict_test add column colf int first;
--- @session}
+@session(id=1) {
+    alter table conflict_test add column colf int first;
+}
 select * from conflict_test;
 show create table conflict_test;
 drop table conflict_test;
@@ -559,19 +554,17 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant select on table * to role_r1;
 grant show tables on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use test;
-alter table rename01 rename to newRename;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use test;
+    alter table rename01 rename to newRename;
+}
 grant alter table on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use test;
-alter table rename01 rename to newRename;
-alter table newRename rename to `newRename`;
-show create table newRename;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use test;
+    alter table rename01 rename to newRename;
+    alter table newRename rename to `newRename`;
+    show create table newRename;
+}
 drop table newRename;
 drop role role_r1;
 drop user role_u1;

@@ -81,23 +81,23 @@ select * from test08;
 drop table test07;
 drop table test08;
 
--- @bvt:issue#7889
-drop table if exists test07;
-create temporary table test07(col1 int unique key , col2 decimal, col3 char, col4 varchar(20), col5 text, col6 double, unique index(col1, col2));
-insert into test07 values (1, 2, 'a', '23eiojf', 'r23v324r23rer', 3923.324);
-insert into test07 values (2, 3, 'b', '32r32r', 'database', 1111111);
-insert into test07 values (3, null, null, null, null, null);
-drop table if exists test08;
-create table test08 like test07;
-show create table test07;
-show create table test08;
-desc test07;
-desc test08;
-select * from test07;
-select * from test08;
-drop table test07;
-drop table test08;
--- @bvt:issue
+@issue(no=7889) {
+    drop table if exists test07;
+    create temporary table test07(col1 int unique key , col2 decimal, col3 char, col4 varchar(20), col5 text, col6 double, unique index(col1, col2));
+    insert into test07 values (1, 2, 'a', '23eiojf', 'r23v324r23rer', 3923.324);
+    insert into test07 values (2, 3, 'b', '32r32r', 'database', 1111111);
+    insert into test07 values (3, null, null, null, null, null);
+    drop table if exists test08;
+    create table test08 like test07;
+    show create table test07;
+    show create table test08;
+    desc test07;
+    desc test08;
+    select * from test07;
+    select * from test08;
+    drop table test07;
+    drop table test08;
+}
 
 -- table with foreign key, then create table like
 drop table if exists foreign01;

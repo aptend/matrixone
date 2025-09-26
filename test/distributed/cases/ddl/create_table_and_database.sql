@@ -41,9 +41,9 @@ drop role if exists role112233;
 create role role112233;
 grant SHOW DATABASES, CREATE DATABASE, DROP DATABASE, CONNECT on account * to role112233;
 create user uuu123 identified by "111" default role role112233;
--- @session:id=1&user=uuu123&password=111
-create database `中文库`;
-drop database `中文库`;
--- @session
+@session(id=1, user="uuu123", password="111") {
+    create database `中文库`;
+    drop database `中文库`;
+}
 drop user uuu123;
 drop role role112233;

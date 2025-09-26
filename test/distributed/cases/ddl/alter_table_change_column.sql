@@ -581,8 +581,8 @@ insert into primary01 values (1, 'wq432r43rf32y2493821ijfk2env3ui4y33i24');
 insert into primary01 values (2, '243ewfvefreverewfcwr');
 alter table primary01 change col1 col1New float primary key;
 show create table primary01;
--- @pattern
 insert into primary01 values (1, '432r2f234day89ujfw42342');
+| @regex(pattern=r"");
 insert into primary01 values (2378.32423, '234242))())_');
 select * from primary01;
 show columns from primary01;
@@ -622,8 +622,8 @@ insert into primary03 values (2, '3e');
 alter table primary03 change col1 col1New int primary key;
 show create table primary03;
 insert into primary03 (col1New, col2) values (3, '*');
--- @pattern
 insert into primary03 values (3, 'assad');
+| @regex(pattern=r"");
 update from primary03 set col2 = 'database' where col1New = 3;
 select * from primary03;
 show columns from primary03;
@@ -639,8 +639,8 @@ insert into primary04 values (2, '324543##');
 alter table primary04 change col1 col1New float;
 alter table primary04 change col2 col2New varbinary(50);
 show create table primary04;
--- @pattern
 insert into primary04 values (1, '324342__');
+| @regex(pattern=r"");
 insert into primary04 values (3, 'qw');
 delete from primary04 where col2 = 'qfreqvreq';
 delete from primary04 where col2New = 'qfreqvreq';
@@ -750,8 +750,8 @@ show create table index02;
 alter table index02 change b bnewNew VARCHAR(20) UNIQUE KEY;
 show index from index02;
 show create table index02;
--- @pattern
 insert into index02 values (4, 'ab', '2000-10-10', 10000);
+| @regex(pattern=r"");
 insert into index02 values (5, 'gh', '1999-12-31', 20000);
 delete from index02 where bnewnew = 'ab';
 update index02 set bnewnew = 'database' where bnewnEW = 'ad';
@@ -1117,18 +1117,16 @@ grant show databases on account * to role_r1;
 grant connect on account * to role_r1;
 grant select on table * to role_r1;
 grant show tables on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use alter_table_change_column;
-alter table test01 change col1 col1New int primary key;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use alter_table_change_column;
+    alter table test01 change col1 col1New int primary key;
+}
 grant alter table on database * to role_r1;
-
--- @session:id=2&user=sys:role_u1:role_r1&password=111
-use alter_table_change_column;
-alter table test01 change col1 int primary key;
-show create table test01;
--- @session
+@session(id=2, user="sys:role_u1:role_r1", password="111") {
+    use alter_table_change_column;
+    alter table test01 change col1 int primary key;
+    show create table test01;
+}
 show create table test01;
 drop table test01;
 drop role role_r1;

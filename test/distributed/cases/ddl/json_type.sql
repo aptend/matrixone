@@ -92,10 +92,10 @@ create table json_table_4(j1 json);
 insert into json_table_4 values('[1, 2,');
 insert into json_table_4 values('{"key1": NULL, "": "value2"}');
 insert into json_table_4 values('');
--- @bvt:issue#16438
-create table json_table_5(j1 json primary key,j2 json default '{"x": 17, "x": "red"}',j3 json not null );
-create table json_table_5(j1 json) partition by hash(j1);
--- @bvt:issue
+@issue(no=16438) {
+    create table json_table_5(j1 json primary key,j2 json default '{"x": 17, "x": "red"}',j3 json not null );
+    create table json_table_5(j1 json) partition by hash(j1);
+}
 select j1 from json_table_1 where j1>'{"": "", "123456": "中文mo"}';
 
 --update all data
@@ -221,7 +221,7 @@ select json_extract('[1,2,3]', '$[0]');
 select json_extract('[1,2,3]', '$[1]');
 select json_extract('[1,2,3]', '$[2]');
 select json_extract('[1,2,3]', '$[3]');
-SELECT JSON_EXTRACT('["apple", "banana", "cherry"]', '$[0]') AS FRUIT; 
+SELECT JSON_EXTRACT('["apple", "banana", "cherry"]', '$[0]') AS FRUIT;
 SELECT JSON_EXTRACT('["apple", "banana", "cherry"]', '$[1]') AS FRUIT;
 select json_extract('[1,2,3]', '$[4]');
 select json_extract('[1,2,3]', '$[5]');

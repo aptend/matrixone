@@ -1,8 +1,8 @@
 -- Attempt to create a composite unique key with VARCHAR and DATETIME, but with duplicates
 DROP TABLE IF EXISTS t0;
 CREATE TABLE t0(
-    col1 VARCHAR(255), 
-    col2 DATETIME, 
+    col1 VARCHAR(255),
+    col2 DATETIME,
     col3 DECIMAL(10,2)
 );
 
@@ -23,8 +23,8 @@ DROP TABLE t0;
 -- Attempt to create a composite unique key with DECIMAL and DATE, but with duplicates
 DROP TABLE IF EXISTS t1;
 CREATE TABLE t1(
-    col1 DECIMAL(5,2), 
-    col2 DATETIME, 
+    col1 DECIMAL(5,2),
+    col2 DATETIME,
     col3 int
 );
 

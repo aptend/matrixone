@@ -1,6 +1,6 @@
--- testcase_2. 
+-- testcase_2.
 -- ENGINE=xxx (InnoDB, MyISAM, ...)
--- DEFAULT CHARSET=xxx (latin1, utf8, ...) COLLATE=utf8mb4_general_ci 
+-- DEFAULT CHARSET=xxx (latin1, utf8, ...) COLLATE=utf8mb4_general_ci
 -- CHARACTER SET xxx (utf8, ...) COLLATE utf8mb4_general_ci
 -- USING xxx (BTREE, HASH, ...)
 -- UNLOCK TABLES and LOCK TABLES

@@ -1,656 +1,821 @@
+#SQL[@1,N27]Result[]
 drop database if exists db6;
+
+#SQL[@2,N19]Result[]
 create database db6;
+
+#SQL[@3,N7]Result[]
 use db6;
+
+#SQL[@5,N23]Result[]
 drop table if exists t1;
+
+#SQL[@6,N170]Result[]
 create table t1(
-deptno int unsigned,
-dname varchar(15),
-loc varchar(50),
-unique key(deptno)
+                   deptno int unsigned,
+                   dname varchar(15),
+                   loc varchar(50),
+                   unique key(deptno)
 );
+
+#SQL[@12,N447]Result[130, 87]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't1' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-deptno    UNIQUE    deptno    1    0        t1    deptno    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+deptno  ¦  UNIQUE  ¦  deptno  ¦  1  ¦  0  ¦    ¦  t1  ¦  deptno  ¦  1  ¦  null
+
+#SQL[@27,N231]Result[132, 64]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't1';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t1    0    db6    deptno    1    deptno    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't1';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t1  ¦  0  ¦  db6  ¦  deptno  ¦  1  ¦  deptno  ¦  
+
+#SQL[@40,N23]Result[]
 drop table if exists t2;
+
+#SQL[@41,N371]Result[]
 create table t2(
-empno int unsigned auto_increment,
-ename varchar(15),
-job varchar(10),
-mgr int unsigned ,
-hiredate date,
-sal decimal(7,2),
-comm decimal(7,2),
-deptno int unsigned,
-primary key(empno)
+                   empno int unsigned auto_increment,
+                   ename varchar(15),
+                   job varchar(10),
+                   mgr int unsigned ,
+                   hiredate date,
+                   sal decimal(7,2),
+                   comm decimal(7,2),
+                   deptno int unsigned,
+                   primary key(empno)
 );
+
+#SQL[@52,N447]Result[130, 89]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't2' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t2    empno    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t2  ¦  empno  ¦  1  ¦  null
+
+#SQL[@67,N231]Result[132, 64]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't2';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t2    0    db6    PRIMARY    1    empno    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't2';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t2  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  empno  ¦  
+
+#SQL[@79,N23]Result[]
 drop table if exists t3;
+
+#SQL[@80,N362]Result[]
 create table t3(
-empno int unsigned,
-ename varchar(15),
-job varchar(10),
-mgr int unsigned ,
-hiredate date,
-sal decimal(7,2),
-comm decimal(7,2),
-deptno int unsigned,
-unique key(empno, ename)
+                   empno int unsigned,
+                   ename varchar(15),
+                   job varchar(10),
+                   mgr int unsigned ,
+                   hiredate date,
+                   sal decimal(7,2),
+                   comm decimal(7,2),
+                   deptno int unsigned,
+                   unique key(empno, ename)
 );
+
+#SQL[@91,N447]Result[130, 84, 84]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't3' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-empno    UNIQUE    empno    1    0        t3    empno    1    null
-empno    UNIQUE    empno    1    0        t3    ename    2    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+empno  ¦  UNIQUE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t3  ¦  empno  ¦  1  ¦  null
+empno  ¦  UNIQUE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t3  ¦  ename  ¦  2  ¦  null
+
+#SQL[@106,N231]Result[132, 62, 62]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't3';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t3    0    db6    empno    1    empno    
-db6    t3    0    db6    empno    2    ename    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't3';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t3  ¦  0  ¦  db6  ¦  empno  ¦  1  ¦  empno  ¦  
+db6  ¦  t3  ¦  0  ¦  db6  ¦  empno  ¦  2  ¦  ename  ¦  
+
+#SQL[@118,N23]Result[]
 drop table if exists t4;
+
+#SQL[@119,N362]Result[]
 create table t4(
-empno int unsigned,
-ename varchar(15),
-job varchar(10),
-mgr int unsigned ,
-hiredate date,
-sal decimal(7,2),
-comm decimal(7,2),
-deptno int unsigned,
-index(empno, ename, job)
+                   empno int unsigned,
+                   ename varchar(15),
+                   job varchar(10),
+                   mgr int unsigned ,
+                   hiredate date,
+                   sal decimal(7,2),
+                   comm decimal(7,2),
+                   deptno int unsigned,
+                   index(empno, ename, job)
 );
+
+#SQL[@130,N447]Result[130, 86, 86, 84]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't4' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-empno    MULTIPLE    empno    1    0        t4    empno    1    null
-empno    MULTIPLE    empno    1    0        t4    ename    2    null
-empno    MULTIPLE    empno    1    0        t4    job    3    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+empno  ¦  MULTIPLE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t4  ¦  empno  ¦  1  ¦  null
+empno  ¦  MULTIPLE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t4  ¦  ename  ¦  2  ¦  null
+empno  ¦  MULTIPLE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t4  ¦  job  ¦  3  ¦  null
+
+#SQL[@145,N231]Result[132, 62, 62, 60]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't4';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t4    1    db6    empno    1    empno    
-db6    t4    1    db6    empno    2    ename    
-db6    t4    1    db6    empno    3    job    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't4';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t4  ¦  1  ¦  db6  ¦  empno  ¦  1  ¦  empno  ¦  
+db6  ¦  t4  ¦  1  ¦  db6  ¦  empno  ¦  2  ¦  ename  ¦  
+db6  ¦  t4  ¦  1  ¦  db6  ¦  empno  ¦  3  ¦  job  ¦  
+
+#SQL[@157,N23]Result[]
 drop table if exists t5;
+
+#SQL[@158,N363]Result[]
 create table t5(
-empno int unsigned,
-ename varchar(15),
-job varchar(10),
-mgr int unsigned ,
-hiredate date,
-sal decimal(7,2),
-comm decimal(7,2),
-deptno int unsigned,
-primary key(empno, ename)
+                   empno int unsigned,
+                   ename varchar(15),
+                   job varchar(10),
+                   mgr int unsigned ,
+                   hiredate date,
+                   sal decimal(7,2),
+                   comm decimal(7,2),
+                   deptno int unsigned,
+                   primary key(empno, ename)
 );
+
+#SQL[@169,N447]Result[130, 89, 89]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't5' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t5    empno    1    null
-PRIMARY    PRIMARY    PRIMARY    1    0        t5    ename    2    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t5  ¦  empno  ¦  1  ¦  null
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t5  ¦  ename  ¦  2  ¦  null
+
+#SQL[@184,N231]Result[132, 64, 64]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't5';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t5    0    db6    PRIMARY    1    empno    
-db6    t5    0    db6    PRIMARY    2    ename    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't5';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t5  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  empno  ¦  
+db6  ¦  t5  ¦  0  ¦  db6  ¦  PRIMARY  ¦  2  ¦  ename  ¦  
+
+#SQL[@196,N23]Result[]
 drop table if exists t6;
+
+#SQL[@197,N317]Result[]
 create table t6(
-empno int unsigned,
-ename varchar(15),
-job varchar(10),
-mgr int unsigned ,
-hiredate date,
-sal decimal(7,2),
-comm decimal(7,2),
-deptno int unsigned
+                   empno int unsigned,
+                   ename varchar(15),
+                   job varchar(10),
+                   mgr int unsigned ,
+                   hiredate date,
+                   sal decimal(7,2),
+                   comm decimal(7,2),
+                   deptno int unsigned
 );
+
+#SQL[@207,N447]Result[]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't6' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
+
+#SQL[@222,N231]Result[]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't6';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
+    information_schema.statistics where table_schema = 'db6' and table_name = 't6';
+
+#SQL[@234,N23]Result[]
 drop table if exists t7;
+
+#SQL[@235,N399]Result[]
 create table t7(
-col1 int unsigned,
-col2 varchar(15),
-col3 varchar(10),
-col4 int unsigned,
-col5 date,
-col6 decimal(7,2),
-col7 decimal(7,2),
-col8 int unsigned,
-unique index(col1,col2),
-unique index(col3,col6)
+                   col1 int unsigned,
+                   col2 varchar(15),
+                   col3 varchar(10),
+                   col4 int unsigned,
+                   col5 date,
+                   col6 decimal(7,2),
+                   col7 decimal(7,2),
+                   col8 int unsigned,
+                   unique index(col1,col2),
+                   unique index(col3,col6)
 );
+
+#SQL[@247,N447]Result[130, 81, 81, 81, 81]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't7' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-col1    UNIQUE    col1    1    0        t7    col1    1    null
-col1    UNIQUE    col1    1    0        t7    col2    2    null
-col3    UNIQUE    col3    1    0        t7    col3    1    null
-col3    UNIQUE    col3    1    0        t7    col6    2    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+col1  ¦  UNIQUE  ¦  col1  ¦  1  ¦  0  ¦    ¦  t7  ¦  col1  ¦  1  ¦  null
+col1  ¦  UNIQUE  ¦  col1  ¦  1  ¦  0  ¦    ¦  t7  ¦  col2  ¦  2  ¦  null
+col3  ¦  UNIQUE  ¦  col3  ¦  1  ¦  0  ¦    ¦  t7  ¦  col3  ¦  1  ¦  null
+col3  ¦  UNIQUE  ¦  col3  ¦  1  ¦  0  ¦    ¦  t7  ¦  col6  ¦  2  ¦  null
+
+#SQL[@262,N231]Result[132, 60, 60, 60, 60]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't7';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t7    0    db6    col1    1    col1    
-db6    t7    0    db6    col1    2    col2    
-db6    t7    0    db6    col3    1    col3    
-db6    t7    0    db6    col3    2    col6    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't7';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t7  ¦  0  ¦  db6  ¦  col1  ¦  1  ¦  col1  ¦  
+db6  ¦  t7  ¦  0  ¦  db6  ¦  col1  ¦  2  ¦  col2  ¦  
+db6  ¦  t7  ¦  0  ¦  db6  ¦  col3  ¦  1  ¦  col3  ¦  
+db6  ¦  t7  ¦  0  ¦  db6  ¦  col3  ¦  2  ¦  col6  ¦  
+
+#SQL[@274,N23]Result[]
 drop table if exists t8;
+
+#SQL[@275,N374]Result[]
 create table t8(
-empno int unsigned primary key,
-ename varchar(15),
-job varchar(10),
-mgr int unsigned ,
-hiredate date,
-sal decimal(7,2),
-comm decimal(7,2),
-deptno int unsigned,
-unique key(empno, ename)
+                   empno int unsigned primary key,
+                   ename varchar(15),
+                   job varchar(10),
+                   mgr int unsigned ,
+                   hiredate date,
+                   sal decimal(7,2),
+                   comm decimal(7,2),
+                   deptno int unsigned,
+                   unique key(empno, ename)
 );
+
+#SQL[@286,N447]Result[130, 84, 84, 89]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't8' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-empno    UNIQUE    empno    1    0        t8    empno    1    null
-empno    UNIQUE    empno    1    0        t8    ename    2    null
-PRIMARY    PRIMARY    PRIMARY    1    0        t8    empno    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+empno  ¦  UNIQUE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t8  ¦  empno  ¦  1  ¦  null
+empno  ¦  UNIQUE  ¦  empno  ¦  1  ¦  0  ¦    ¦  t8  ¦  ename  ¦  2  ¦  null
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t8  ¦  empno  ¦  1  ¦  null
+
+#SQL[@301,N231]Result[132, 62, 62, 64]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't8';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t8    0    db6    empno    1    empno    
-db6    t8    0    db6    empno    2    ename    
-db6    t8    0    db6    PRIMARY    1    empno    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't8';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t8  ¦  0  ¦  db6  ¦  empno  ¦  1  ¦  empno  ¦  
+db6  ¦  t8  ¦  0  ¦  db6  ¦  empno  ¦  2  ¦  ename  ¦  
+db6  ¦  t8  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  empno  ¦  
+
+#SQL[@313,N23]Result[]
 drop table if exists t9;
+
+#SQL[@314,N61]Result[]
 create table t9(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@315,N35]Result[]
 insert into t9 values(1,"Abby", 24);
+
+#SQL[@316,N34]Result[]
 insert into t9 values(2,"Bob", 25);
+
+#SQL[@317,N36]Result[]
 insert into t9 values(3,"Carol", 23);
+
+#SQL[@318,N35]Result[]
 insert into t9 values(4,"Dora", 29);
+
+#SQL[@319,N447]Result[130, 86]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't9' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t9    id    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t9  ¦  id  ¦  1  ¦  null
+
+#SQL[@333,N35]Result[]
 create unique index idx on t9(name);
+
+#SQL[@334,N415]Result[130, 86, 79]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't9' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t9    id    1    null
-idx    UNIQUE    idx    1    0        t9    name    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t9  ¦  id  ¦  1  ¦  null
+idx  ¦  UNIQUE  ¦  idx  ¦  1  ¦  0  ¦    ¦  t9  ¦  name  ¦  1  ¦  null
+
+#SQL[@349,N231]Result[132, 61, 59]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't9';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t9    0    db6    PRIMARY    1    id    
-db6    t9    0    db6    idx    1    name    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't9';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t9  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  id  ¦  
+db6  ¦  t9  ¦  0  ¦  db6  ¦  idx  ¦  1  ¦  name  ¦  
+
+#SQL[@361,N16]Result[21, 19, 18, 20, 19]
 select * from t9;
-id    name    age
-1    Abby    24
-2    Bob    25
-3    Carol    23
-4    Dora    29
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+3  ¦  Carol  ¦  23
+4  ¦  Dora  ¦  29
+
+#SQL[@362,N13]Result[]
 drop table t9;
+
+#SQL[@365,N24]Result[]
 drop table if exists t10;
+
+#SQL[@366,N176]Result[]
 create table t10 (
-col1 bigint primary key,
-col2 varchar(25),
-col3 float,
-col4 varchar(50)
+                     col1 bigint primary key,
+                     col2 varchar(25),
+                     col3 float,
+                     col4 varchar(50)
 );
+
+#SQL[@372,N448]Result[130, 89]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't10' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t10    col1    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t10  ¦  col1  ¦  1  ¦  null
+
+#SQL[@386,N67]Result[]
 create unique index idx on t10(col2) comment 'create varchar index';
+
+#SQL[@387,N448]Result[130, 89, 100]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't10' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t10    col1    1    null
-idx    UNIQUE    idx    1    0    create varchar index    t10    col2    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t10  ¦  col1  ¦  1  ¦  null
+idx  ¦  UNIQUE  ¦  idx  ¦  1  ¦  0  ¦  create varchar index  ¦  t10  ¦  col2  ¦  1  ¦  null
+
+#SQL[@402,N232]Result[132, 64, 80]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't10';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t10    0    db6    PRIMARY    1    col1    
-db6    t10    0    db6    idx    1    col2    create varchar index
+    information_schema.statistics where table_schema = 'db6' and table_name = 't10';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t10  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  col1  ¦  
+db6  ¦  t10  ¦  0  ¦  db6  ¦  idx  ¦  1  ¦  col2  ¦  create varchar index
+
+#SQL[@414,N45]Result[]
 insert into t10 values(1,"Abby", 24,'zbcvdf');
+
+#SQL[@415,N44]Result[]
 insert into t10 values(2,"Bob", 25,'zbcvdf');
+
+#SQL[@416,N46]Result[]
 insert into t10 values(3,"Carol", 23,'zbcvdf');
+
+#SQL[@417,N45]Result[]
 insert into t10 values(4,"Dora", 29,'zbcvdf');
+
+#SQL[@418,N17]Result[34, 31, 30, 32, 31]
 select * from t10;
-col1    col2    col3    col4
-1    Abby    24.0    zbcvdf
-2    Bob    25.0    zbcvdf
-3    Carol    23.0    zbcvdf
-4    Dora    29.0    zbcvdf
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  Abby  ¦  24  ¦  zbcvdf
+2  ¦  Bob  ¦  25  ¦  zbcvdf
+3  ¦  Carol  ¦  23  ¦  zbcvdf
+4  ¦  Dora  ¦  29  ¦  zbcvdf
+
+#SQL[@419,N14]Result[]
 drop table t10;
+
+#SQL[@421,N24]Result[]
 drop table if exists t11;
+
+#SQL[@422,N44]Result[]
 create table t11(a int, b int,c varchar(20));
+
+#SQL[@423,N448]Result[]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't11' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
+
+#SQL[@437,N44]Result[]
 create index x11 ON t11(a) comment 'xxxxxxx';
+
+#SQL[@438,N49]Result[]
 create index x12 ON t11(b, c) comment 'yyyyyyyyy';
+
+#SQL[@439,N448]Result[130, 86, 88, 88]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't11' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-x11    MULTIPLE    x11    1    0    xxxxxxx    t11    a    1    null
-x12    MULTIPLE    x12    1    0    yyyyyyyyy    t11    b    1    null
-x12    MULTIPLE    x12    1    0    yyyyyyyyy    t11    c    2    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+x11  ¦  MULTIPLE  ¦  x11  ¦  1  ¦  0  ¦  xxxxxxx  ¦  t11  ¦  a  ¦  1  ¦  null
+x12  ¦  MULTIPLE  ¦  x12  ¦  1  ¦  0  ¦  yyyyyyyyy  ¦  t11  ¦  b  ¦  1  ¦  null
+x12  ¦  MULTIPLE  ¦  x12  ¦  1  ¦  0  ¦  yyyyyyyyy  ¦  t11  ¦  c  ¦  2  ¦  null
+
+#SQL[@454,N232]Result[132, 64, 66, 66]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't11';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t11    1    db6    x11    1    a    xxxxxxx
-db6    t11    1    db6    x12    1    b    yyyyyyyyy
-db6    t11    1    db6    x12    2    c    yyyyyyyyy
+    information_schema.statistics where table_schema = 'db6' and table_name = 't11';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t11  ¦  1  ¦  db6  ¦  x11  ¦  1  ¦  a  ¦  xxxxxxx
+db6  ¦  t11  ¦  1  ¦  db6  ¦  x12  ¦  1  ¦  b  ¦  yyyyyyyyy
+db6  ¦  t11  ¦  1  ¦  db6  ¦  x12  ¦  2  ¦  c  ¦  yyyyyyyyy
+
+#SQL[@466,N21]Result[]
 drop index x11 on t11;
+
+#SQL[@467,N21]Result[]
 drop index x12 on t11;
+
+#SQL[@468,N448]Result[]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't11' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
+
+#SQL[@482,N14]Result[]
 drop table t11;
+
+#SQL[@484,N232]Result[]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't11';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
+    information_schema.statistics where table_schema = 'db6' and table_name = 't11';
+
+#SQL[@496,N24]Result[]
 drop table if exists t12;
+
+#SQL[@497,N60]Result[]
 create table t12(a int, b int,c varchar(20), primary key(a));
+
+#SQL[@498,N49]Result[]
 create index idx_1 on t12(a, b) comment 'xxxxxxx';
+
+#SQL[@499,N448]Result[130, 86, 90, 90]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't12' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t12    a    1    null
-idx_1    MULTIPLE    idx_1    1    0    xxxxxxx    t12    a    1    null
-idx_1    MULTIPLE    idx_1    1    0    xxxxxxx    t12    b    2    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t12  ¦  a  ¦  1  ¦  null
+idx_1  ¦  MULTIPLE  ¦  idx_1  ¦  1  ¦  0  ¦  xxxxxxx  ¦  t12  ¦  a  ¦  1  ¦  null
+idx_1  ¦  MULTIPLE  ¦  idx_1  ¦  1  ¦  0  ¦  xxxxxxx  ¦  t12  ¦  b  ¦  2  ¦  null
+
+#SQL[@514,N232]Result[132, 61, 66, 66]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't12';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t12    0    db6    PRIMARY    1    a    
-db6    t12    1    db6    idx_1    1    a    xxxxxxx
-db6    t12    1    db6    idx_1    2    b    xxxxxxx
+    information_schema.statistics where table_schema = 'db6' and table_name = 't12';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t12  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  a  ¦  
+db6  ¦  t12  ¦  1  ¦  db6  ¦  idx_1  ¦  1  ¦  a  ¦  xxxxxxx
+db6  ¦  t12  ¦  1  ¦  db6  ¦  idx_1  ¦  2  ¦  b  ¦  xxxxxxx
+
+#SQL[@526,N31]Error[26]
 create index idx_1 on t12(a, b);
 duplicate key name 'idx_1'
+
+#SQL[@527,N448]Result[130, 86, 90, 90]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't12' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t12    a    1    null
-idx_1    MULTIPLE    idx_1    1    0    xxxxxxx    t12    a    1    null
-idx_1    MULTIPLE    idx_1    1    0    xxxxxxx    t12    b    2    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t12  ¦  a  ¦  1  ¦  null
+idx_1  ¦  MULTIPLE  ¦  idx_1  ¦  1  ¦  0  ¦  xxxxxxx  ¦  t12  ¦  a  ¦  1  ¦  null
+idx_1  ¦  MULTIPLE  ¦  idx_1  ¦  1  ¦  0  ¦  xxxxxxx  ¦  t12  ¦  b  ¦  2  ¦  null
+
+#SQL[@542,N232]Result[132, 61, 66, 66]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't12';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t12    0    db6    PRIMARY    1    a    
-db6    t12    1    db6    idx_1    1    a    xxxxxxx
-db6    t12    1    db6    idx_1    2    b    xxxxxxx
+    information_schema.statistics where table_schema = 'db6' and table_name = 't12';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t12  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  a  ¦  
+db6  ¦  t12  ¦  1  ¦  db6  ¦  idx_1  ¦  1  ¦  a  ¦  xxxxxxx
+db6  ¦  t12  ¦  1  ¦  db6  ¦  idx_1  ¦  2  ¦  b  ¦  xxxxxxx
+
+#SQL[@554,N23]Result[]
 drop index idx_1 on t12;
+
+#SQL[@555,N448]Result[130, 86]
 select
-`idx`.`name`,
-`idx`.`type`,
-`idx`.`name`,
-`idx`.`is_visible`,
-`idx`.`hidden`,
-`idx`.`comment`,
-`tbl`.`relname`,
-`idx`.`column_name`,
-`idx`.`ordinal_position`,
-`idx`.`options`
+    `idx`.`name`,
+    `idx`.`type`,
+    `idx`.`name`,
+    `idx`.`is_visible`,
+    `idx`.`hidden`,
+    `idx`.`comment`,
+    `tbl`.`relname`,
+    `idx`.`column_name`,
+    `idx`.`ordinal_position`,
+    `idx`.`options`
 from
-`mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
+    `mo_catalog`.`mo_indexes` `idx` join `mo_catalog`.`mo_tables` `tbl` on (`idx`.`table_id` = `tbl`.`rel_id`)
 where  `tbl`.`relname` = 't12' and `tbl`.`reldatabase` = 'db6' and `idx`.`column_name` NOT LIKE '__mo_alias_%';
-name    type    name    is_visible    hidden    comment    relname    column_name    ordinal_position    options
-PRIMARY    PRIMARY    PRIMARY    1    0        t12    a    1    null
+name  ¦  type  ¦  name  ¦  is_visible  ¦  hidden  ¦  comment  ¦  relname  ¦  column_name  ¦  ordinal_position  ¦  options
+PRIMARY  ¦  PRIMARY  ¦  PRIMARY  ¦  1  ¦  0  ¦    ¦  t12  ¦  a  ¦  1  ¦  null
+
+#SQL[@570,N232]Result[132, 61]
 select
-table_schema,
-table_name,
-non_unique,
-index_schema,
-index_name,
-seq_in_index,
-column_name,
-index_comment
+    table_schema,
+    table_name,
+    non_unique,
+    index_schema,
+    index_name,
+    seq_in_index,
+    column_name,
+    index_comment
 from
-information_schema.statistics where table_schema = 'db6' and table_name = 't12';
-table_schema    table_name    non_unique    index_schema    index_name    seq_in_index    column_name    index_comment
-db6    t12    0    db6    PRIMARY    1    a    
+    information_schema.statistics where table_schema = 'db6' and table_name = 't12';
+table_schema  ¦  table_name  ¦  non_unique  ¦  index_schema  ¦  index_name  ¦  seq_in_index  ¦  column_name  ¦  index_comment
+db6  ¦  t12  ¦  0  ¦  db6  ¦  PRIMARY  ¦  1  ¦  a  ¦  
+
+#SQL[@582,N23]Error[38]
 drop index idx_1 on t12;
 internal error: not found index: idx_1
+
+#SQL[@583,N14]Result[]
 drop table t12;
+
+#SQL[@584,N17]Result[]
 drop database db6;
+

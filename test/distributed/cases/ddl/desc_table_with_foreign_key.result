@@ -1,33 +1,85 @@
+#SQL[@1,N27]Result[]
 drop database if exists db1;
+
+#SQL[@2,N19]Result[]
 create database db1;
+
+#SQL[@3,N7]Result[]
 use db1;
+
+#SQL[@4,N29]Result[]
 drop table if exists tb_empt6;
+
+#SQL[@5,N29]Result[]
 drop table if exists tb_dept1;
+
+#SQL[@6,N94]Result[]
 CREATE TABLE tb_dept1(id INT(11) PRIMARY KEY, name VARCHAR(22) NOT NULL,location VARCHAR(50) );
+
+#SQL[@7,N159]Result[]
 CREATE TABLE tb_emp6 (id INT(11) PRIMARY KEY,name VARCHAR(25),deptId INT(11),salary FLOAT,CONSTRAINT fk_emp_dept1 FOREIGN KEY(deptId) REFERENCES tb_dept1(id) );
+
+#SQL[@8,N12]Result[71, 54, 58, 59, 57]
 desc tb_emp6;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null        
-name    VARCHAR(25)    YES        null        
-deptId    INT(32)    YES    MUL    null        
-salary    FLOAT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+name  ¦  VARCHAR(25)  ¦  YES  ¦    ¦  null  ¦    ¦  
+deptId  ¦  INT(32)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+salary  ¦  FLOAT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@9,N25]Result[23, 295]
 show create table tb_emp6;
-Table    Create Table
-tb_emp6    CREATE TABLE `tb_emp6` (\n  `id` int NOT NULL,\n  `name` varchar(25) DEFAULT NULL,\n  `deptId` int DEFAULT NULL,\n  `salary` float DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  CONSTRAINT `fk_emp_dept1` FOREIGN KEY (`deptId`) REFERENCES `tb_dept1` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+tb_emp6  ¦  CREATE TABLE `tb_emp6` (
+  `id` int NOT NULL,
+  `name` varchar(25) DEFAULT NULL,
+  `deptId` int DEFAULT NULL,
+  `salary` float DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_emp_dept1` FOREIGN KEY (`deptId`) REFERENCES `tb_dept1` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@10,N17]Result[]
 drop database db1;
+
+#SQL[@12,N27]Result[]
 drop database if exists db2;
+
+#SQL[@13,N19]Result[]
 create database db2;
+
+#SQL[@14,N7]Result[]
 use db2;
+
+#SQL[@15,N23]Result[]
 drop table if exists t1;
+
+#SQL[@16,N23]Result[]
 drop table if exists t2;
+
+#SQL[@17,N48]Result[]
 create table t1(a int primary key, b varchar(5));
+
+#SQL[@18,N92]Result[]
 create table t2(a int ,b varchar(5), c int, constraint `c1` foreign key(c) references t1(a));
+
+#SQL[@19,N7]Result[71, 51, 54, 54]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null        
-b    VARCHAR(5)    YES        null        
-c    INT(32)    YES    MUL    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  VARCHAR(5)  ¦  YES  ¦    ¦  null  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+
+#SQL[@20,N20]Result[23, 204]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` int DEFAULT NULL,\n  `b` varchar(5) DEFAULT NULL,\n  `c` int DEFAULT NULL,\n  CONSTRAINT `c1` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` int DEFAULT NULL,
+  `b` varchar(5) DEFAULT NULL,
+  `c` int DEFAULT NULL,
+  CONSTRAINT `c1` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@21,N17]Result[]
 drop database db2;
+

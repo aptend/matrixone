@@ -1,97 +1,157 @@
+#SQL[@1,N39]Result[]
 create table tt(aa int, bb int, cc int);
+
+#SQL[@2,N31]Result[]
 insert into tt values (1, 1, 1);
+
+#SQL[@3,N16]Result[18, 15]
 select * from tt;
-aa    bb    cc
-1    1    1
+aa  ¦  bb  ¦  cc
+1  ¦  1  ¦  1
+
+#SQL[@4,N17]Result[2, 1]
 select aa from tt;
 aa
 1
+
+#SQL[@5,N17]Result[2, 1]
 select aA from tt;
 aA
 1
+
+#SQL[@6,N23]Result[8, 1]
 select count(*) from tt;
 count(*)
 1
+
+#SQL[@7,N24]Result[8, 1]
 select COUNT(*)  from tt;
 COUNT(*)
 1
+
+#SQL[@8,N17]Result[2, 1]
 select aa from tt;
 aa
 1
+
+#SQL[@9,N17]Result[2, 1]
 select aA from tt;
 aA
 1
+
+#SQL[@10,N17]Result[2, 1]
 select AA from tt;
 AA
 1
+
+#SQL[@11,N17]Result[2, 1]
 select Aa from tt;
 Aa
 1
+
+#SQL[@12,N23]Result[8, 1]
 select count(*) from tt;
 count(*)
 1
+
+#SQL[@13,N24]Result[8, 1]
 select COUNT(*)  from tt;
 COUNT(*)
 1
+
+#SQL[@14,N24]Result[8, 1]
 select cOuNt(*)  from tt;
 cOuNt(*)
 1
+
+#SQL[@15,N13]Result[]
 drop table tt;
+
+#SQL[@17,N23]Result[]
 drop table if exists t1;
+
+#SQL[@18,N41]Result[]
 create table t1(
 aa int,
 bb varchar(25)
 );
+
+#SQL[@22,N31]Result[]
 insert into  t1 values (0, 'a');
+
+#SQL[@23,N32]Result[]
 insert into  t1 values (1, NULL);
+
+#SQL[@24,N35]Result[]
 insert into  t1 values (NULL, NULL);
+
+#SQL[@25,N34]Result[]
 insert into  t1 values (null, 'b');
+
+#SQL[@26,N16]Result[10, 8, 11, 14, 11]
 select * from t1;
-aa    bb
-0    a
-1    null
-null    null
-null    b
+aa  ¦  bb
+0  ¦  a
+1  ¦  null
+null  ¦  null
+null  ¦  b
+
+#SQL[@27,N30]Result[15, 1, 1, 1, 1]
 select coalesCE(Aa, 1) from t1;
 coalesCE(Aa, 1)
 0
 1
 1
 1
+
+#SQL[@28,N30]Result[15, 1, 1, 1, 1]
 select coalEsCE(aA, 1) from t1;
 coalEsCE(aA, 1)
 0
 1
 1
 1
+
+#SQL[@29,N32]Result[15, 1, 1, 1, 1]
 select cOAlesce(bB, '1') from t1;
 cOAlesce(bB, 1)
 a
 1
 1
 b
+
+#SQL[@30,N16]Result[10, 8, 11, 14, 11]
 select * from t1;
-aa    bb
-0    a
-1    null
-null    null
-null    b
+aa  ¦  bb
+0  ¦  a
+1  ¦  null
+null  ¦  null
+null  ¦  b
+
+#SQL[@31,N30]Result[15, 1, 1, 1, 1]
 select coalesCE(Aa, 1) from t1;
 coalesCE(Aa, 1)
 0
 1
 1
 1
+
+#SQL[@32,N30]Result[15, 1, 1, 1, 1]
 select coalEsCE(aA, 1) from t1;
 coalEsCE(aA, 1)
 0
 1
 1
 1
+
+#SQL[@33,N32]Result[15, 1, 1, 1, 1]
 select cOAlesce(bB, '1') from t1;
 cOAlesce(bB, 1)
 a
 1
 1
 b
+
+#SQL[@34,N13]Result[]
 drop table t1;
+

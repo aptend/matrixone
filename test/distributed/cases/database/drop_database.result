@@ -1,7 +1,16 @@
+#SQL[@3,N30]Result[]
 drop database if exists test01;
+
+#SQL[@4,N37]Result[]
 drop database if exists drop_database;
+
+#SQL[@8,N22]Result[]
 create database test01;
+
+#SQL[@9,N20]Result[]
 drop database test01;
+
+#SQL[@10,N14]Result[8, 18, 10, 8, 7, 5, 6, 14]
 show databases;
 Database
 information_schema
@@ -11,3 +20,4 @@ mo_task
 mysql
 system
 system_metrics
+

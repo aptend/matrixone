@@ -1,22 +1,38 @@
+#SQL[@1,N8]Result[]
 use tpch;
+
+#SQL[@2,N29]Result[8, 3]
 select count(*) from customer;
 count(*)
 150
+
+#SQL[@3,N29]Result[8, 4]
 select count(*) from lineitem;
 count(*)
 6005
+
+#SQL[@4,N27]Result[8, 2]
 select count(*) from nation;
 count(*)
 25
+
+#SQL[@5,N27]Result[8, 4]
 select count(*) from orders;
 count(*)
 1500
+
+#SQL[@6,N25]Result[8, 3]
 select count(*) from part;
 count(*)
 200
+
+#SQL[@7,N29]Result[8, 3]
 select count(*) from partsupp;
 count(*)
 800
+
+#SQL[@8,N29]Result[8, 2]
 select count(*) from supplier;
 count(*)
 10
+

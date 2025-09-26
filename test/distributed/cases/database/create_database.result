@@ -1,13 +1,34 @@
+#SQL[@3,N30]Result[]
 drop database if exists test01;
+
+#SQL[@4,N30]Result[]
 drop database if exists test03;
+
+#SQL[@5,N30]Result[]
 drop database if exists test04;
+
+#SQL[@6,N30]Result[]
 drop database if exists test05;
+
+#SQL[@7,N41]Result[]
 drop database if exists `测试数据库`;
+
+#SQL[@8,N105]Result[]
 drop database if exists t01234567890123456789012345678901234567890123456789012345678901234567890123456789;
+
+#SQL[@13,N22]Result[]
 create database test01;
+
+#SQL[@14,N36]Result[]
 create database IF NOT EXISTS test01;
+
+#SQL[@18,N33]Result[]
 create database `测试数据库`;
+
+#SQL[@27,N97]Result[]
 create database t01234567890123456789012345678901234567890123456789012345678901234567890123456789;
+
+#SQL[@32,N14]Result[8, 15, 18, 10, 8, 7, 5, 6, 14, 81, 6, 15]
 show databases;
 Database
 create_database
@@ -21,18 +42,44 @@ system_metrics
 t01234567890123456789012345678901234567890123456789012345678901234567890123456789
 test01
 测试数据库
+
+#SQL[@33,N30]Result[]
 drop database if exists test01;
+
+#SQL[@34,N30]Result[]
 drop database if exists test03;
+
+#SQL[@35,N30]Result[]
 drop database if exists test04;
+
+#SQL[@36,N30]Result[]
 drop database if exists test05;
+
+#SQL[@37,N41]Result[]
 drop database if exists `测试数据库`;
+
+#SQL[@38,N105]Result[]
 drop database if exists t01234567890123456789012345678901234567890123456789012345678901234567890123456789;
+
+#SQL[@39,N36]Result[]
 drop database if exists `TPCH_0.01G`;
+
+#SQL[@40,N42]Result[]
 create database if not exists `TPCH_0.01G`;
+
+#SQL[@41,N16]Result[]
 use `TPCH_0.01G`;
+
+#SQL[@42,N36]Result[]
 drop database if exists `TPCH_0.01G`;
+
+#SQL[@43,N27]Result[]
 drop database if exists db1;
+
+#SQL[@44,N33]Result[]
 create database if not exists db1;
+
+#SQL[@45,N12]Result[8, 15, 3, 18, 10, 8, 7, 5, 6, 14]
 show schemas;
 Database
 create_database
@@ -44,4 +91,7 @@ mo_task
 mysql
 system
 system_metrics
+
+#SQL[@46,N27]Result[]
 drop database if exists db1;
+

@@ -1,56 +1,162 @@
+#SQL[@2,N64]Result[]
 create account default_1 ADMIN_NAME admin IDENTIFIED BY '111111';
+
+#SQL[@4,N17]Result[]
 create role role1;
+
+#SQL[@5,N43]Result[]
 grant create database on account * to role1;
+
+#SQL[@6,N59]Result[]
 create user user1 identified by '123456' default role role1;
+
+#SQL[@7,N17]Result[]
 create role role2;
+
+#SQL[@8,N43]Result[]
 grant create database on account * to role2;
+
+#SQL[@9,N59]Result[]
 create user user2 identified by '123456' default role role2;
+
+#SQL[@12,N19]Result[]
 create database db1;
+
+#SQL[@13,N57]Result[]
 alter database db1 set mysql_compatibility_mode = '0.7.0';
+
+#SQL[@16,N57]Error[63]
 alter database db1 set mysql_compatibility_mode = '0.8.0';
 internal error: do not have privileges to alter database config
+
+#SQL[@18,N22]Result[]
 drop account default_1;
+
+#SQL[@20,N31]Result[]
 drop role if exists role1,role2;
+
+#SQL[@21,N67]Result[]
 drop user if exists alter_user1,alter_user2,alter_user3,alter_user4;
+
+#SQL[@23,N24]Result[]
 create database alter_db;
+
+#SQL[@24,N12]Result[]
 use alter_db;
+
+#SQL[@25,N62]Result[]
 alter database alter_db set mysql_compatibility_mode = '1.0.0';
+
+#SQL[@26,N62]Result[]
 alter database alter_db set mysql_compatibility_mode = '0.8.0';
+
+#SQL[@27,N22]Result[]
 drop database alter_db;
+
+#SQL[@30,N43]Result[]
 create user alter_user1 identified by '123';
+
+#SQL[@31,N17]Result[]
 create role role1;
+
+#SQL[@32,N17]Result[]
 create role role2;
+
+#SQL[@33,N31]Result[]
 grant all on account * to role1;
+
+#SQL[@34,N31]Result[]
 grant all on account * to role2;
+
+#SQL[@35,N26]Result[]
 grant role1 to alter_user1;
+
+#SQL[@36,N43]Result[]
 create user alter_user2 identified by '123';
+
+#SQL[@37,N26]Result[]
 grant role2 to alter_user2;
+
+#SQL[@39,N25]Result[]
 create database alter_db1;
+
+#SQL[@40,N13]Result[]
 use alter_db1;
+
+#SQL[@41,N63]Result[]
 alter database alter_db1 set mysql_compatibility_mode = '0.9.0';
+
+#SQL[@44,N13]Result[]
 use alter_db1;
+
+#SQL[@45,N63]Error[63]
 alter database alter_db1 set mysql_compatibility_mode = '0.9.1';
 internal error: do not have privileges to alter database config
+
+#SQL[@47,N21]Result[]
 drop role role1,role2;
+
+#SQL[@48,N33]Result[]
 drop user alter_user1,alter_user2;
+
+#SQL[@49,N23]Result[]
 drop database alter_db1;
+
+#SQL[@52,N67]Result[]
 create account alter_account ADMIN_NAME admin IDENTIFIED BY '12345';
+
+#SQL[@54,N25]Result[]
 create database alter_db2;
+
+#SQL[@55,N13]Result[]
 use alter_db2;
+
+#SQL[@56,N63]Result[]
 alter database alter_db2 set mysql_compatibility_mode = '1.0.0';
+
+#SQL[@57,N23]Result[]
 drop database alter_db2;
+
+#SQL[@62,N43]Result[]
 create user alter_user3 identified by '123';
+
+#SQL[@63,N17]Result[]
 create role role1;
+
+#SQL[@64,N17]Result[]
 create role role2;
+
+#SQL[@65,N31]Result[]
 grant all on account * to role1;
+
+#SQL[@66,N31]Result[]
 grant all on account * to role2;
+
+#SQL[@67,N26]Result[]
 grant role1 to alter_user3;
+
+#SQL[@68,N43]Result[]
 create user alter_user4 identified by '123';
+
+#SQL[@69,N26]Result[]
 grant role2 to alter_user4;
+
+#SQL[@72,N25]Result[]
 create database alter_db3;
+
+#SQL[@73,N13]Result[]
 use alter_db3;
+
+#SQL[@74,N63]Result[]
 alter database alter_db3 set mysql_compatibility_mode = '1.1.0';
+
+#SQL[@77,N13]Result[]
 use alter_db3;
+
+#SQL[@78,N63]Error[63]
 alter database alter_db3 set mysql_compatibility_mode = '1.0.1';
 internal error: do not have privileges to alter database config
+
+#SQL[@80,N26]Result[]
 drop account alter_account;
+

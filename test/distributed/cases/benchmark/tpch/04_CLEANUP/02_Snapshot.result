@@ -1,213 +1,359 @@
+#SQL[@2,N63]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_snapshot'};
 count(*)
 150
+
+#SQL[@3,N63]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_snapshot'};
 count(*)
 150
+
+#SQL[@4,N63]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_snapshot'};
 count(*)
 150
+
+#SQL[@5,N63]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_snapshot'};
 count(*)
 150
+
+#SQL[@6,N63]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_snapshot'};
 count(*)
 150
+
+#SQL[@8,N63]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_snapshot'};
 count(*)
 6005
+
+#SQL[@9,N63]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_snapshot'};
 count(*)
 6005
+
+#SQL[@10,N63]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_snapshot'};
 count(*)
 6005
+
+#SQL[@11,N63]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_snapshot'};
 count(*)
 6005
+
+#SQL[@12,N63]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_snapshot'};
 count(*)
 6005
+
+#SQL[@14,N61]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_snapshot'};
 count(*)
 25
+
+#SQL[@15,N61]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_snapshot'};
 count(*)
 25
+
+#SQL[@16,N61]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_snapshot'};
 count(*)
 25
+
+#SQL[@17,N61]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_snapshot'};
 count(*)
 25
+
+#SQL[@18,N61]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_snapshot'};
 count(*)
 25
+
+#SQL[@20,N61]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_snapshot'};
 count(*)
 1500
+
+#SQL[@21,N61]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_snapshot'};
 count(*)
 1500
+
+#SQL[@22,N61]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_snapshot'};
 count(*)
 1500
+
+#SQL[@23,N61]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_snapshot'};
 count(*)
 1500
+
+#SQL[@24,N61]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_snapshot'};
 count(*)
 1500
+
+#SQL[@26,N59]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_snapshot'};
 count(*)
 200
+
+#SQL[@27,N59]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_snapshot'};
 count(*)
 200
+
+#SQL[@28,N59]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_snapshot'};
 count(*)
 200
+
+#SQL[@29,N59]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_snapshot'};
 count(*)
 200
+
+#SQL[@30,N59]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_snapshot'};
 count(*)
 200
+
+#SQL[@32,N63]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_snapshot'};
 count(*)
 800
+
+#SQL[@33,N63]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_snapshot'};
 count(*)
 800
+
+#SQL[@34,N63]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_snapshot'};
 count(*)
 800
+
+#SQL[@35,N63]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_snapshot'};
 count(*)
 800
+
+#SQL[@36,N63]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_snapshot'};
 count(*)
 800
+
+#SQL[@38,N63]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_snapshot'};
 count(*)
 10
+
+#SQL[@39,N63]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_snapshot'};
 count(*)
 10
+
+#SQL[@40,N63]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_snapshot'};
 count(*)
 10
+
+#SQL[@41,N63]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_snapshot'};
 count(*)
 10
+
+#SQL[@42,N63]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_snapshot'};
 count(*)
 10
+
+#SQL[@45,N62]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_cluster'};
 count(*)
 150
+
+#SQL[@46,N62]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_cluster'};
 count(*)
 150
+
+#SQL[@47,N62]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_cluster'};
 count(*)
 150
+
+#SQL[@48,N62]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_cluster'};
 count(*)
 150
+
+#SQL[@49,N62]Result[8, 3]
 select count(*) from tpch.customer {snapshot = 'tpch_cluster'};
 count(*)
 150
+
+#SQL[@51,N62]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_cluster'};
 count(*)
 6005
+
+#SQL[@52,N62]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_cluster'};
 count(*)
 6005
+
+#SQL[@53,N62]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_cluster'};
 count(*)
 6005
+
+#SQL[@54,N62]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_cluster'};
 count(*)
 6005
+
+#SQL[@55,N62]Result[8, 4]
 select count(*) from tpch.lineitem {snapshot = 'tpch_cluster'};
 count(*)
 6005
+
+#SQL[@57,N60]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_cluster'};
 count(*)
 25
+
+#SQL[@58,N60]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_cluster'};
 count(*)
 25
+
+#SQL[@59,N60]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_cluster'};
 count(*)
 25
+
+#SQL[@60,N60]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_cluster'};
 count(*)
 25
+
+#SQL[@61,N60]Result[8, 2]
 select count(*) from tpch.nation {snapshot = 'tpch_cluster'};
 count(*)
 25
+
+#SQL[@63,N60]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_cluster'};
 count(*)
 1500
+
+#SQL[@64,N60]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_cluster'};
 count(*)
 1500
+
+#SQL[@65,N60]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_cluster'};
 count(*)
 1500
+
+#SQL[@66,N60]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_cluster'};
 count(*)
 1500
+
+#SQL[@67,N60]Result[8, 4]
 select count(*) from tpch.orders {snapshot = 'tpch_cluster'};
 count(*)
 1500
+
+#SQL[@69,N58]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_cluster'};
 count(*)
 200
+
+#SQL[@70,N58]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_cluster'};
 count(*)
 200
+
+#SQL[@71,N58]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_cluster'};
 count(*)
 200
+
+#SQL[@72,N58]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_cluster'};
 count(*)
 200
+
+#SQL[@73,N58]Result[8, 3]
 select count(*) from tpch.part {snapshot = 'tpch_cluster'};
 count(*)
 200
+
+#SQL[@75,N62]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_cluster'};
 count(*)
 800
+
+#SQL[@76,N62]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_cluster'};
 count(*)
 800
+
+#SQL[@77,N62]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_cluster'};
 count(*)
 800
+
+#SQL[@78,N62]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_cluster'};
 count(*)
 800
+
+#SQL[@79,N62]Result[8, 3]
 select count(*) from tpch.partsupp {snapshot = 'tpch_cluster'};
 count(*)
 800
+
+#SQL[@81,N62]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_cluster'};
 count(*)
 10
+
+#SQL[@82,N62]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_cluster'};
 count(*)
 10
+
+#SQL[@83,N62]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_cluster'};
 count(*)
 10
+
+#SQL[@84,N62]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_cluster'};
 count(*)
 10
+
+#SQL[@85,N62]Result[8, 2]
 select count(*) from tpch.supplier {snapshot = 'tpch_cluster'};
 count(*)
 10
+
+#SQL[@87,N28]Result[]
 drop database if exists TPCH;
+
+#SQL[@88,N37]Result[]
 drop snapshot if exists tpch_snapshot;
+
+#SQL[@89,N36]Result[]
 drop snapshot if exists tpch_cluster;
+

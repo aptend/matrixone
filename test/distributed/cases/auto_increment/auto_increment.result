@@ -1,211 +1,403 @@
+#SQL[@7,N37]Result[]
 drop table if exists auto_increment01;
+
+#SQL[@8,N84]Result[]
 create table auto_increment01(col1 int auto_increment primary key)auto_increment = 0;
+
+#SQL[@9,N30]Result[]
 select * from auto_increment01;
-col1
+
+#SQL[@10,N37]Result[]
 Insert into auto_increment01 values();
+
+#SQL[@11,N23]Result[16, 1]
 select last_insert_id();
 last_insert_id()
 1
+
+#SQL[@12,N30]Result[4, 1]
 Select * from auto_increment01;
 col1
 1
+
+#SQL[@13,N38]Error[34]
 Insert into auto_increment01 values(1);
 Duplicate entry '1' for key 'col1'
+
+#SQL[@14,N30]Result[4, 1]
 Select * from auto_increment01;
 col1
 1
+
+#SQL[@15,N27]Result[]
 drop table auto_increment01;
+
+#SQL[@19,N37]Result[]
 Drop table if exists auto_increment02;
+
+#SQL[@20,N84]Result[]
 Create table auto_increment02(col1 int auto_increment unique key)auto_increment = 10;
+
+#SQL[@21,N37]Result[]
 Insert into auto_increment02 values();
+
+#SQL[@22,N30]Result[4, 2]
 Select * from auto_increment02;
 col1
 10
+
+#SQL[@23,N39]Error[35]
 Insert into auto_increment02 values(10);
-Duplicate entry '10' for key '(.*)'
+Duplicate entry '10' for key 'col1'
+
+#SQL[@24,N40]Result[]
 insert into auto_increment02 values(100);
+
+#SQL[@25,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 12
+
+#SQL[@26,N30]Result[4, 2, 3]
 Select * from auto_increment02;
 col1
 10
 100
+
+#SQL[@27,N27]Result[]
 Drop table auto_increment02;
+
+#SQL[@32,N37]Result[]
 Drop table if exists auto_increment03;
+
+#SQL[@33,N89]Result[]
 create table auto_increment03(col1 int auto_increment primary key) auto_increment = 10000;
+
+#SQL[@34,N37]Result[]
 Insert into auto_increment03 values();
+
+#SQL[@35,N23]Result[16, 5]
 select last_insert_id();
 last_insert_id()
 10000
+
+#SQL[@36,N42]Error[38]
 Insert into auto_increment03 values(10000);
 Duplicate entry '10000' for key 'col1'
+
+#SQL[@37,N42]Error[38]
 Insert into auto_increment03 values(10000);
 Duplicate entry '10000' for key 'col1'
+
+#SQL[@38,N30]Result[4, 5]
 Select * from auto_increment03;
 col1
 10000
+
+#SQL[@39,N27]Result[]
 Drop table auto_increment03;
+
+#SQL[@43,N37]Result[]
 Drop table if exists auto_increment04;
+
+#SQL[@44,N86]Result[]
 Create table auto_increment04(col1 int primary key auto_increment) auto_increment = 10;
+
+#SQL[@45,N37]Result[]
 insert into auto_increment04 values();
+
+#SQL[@46,N30]Result[4, 2]
 Select * from auto_increment04;
 col1
 10
+
+#SQL[@47,N37]Result[]
 Insert into auto_increment04 values();
+
+#SQL[@48,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 11
+
+#SQL[@49,N40]Result[]
 Insert into auto_increment04 values(100);
+
+#SQL[@50,N40]Result[]
 Insert into auto_increment04 values(200);
+
+#SQL[@51,N39]Error[35]
 Insert into auto_increment04 values(10);
 Duplicate entry '10' for key 'col1'
+
+#SQL[@52,N39]Error[35]
 Insert into auto_increment04 values(11);
 Duplicate entry '11' for key 'col1'
+
+#SQL[@53,N30]Result[4, 2, 2, 3, 3]
 Select * from auto_increment04;
 col1
 10
 11
 100
 200
+
+#SQL[@54,N27]Result[]
 Drop table auto_increment04;
+
+#SQL[@58,N37]Result[]
 Drop table if exists auto_increment05;
+
+#SQL[@59,N88]Result[]
 Create table auto_increment05(col1 int unique key auto_increment) auto_increment = 10000;
+
+#SQL[@60,N37]Result[]
 Insert into auto_increment05 values();
+
+#SQL[@61,N37]Result[]
 Insert into auto_increment05 values();
+
+#SQL[@62,N37]Result[]
 Insert into auto_increment05 values();
+
+#SQL[@63,N23]Result[16, 5]
 select last_insert_id();
 last_insert_id()
 10002
+
+#SQL[@64,N30]Result[4, 5, 5, 5]
 Select * from auto_increment05;
 col1
 10000
 10001
 10002
+
+#SQL[@65,N42]Error[38]
 Insert into auto_increment05 values(10001);
-Duplicate entry '10001' for key '(.*)'
+Duplicate entry '10001' for key 'col1'
+
+#SQL[@66,N42]Error[38]
 Insert into auto_increment05 values(10002);
-Duplicate entry '10002' for key '(.*)'
+Duplicate entry '10002' for key 'col1'
+
+#SQL[@67,N30]Result[4, 5, 5, 5]
 Select * from auto_increment05;
 col1
 10000
 10001
 10002
+
+#SQL[@68,N27]Result[]
 Drop table auto_increment05;
+
+#SQL[@72,N37]Result[]
 Drop table if exists auto_increment06;
+
+#SQL[@73,N94]Result[]
 Create table auto_increment06(col1 int auto_increment primary key) auto_increment = 2147483646;
+
+#SQL[@74,N37]Result[]
 Insert into auto_increment06 values();
+
+#SQL[@75,N37]Result[]
 Insert into auto_increment06 values();
+
+#SQL[@76,N37]Error[50]
 Insert into auto_increment06 values();
-Data truncation: data out of range: data type int, value 2147483648
+data out of range: data type int, value 2147483648
+
+#SQL[@77,N23]Result[16, 10]
 select last_insert_id();
 last_insert_id()
 2147483647
+
+#SQL[@78,N30]Result[4, 10, 10]
 Select * from auto_increment06;
 col1
 2147483646
 2147483647
+
+#SQL[@79,N42]Result[]
 Insert into auto_increment06 values(10001);
+
+#SQL[@80,N42]Result[]
 Insert into auto_increment06 values(10002);
+
+#SQL[@81,N30]Result[4, 10, 10, 5, 5]
 Select * from auto_increment06;
 col1
 2147483646
 2147483647
 10001
 10002
+
+#SQL[@82,N27]Result[]
 Drop table auto_increment06;
+
+#SQL[@86,N37]Result[]
 Drop table if exists auto_increment07;
+
+#SQL[@87,N94]Result[]
 Create table auto_increment07(col1 smallint auto_increment primary key) auto_increment = 32766;
+
+#SQL[@88,N37]Result[]
 Insert into auto_increment07 values();
+
+#SQL[@89,N37]Result[]
 Insert into auto_increment07 values();
+
+#SQL[@90,N37]Error[50]
 Insert into auto_increment07 values();
-Data truncation: data out of range: data type smallint, value 32768
+data out of range: data type smallint, value 32768
+
+#SQL[@91,N23]Result[16, 5]
 select last_insert_id();
 last_insert_id()
 32767
+
+#SQL[@92,N30]Result[4, 5, 5]
 Select * from auto_increment07;
 col1
 32766
 32767
+
+#SQL[@93,N27]Result[]
 Drop table auto_increment07;
+
+#SQL[@97,N37]Result[]
 Drop table if exists auto_increment08;
+
+#SQL[@98,N106]Result[]
 Create table auto_increment08(col1 bigint auto_increment primary key) auto_increment = 9223372036854775806;
+
+#SQL[@99,N37]Result[]
 Insert into auto_increment08 values();
+
+#SQL[@100,N37]Result[]
 Insert into auto_increment08 values();
+
+#SQL[@101,N37]Error[62]
 Insert into auto_increment08 values();
-Data truncation: data out of range: data type bigint, value 9223372036854775808
+data out of range: data type bigint, value 9223372036854775808
+
+#SQL[@102,N23]Result[16, 19]
 select last_insert_id();
 last_insert_id()
 9223372036854775807
+
+#SQL[@103,N30]Result[4, 19, 19]
 Select * from auto_increment08;
 col1
 9223372036854775806
 9223372036854775807
+
+#SQL[@104,N27]Result[]
 Drop table auto_increment08;
+
+#SQL[@108,N37]Result[]
 Drop table if exists auto_increment09;
+
+#SQL[@109,N100]Result[]
 Create table auto_increment09(col1 tinyint unsigned auto_increment primary key) auto_increment = 254;
+
+#SQL[@110,N37]Result[]
 Insert into auto_increment09 values();
+
+#SQL[@111,N37]Result[]
 Insert into auto_increment09 values();
+
+#SQL[@112,N37]Error[56]
 Insert into auto_increment09 values();
-Data truncation: data out of range: data type tinyint unsigned, value 256
+data out of range: data type tinyint unsigned, value 256
+
+#SQL[@113,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 255
+
+#SQL[@114,N30]Result[4, 3, 3]
 Select * from auto_increment09;
 col1
 254
 255
+
+#SQL[@115,N27]Result[]
 Drop table auto_increment09;
-Drop table if exists auto_increment10;
-[unknown result because it is related to issue#10834]
-Create table auto_increment10(col1 int auto_increment, col2 int, unique index(col1)) auto_increment = 254;
-[unknown result because it is related to issue#10834]
-Insert into auto_increment10(col2) values(100);
-[unknown result because it is related to issue#10834]
-Insert into auto_increment10(col2) values(200);
-[unknown result because it is related to issue#10834]
-insert into auto_increment10(col2) values(100);
-[unknown result because it is related to issue#10834]
-select last_insert_id();
-[unknown result because it is related to issue#10834]
-Select * from auto_increment10;
-[unknown result because it is related to issue#10834]
-Drop table auto_increment10;
-[unknown result because it is related to issue#10834]
+
+#SQL[@132,N37]Result[]
 Drop table if exists auto_increment11;
+
+#SQL[@133,N87]Result[]
 Create table auto_increment11(col1 int auto_increment primary key) auto_increment = 100;
+
+#SQL[@134,N37]Result[]
 insert into auto_increment11 values();
+
+#SQL[@135,N37]Result[]
 Insert into auto_increment11 values();
+
+#SQL[@136,N37]Result[]
 Insert into auto_increment11 values();
+
+#SQL[@137,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 102
+
+#SQL[@138,N30]Result[4, 3, 3, 3]
 Select * from auto_increment11;
 col1
 100
 101
 102
+
+#SQL[@139,N45]Result[]
 Delete from auto_increment11 where col1 = 100;
+
+#SQL[@140,N55]Result[]
 Update auto_increment11 set col1 = 200 where col1 = 101;
+
+#SQL[@141,N30]Result[4, 3, 3]
 Select * from auto_increment11;
 col1
 102
 200
+
+#SQL[@142,N27]Result[]
 Drop table auto_increment11;
+
+#SQL[@146,N37]Result[]
 Drop table if exists auto_increment12;
+
+#SQL[@147,N85]Result[]
 create table auto_increment12(col1 int auto_increment primary key)auto_increment = 10;
+
+#SQL[@148,N37]Result[]
 Insert into auto_increment12 values();
+
+#SQL[@149,N37]Result[]
 Insert into auto_increment12 values();
+
+#SQL[@150,N30]Result[4, 2, 2]
 Select * from auto_increment12;
 col1
 10
 11
+
+#SQL[@151,N46]Result[]
 Insert into auto_increment12 values(16.898291);
+
+#SQL[@152,N54]Result[]
 insert into auto_increment12 values(124312.4321424324);
+
+#SQL[@153,N37]Result[]
 insert into auto_increment12 values();
+
+#SQL[@154,N23]Result[16, 6]
 select last_insert_id();
 last_insert_id()
 124313
+
+#SQL[@155,N30]Result[4, 2, 2, 2, 6, 6]
 Select * from auto_increment12;
 col1
 10
@@ -213,486 +405,452 @@ col1
 16
 124312
 124313
+
+#SQL[@156,N27]Result[]
 Drop table auto_increment12;
+
+#SQL[@160,N37]Result[]
 Drop table if exists auto_increment10;
+
+#SQL[@161,N88]Result[]
 Create table auto_increment13(col1 int auto_increment primary key)auto_increment = 30000;
+
+#SQL[@162,N37]Result[]
 Insert into auto_increment13 values();
+
+#SQL[@163,N37]Result[]
 Insert into auto_increment13 values();
+
+#SQL[@164,N30]Result[4, 5, 5]
 select * from auto_increment13;
 col1
 30000
 30001
+
+#SQL[@165,N31]Result[]
 Truncate table auto_increment13;
+
+#SQL[@166,N37]Result[]
 Insert into auto_increment13 values();
+
+#SQL[@167,N23]Result[16, 1]
 select last_insert_id();
 last_insert_id()
 1
+
+#SQL[@168,N42]Result[]
 Insert into auto_increment13 values(10000);
+
+#SQL[@169,N30]Result[4, 1, 5]
 Select * from auto_increment13;
 col1
 1
 10000
+
+#SQL[@170,N27]Result[]
 Drop table auto_increment13;
+
+#SQL[@174,N37]Result[]
 Drop table if exists auto_increment14;
+
+#SQL[@175,N104]Result[]
 Create table auto_increment14(col1 int primary key auto_increment, col2 varchar(10))auto_increment = 100;
+
+#SQL[@176,N56]Result[]
 insert into auto_increment14 values (-2147483648, 'aaa');
+
+#SQL[@177,N41]Error[38]
 select * from auto_increment14 order by c;
 invalid input: column c does not exist
+
+#SQL[@178,N56]Error[55]
 insert into auto_increment14 values (-2147483649, 'aaa');
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@179,N37]Result[]
 Insert into auto_increment14 values();
+
+#SQL[@180,N37]Result[]
 Insert into auto_increment14 values();
+
+#SQL[@181,N23]Result[16, 3]
 Select last_insert_id();
 last_insert_id()
 101
+
+#SQL[@182,N51]Result[]
 insert into auto_increment14(col2) values ('22222');
+
+#SQL[@183,N44]Result[14, 20, 13, 13, 14]
 select * from auto_increment14 order by col1;
-col1    col2
--2147483648    aaa
-100    null
-101    null
-102    22222
+col1  ¦  col2
+-2147483648  ¦  aaa
+100  ¦  null
+101  ¦  null
+102  ¦  22222
+
+#SQL[@184,N49]Result[14, 14, 13, 13, 20]
 select * from auto_increment14 order by col1 desc;
-col1    col2
-102    22222
-101    null
-100    null
--2147483648    aaa
+col1  ¦  col2
+102  ¦  22222
+101  ¦  null
+100  ¦  null
+-2147483648  ¦  aaa
+
+#SQL[@185,N27]Result[]
 Drop table auto_increment14;
+
+#SQL[@189,N37]Result[]
 drop table if exists auto_increment15;
+
+#SQL[@190,N324]Result[]
 create table auto_increment15(
-a int primary key auto_increment,
-b bigint auto_increment,
-c int auto_increment,
-d int auto_increment,
-e bigint auto_increment
+                                 a int primary key auto_increment,
+                                 b bigint auto_increment,
+                                 c int auto_increment,
+                                 d int auto_increment,
+                                 e bigint auto_increment
 );
+
+#SQL[@197,N34]Result[23, 258]
 show create table auto_increment15;
-Table    Create Table
-auto_increment15    CREATE TABLE `auto_increment15` (\n  `a` int NOT NULL AUTO_INCREMENT,\n  `b` bigint NOT NULL AUTO_INCREMENT,\n  `c` int NOT NULL AUTO_INCREMENT,\n  `d` int NOT NULL AUTO_INCREMENT,\n  `e` bigint NOT NULL AUTO_INCREMENT,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+auto_increment15  ¦  CREATE TABLE `auto_increment15` (
+  `a` int NOT NULL AUTO_INCREMENT,
+  `b` bigint NOT NULL AUTO_INCREMENT,
+  `c` int NOT NULL AUTO_INCREMENT,
+  `d` int NOT NULL AUTO_INCREMENT,
+  `e` bigint NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@198,N47]Result[]
 insert into auto_increment15 values (),(),(),();
+
+#SQL[@199,N41]Result[29, 29, 29, 29, 29]
 select * from auto_increment15 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+
+#SQL[@200,N66]Result[]
 insert into auto_increment15 values (NULL, NULL, NULL, NULL, NULL);
+
+#SQL[@201,N41]Result[29, 29, 29, 29, 29, 29]
 select * from auto_increment15 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+
+#SQL[@202,N59]Result[]
 insert into auto_increment15(b,c,d) values (NULL,NULL,NULL);
+
+#SQL[@203,N41]Result[29, 29, 29, 29, 29, 29, 29]
 select * from auto_increment15 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+
+#SQL[@204,N51]Result[]
 insert into auto_increment15(a,b) values (100, 400);
+
+#SQL[@205,N41]Result[29, 29, 29, 29, 29, 29, 29, 33]
 select * from auto_increment15 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+
+#SQL[@206,N58]Result[]
 insert into auto_increment15(c,d,e) values (200, 200, 200);
+
+#SQL[@207,N30]Result[29, 29, 29, 29, 29, 29, 29, 33, 39]
 select * from auto_increment15;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+
+#SQL[@208,N58]Result[]
 insert into auto_increment15(c,d,e) values (200, 400, 600);
+
+#SQL[@209,N30]Result[29, 29, 29, 29, 29, 29, 29, 33, 39, 39]
 select * from auto_increment15;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
-102    402    200    400    600
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+102  ¦  402  ¦  200  ¦  400  ¦  600
+
+#SQL[@210,N27]Result[]
 Drop table auto_increment15;
+
+#SQL[@214,N37]Result[]
 Drop table if exists auto_increment16;
+
+#SQL[@215,N72]Error[199]
 Create table auto_increment16(col1 int auto_increment)auto_increment < 0;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 70 near " < 0;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 70 near \" < 0\";
+
+#SQL[@216,N27]Error[45]
 Drop table auto_increment16;
 no such table auto_increment.auto_increment16
-drop table if exists auto_increment01;
-[unknown result because it is related to issue#10903]
-create temporary table auto_increment01(col1 int auto_increment primary key)auto_increment = 0;
-[unknown result because it is related to issue#10903]
-select * from auto_increment01;
-[unknown result because it is related to issue#10903]
-Insert into auto_increment01 values();
-[unknown result because it is related to issue#10903]
-select last_insert_id();
-[unknown result because it is related to issue#10903]
-Select * from auto_increment01;
-[unknown result because it is related to issue#10903]
-Insert into auto_increment01 values(1);
-[unknown result because it is related to issue#10903]
-Select * from auto_increment01;
-[unknown result because it is related to issue#10903]
-drop table auto_increment01;
-[unknown result because it is related to issue#10903]
-Drop table if exists auto_increment03;
-[unknown result because it is related to issue#10903]
-create temporary table auto_increment03(col1 int auto_increment primary key) auto_increment = 10000;
-[unknown result because it is related to issue#10903]
-Insert into auto_increment03 values();
-[unknown result because it is related to issue#10903]
-Insert into auto_increment03 values(10000);
-[unknown result because it is related to issue#10903]
-Insert into auto_increment03 values(10000);
-[unknown result because it is related to issue#10903]
-Insert into auto_increment03 values();
-[unknown result because it is related to issue#10903]
-select last_insert_id();
-[unknown result because it is related to issue#10903]
-Select * from auto_increment03;
-[unknown result because it is related to issue#10903]
-Drop table auto_increment03;
-[unknown result because it is related to issue#10903]
-Drop table if exists auto_increment04;
-[unknown result because it is related to issue#10903]
-Create temporary table auto_increment04(col1 int primary key auto_increment) auto_increment = 10;
-[unknown result because it is related to issue#10903]
-insert into auto_increment04 values();
-[unknown result because it is related to issue#10903]
-Select * from auto_increment04;
-[unknown result because it is related to issue#10903]
-Insert into auto_increment04 values();
-[unknown result because it is related to issue#10903]
-select last_insert_id();
-[unknown result because it is related to issue#10903]
-Insert into auto_increment04 values(100);
-[unknown result because it is related to issue#10903]
-Insert into auto_increment04 values(200);
-[unknown result because it is related to issue#10903]
-Insert into auto_increment04 values(10);
-[unknown result because it is related to issue#10903]
-Insert into auto_increment04 values(11);
-[unknown result because it is related to issue#10903]
-Select * from auto_increment04;
-[unknown result because it is related to issue#10903]
-Drop table auto_increment04;
-[unknown result because it is related to issue#10903]
-Drop table if exists auto_increment05;
-[unknown result because it is related to issue#10834]
-Create temporary table auto_increment05(col1 int unique key auto_increment) auto_increment = 10000;
-[unknown result because it is related to issue#10834]
-Insert into auto_increment05 values();
-[unknown result because it is related to issue#10834]
-Insert into auto_increment05 values();
-[unknown result because it is related to issue#10834]
-Insert into auto_increment05 values();
-[unknown result because it is related to issue#10834]
-select last_insert_id();
-[unknown result because it is related to issue#10834]
-Select * from auto_increment05;
-[unknown result because it is related to issue#10834]
-Insert into auto_increment05 values(10001);
-[unknown result because it is related to issue#10834]
-Insert into auto_increment05 values(10002);
-[unknown result because it is related to issue#10834]
-Select * from auto_increment05;
-[unknown result because it is related to issue#10834]
-Drop table auto_increment05;
-[unknown result because it is related to issue#10834]
-Drop table if exists auto_increment06;
 
-Create temporary table auto_increment06(col1 int unsigned auto_increment primary key) auto_increment = 2147483646;
-
-Insert into auto_increment06 values();
-
-Insert into auto_increment06 values();
-
-Insert into auto_increment06 values();
-
-select last_insert_id();
-last_insert_id()
-2147483648
-Select * from auto_increment06;
-col1
-2147483646
-2147483647
-2147483648
-Insert into auto_increment06 values(10001);
-
-Insert into auto_increment06 values(10002);
-
-Select * from auto_increment06;
-col1
-10001
-10002
-2147483646
-2147483647
-2147483648
-Drop table auto_increment06;
-
+#SQL[@299,N37]Result[]
 Drop table if exists auto_increment07;
+
+#SQL[@300,N103]Result[]
 Create table auto_increment07(col1 smallint unsigned auto_increment primary key) auto_increment = 65534;
+
+#SQL[@301,N37]Result[]
 Insert into auto_increment07 values();
+
+#SQL[@302,N37]Result[]
 Insert into auto_increment07 values();
+
+#SQL[@303,N37]Error[59]
 Insert into auto_increment07 values();
-Data truncation: data out of range: data type smallint unsigned, value 65536
+data out of range: data type smallint unsigned, value 65536
+
+#SQL[@304,N37]Error[59]
 Insert into auto_increment07 values();
-Data truncation: data out of range: data type smallint unsigned, value 65537
+data out of range: data type smallint unsigned, value 65537
+
+#SQL[@305,N23]Result[16, 5]
 select last_insert_id();
 last_insert_id()
 65535
+
+#SQL[@306,N30]Result[4, 5, 5]
 Select * from auto_increment07;
 col1
 65534
 65535
+
+#SQL[@307,N27]Result[]
 Drop table auto_increment07;
+
+#SQL[@311,N37]Result[]
 Drop table if exists auto_increment08;
+
+#SQL[@312,N115]Result[]
 Create table auto_increment08(col1 bigint unsigned auto_increment primary key) auto_increment = 9223372036854775806;
+
+#SQL[@313,N37]Result[]
 Insert into auto_increment08 values();
+
+#SQL[@314,N37]Result[]
 Insert into auto_increment08 values();
+
+#SQL[@315,N37]Result[]
 Insert into auto_increment08 values();
+
+#SQL[@316,N23]Result[16, 19]
 select last_insert_id();
 last_insert_id()
 9223372036854775808
+
+#SQL[@317,N30]Result[4, 19, 19, 19]
 Select * from auto_increment08;
 col1
 9223372036854775806
 9223372036854775807
 9223372036854775808
+
+#SQL[@318,N27]Result[]
 Drop table auto_increment08;
+
+#SQL[@322,N37]Result[]
 Drop table if exists auto_increment09;
+
+#SQL[@323,N91]Result[]
 Create table auto_increment09(col1 tinyint auto_increment primary key) auto_increment = 254;
+
+#SQL[@324,N37]Error[47]
 Insert into auto_increment09 values();
-Data truncation: data out of range: data type tinyint, value 254
+data out of range: data type tinyint, value 254
+
+#SQL[@325,N37]Error[47]
 Insert into auto_increment09 values();
-Data truncation: data out of range: data type tinyint, value 255
+data out of range: data type tinyint, value 255
+
+#SQL[@326,N37]Error[47]
 Insert into auto_increment09 values();
-Data truncation: data out of range: data type tinyint, value 256
+data out of range: data type tinyint, value 256
+
+#SQL[@327,N23]Result[16, 19]
 select last_insert_id();
 last_insert_id()
 9223372036854775808
+
+#SQL[@328,N30]Result[]
 Select * from auto_increment09;
-col1
+
+#SQL[@329,N27]Result[]
 Drop table auto_increment09;
-Drop table if exists auto_increment10;
-[unknown result because it is related to issue#10834]
-Create temporary table auto_increment10(col1 int auto_increment, col2 int, unique index(col1)) auto_increment = 3267183;
-[unknown result because it is related to issue#10834]
-Insert into auto_increment10(col2) values(100);
-[unknown result because it is related to issue#10834]
-Insert into auto_increment10(col2) values(200);
-[unknown result because it is related to issue#10834]
-insert into auto_increment10(col2) values(100);
-[unknown result because it is related to issue#10834]
-select last_insert_id();
-[unknown result because it is related to issue#10834]
-Select * from auto_increment10;
-[unknown result because it is related to issue#10834]
-Drop table auto_increment10;
-[unknown result because it is related to issue#10834]
-Drop table if exists auto_increment11;
-[unknown result because it is related to issue#10903]
-Create temporary table auto_increment11(col1 int auto_increment primary key) auto_increment = 100;
-[unknown result because it is related to issue#10903]
-insert into auto_increment11 values();
-[unknown result because it is related to issue#10903]
-Insert into auto_increment11 values();
-[unknown result because it is related to issue#10903]
-Insert into auto_increment11 values();
-[unknown result because it is related to issue#10903]
-select last_insert_id();
-[unknown result because it is related to issue#10903]
-Select * from auto_increment11;
-[unknown result because it is related to issue#10903]
-Delete from auto_increment11 where col1 = 100;
-[unknown result because it is related to issue#10903]
-Update auto_increment11 set col1 = 200 where col1 = 101;
-[unknown result because it is related to issue#10834]
-Select * from auto_increment11;
-[unknown result because it is related to issue#10834]
-Drop table auto_increment11;
-[unknown result because it is related to issue#10834]
-Drop table if exists auto_increment12;
 
-create temporary table auto_increment12(col1 int auto_increment primary key)auto_increment = 10;
-
-Insert into auto_increment12 values();
-
-Insert into auto_increment12 values();
-
-Select * from auto_increment12;
-col1
-10
-11
-Insert into auto_increment12 values(16.898291);
-
-insert into auto_increment12 values();
-
-select last_insert_id();
-last_insert_id()
-17
-Select * from auto_increment12;
-col1
-10
-11
-16
-17
-Drop table auto_increment12;
-
+#SQL[@378,N37]Result[]
 Drop table if exists auto_increment13;
+
+#SQL[@379,N88]Result[]
 Create table auto_increment13(col1 int auto_increment primary key)auto_increment = 30000;
+
+#SQL[@380,N37]Result[]
 Insert into auto_increment13 values();
+
+#SQL[@381,N37]Result[]
 Insert into auto_increment13 values();
+
+#SQL[@382,N30]Result[4, 5, 5]
 select * from auto_increment13;
 col1
 30000
 30001
+
+#SQL[@383,N31]Result[]
 Truncate table auto_increment13;
+
+#SQL[@384,N37]Result[]
 Insert into auto_increment13 values();
+
+#SQL[@385,N23]Result[16, 1]
 select last_insert_id();
 last_insert_id()
 1
+
+#SQL[@386,N42]Result[]
 Insert into auto_increment13 values(10000);
+
+#SQL[@387,N30]Result[4, 1, 5]
 Select * from auto_increment13;
 col1
 1
 10000
+
+#SQL[@388,N27]Result[]
 Drop table auto_increment13;
+
+#SQL[@392,N37]Result[]
 Drop table if exists auto_increment14;
+
+#SQL[@393,N104]Result[]
 Create table auto_increment14(col1 int primary key auto_increment, col2 varchar(10))auto_increment = 100;
+
+#SQL[@394,N56]Result[]
 insert into auto_increment14 values (-2147483648, 'aaa');
+
+#SQL[@395,N41]Error[38]
 select * from auto_increment14 order by c;
 invalid input: column c does not exist
+
+#SQL[@396,N56]Error[55]
 insert into auto_increment14 values (-2147483649, 'aaa');
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@397,N37]Result[]
 Insert into auto_increment14 values();
+
+#SQL[@398,N37]Result[]
 Insert into auto_increment14 values();
+
+#SQL[@399,N23]Result[16, 3]
 Select last_insert_id();
 last_insert_id()
 101
+
+#SQL[@400,N51]Result[]
 insert into auto_increment14(col2) values ('22222');
+
+#SQL[@401,N44]Result[14, 20, 13, 13, 14]
 select * from auto_increment14 order by col1;
-col1    col2
--2147483648    aaa
-100    null
-101    null
-102    22222
+col1  ¦  col2
+-2147483648  ¦  aaa
+100  ¦  null
+101  ¦  null
+102  ¦  22222
+
+#SQL[@402,N49]Result[14, 14, 13, 13, 20]
 select * from auto_increment14 order by col1 desc;
-col1    col2
-102    22222
-101    null
-100    null
--2147483648    aaa
+col1  ¦  col2
+102  ¦  22222
+101  ¦  null
+100  ¦  null
+-2147483648  ¦  aaa
+
+#SQL[@403,N27]Result[]
 Drop table auto_increment14;
-drop table if exists auto_increment15;
 
-create temporary table auto_increment15(
-a int primary key auto_increment,
-b bigint auto_increment,
-c int auto_increment,
-d int auto_increment,
-e bigint auto_increment
-)auto_increment = 100;
-
-show create table auto_increment15;
-Table    Create Table
-auto_increment15    CREATE TABLE `auto_increment15` (\n`a` INT NOT NULL AUTO_INCREMENT,\n`b` BIGINT NOT NULL AUTO_INCREMENT,\n`c` INT NOT NULL AUTO_INCREMENT,\n`d` INT NOT NULL AUTO_INCREMENT,\n`e` BIGINT NOT NULL AUTO_INCREMENT,\nPRIMARY KEY (`a`)\n)
-insert into auto_increment15 values (),(),(),();
-
-select * from auto_increment15 order by a;
-a    b    c    d    e
-100    100    100    100    100
-101    101    101    101    101
-102    102    102    102    102
-103    103    103    103    103
-insert into auto_increment15 values (NULL, NULL, NULL, NULL, NULL);
-
-select * from auto_increment15 order by a;
-a    b    c    d    e
-100    100    100    100    100
-101    101    101    101    101
-102    102    102    102    102
-103    103    103    103    103
-104    104    104    104    104
-insert into auto_increment15(b,c,d) values (NULL,NULL,NULL);
-
-select * from auto_increment15 order by a;
-a    b    c    d    e
-100    100    100    100    100
-101    101    101    101    101
-102    102    102    102    102
-103    103    103    103    103
-104    104    104    104    104
-105    105    105    105    105
-insert into auto_increment15(a,b) values (100, 400);
-tae data: duplicate
-select * from auto_increment15 order by a;
-a    b    c    d    e
-100    100    100    100    100
-101    101    101    101    101
-102    102    102    102    102
-103    103    103    103    103
-104    104    104    104    104
-105    105    105    105    105
-insert into auto_increment15(c,d,e) values (200, 200, 200);
-
-select * from auto_increment15;
-a    b    c    d    e
-100    100    100    100    100
-101    101    101    101    101
-102    102    102    102    102
-103    103    103    103    103
-104    104    104    104    104
-105    105    105    105    105
-106    401    200    200    200
-insert into auto_increment15(c,d,e) values (200, 400, 600);
-
-select * from auto_increment15;
-a    b    c    d    e
-100    100    100    100    100
-101    101    101    101    101
-102    102    102    102    102
-103    103    103    103    103
-104    104    104    104    104
-105    105    105    105    105
-106    401    200    200    200
-107    402    200    400    600
-Drop table auto_increment15;
-
+#SQL[@434,N37]Result[]
 Drop table if exists auto_increment16;
+
+#SQL[@435,N82]Error[199]
 Create temporary table auto_increment16(col1 int auto_increment)auto_increment < 0;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 80 near " < 0;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 80 near \" < 0\";
+
+#SQL[@436,N27]Error[45]
 Drop table auto_increment16;
 no such table auto_increment.auto_increment16
+
+#SQL[@439,N37]Result[]
 drop table if exists auto_increment17;
+
+#SQL[@440,N30]Result[]
 set auto_increment_offset = 10;
+
+#SQL[@441,N54]Result[]
 create table auto_increment17(col1 int auto_increment);
+
+#SQL[@442,N37]Result[]
 insert into auto_increment17 values();
+
+#SQL[@443,N30]Result[4, 2]
 select * from auto_increment17;
 col1
 10
+
+#SQL[@444,N27]Result[]
 drop table auto_increment17;
+
+#SQL[@445,N31]Result[]
 set auto_increment_offset = 100;
+
+#SQL[@446,N54]Result[]
 create table auto_increment17(col1 int auto_increment);
+
+#SQL[@447,N37]Result[]
 insert into auto_increment17 values();
+
+#SQL[@448,N30]Result[4, 3]
 select * from auto_increment17;
 col1
 100
+
+#SQL[@449,N27]Result[]
 drop table auto_increment17;
+
+#SQL[@451,N29]Result[]
 set auto_increment_offset = 1;
+

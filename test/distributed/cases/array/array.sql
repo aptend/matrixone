@@ -11,7 +11,7 @@ insert into vec_table values(1, "[1,2,3]", "[4,5,6]");
 select * from vec_table;
 
 set save_query_result = on;
-/* save_result */ select * from vec_table;
+select * from vec_table /* save_result */;
 select * from result_scan(last_query_id()) as u;
 set save_query_result = off;
 
@@ -112,7 +112,7 @@ insert into t7 values(3, "[0.1726299, 3.2908857, 30.433094]","[0.45052445, 2.198
 insert into t7 values(4, "[8.560689, 6.790359, 821.9778]", "[0.46323407, 23.498016, 563.923, 56.076736, 8732.958]");
 select * from t7;
 set save_query_result = on;
-/* save_result */ select * from t7;
+select * from t7 /* save_result */;
 select * from result_scan(last_query_id()) as u;
 set save_query_result = off;
 select a, b + b, c + c from t7;

@@ -1,40 +1,93 @@
+#SQL[@1,N34]Result[]
 create database if not exists test;
+
+#SQL[@2,N8]Result[]
 use test;
+
+#SQL[@3,N34]Result[]
 drop table if exists tlonglonglong;
+
+#SQL[@7,N608]Result[]
 CREATE TABLE table01(
-c1 BIGINT NOT NULL AUTO_INCREMENT,
-c2 VARCHAR(200) NULL,
-c3 VARCHAR(200) NULL,
-c4 VARCHAR(200) NULL,
-c5 VARCHAR(200) NULL,
-c6 TINYINT NULL,
-c7 DATETIME NULL,
-c8 VARCHAR(200) NULL,
-c9 TINYINT NOT NULL,
-PRIMARY KEY (`c1`) USING BTREE
+                              c1 BIGINT NOT NULL AUTO_INCREMENT,
+                              c2 VARCHAR(200) NULL,
+                              c3 VARCHAR(200) NULL,
+                              c4 VARCHAR(200) NULL,
+                              c5 VARCHAR(200) NULL,
+                              c6 TINYINT NULL,
+                              c7 DATETIME NULL,
+                              c8 VARCHAR(200) NULL,
+                              c9 TINYINT NOT NULL,
+                              PRIMARY KEY (`c1`) USING BTREE
 )ENGINE=INNODB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+
+#SQL[@20,N11]Result[14, 7]
 show tables;
 Tables_in_test
 table01
+
+#SQL[@21,N25]Result[23, 353]
 show create table table01;
-Table    Create Table
-table01    CREATE TABLE `table01` (\n  `c1` bigint NOT NULL AUTO_INCREMENT,\n  `c2` varchar(200) DEFAULT NULL,\n  `c3` varchar(200) DEFAULT NULL,\n  `c4` varchar(200) DEFAULT NULL,\n  `c5` varchar(200) DEFAULT NULL,\n  `c6` tinyint DEFAULT NULL,\n  `c7` datetime DEFAULT NULL,\n  `c8` varchar(200) DEFAULT NULL,\n  `c9` tinyint NOT NULL,\n  PRIMARY KEY (`c1`)\n)
+Table  ¦  Create Table
+table01  ¦  CREATE TABLE `table01` (
+  `c1` bigint NOT NULL AUTO_INCREMENT,
+  `c2` varchar(200) DEFAULT NULL,
+  `c3` varchar(200) DEFAULT NULL,
+  `c4` varchar(200) DEFAULT NULL,
+  `c5` varchar(200) DEFAULT NULL,
+  `c6` tinyint DEFAULT NULL,
+  `c7` datetime DEFAULT NULL,
+  `c8` varchar(200) DEFAULT NULL,
+  `c9` tinyint NOT NULL,
+  PRIMARY KEY (`c1`)
+)
+
+#SQL[@22,N18]Result[]
 drop table table01;
+
+#SQL[@25,N28]Result[]
 drop table if exists table02;
+
+#SQL[@26,N66]Result[]
 create table table02(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@27,N40]Result[]
 insert into table02 values(1,"Abby", 24);
+
+#SQL[@28,N39]Result[]
 insert into table02 values(2,"Bob", 25);
+
+#SQL[@29,N41]Result[]
 insert into table02 values(3,"Carol", 23);
+
+#SQL[@30,N40]Result[]
 insert into table02 values(4,"Dora", 29);
+
+#SQL[@31,N40]Result[]
 create unique index idx on table02(name);
+
+#SQL[@32,N21]Result[21, 19, 18, 20, 19]
 select * from table02;
-id    name    age
-1    Abby    24
-2    Bob    25
-3    Carol    23
-4    Dora    29
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+3  ¦  Carol  ¦  23
+4  ¦  Dora  ¦  29
+
+#SQL[@33,N25]Result[23, 172]
 show create table table02;
-Table    Create Table
-table02    CREATE TABLE `table02` (\n  `id` int NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `idx` (`name`)\n)
+Table  ¦  Create Table
+table02  ¦  CREATE TABLE `table02` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx` (`name`)
+)
+
+#SQL[@34,N18]Result[]
 drop table table02;
+
+#SQL[@37,N18]Result[]
 drop database test;
+

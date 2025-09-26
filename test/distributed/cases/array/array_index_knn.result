@@ -1,272 +1,534 @@
+#SQL[@1,N30]Result[]
 SET experimental_ivf_index = 1;
+
+#SQL[@2,N19]Result[]
 SET probe_limit = 1;
+
+#SQL[@5,N30]Result[]
 drop database if exists vecdb3;
+
+#SQL[@6,N22]Result[]
 create database vecdb3;
+
+#SQL[@7,N10]Result[]
 use vecdb3;
+
+#SQL[@10,N23]Result[]
 drop table if exists t6;
+
+#SQL[@11,N61]Result[]
 create table t6(a int primary key,b vecf32(4), c varchar(3) );
+
+#SQL[@12,N43]Result[]
 insert into t6 values(1, "[1,0,0,0]" , "1");
+
+#SQL[@13,N42]Result[]
 insert into t6 values(2, "[2,0,0,0]", "2");
+
+#SQL[@14,N42]Result[]
 insert into t6 values(3, "[3,0,0,0]", "3");
+
+#SQL[@15,N44]Result[]
 insert into t6 values(4, "[11,11,0,0]", "4");
+
+#SQL[@16,N44]Result[]
 insert into t6 values(5, "[12,12,0,0]", "5");
+
+#SQL[@17,N44]Result[]
 insert into t6 values(6, "[13,13,0,0]", "6");
+
+#SQL[@18,N30]Result[]
 SET experimental_ivf_index = 0;
+
+#SQL[@20,N72]Error[40]
 create index idx6 using ivfflat on t6(b) lists=2 op_type "vector_l2_ops";
 internal error: IVF index is not enabled
+
+#SQL[@21,N30]Result[]
 SET experimental_ivf_index = 1;
+
+#SQL[@23,N72]Result[]
 create index idx6 using ivfflat on t6(b) lists=2 op_type "vector_l2_ops";
+
+#SQL[@24,N64]Result[8, 19, 19, 19]
 select a, b from t6 order by l2_distance(b, "[1,0,0,0]") limit 4;
-a    b
-1    [1, 0, 0, 0]
-2    [2, 0, 0, 0]
-3    [3, 0, 0, 0]
+a  ¦  b
+1  ¦  [1, 0, 0, 0]
+2  ¦  [2, 0, 0, 0]
+3  ¦  [3, 0, 0, 0]
+
+#SQL[@27,N23]Result[]
 drop table if exists t1;
+
+#SQL[@28,N61]Result[]
 create table t1(a int primary key,b vecf32(4), c varchar(3) );
+
+#SQL[@29,N43]Result[]
 insert into t1 values(1, "[1,0,0,0]" , "1");
+
+#SQL[@30,N42]Result[]
 insert into t1 values(2, "[2,0,0,0]", "2");
+
+#SQL[@31,N42]Result[]
 insert into t1 values(3, "[3,0,0,0]", "3");
+
+#SQL[@32,N44]Result[]
 insert into t1 values(4, "[11,11,0,0]", "4");
+
+#SQL[@33,N44]Result[]
 insert into t1 values(5, "[12,12,0,0]", "5");
+
+#SQL[@34,N44]Result[]
 insert into t1 values(6, "[13,13,0,0]", "6");
+
+#SQL[@35,N48]Result[]
 insert into t1 values(7, "[111,111,111,0]", "7");
+
+#SQL[@36,N48]Result[]
 insert into t1 values(8, "[112,112,112,0]", "8");
+
+#SQL[@37,N48]Result[]
 insert into t1 values(9, "[113,113,113,0]", "9");
+
+#SQL[@38,N70]Result[8, 25, 25, 25]
 select a, b from t1 order by l2_distance(b, "[111,111,111,0]") limit 3;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+
+#SQL[@40,N72]Result[]
 create index idx1 using ivfflat on t1(b) lists=3 op_type "vector_l2_ops";
+
+#SQL[@41,N70]Result[8, 25, 25, 25]
 select a, b from t1 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+
+#SQL[@43,N50]Result[]
 insert into t1 values(10, "[114,114,114,0]", "10");
+
+#SQL[@44,N70]Result[8, 25, 25, 25, 26]
 select a, b from t1 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
-10    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@47,N71]Result[15, 32, 32, 32, 34]
 select a,b,c from t1 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b    c
-7    [111, 111, 111, 0]    7
-8    [112, 112, 112, 0]    8
-9    [113, 113, 113, 0]    9
-10    [114, 114, 114, 0]    10
+a  ¦  b  ¦  c
+7  ¦  [111, 111, 111, 0]  ¦  7
+8  ¦  [112, 112, 112, 0]  ¦  8
+9  ¦  [113, 113, 113, 0]  ¦  9
+10  ¦  [114, 114, 114, 0]  ¦  10
+
+#SQL[@50,N56]Result[]
 insert into t1 values(11, "[1111,1111,1111,1111]", "11");
+
+#SQL[@51,N56]Result[]
 insert into t1 values(12, "[1112,1112,1112,1112]", "12");
+
+#SQL[@52,N56]Result[]
 insert into t1 values(13, "[1113,1113,1113,1113]", "13");
+
+#SQL[@54,N49]Result[]
 alter table t1 alter reindex idx1 ivfflat lists=4;
+
+#SQL[@55,N64]Result[8, 19, 19, 19]
 select a, b from t1 order by l2_distance(b, "[1,0,0,0]") limit 4;
-a    b
-1    [1, 0, 0, 0]
-2    [2, 0, 0, 0]
-3    [3, 0, 0, 0]
+a  ¦  b
+1  ¦  [1, 0, 0, 0]
+2  ¦  [2, 0, 0, 0]
+3  ¦  [3, 0, 0, 0]
+
+#SQL[@56,N66]Result[8, 21, 21, 21]
 select a, b from t1 order by l2_distance(b, "[11,11,0,0]") limit 4;
-a    b
-4    [11, 11, 0, 0]
-5    [12, 12, 0, 0]
-6    [13, 13, 0, 0]
+a  ¦  b
+4  ¦  [11, 11, 0, 0]
+5  ¦  [12, 12, 0, 0]
+6  ¦  [13, 13, 0, 0]
+
+#SQL[@57,N70]Result[8, 25, 25, 25, 26]
 select a, b from t1 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
-10    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@58,N76]Result[8, 32, 32, 32]
 select a, b from t1 order by l2_distance(b, "[1111,1111,1111,1111]") limit 4;
-a    b
-11    [1111, 1111, 1111, 1111]
-12    [1112, 1112, 1112, 1112]
-13    [1113, 1113, 1113, 1113]
+a  ¦  b
+11  ¦  [1111, 1111, 1111, 1111]
+12  ¦  [1112, 1112, 1112, 1112]
+13  ¦  [1113, 1113, 1113, 1113]
+
+#SQL[@62,N23]Result[]
 drop table if exists t3;
+
+#SQL[@63,N73]Result[]
 create table t2(a int,b vecf32(4), c varchar(3), d int, primary key(a,d));
+
+#SQL[@64,N46]Result[]
 insert into t2 values(1, "[1,0,0,0]" , "1", 1);
+
+#SQL[@65,N45]Result[]
 insert into t2 values(2, "[2,0,0,0]", "2", 2);
+
+#SQL[@66,N45]Result[]
 insert into t2 values(3, "[3,0,0,0]", "3", 3);
+
+#SQL[@67,N47]Result[]
 insert into t2 values(4, "[11,11,0,0]", "4", 4);
+
+#SQL[@68,N47]Result[]
 insert into t2 values(5, "[12,12,0,0]", "5", 5);
+
+#SQL[@69,N47]Result[]
 insert into t2 values(6, "[13,13,0,0]", "6", 6);
+
+#SQL[@70,N51]Result[]
 insert into t2 values(7, "[111,111,111,0]", "7", 7);
+
+#SQL[@71,N51]Result[]
 insert into t2 values(8, "[112,112,112,0]", "8", 8);
+
+#SQL[@72,N51]Result[]
 insert into t2 values(9, "[113,113,113,0]", "9", 9);
+
+#SQL[@73,N70]Result[8, 25, 25, 25]
 select a, b from t2 order by l2_distance(b, "[111,111,111,0]") limit 3;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+
+#SQL[@75,N72]Result[]
 create index idx2 using ivfflat on t2(b) lists=3 op_type "vector_l2_ops";
-select b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4; -- speed path (should output only 3 rows)
+
+#SQL[@76,N67]Result[1, 18, 18, 18]
+select b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
 b
 [111, 111, 111, 0]
 [112, 112, 112, 0]
 [113, 113, 113, 0]
-select a, b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4; -- slow path
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
+
+#SQL[@77,N70]Result[8, 25, 25, 25]
+select a, b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+
+#SQL[@79,N54]Result[]
 insert into t2 values(10, "[114,114,114,0]", "10", 10);
-select b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4; -- speed path
+
+#SQL[@80,N67]Result[1, 18, 18, 18, 18]
+select b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
 b
 [111, 111, 111, 0]
 [112, 112, 112, 0]
 [113, 113, 113, 0]
 [114, 114, 114, 0]
-select a, b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4; -- slow path
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
-10    [114, 114, 114, 0]
-select a,b,c from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b    c
-7    [111, 111, 111, 0]    7
-8    [112, 112, 112, 0]    8
-9    [113, 113, 113, 0]    9
-10    [114, 114, 114, 0]    10
-insert into t2 values(11, "[1111,1111,1111,1111]", "11", 11);
-insert into t2 values(12, "[1112,1112,1112,1112]", "12", 12);
-insert into t2 values(13, "[1113,1113,1113,1113]", "13", 13);
-alter table t2 alter reindex idx2 ivfflat lists=4;
-select a, b from t2 order by l2_distance(b, "[1,0,0,0]") limit 4;
-a    b
-1    [1, 0, 0, 0]
-2    [2, 0, 0, 0]
-3    [3, 0, 0, 0]
-select a, b from t2 order by l2_distance(b, "[11,11,0,0]") limit 4;
-a    b
-4    [11, 11, 0, 0]
-5    [12, 12, 0, 0]
-6    [13, 13, 0, 0]
+
+#SQL[@81,N70]Result[8, 25, 25, 25, 26]
 select a, b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
-10    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@84,N71]Result[15, 32, 32, 32, 34]
+select a,b,c from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
+a  ¦  b  ¦  c
+7  ¦  [111, 111, 111, 0]  ¦  7
+8  ¦  [112, 112, 112, 0]  ¦  8
+9  ¦  [113, 113, 113, 0]  ¦  9
+10  ¦  [114, 114, 114, 0]  ¦  10
+
+#SQL[@86,N60]Result[]
+insert into t2 values(11, "[1111,1111,1111,1111]", "11", 11);
+
+#SQL[@87,N60]Result[]
+insert into t2 values(12, "[1112,1112,1112,1112]", "12", 12);
+
+#SQL[@88,N60]Result[]
+insert into t2 values(13, "[1113,1113,1113,1113]", "13", 13);
+
+#SQL[@90,N49]Result[]
+alter table t2 alter reindex idx2 ivfflat lists=4;
+
+#SQL[@91,N64]Result[8, 19, 19, 19]
+select a, b from t2 order by l2_distance(b, "[1,0,0,0]") limit 4;
+a  ¦  b
+1  ¦  [1, 0, 0, 0]
+2  ¦  [2, 0, 0, 0]
+3  ¦  [3, 0, 0, 0]
+
+#SQL[@92,N66]Result[8, 21, 21, 21]
+select a, b from t2 order by l2_distance(b, "[11,11,0,0]") limit 4;
+a  ¦  b
+4  ¦  [11, 11, 0, 0]
+5  ¦  [12, 12, 0, 0]
+6  ¦  [13, 13, 0, 0]
+
+#SQL[@93,N70]Result[8, 25, 25, 25, 26]
+select a, b from t2 order by l2_distance(b, "[111,111,111,0]") limit 4;
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@94,N76]Result[8, 32, 32, 32]
 select a, b from t2 order by l2_distance(b, "[1111,1111,1111,1111]") limit 4;
-a    b
-11    [1111, 1111, 1111, 1111]
-12    [1112, 1112, 1112, 1112]
-13    [1113, 1113, 1113, 1113]
+a  ¦  b
+11  ¦  [1111, 1111, 1111, 1111]
+12  ¦  [1112, 1112, 1112, 1112]
+13  ¦  [1113, 1113, 1113, 1113]
+
+#SQL[@97,N23]Result[]
 drop table if exists t3;
+
+#SQL[@98,N48]Result[]
 create table t3(a int,b vecf32(4), c varchar(3));
+
+#SQL[@99,N43]Result[]
 insert into t3 values(1, "[1,0,0,0]" , "1");
+
+#SQL[@100,N42]Result[]
 insert into t3 values(2, "[2,0,0,0]", "2");
+
+#SQL[@101,N42]Result[]
 insert into t3 values(3, "[3,0,0,0]", "3");
+
+#SQL[@102,N44]Result[]
 insert into t3 values(4, "[11,11,0,0]", "4");
+
+#SQL[@103,N44]Result[]
 insert into t3 values(5, "[12,12,0,0]", "5");
+
+#SQL[@104,N44]Result[]
 insert into t3 values(6, "[13,13,0,0]", "6");
+
+#SQL[@105,N48]Result[]
 insert into t3 values(7, "[111,111,111,0]", "7");
+
+#SQL[@106,N48]Result[]
 insert into t3 values(8, "[112,112,112,0]", "8");
+
+#SQL[@107,N48]Result[]
 insert into t3 values(9, "[113,113,113,0]", "9");
+
+#SQL[@108,N70]Result[8, 25, 25, 25]
 select a, b from t3 order by l2_distance(b, "[111,111,111,0]") limit 3;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+
+#SQL[@110,N72]Result[]
 create index idx3 using ivfflat on t3(b) lists=3 op_type "vector_l2_ops";
+
+#SQL[@111,N70]Result[8, 25, 25, 25]
 select a, b from t3 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+
+#SQL[@113,N50]Result[]
 insert into t3 values(10, "[114,114,114,0]", "10");
+
+#SQL[@114,N70]Result[8, 25, 25, 25, 26]
 select a, b from t3 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
-10    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@118,N71]Result[15, 32, 32, 32, 34]
 select a,b,c from t3 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b    c
-7    [111, 111, 111, 0]    7
-8    [112, 112, 112, 0]    8
-9    [113, 113, 113, 0]    9
-10    [114, 114, 114, 0]    10
+a  ¦  b  ¦  c
+7  ¦  [111, 111, 111, 0]  ¦  7
+8  ¦  [112, 112, 112, 0]  ¦  8
+9  ¦  [113, 113, 113, 0]  ¦  9
+10  ¦  [114, 114, 114, 0]  ¦  10
+
+#SQL[@120,N56]Result[]
 insert into t3 values(11, "[1111,1111,1111,1111]", "11");
+
+#SQL[@121,N56]Result[]
 insert into t3 values(12, "[1112,1112,1112,1112]", "12");
+
+#SQL[@122,N56]Result[]
 insert into t3 values(13, "[1113,1113,1113,1113]", "13");
+
+#SQL[@124,N49]Result[]
 alter table t3 alter reindex idx3 ivfflat lists=4;
+
+#SQL[@125,N64]Result[8, 19, 19, 19]
 select a, b from t3 order by l2_distance(b, "[1,0,0,0]") limit 4;
-a    b
-1    [1, 0, 0, 0]
-2    [2, 0, 0, 0]
-3    [3, 0, 0, 0]
+a  ¦  b
+1  ¦  [1, 0, 0, 0]
+2  ¦  [2, 0, 0, 0]
+3  ¦  [3, 0, 0, 0]
+
+#SQL[@126,N66]Result[8, 21, 21, 21]
 select a, b from t3 order by l2_distance(b, "[11,11,0,0]") limit 4;
-a    b
-4    [11, 11, 0, 0]
-5    [12, 12, 0, 0]
-6    [13, 13, 0, 0]
+a  ¦  b
+4  ¦  [11, 11, 0, 0]
+5  ¦  [12, 12, 0, 0]
+6  ¦  [13, 13, 0, 0]
+
+#SQL[@127,N70]Result[8, 25, 25, 25, 26]
 select a, b from t3 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-9    [113, 113, 113, 0]
-10    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+9  ¦  [113, 113, 113, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@128,N76]Result[8, 32, 32, 32]
 select a, b from t3 order by l2_distance(b, "[1111,1111,1111,1111]") limit 4;
-a    b
-11    [1111, 1111, 1111, 1111]
-12    [1112, 1112, 1112, 1112]
-13    [1113, 1113, 1113, 1113]
+a  ¦  b
+11  ¦  [1111, 1111, 1111, 1111]
+12  ¦  [1112, 1112, 1112, 1112]
+13  ¦  [1113, 1113, 1113, 1113]
+
+#SQL[@131,N23]Result[]
 drop table if exists t4;
+
+#SQL[@132,N61]Result[]
 create table t4(a int primary key,b vecf32(4), c varchar(3) );
+
+#SQL[@133,N43]Result[]
 insert into t4 values(1, "[1,0,0,0]" , "1");
+
+#SQL[@134,N42]Result[]
 insert into t4 values(2, "[2,0,0,0]", "2");
+
+#SQL[@135,N42]Result[]
 insert into t4 values(3, "[3,0,0,0]", "3");
+
+#SQL[@136,N44]Result[]
 insert into t4 values(4, "[11,11,0,0]", "4");
+
+#SQL[@137,N44]Result[]
 insert into t4 values(5, "[12,12,0,0]", "5");
+
+#SQL[@138,N44]Result[]
 insert into t4 values(6, "[13,13,0,0]", "6");
+
+#SQL[@139,N48]Result[]
 insert into t4 values(7, "[111,111,111,0]", "7");
+
+#SQL[@140,N48]Result[]
 insert into t4 values(8, "[112,112,112,0]", "8");
+
+#SQL[@141,N35]Result[]
 insert into t4 values(9, NULL, "9");
+
+#SQL[@142,N70]Result[8, 11, 25, 25]
 select a, b from t4 order by l2_distance(b, "[111,111,111,0]") limit 3;
-a    b
-9    null
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
+a  ¦  b
+9  ¦  null
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+
+#SQL[@144,N72]Result[]
 create index idx4 using ivfflat on t4(b) lists=3 op_type "vector_l2_ops";
+
+#SQL[@145,N70]Result[8, 25, 25]
 select a, b from t4 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+
+#SQL[@147,N50]Result[]
 insert into t4 values(10, "[114,114,114,0]", "10");
+
+#SQL[@148,N70]Result[8, 25, 25, 26]
 select a, b from t4 order by l2_distance(b, "[111,111,111,0]") limit 4;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-10    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+10  ¦  [114, 114, 114, 0]
+
+#SQL[@151,N23]Result[]
 drop table if exists t5;
+
+#SQL[@152,N61]Result[]
 create table t5(a int primary key,b vecf32(4), c varchar(3) );
+
+#SQL[@153,N43]Result[]
 insert into t5 values(1, "[1,0,0,0]" , "1");
+
+#SQL[@154,N42]Result[]
 insert into t5 values(2, "[2,0,0,0]", "2");
+
+#SQL[@155,N42]Result[]
 insert into t5 values(3, "[3,0,0,0]", "3");
+
+#SQL[@156,N44]Result[]
 insert into t5 values(4, "[11,11,0,0]", "4");
+
+#SQL[@157,N44]Result[]
 insert into t5 values(5, "[12,12,0,0]", "5");
+
+#SQL[@158,N44]Result[]
 insert into t5 values(6, "[13,13,0,0]", "6");
+
+#SQL[@159,N48]Result[]
 insert into t5 values(7, "[111,111,111,0]", "7");
+
+#SQL[@160,N48]Result[]
 insert into t5 values(8, "[112,112,112,0]", "8");
+
+#SQL[@161,N54]Result[]
 insert into t5 values(9, "[1113,1113,1113,1113]", "9");
+
+#SQL[@162,N44]Result[]
 insert into t5 values(10, "[0,0,0,0]", "10");
+
+#SQL[@163,N70]Result[8, 25, 25, 21]
 select a, b from t5 order by l2_distance(b, "[111,111,111,0]") limit 3;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-6    [13, 13, 0, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+6  ¦  [13, 13, 0, 0]
+
+#SQL[@165,N72]Result[]
 create index idx5 using ivfflat on t5(b) lists=3 op_type "vector_l2_ops";
+
+#SQL[@181,N70]Result[8, 25, 25]
 select a, b from t5 order by l2_distance(b, "[111,111,111,0]") limit 7;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+
+#SQL[@183,N50]Result[]
 insert into t5 values(11, "[114,114,114,0]", "11");
+
+#SQL[@184,N70]Result[8, 25, 25, 26]
 select a, b from t5 order by l2_distance(b, "[111,111,111,0]") limit 7;
-a    b
-7    [111, 111, 111, 0]
-8    [112, 112, 112, 0]
-11    [114, 114, 114, 0]
+a  ¦  b
+7  ¦  [111, 111, 111, 0]
+8  ¦  [112, 112, 112, 0]
+11  ¦  [114, 114, 114, 0]
+
+#SQL[@187,N30]Result[]
 SET experimental_ivf_index = 0;
+
+#SQL[@188,N19]Result[]
 SET probe_limit = 5;
+
+#SQL[@189,N20]Result[]
 drop database vecdb3;
+

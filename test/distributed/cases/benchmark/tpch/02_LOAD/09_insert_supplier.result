@@ -1,4 +1,7 @@
+#SQL[@1,N8]Result[]
 use tpch;
+
+#SQL[@2,N1353]Result[]
 insert into supplier values
 (1,"Supplier#000000001"," N kD4on9OM Ipw3,gf0JBoQDd7tgrzrddZ",17,"27-918-335-1736",5755.94,"each slyly above the careful"),
 (2,"Supplier#000000002","89eJ5ksX3ImxJQBvxObC,",5,"15-679-861-2259",4032.68," slyly bold instructions. idle dependen"),
@@ -10,3 +13,4 @@ insert into supplier values
 (8,"Supplier#000000008","9Sq4bBH2FQEmaFOocY45sRTxo6yuoG",17,"27-498-742-3860",7627.85,"al pinto beans. asymptotes haggl"),
 (9,"Supplier#000000009","1KhUgZegwM3ua7dsYmekYBsK",10,"20-403-398-8662",5302.37,"s. unusual, even requests along the furiously regular pac"),
 (10,"Supplier#000000010","Saygah3gYWMp72i PY",24,"34-852-489-8585",3891.91,"ing waters. regular requests ar");
+

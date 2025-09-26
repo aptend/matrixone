@@ -1,10 +1,30 @@
+#SQL[@1,N8]Result[]
 use TPCH;
+
+#SQL[@2,N45]Result[]
 create snapshot tpch_snapshot for account sys;
+
+#SQL[@3,N40]Result[]
 create snapshot tpch_cluster for cluster;
+
+#SQL[@4,N29]Result[]
 drop table if exists customer;
+
+#SQL[@5,N29]Result[]
 drop table if exists lineitem;
+
+#SQL[@6,N27]Result[]
 drop table if exists nation;
+
+#SQL[@7,N27]Result[]
 drop table if exists orders;
+
+#SQL[@8,N25]Result[]
 drop table if exists part;
+
+#SQL[@9,N29]Result[]
 drop table if exists partsupp;
+
+#SQL[@10,N29]Result[]
 drop table if exists supplier;
+

@@ -1,33 +1,87 @@
+#SQL[@1,N24]Result[]
 create table test(a int);
+
+#SQL[@2,N26]Result[]
 insert into test values(1);
+
+#SQL[@3,N31]Result[]
 create table new_test like test;
+
+#SQL[@4,N26]Result[23, 64]
 show create table new_test;
-Table    Create Table
-new_test    CREATE TABLE `new_test` (\n  `a` int DEFAULT NULL\n)
+Table  ¦  Create Table
+new_test  ¦  CREATE TABLE `new_test` (
+  `a` int DEFAULT NULL
+)
+
+#SQL[@5,N15]Result[]
 drop table test;
+
+#SQL[@6,N19]Result[]
 drop table new_test;
+
+#SQL[@8,N21]Result[]
 create database test1;
+
+#SQL[@9,N9]Result[]
 use test1;
+
+#SQL[@10,N24]Result[]
 create table test(a int);
+
+#SQL[@11,N26]Result[]
 insert into test values(1);
+
+#SQL[@12,N21]Result[]
 create database test2;
+
+#SQL[@13,N9]Result[]
 use test2;
+
+#SQL[@14,N37]Result[]
 create table new_test like test1.test;
+
+#SQL[@15,N26]Result[23, 64]
 show create table new_test;
-Table    Create Table
-new_test    CREATE TABLE `new_test` (\n  `a` int DEFAULT NULL\n)
+Table  ¦  Create Table
+new_test  ¦  CREATE TABLE `new_test` (
+  `a` int DEFAULT NULL
+)
+
+#SQL[@16,N19]Result[]
 drop database test1;
+
+#SQL[@17,N19]Result[]
 drop database test2;
+
+#SQL[@19,N21]Result[]
 create database test1;
+
+#SQL[@20,N9]Result[]
 use test1;
+
+#SQL[@21,N24]Result[]
 create table test(a int);
+
+#SQL[@22,N26]Result[]
 insert into test values(1);
+
+#SQL[@23,N27]Error[25]
 create table test like test;
 table test already exists
+
+#SQL[@24,N39]Result[]
 create view view1 as select * from test;
+
+#SQL[@25,N22]Result[73, 87]
 show create view view1;
-View    Create View    character_set_client    collation_connection
-view1    create view view1 as select * from test;    utf8mb4    utf8mb4_general_ci
+View  ¦  Create View  ¦  character_set_client  ¦  collation_connection
+view1  ¦  create view view1 as select * from test  ¦  utf8mb4  ¦  utf8mb4_general_ci
+
+#SQL[@26,N32]Error[45]
 create table new_test like view1;
 internal error: test1.view1 is not BASE TABLE
+
+#SQL[@27,N19]Result[]
 drop database test1;
+

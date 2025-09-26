@@ -1,210 +1,350 @@
+#SQL[@1,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@2,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@3,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@4,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@5,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@7,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@8,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@9,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@10,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@11,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@13,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@14,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@15,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@16,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@17,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@19,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@20,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@21,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@22,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@23,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@25,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@26,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@27,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@28,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@29,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@31,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@32,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@33,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@34,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@35,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@37,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@38,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@39,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@40,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@41,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@44,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@45,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@46,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@47,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@48,N34]Result[8, 3]
 select count(*) from tpch.customer;
 count(*)
 150
+
+#SQL[@50,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@51,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@52,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@53,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@54,N34]Result[8, 4]
 select count(*) from tpch.lineitem;
 count(*)
 6005
+
+#SQL[@56,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@57,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@58,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@59,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@60,N32]Result[8, 2]
 select count(*) from tpch.nation;
 count(*)
 25
+
+#SQL[@62,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@63,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@64,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@65,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@66,N32]Result[8, 4]
 select count(*) from tpch.orders;
 count(*)
 1500
+
+#SQL[@68,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@69,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@70,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@71,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@72,N30]Result[8, 3]
 select count(*) from tpch.part;
 count(*)
 200
+
+#SQL[@74,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@75,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@76,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@77,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@78,N34]Result[8, 3]
 select count(*) from tpch.partsupp;
 count(*)
 800
+
+#SQL[@80,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@81,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@82,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@83,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+
+#SQL[@84,N34]Result[8, 2]
 select count(*) from tpch.supplier;
 count(*)
 10
+

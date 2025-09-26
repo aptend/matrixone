@@ -4,7 +4,7 @@ use tpch;
 set save_query_result = on;
 
 -- test q1
-/* save_result */select
+select
 	l_returnflag,
 	l_linestatus,
 	sum(l_quantity) as sum_qty,
@@ -25,11 +25,11 @@ group by
 order by
 	l_returnflag,
 	l_linestatus
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test q2
-/* save_result */select
+select
 	s_acctbal,
 	s_name,
 	n_name,
@@ -73,11 +73,11 @@ order by
 	s_name,
 	p_partkey
 limit 100
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test q3
-/* save_result */select
+select
 	l_orderkey,
 	sum(l_extendedprice * (1 - l_discount)) as revenue,
 	o_orderdate,
@@ -100,11 +100,11 @@ order by
 	revenue desc,
 	o_orderdate
 limit 10
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql4
-/* save_result */select
+select
     o_orderpriority,
     count(*) as order_count
 from
@@ -125,11 +125,11 @@ group by
     o_orderpriority
 order by
     o_orderpriority
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql5
-/* save_result */select
+select
 	n_name,
 	sum(l_extendedprice * (1 - l_discount)) as revenue
 from
@@ -153,11 +153,11 @@ group by
 	n_name
 order by
 	revenue desc
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql6
-/* save_result */select
+select
 	sum(l_extendedprice * l_discount) as revenue
 from
 	lineitem
@@ -165,11 +165,11 @@ where
 	l_shipdate >= date '1994-01-01'
 	and l_shipdate < date '1994-01-01' + interval '1' year
 	and l_discount between 0.03 - 0.01 and 0.03 + 0.01
-	and l_quantity < 24;
+	and l_quantity < 24 /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql7
-/* save_result */select
+select
     sum(l_extendedprice * l_discount) as revenue
 from
     lineitem
@@ -177,9 +177,9 @@ where
     l_shipdate >= date '1994-01-01'
     and l_shipdate < date '1994-01-01' + interval '1' year
     and l_discount between 0.03 - 0.01 and 0.03 + 0.01
-    and l_quantity < 24;
+    and l_quantity < 24 /* save_result */;
 
-/* save_result */select
+select
     supp_nation,
     cust_nation,
     l_year,
@@ -218,11 +218,11 @@ order by
     supp_nation,
     cust_nation,
     l_year
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql8
-/* save_result */select
+select
     o_year,
     (sum(case
         when nation = 'ARGENTINA' then volume
@@ -259,11 +259,11 @@ group by
     o_year
 order by
     o_year
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql9
-/* save_result */select
+select
     nation,
     o_year,
     sum(amount) as sum_profit
@@ -295,11 +295,11 @@ group by
 order by
     nation,
     o_year desc
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql10
-/* save_result */select
+select
 	c_custkey,
 	c_name,
 	sum(l_extendedprice * (1 - l_discount)) as revenue,
@@ -331,13 +331,13 @@ group by
 order by
 	revenue desc
 limit 20
-;
--- @bvt:issue#7906
-select * from result_scan(last_query_id()) as u;
--- @bvt:issue
+ /* save_result */;
+@issue(no=7906) { 
+    select * from result_scan(last_query_id()) as u;
+}
 
 -- test sql11
-/* save_result */select
+select
     ps_partkey,
     sum(ps_supplycost * ps_availqty) as value
 from
@@ -363,11 +363,11 @@ group by
         )
 order by
     value desc
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql12
-/* save_result */select
+select
         l_shipmode,
         sum(case
                 when o_orderpriority = '1-URGENT'
@@ -395,11 +395,11 @@ group by
         l_shipmode
 order by
         l_shipmode
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql13
-/* save_result */select
+select
 	c_count,
 	count(*) as custdist
 from
@@ -419,11 +419,11 @@ group by
 order by
 	custdist desc,
 	c_count desc
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql14
-/* save_result */select
+select
 	100.00 * sum(case
 		when p_type like 'PROMO%'
 			then l_extendedprice * (1 - l_discount)
@@ -435,7 +435,7 @@ from
 where
 	l_partkey = p_partkey
 	and l_shipdate >= date '1996-04-01'
-	and l_shipdate < date '1996-04-01' + interval '1' month;
+	and l_shipdate < date '1996-04-01' + interval '1' month /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql15
@@ -451,7 +451,7 @@ with q15_revenue0 as (
     group by
         l_suppkey
     )
-/* save_result */select
+select
     s_suppkey,
     s_name,
     s_address,
@@ -470,11 +470,11 @@ where
     )
 order by
     s_suppkey
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql16
-/* save_result */select
+select
     p_brand,
     p_type,
     p_size,
@@ -504,11 +504,11 @@ order by
     p_brand,
     p_type,
     p_size
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql17
-/* save_result */select
+select
     sum(l_extendedprice) / 7.0 as avg_yearly
 from
     lineitem,
@@ -524,11 +524,11 @@ where
             lineitem
         where
             l_partkey = p_partkey
-    );
+    ) /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql18
-/* save_result */select
+select
     c_name,
     c_custkey,
     o_orderkey,
@@ -561,11 +561,11 @@ order by
     o_totalprice desc,
     o_orderdate
 limit 100
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql19
-/* save_result */select
+select
     sum(l_extendedprice* (1 - l_discount)) as revenue
 from
     lineitem,
@@ -599,11 +599,11 @@ where
         and p_size between 1 and 15
         and l_shipmode in ('AIR', 'AIR REG')
         and l_shipinstruct = 'DELIVER IN PERSON'
-    );
+    ) /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql20
-/* save_result */select
+select
     s_name,
     s_address
 from
@@ -639,11 +639,11 @@ where
     and s_nationkey = n_nationkey
     and n_name = 'VIETNAM'
 order by s_name
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql21
-/* save_result */select
+select
     s_name,
     count(*) as numwait
 from
@@ -683,11 +683,11 @@ order by
     numwait desc,
     s_name
 limit 100
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 -- test sql22
-/* save_result */select
+select
     cntrycode,
     count(*) as numcust,
     sum(c_acctbal) as totacctbal
@@ -724,7 +724,7 @@ group by
     cntrycode
 order by
     cntrycode
-;
+ /* save_result */;
 select * from result_scan(last_query_id()) as u;
 
 # reset to default(off)

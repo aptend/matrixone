@@ -1,352 +1,583 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N69]Result[]
 create table t1(
 a bigint primary key auto_increment,
 b varchar(10)
 );
+
+#SQL[@10,N20]Result[23, 119]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` bigint NOT NULL AUTO_INCREMENT,\n  `b` varchar(10) DEFAULT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` bigint NOT NULL AUTO_INCREMENT,
+  `b` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@12,N32]Result[]
 insert into t1(b) values ('bbb');
+
+#SQL[@15,N32]Error[31]
 insert into t1 values (1, 'ccc');
 Duplicate entry '1' for key 'a'
+
+#SQL[@17,N32]Result[]
 insert into t1 values (3, 'ccc');
+
+#SQL[@18,N36]Result[]
 insert into t1(b) values ('bbb1111');
+
+#SQL[@21,N27]Result[8, 10, 10, 14]
 select * from t1 order by a;
-a    b
-1    bbb
-3    ccc
-4    bbb1111
+a  ¦  b
+1  ¦  bbb
+3  ¦  ccc
+4  ¦  bbb1111
+
+#SQL[@23,N37]Result[]
 insert into t1 values (2, 'aaaa1111');
+
+#SQL[@24,N27]Result[8, 10, 15, 10, 14]
 select * from t1 order by a;
-a    b
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
+a  ¦  b
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+
+#SQL[@26,N37]Result[]
 insert into t1(b) values ('aaaa1111');
+
+#SQL[@28,N27]Result[8, 10, 15, 10, 14, 15]
 select * from t1 order by a;
-a    b
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
+a  ¦  b
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+
+#SQL[@30,N35]Result[]
 insert into t1 values (100, 'xxxx');
+
+#SQL[@31,N33]Result[]
 insert into t1(b) values ('xxxx');
+
+#SQL[@33,N27]Result[8, 10, 15, 10, 14, 15, 13, 13]
 select * from t1 order by a;
-a    b
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
+a  ¦  b
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+
+#SQL[@35,N33]Result[]
 insert into t1 values (0, 'xxxx');
+
+#SQL[@36,N33]Result[]
 insert into t1(b) values ('xxxx');
+
+#SQL[@38,N36]Result[]
 insert into t1 values (-1000, 'yyy');
+
+#SQL[@40,N27]Result[8, 14, 11, 10, 15, 10, 14, 15, 13, 13, 13]
 select * from t1 order by a;
-a    b
--1000    yyy
-0    xxxx
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
+a  ¦  b
+-1000  ¦  yyy
+0  ¦  xxxx
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+
+#SQL[@42,N38]Result[]
 insert into t1 values ('-2000', 'yyy');
+
+#SQL[@43,N36]Result[]
 insert into t1 values ('200', 'yyy');
+
+#SQL[@46,N34]Error[31]
 insert into t1 values ('0', 'yyy');
 Duplicate entry '0' for key 'a'
+
+#SQL[@48,N16]Result[8, 10, 10, 14, 15, 15, 13, 13, 11, 13, 14, 14, 12]
 select * from t1;
-a    b
-1    bbb
-3    ccc
-4    bbb1111
-2    aaaa1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-0    xxxx
-102    xxxx
--1000    yyy
--2000    yyy
-200    yyy
+a  ¦  b
+1  ¦  bbb
+3  ¦  ccc
+4  ¦  bbb1111
+2  ¦  aaaa1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+0  ¦  xxxx
+102  ¦  xxxx
+-1000  ¦  yyy
+-2000  ¦  yyy
+200  ¦  yyy
+
+#SQL[@50,N35]Result[]
 insert into t1 values (NULL, 'yyy');
+
+#SQL[@51,N27]Result[8, 14, 14, 11, 10, 15, 10, 14, 15, 13, 13, 13, 12, 12]
 select * from t1 order by a;
-a    b
--2000    yyy
--1000    yyy
-0    xxxx
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
-200    yyy
-201    yyy
+a  ¦  b
+-2000  ¦  yyy
+-1000  ¦  yyy
+0  ¦  xxxx
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+200  ¦  yyy
+201  ¦  yyy
+
+#SQL[@54,N31]Error[31]
 update t1 set a=0 where b='ccc';
 Duplicate entry '0' for key 'a'
+
+#SQL[@56,N35]Error[33]
 update t1 set a='200' where b='ccc';
 Duplicate entry '200' for key 'a'
+
+#SQL[@58,N39]Result[]
 insert into t1(b) values ('xefrsdfgds');
+
+#SQL[@60,N27]Result[8, 14, 14, 11, 10, 15, 10, 14, 15, 13, 13, 13, 12, 12, 19]
 select * from t1 order by a;
-a    b
--2000    yyy
--1000    yyy
-0    xxxx
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
-200    yyy
-201    yyy
-202    xefrsdfgds
+a  ¦  b
+-2000  ¦  yyy
+-1000  ¦  yyy
+0  ¦  xxxx
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+200  ¦  yyy
+201  ¦  yyy
+202  ¦  xefrsdfgds
+
+#SQL[@63,N57]Result[]
 insert into t1 values (-9223372036854775808,'xefrsdfgds');
+
+#SQL[@65,N57]Error[64]
 insert into t1 values (-9223372036854775809,'xefrsdfgds');
-Data truncation: data out of range: data type int64, value '-9223372036854775809'
+data out of range: data type int64, value '-9223372036854775809'
+
+#SQL[@68,N56]Result[]
 insert into t1 values (9223372036854775807,'xefrsdfgds');
+
+#SQL[@70,N56]Error[63]
 insert into t1 values (9223372036854775808,'xefrsdfgds');
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@71,N34]Error[62]
 insert into t1(b) values ('eeeee');
-Data truncation: data out of range: data type bigint, value 9223372036854775808
+data out of range: data type bigint, value 9223372036854775808
+
+#SQL[@73,N13]Result[]
 drop table t1;
+
+#SQL[@77,N23]Result[]
 drop table if exists t2;
+
+#SQL[@78,N67]Result[]
 create table t2 (
 c int primary key auto_increment,
 d varchar(10)
 );
+
+#SQL[@83,N42]Result[]
 insert into t2 values (-2147483648, 'aaa');
+
+#SQL[@84,N27]Result[8, 20]
 select * from t2 order by c;
-c    d
--2147483648    aaa
+c  ¦  d
+-2147483648  ¦  aaa
+
+#SQL[@86,N42]Error[55]
 insert into t2 values (-2147483649, 'aaa');
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@88,N33]Result[]
 insert into t2(d) values ('1111');
+
+#SQL[@89,N27]Result[8, 20, 11]
 select * from t2 order by c;
-c    d
--2147483648    aaa
-1    1111
+c  ¦  d
+-2147483648  ¦  aaa
+1  ¦  1111
+
+#SQL[@91,N40]Result[]
 insert into t2 values(2147483647, 'bbb');
+
+#SQL[@93,N40]Error[54]
 insert into t2 values(2147483648, 'bbb');
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@95,N34]Error[50]
 insert into t2(d) values ('22222');
-Data truncation: data out of range: data type int, value 2147483648
+data out of range: data type int, value 2147483648
+
+#SQL[@96,N27]Result[8, 20, 11, 19]
 select * from t2 order by c;
-c    d
--2147483648    aaa
-1    1111
-2147483647    bbb
+c  ¦  d
+-2147483648  ¦  aaa
+1  ¦  1111
+2147483647  ¦  bbb
+
+#SQL[@98,N13]Result[]
 drop table t2;
+
+#SQL[@101,N23]Result[]
 drop table if exists t3;
+
+#SQL[@102,N66]Result[]
 create table t3(
 a int primary key auto_increment,
 b varchar(10)
 );
+
+#SQL[@107,N34]Result[]
 insert into t3 values (-19, 'aaa');
+
+#SQL[@108,N32]Result[]
 insert into t3(b) values ('bbb');
+
+#SQL[@109,N27]Result[8, 12, 10]
 select * from t3 order by a;
-a    b
--19    aaa
-1    bbb
+a  ¦  b
+-19  ¦  aaa
+1  ¦  bbb
+
+#SQL[@111,N28]Result[]
 delete from t3 where b='bbb';
+
+#SQL[@112,N32]Result[]
 insert into t3(b) values ('bbb');
+
+#SQL[@113,N27]Result[8, 12, 10]
 select * from t3 order by a;
-a    b
--19    aaa
-2    bbb
+a  ¦  b
+-19  ¦  aaa
+2  ¦  bbb
+
+#SQL[@115,N32]Result[]
 insert into t3 values (1, 'aaa');
+
+#SQL[@117,N32]Error[32]
 update t3 set a=10 where b='aaa';
 Duplicate entry '10' for key 'a'
+
+#SQL[@118,N32]Result[]
 update t3 set a=10 where b='bbb';
+
+#SQL[@119,N27]Result[8, 12, 10, 11]
 select * from t3 order by a;
-a    b
--19    aaa
-1    aaa
-10    bbb
+a  ¦  b
+-19  ¦  aaa
+1  ¦  aaa
+10  ¦  bbb
+
+#SQL[@121,N31]Result[]
 insert into t3 values (2,'ccc');
+
+#SQL[@122,N27]Result[8, 12, 10, 10, 11]
 select * from t3 order by a;
-a    b
--19    aaa
-1    aaa
-2    ccc
-10    bbb
+a  ¦  b
+-19  ¦  aaa
+1  ¦  aaa
+2  ¦  ccc
+10  ¦  bbb
+
+#SQL[@124,N14]Result[]
 delete from t3;
+
+#SQL[@125,N32]Result[]
 insert into t3(b) values ('bbb');
+
+#SQL[@126,N27]Result[8, 11]
 select * from t3 order by a;
-a    b
-11    bbb
+a  ¦  b
+11  ¦  bbb
+
+#SQL[@128,N13]Result[]
 drop table t3;
+
+#SQL[@131,N23]Result[]
 drop table if exists t4;
+
+#SQL[@133,N58]Result[]
 create table t4(
 a bigint  auto_increment,
 b varchar(10)
 );
+
+#SQL[@138,N32]Result[]
 insert into t4(b) values ('bbb');
+
+#SQL[@140,N32]Result[]
 insert into t4 values (1, 'ccc');
+
+#SQL[@142,N32]Result[]
 insert into t4 values (3, 'ccc');
+
+#SQL[@143,N36]Result[]
 insert into t4(b) values ('bbb1111');
+
+#SQL[@145,N27]Result[8, 10, 10, 10, 14]
 select * from t4 order by a;
-a    b
-1    bbb
-1    ccc
-3    ccc
-4    bbb1111
+a  ¦  b
+1  ¦  bbb
+1  ¦  ccc
+3  ¦  ccc
+4  ¦  bbb1111
+
+#SQL[@147,N37]Result[]
 insert into t4 values (2, 'aaaa1111');
+
+#SQL[@148,N27]Result[8, 10, 10, 15, 10, 14]
 select * from t4 order by a;
-a    b
-1    bbb
-1    ccc
-2    aaaa1111
-3    ccc
-4    bbb1111
+a  ¦  b
+1  ¦  bbb
+1  ¦  ccc
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+
+#SQL[@150,N37]Result[]
 insert into t4(b) values ('aaaa1111');
+
+#SQL[@152,N27]Result[8, 10, 10, 15, 10, 14, 15]
 select * from t4 order by a;
-a    b
-1    bbb
-1    ccc
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
+a  ¦  b
+1  ¦  bbb
+1  ¦  ccc
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+
+#SQL[@154,N35]Result[]
 insert into t4 values (100, 'xxxx');
+
+#SQL[@155,N33]Result[]
 insert into t4(b) values ('xxxx');
+
+#SQL[@157,N27]Result[8, 10, 10, 15, 10, 14, 15, 13, 13]
 select * from t4 order by a;
-a    b
-1    bbb
-1    ccc
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
+a  ¦  b
+1  ¦  bbb
+1  ¦  ccc
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+
+#SQL[@159,N33]Result[]
 insert into t4 values (0, 'xxxx');
+
+#SQL[@160,N33]Result[]
 insert into t4(b) values ('xxxx');
+
+#SQL[@162,N36]Result[]
 insert into t4 values (-1000, 'yyy');
+
+#SQL[@164,N27]Result[8, 14, 11, 10, 10, 15, 10, 14, 15, 13, 13, 13]
 select * from t4 order by a;
-a    b
--1000    yyy
-0    xxxx
-1    bbb
-1    ccc
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
+a  ¦  b
+-1000  ¦  yyy
+0  ¦  xxxx
+1  ¦  bbb
+1  ¦  ccc
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+
+#SQL[@166,N38]Result[]
 insert into t4 values ('-2000', 'yyy');
+
+#SQL[@167,N36]Result[]
 insert into t4 values ('200', 'yyy');
+
+#SQL[@170,N34]Result[]
 insert into t4 values ('0', 'yyy');
+
+#SQL[@172,N27]Result[8, 14, 14, 10, 11, 10, 10, 15, 10, 14, 15, 13, 13, 13, 12]
 select * from t4 order by a;
-a    b
--2000    yyy
--1000    yyy
-0    yyy
-0    xxxx
-1    ccc
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
-200    yyy
+a  ¦  b
+-2000  ¦  yyy
+-1000  ¦  yyy
+0  ¦  yyy
+0  ¦  xxxx
+1  ¦  ccc
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+200  ¦  yyy
+
+#SQL[@174,N35]Result[]
 insert into t4 values (NULL, 'yyy');
+
+#SQL[@175,N27]Result[8, 14, 14, 10, 11, 10, 10, 15, 10, 14, 15, 13, 13, 13, 12, 12]
 select * from t4 order by a;
-a    b
--2000    yyy
--1000    yyy
-0    yyy
-0    xxxx
-1    ccc
-1    bbb
-2    aaaa1111
-3    ccc
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
-200    yyy
-201    yyy
+a  ¦  b
+-2000  ¦  yyy
+-1000  ¦  yyy
+0  ¦  yyy
+0  ¦  xxxx
+1  ¦  ccc
+1  ¦  bbb
+2  ¦  aaaa1111
+3  ¦  ccc
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+200  ¦  yyy
+201  ¦  yyy
+
+#SQL[@178,N31]Result[]
 update t4 set a=0 where b='ccc';
+
+#SQL[@180,N35]Result[]
 update t4 set a='200' where b='ccc';
+
+#SQL[@182,N39]Result[]
 insert into t4(b) values ('xefrsdfgds');
+
+#SQL[@184,N27]Result[8, 14, 14, 10, 11, 10, 15, 14, 15, 13, 13, 13, 12, 12, 12, 12, 19]
 select * from t4 order by a;
-a    b
--2000    yyy
--1000    yyy
-0    yyy
-0    xxxx
-1    bbb
-2    aaaa1111
-4    bbb1111
-5    aaaa1111
-100    xxxx
-101    xxxx
-102    xxxx
-200    yyy
-200    ccc
-200    ccc
-201    yyy
-202    xefrsdfgds
+a  ¦  b
+-2000  ¦  yyy
+-1000  ¦  yyy
+0  ¦  yyy
+0  ¦  xxxx
+1  ¦  bbb
+2  ¦  aaaa1111
+4  ¦  bbb1111
+5  ¦  aaaa1111
+100  ¦  xxxx
+101  ¦  xxxx
+102  ¦  xxxx
+200  ¦  yyy
+200  ¦  ccc
+200  ¦  ccc
+201  ¦  yyy
+202  ¦  xefrsdfgds
+
+#SQL[@187,N57]Result[]
 insert into t4 values (-9223372036854775808,'xefrsdfgds');
+
+#SQL[@189,N57]Error[64]
 insert into t4 values (-9223372036854775809,'xefrsdfgds');
-Data truncation: data out of range: data type int64, value '-9223372036854775809'
+data out of range: data type int64, value '-9223372036854775809'
+
+#SQL[@192,N56]Result[]
 insert into t4 values (9223372036854775807,'xefrsdfgds');
+
+#SQL[@194,N56]Error[63]
 insert into t4 values (9223372036854775808,'xefrsdfgds');
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@195,N34]Error[62]
 insert into t4(b) values ('eeeee');
-Data truncation: data out of range: data type bigint, value 9223372036854775808
+data out of range: data type bigint, value 9223372036854775808
+
+#SQL[@197,N13]Result[]
 drop table t4;
+
+#SQL[@201,N23]Result[]
 drop table if exists t5;
+
+#SQL[@202,N55]Result[]
 create table t5 (
 c int auto_increment,
 d varchar(10)
 );
+
+#SQL[@207,N42]Result[]
 insert into t5 values (-2147483648, 'aaa');
+
+#SQL[@208,N27]Result[8, 20]
 select * from t5 order by c;
-c    d
--2147483648    aaa
+c  ¦  d
+-2147483648  ¦  aaa
+
+#SQL[@210,N42]Error[55]
 insert into t5 values (-2147483649, 'aaa');
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@212,N33]Result[]
 insert into t5(d) values ('1111');
+
+#SQL[@213,N27]Result[8, 20, 11]
 select * from t5 order by c;
-c    d
--2147483648    aaa
-1    1111
+c  ¦  d
+-2147483648  ¦  aaa
+1  ¦  1111
+
+#SQL[@215,N40]Result[]
 insert into t5 values(2147483647, 'bbb');
+
+#SQL[@217,N40]Error[54]
 insert into t5 values(2147483648, 'bbb');
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@218,N27]Result[8, 20, 11, 19]
 select * from t5 order by c;
-c    d
--2147483648    aaa
-1    1111
-2147483647    bbb
+c  ¦  d
+-2147483648  ¦  aaa
+1  ¦  1111
+2147483647  ¦  bbb
+
+#SQL[@220,N34]Error[50]
 insert into t5(d) values ('22222');
-Data truncation: data out of range: data type int, value 2147483648
+data out of range: data type int, value 2147483648
+
+#SQL[@221,N27]Result[8, 20, 11, 19]
 select * from t5 order by c;
-c    d
--2147483648    aaa
-1    1111
-2147483647    bbb
+c  ¦  d
+-2147483648  ¦  aaa
+1  ¦  1111
+2147483647  ¦  bbb
+
+#SQL[@223,N13]Result[]
 drop table t5;
+
+#SQL[@228,N23]Result[]
 drop table if exists t6;
+
+#SQL[@229,N145]Result[]
 create table t6(
 a int primary key auto_increment,
 b bigint auto_increment,
@@ -354,281 +585,453 @@ c int auto_increment,
 d int auto_increment,
 e bigint auto_increment
 );
+
+#SQL[@237,N20]Result[23, 230]
 show create table t6;
-Table    Create Table
-t6    CREATE TABLE `t6` (\n  `a` int NOT NULL AUTO_INCREMENT,\n  `b` bigint NOT NULL AUTO_INCREMENT,\n  `c` int NOT NULL AUTO_INCREMENT,\n  `d` int NOT NULL AUTO_INCREMENT,\n  `e` bigint NOT NULL AUTO_INCREMENT,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t6  ¦  CREATE TABLE `t6` (
+  `a` int NOT NULL AUTO_INCREMENT,
+  `b` bigint NOT NULL AUTO_INCREMENT,
+  `c` int NOT NULL AUTO_INCREMENT,
+  `d` int NOT NULL AUTO_INCREMENT,
+  `e` bigint NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@239,N33]Result[]
 insert into t6 values (),(),(),();
+
+#SQL[@240,N27]Result[29, 29, 29, 29, 29]
 select * from t6 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+
+#SQL[@242,N52]Result[]
 insert into t6 values (NULL, NULL, NULL, NULL, NULL);
+
+#SQL[@243,N27]Result[29, 29, 29, 29, 29, 29]
 select * from t6 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+
+#SQL[@245,N45]Result[]
 insert into t6(b,c,d) values (NULL,NULL,NULL);
+
+#SQL[@246,N27]Result[29, 29, 29, 29, 29, 29, 29]
 select * from t6 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+
+#SQL[@248,N37]Result[]
 insert into t6(a,b) values (100, 400);
+
+#SQL[@249,N27]Result[29, 29, 29, 29, 29, 29, 29, 33]
 select * from t6 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+
+#SQL[@251,N44]Result[]
 insert into t6(c,d,e) values (200, 200, 200);
+
+#SQL[@252,N16]Result[29, 29, 29, 29, 29, 29, 29, 33, 39]
 select * from t6;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+
+#SQL[@254,N44]Result[]
 insert into t6(c,d,e) values (200, 400, 600);
+
+#SQL[@255,N16]Result[29, 29, 29, 29, 29, 29, 29, 33, 39, 39]
 select * from t6;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
-102    402    200    400    600
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+102  ¦  402  ¦  200  ¦  400  ¦  600
+
+#SQL[@258,N37]Error[33]
 insert into t6(a,b) values (100, 400);
 Duplicate entry '100' for key 'a'
+
+#SQL[@259,N27]Result[29, 29, 29, 29, 29, 29, 29, 33, 39, 39]
 select * from t6 order by a;
-a    b    c    d    e
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
-102    402    200    400    600
+a  ¦  b  ¦  c  ¦  d  ¦  e
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+102  ¦  402  ¦  200  ¦  400  ¦  600
+
+#SQL[@261,N43]Result[]
 insert into t6 values ('0','0','0','0','0');
+
+#SQL[@262,N27]Result[29, 29, 29, 29, 29, 29, 29, 29, 33, 39, 39]
 select * from t6 order by a;
-a    b    c    d    e
-0    0    0    0    0
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
-102    402    200    400    600
+a  ¦  b  ¦  c  ¦  d  ¦  e
+0  ¦  0  ¦  0  ¦  0  ¦  0
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+102  ¦  402  ¦  200  ¦  400  ¦  600
+
+#SQL[@265,N43]Error[41]
 insert into t6 values ('a','a','a','a','a');
 invalid argument cast to int, bad value a
+
+#SQL[@266,N27]Result[29, 29, 29, 29, 29, 29, 29, 29, 33, 39, 39]
 select * from t6 order by a;
-a    b    c    d    e
-0    0    0    0    0
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
-102    402    200    400    600
+a  ¦  b  ¦  c  ¦  d  ¦  e
+0  ¦  0  ¦  0  ¦  0  ¦  0
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+102  ¦  402  ¦  200  ¦  400  ¦  600
+
+#SQL[@268,N36]Result[]
 insert into t6 values ('-1',0,0,0,0);
+
+#SQL[@269,N27]Result[29, 30, 29, 29, 29, 29, 29, 29, 29, 33, 39, 39]
 select * from t6 order by a;
-a    b    c    d    e
--1    0    0    0    0
-0    0    0    0    0
-1    1    1    1    1
-2    2    2    2    2
-3    3    3    3    3
-4    4    4    4    4
-5    5    5    5    5
-6    6    6    6    6
-100    400    7    7    7
-101    401    200    200    200
-102    402    200    400    600
+a  ¦  b  ¦  c  ¦  d  ¦  e
+-1  ¦  0  ¦  0  ¦  0  ¦  0
+0  ¦  0  ¦  0  ¦  0  ¦  0
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3  ¦  3
+4  ¦  4  ¦  4  ¦  4  ¦  4
+5  ¦  5  ¦  5  ¦  5  ¦  5
+6  ¦  6  ¦  6  ¦  6  ¦  6
+100  ¦  400  ¦  7  ¦  7  ¦  7
+101  ¦  401  ¦  200  ¦  200  ¦  200
+102  ¦  402  ¦  200  ¦  400  ¦  600
+
+#SQL[@271,N13]Result[]
 drop table t6;
+
+#SQL[@274,N23]Result[]
 drop table if exists t8;
+
+#SQL[@275,N73]Result[]
 create table t8(
 a int auto_increment primary key,
 b int auto_increment
 );
+
+#SQL[@280,N23]Result[]
 drop table if exists t9;
+
+#SQL[@281,N73]Result[]
 create table t9(
 c int auto_increment primary key,
 d int auto_increment
 );
+
+#SQL[@286,N27]Result[]
 insert into t8 values (),();
+
+#SQL[@287,N27]Result[8, 8, 8]
 select * from t8 order by a;
-a    b
-1    1
-2    2
+a  ¦  b
+1  ¦  1
+2  ¦  2
+
+#SQL[@289,N27]Result[]
 insert into t9 values (),();
+
+#SQL[@290,N27]Result[8, 8, 8]
 select * from t9 order by c;
-c    d
-1    1
-2    2
+c  ¦  d
+1  ¦  1
+2  ¦  2
+
+#SQL[@292,N29]Result[]
 insert into t8(a) values (19);
+
+#SQL[@293,N27]Result[8, 8, 8, 9]
 select * from t8 order by a;
-a    b
-1    1
-2    2
-19    3
+a  ¦  b
+1  ¦  1
+2  ¦  2
+19  ¦  3
+
+#SQL[@295,N30]Result[]
 insert into t9 (c) values (19);
+
+#SQL[@296,N27]Result[8, 8, 8, 9]
 select * from t9 order by c;
-c    d
-1    1
-2    2
-19    3
+c  ¦  d
+1  ¦  1
+2  ¦  2
+19  ¦  3
+
+#SQL[@298,N27]Result[]
 insert into t8 values (),();
+
+#SQL[@299,N27]Result[8, 8, 8, 9, 9, 9]
 select * from t8 order by a;
-a    b
-1    1
-2    2
-19    3
-20    4
-21    5
+a  ¦  b
+1  ¦  1
+2  ¦  2
+19  ¦  3
+20  ¦  4
+21  ¦  5
+
+#SQL[@301,N27]Result[]
 insert into t9 values (),();
+
+#SQL[@302,N27]Result[8, 8, 8, 9, 9, 9]
 select * from t9 order by c;
-c    d
-1    1
-2    2
-19    3
-20    4
-21    5
+c  ¦  d
+1  ¦  1
+2  ¦  2
+19  ¦  3
+20  ¦  4
+21  ¦  5
+
+#SQL[@304,N28]Result[]
 insert into t8(b) values (1);
+
+#SQL[@305,N27]Result[8, 8, 8, 9, 9, 9, 9]
 select * from t8 order by a;
-a    b
-1    1
-2    2
-19    3
-20    4
-21    5
-22    1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+19  ¦  3
+20  ¦  4
+21  ¦  5
+22  ¦  1
+
+#SQL[@307,N29]Result[]
 insert into t9 (d) values (1);
+
+#SQL[@308,N27]Result[8, 8, 8, 9, 9, 9, 9]
 select * from t9 order by c;
-c    d
-1    1
-2    2
-19    3
-20    4
-21    5
-22    1
+c  ¦  d
+1  ¦  1
+2  ¦  2
+19  ¦  3
+20  ¦  4
+21  ¦  5
+22  ¦  1
+
+#SQL[@311,N28]Error[31]
 insert into t8(a) values (1);
 Duplicate entry '1' for key 'a'
+
+#SQL[@312,N27]Result[8, 8, 8, 9, 9, 9, 9]
 select * from t8 order by a;
-a    b
-1    1
-2    2
-19    3
-20    4
-21    5
-22    1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+19  ¦  3
+20  ¦  4
+21  ¦  5
+22  ¦  1
+
+#SQL[@314,N29]Error[31]
 insert into t9 (c) values (1);
 Duplicate entry '1' for key 'c'
+
+#SQL[@315,N27]Result[8, 8, 8, 9, 9, 9, 9]
 select * from t9 order by c;
-c    d
-1    1
-2    2
-19    3
-20    4
-21    5
-22    1
+c  ¦  d
+1  ¦  1
+2  ¦  2
+19  ¦  3
+20  ¦  4
+21  ¦  5
+22  ¦  1
+
+#SQL[@317,N13]Result[]
 drop table t8;
+
+#SQL[@318,N13]Result[]
 drop table t9;
+
+#SQL[@321,N24]Result[]
 drop table if exists t10;
+
+#SQL[@322,N74]Result[]
 create table t10(
 a int auto_increment primary key,
 b int auto_increment
 );
+
+#SQL[@327,N31]Result[]
 insert into t10 values (10, 10);
+
+#SQL[@328,N31]Result[]
 insert into t10 values (),(),();
+
+#SQL[@329,N28]Result[8, 10, 10, 10, 10]
 select * from t10 order by a;
-a    b
-10    10
-11    11
-12    12
-13    13
+a  ¦  b
+10  ¦  10
+11  ¦  11
+12  ¦  12
+13  ¦  13
+
+#SQL[@330,N18]Result[]
 truncate table t10;
+
+#SQL[@331,N25]Result[]
 insert into t10 values ();
+
+#SQL[@332,N28]Result[8, 8]
 select * from t10 order by a;
-a    b
-1    1
+a  ¦  b
+1  ¦  1
+
+#SQL[@334,N14]Result[]
 drop table t10;
+
+#SQL[@338,N24]Result[]
 drop table if exists t11;
+
+#SQL[@339,N92]Result[]
 create table t11(
 a int primary key auto_increment,
 b bigint auto_increment,
 c varchar(25)
 );
+
+#SQL[@345,N113]Error[72]
 load data infile '$resources/auto_increment_columns/auto_increment_1.csv' into table t11 fields terminated by ',';
 invalid input: the data of row 4 contained is not equal to input columns
+
+#SQL[@346,N28]Result[]
 select * from t11 order by a;
-a    b    c
+
+#SQL[@347,N14]Result[]
 drop table t11;
+
+#SQL[@350,N24]Result[]
 drop table if exists t12;
+
+#SQL[@351,N92]Result[]
 create table t12(
 a int primary key auto_increment,
 b bigint auto_increment,
 c varchar(25)
 );
+
+#SQL[@356,N113]Error[72]
 load data infile '$resources/auto_increment_columns/auto_increment_2.csv' into table t12 fields terminated by ',';
 invalid input: the data of row 4 contained is not equal to input columns
+
+#SQL[@357,N28]Result[]
 select * from t12 order by a;
-a    b    c
+
+#SQL[@359,N14]Result[]
 drop table t12;
+
+#SQL[@361,N24]Result[]
 drop table if exists t13;
+
+#SQL[@362,N92]Result[]
 create table t13(
 a int primary key auto_increment,
 b bigint auto_increment,
 c varchar(25)
 );
+
+#SQL[@368,N113]Result[]
 load data infile '$resources/auto_increment_columns/auto_increment_3.csv' into table t13 fields terminated by ',';
+
+#SQL[@369,N28]Result[15, 22, 21, 21, 19, 18]
 select * from t13 order by a;
-a    b    c
-1    1    '你好'
-2    3    'hello'
-4    4    'world'
-5    5    'ccc'
-6    6    '%%'
+a  ¦  b  ¦  c
+1  ¦  1  ¦  '你好'
+2  ¦  3  ¦  'hello'
+4  ¦  4  ¦  'world'
+5  ¦  5  ¦  'ccc'
+6  ¦  6  ¦  '%%'
+
+#SQL[@371,N14]Result[]
 drop table t13;
+
+#SQL[@373,N49]Error[44]
 create table t1(a int default(-1) auto_increment);
 invalid input: invalid default value for 'a'
+
+#SQL[@374,N61]Error[44]
 create table t1(a int primary key default(-1) auto_increment);
 invalid input: invalid default value for 'a'
+
+#SQL[@375,N52]Error[44]
 create table t1(a bigint default(-1) auto_increment);
 invalid input: invalid default value for 'a'
+
+#SQL[@376,N64]Error[44]
 create table t1(a bigint primary key default(-1) auto_increment);
 invalid input: invalid default value for 'a'
+
+#SQL[@377,N63]Result[]
 create table t1(a int, b int default(10), c int auto_increment);
+
+#SQL[@378,N20]Result[23, 111]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT (10),\n  `c` int NOT NULL AUTO_INCREMENT\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT (10),
+  `c` int NOT NULL AUTO_INCREMENT
+)
+
+#SQL[@379,N13]Result[]
 drop table t1;
 
+#SQL[@381,N41]Result[]
 create table t1(a tinyint auto_increment);
+
+#SQL[@382,N60]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (127);
+
+#SQL[@383,N16]Result[1, 1, 1, 1, 1, 1, 3]
 select * from t1;
 a
 1
@@ -637,12 +1040,21 @@ a
 6
 7
 127
-insert into t1 values();
-Data truncation: data out of range: data type tinyint, value 128
 
+#SQL[@384,N23]Error[47]
+insert into t1 values();
+data out of range: data type tinyint, value 128
+
+#SQL[@386,N13]Result[]
 drop table t1;
+
+#SQL[@387,N42]Result[]
 create table t1(a smallint auto_increment);
+
+#SQL[@388,N62]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (32767);
+
+#SQL[@389,N16]Result[1, 1, 1, 1, 1, 1, 5]
 select * from t1;
 a
 1
@@ -651,12 +1063,21 @@ a
 6
 7
 32767
-insert into t1 values();
-Data truncation: data out of range: data type smallint, value 32768
 
+#SQL[@390,N23]Error[50]
+insert into t1 values();
+data out of range: data type smallint, value 32768
+
+#SQL[@392,N13]Result[]
 drop table t1;
+
+#SQL[@393,N37]Result[]
 create table t1(a int auto_increment);
+
+#SQL[@394,N67]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (2147483647);
+
+#SQL[@395,N16]Result[1, 1, 1, 1, 1, 1, 10]
 select * from t1;
 a
 1
@@ -665,12 +1086,21 @@ a
 6
 7
 2147483647
-insert into t1 values();
-Data truncation: data out of range: data type int, value 2147483648
 
+#SQL[@396,N23]Error[50]
+insert into t1 values();
+data out of range: data type int, value 2147483648
+
+#SQL[@398,N13]Result[]
 drop table t1;
+
+#SQL[@399,N40]Result[]
 create table t1(a bigint auto_increment);
+
+#SQL[@400,N76]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (9223372036854775807);
+
+#SQL[@401,N16]Result[1, 1, 1, 1, 1, 1, 19]
 select * from t1;
 a
 1
@@ -679,12 +1109,21 @@ a
 6
 7
 9223372036854775807
-insert into t1 values();
-Data truncation: data out of range: data type bigint, value 9223372036854775808
 
+#SQL[@402,N23]Error[62]
+insert into t1 values();
+data out of range: data type bigint, value 9223372036854775808
+
+#SQL[@404,N13]Result[]
 drop table t1;
+
+#SQL[@405,N50]Result[]
 create table t1(a tinyint unsigned auto_increment);
+
+#SQL[@406,N60]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (255);
+
+#SQL[@407,N16]Result[1, 1, 1, 1, 1, 1, 3]
 select * from t1;
 a
 1
@@ -693,12 +1132,21 @@ a
 6
 7
 255
-insert into t1 values();
-Data truncation: data out of range: data type tinyint unsigned, value 256
 
+#SQL[@408,N23]Error[56]
+insert into t1 values();
+data out of range: data type tinyint unsigned, value 256
+
+#SQL[@410,N13]Result[]
 drop table t1;
+
+#SQL[@411,N51]Result[]
 create table t1(a smallint unsigned auto_increment);
+
+#SQL[@412,N62]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (65535);
+
+#SQL[@413,N16]Result[1, 1, 1, 1, 1, 1, 5]
 select * from t1;
 a
 1
@@ -707,12 +1155,21 @@ a
 6
 7
 65535
-insert into t1 values();
-Data truncation: data out of range: data type smallint unsigned, value 65536
 
+#SQL[@414,N23]Error[59]
+insert into t1 values();
+data out of range: data type smallint unsigned, value 65536
+
+#SQL[@416,N13]Result[]
 drop table t1;
+
+#SQL[@417,N46]Result[]
 create table t1(a int unsigned auto_increment);
+
+#SQL[@418,N67]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (4294967295);
+
+#SQL[@419,N16]Result[1, 1, 1, 1, 1, 1, 10]
 select * from t1;
 a
 1
@@ -721,12 +1178,21 @@ a
 6
 7
 4294967295
-insert into t1 values();
-Data truncation: data out of range: data type int unsigned, value 4294967296
 
+#SQL[@420,N23]Error[59]
+insert into t1 values();
+data out of range: data type int unsigned, value 4294967296
+
+#SQL[@422,N13]Result[]
 drop table t1;
+
+#SQL[@423,N49]Result[]
 create table t1(a bigint unsigned auto_increment);
+
+#SQL[@424,N77]Result[]
 insert into t1 values(null), (3), (null), (6), (null), (18446744073709551615);
+
+#SQL[@425,N16]Result[1, 1, 1, 1, 1, 1, 20]
 select * from t1;
 a
 1
@@ -735,97 +1201,207 @@ a
 6
 7
 18446744073709551615
+
+#SQL[@426,N23]Error[107]
 insert into t1 values();
-Data truncation: data out of range: data type bigint unsigned, auto_incrment column constant value overflows bigint unsigned
+data out of range: data type bigint unsigned, auto_incrment column constant value overflows bigint unsigned
+
+#SQL[@427,N13]Result[]
 drop table t1;
+
+#SQL[@428,N23]Result[]
 drop table if exists t1;
+
+#SQL[@429,N54]Result[]
 create table t1 (a int not null auto_increment, b int);
+
+#SQL[@430,N28]Result[]
 insert into t1(b) values (1);
+
+#SQL[@431,N16]Result[8, 8]
 select * from t1;
-a    b
-1    1
+a  ¦  b
+1  ¦  1
+
+#SQL[@433,N13]Result[]
 drop table t1;
+
+#SQL[@434,N49]Result[]
 create table t1(a int auto_increment primary key);
+
+#SQL[@435,N23]Result[]
 insert into t1 values();
+
+#SQL[@436,N23]Result[16, 1]
 select last_insert_id();
 last_insert_id()
 1
+
+#SQL[@437,N25]Result[]
 insert into t1 values(11);
+
+#SQL[@438,N23]Result[]
 insert into t1 values();
+
+#SQL[@439,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 12
+
+#SQL[@440,N49]Result[]
 create table t2(a int auto_increment primary key);
+
+#SQL[@441,N23]Result[]
 insert into t2 values();
+
+#SQL[@442,N23]Result[16, 1]
 select last_insert_id();
 last_insert_id()
 1
+
+#SQL[@443,N26]Result[]
 insert into t2 values(100);
+
+#SQL[@444,N23]Result[]
 insert into t2 values();
+
+#SQL[@445,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 101
+
+#SQL[@446,N23]Result[]
 insert into t1 values();
+
+#SQL[@447,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 13
+
+#SQL[@448,N23]Result[]
 insert into t2 values();
+
+#SQL[@449,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 102
+
+#SQL[@452,N23]Result[]
 drop table if exists t1;
+
+#SQL[@453,N68]Result[]
 create table t1(a int auto_increment primary key) auto_increment = 0;
+
+#SQL[@454,N23]Result[]
 insert into t1 values();
+
+#SQL[@455,N23]Result[16, 1]
 select last_insert_id();
 last_insert_id()
 1
+
+#SQL[@456,N25]Result[]
 insert into t1 values(11);
+
+#SQL[@457,N23]Result[]
 insert into t1 values();
+
+#SQL[@458,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 12
+
+#SQL[@460,N23]Result[]
 drop table if exists t1;
+
+#SQL[@461,N69]Result[]
 create table t1(a int auto_increment primary key) auto_increment = 10;
+
+#SQL[@462,N23]Result[]
 insert into t1 values();
+
+#SQL[@463,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 10
+
+#SQL[@464,N26]Result[]
 insert into t1 values(101);
+
+#SQL[@465,N23]Result[]
 insert into t1 values();
+
+#SQL[@466,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 102
+
+#SQL[@468,N23]Result[]
 drop table if exists t1;
+
+#SQL[@469,N70]Result[]
 create table t1(a int auto_increment primary key) auto_increment = 100;
+
+#SQL[@470,N23]Result[]
 insert into t1 values();
+
+#SQL[@471,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 100
+
+#SQL[@472,N24]Result[]
 insert into t1 values(7);
+
+#SQL[@473,N23]Result[]
 insert into t1 values();
+
+#SQL[@474,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 101
+
+#SQL[@476,N37]Result[]
 Drop table if exists auto_increment02;
+
+#SQL[@477,N84]Result[]
 Create table auto_increment02(col1 int auto_increment unique key)auto_increment = 10;
+
+#SQL[@478,N30]Result[]
 Select * from auto_increment02;
-col1
+
+#SQL[@479,N23]Result[16, 3]
 select last_insert_id();
 last_insert_id()
 101
+
+#SQL[@480,N37]Result[]
 Insert into auto_increment02 values();
+
+#SQL[@481,N30]Result[4, 2]
 Select * from auto_increment02;
 col1
 10
+
+#SQL[@482,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 10
+
+#SQL[@483,N39]Error[35]
 Insert into auto_increment02 values(10);
-Duplicate entry '10' for key '(.*)'
+Duplicate entry '10' for key 'col1'
+
+#SQL[@484,N30]Result[4, 2]
 Select * from auto_increment02;
 col1
 10
+
+#SQL[@485,N23]Result[16, 2]
 select last_insert_id();
 last_insert_id()
 10
+
+#SQL[@486,N27]Result[]
 Drop table auto_increment02;
+

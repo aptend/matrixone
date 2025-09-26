@@ -1,17 +1,36 @@
+#SQL[@1,N27]Result[]
 drop database if exists db1;
+
+#SQL[@2,N19]Result[]
 create database db1;
+
+#SQL[@3,N7]Result[]
 use db1;
+
+#SQL[@5,N25]Result[]
 DROP TABLE IF EXISTS dept;
+
+#SQL[@6,N116]Result[]
 create table dept(
-deptno int unsigned auto_increment,
-dname varchar(15),
-loc varchar(50),
-primary key(deptno)
+ deptno int unsigned auto_increment,
+ dname varchar(15),
+ loc varchar(50),
+ primary key(deptno)
 );
+
+#SQL[@13,N52]Result[]
 INSERT INTO dept VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@14,N48]Result[]
 INSERT INTO dept VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@15,N46]Result[]
 INSERT INTO dept VALUES (30,'SALES','CHICAGO');
+
+#SQL[@16,N50]Result[]
 INSERT INTO dept VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@18,N34]Result[16, 46, 40, 28, 36, 39]
 explain phyplan select * from dept;
 tp query phyplan
 Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
@@ -19,7 +38,11 @@ Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
   Pipeline: └── output
                 └── projection
                     └── tablescan
+
+#SQL[@21,N24]Result[]
 DROP TABLE IF EXISTS emp;
+
+#SQL[@22,N200]Result[]
 create table emp(
 empno int unsigned auto_increment,
 ename varchar(15),
@@ -31,20 +54,50 @@ comm decimal(7,2),
 deptno int unsigned,
 primary key(empno)
 );
+
+#SQL[@34,N75]Result[]
 INSERT INTO emp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20);
+
+#SQL[@35,N78]Result[]
 INSERT INTO emp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-02-20',1600,300,30);
+
+#SQL[@36,N77]Result[]
 INSERT INTO emp VALUES (7521,'WARD','SALESMAN',7698,'1981-02-22',1250,500,30);
+
+#SQL[@37,N78]Result[]
 INSERT INTO emp VALUES (7566,'JONES','MANAGER',7839,'1981-04-02',2975,NULL,20);
+
+#SQL[@38,N80]Result[]
 INSERT INTO emp VALUES (7654,'MARTIN','SALESMAN',7698,'1981-09-28',1250,1400,30);
+
+#SQL[@39,N78]Result[]
 INSERT INTO emp VALUES (7698,'BLAKE','MANAGER',7839,'1981-05-01',2850,NULL,30);
+
+#SQL[@40,N78]Result[]
 INSERT INTO emp VALUES (7782,'CLARK','MANAGER',7839,'1981-06-09',2450,NULL,10);
+
+#SQL[@41,N78]Result[]
 INSERT INTO emp VALUES (7788,'SCOTT','ANALYST',7566,'0087-07-13',3000,NULL,20);
+
+#SQL[@42,N79]Result[]
 INSERT INTO emp VALUES (7839,'KING','PRESIDENT',NULL,'1981-11-17',5000,NULL,10);
+
+#SQL[@43,N77]Result[]
 INSERT INTO emp VALUES (7844,'TURNER','SALESMAN',7698,'1981-09-08',1500,0,30);
+
+#SQL[@44,N76]Result[]
 INSERT INTO emp VALUES (7876,'ADAMS','CLERK',7788,'0087-07-13',1100,NULL,20);
+
+#SQL[@45,N75]Result[]
 INSERT INTO emp VALUES (7900,'JAMES','CLERK',7698,'1981-12-03',950,NULL,30);
+
+#SQL[@46,N77]Result[]
 INSERT INTO emp VALUES (7902,'FORD','ANALYST',7566,'1981-12-03',3000,NULL,20);
+
+#SQL[@47,N77]Result[]
 INSERT INTO emp VALUES (7934,'MILLER','CLERK',7782,'1982-01-23',1300,NULL,10);
+
+#SQL[@49,N33]Result[16, 46, 67, 28, 36, 39]
 explain phyplan select * from emp;
 tp query phyplan
 Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
@@ -52,6 +105,8 @@ Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
   Pipeline: └── output
                 └── projection
                     └── tablescan
+
+#SQL[@51,N66]Result[16, 46, 42, 28, 36, 40, 40, 47]
 explain phyplan select empno, ename, job from emp where sal > 2000;
 tp query phyplan
 Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
@@ -61,6 +116,8 @@ Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
                     └── projection
                         └── filter
                             └── tablescan
+
+#SQL[@53,N89]Result[16, 46, 35, 28, 36, 34, 43, 14, 50, 40, 36, 39, 3]
 explain phyplan select a.ename,b.dname from emp a left join dept b on a.deptno = b.deptno;
 tp query phyplan
 Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
@@ -75,6 +132,13 @@ Scope 1 (Magic: Remote, mcpu: 1, Receiver: [])
       Pipeline: └── hash build
                     └── tablescan
   }
+
+#SQL[@55,N14]Result[]
 drop table emp;
+
+#SQL[@56,N15]Result[]
 drop table dept;
+
+#SQL[@57,N17]Result[]
 drop database db1;
+

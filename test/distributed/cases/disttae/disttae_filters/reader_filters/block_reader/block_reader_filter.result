@@ -1,133 +1,244 @@
+#SQL[@1,N30]Result[]
 drop database if exists testdb;
+
+#SQL[@2,N22]Result[]
 create database testdb;
+
+#SQL[@3,N10]Result[]
 use testdb;
+
+#SQL[@5,N31]Result[24, 4]
 select enable_fault_injection();
 enable_fault_injection()
 true
+
+#SQL[@7,N39]Result[]
 create table t1(a int, b int, index(b));
+
+#SQL[@8,N76]Result[65, 4]
 select add_fault_point('fj/cn/flush_small_objs',':::','echo',40,'testdb.t1');
 add_fault_point(fj/cn/flush_small_objs, :::, echo, 40, testdb.t1)
 true
+
+#SQL[@9,N58]Result[]
 insert into t1 select *, * from generate_series(1, 40960)g;
+
+#SQL[@10,N28]Result[1, 1]
 select a from t1 where b = 1;
 a
 1
+
+#SQL[@11,N40]Result[1, 1, 1, 1]
 select a from t1 where b between 1 and 3;
 a
 1
 2
 3
+
+#SQL[@12,N35]Result[1, 1, 1, 1]
 select a from t1 where b in (1,2,3);
 a
 1
 2
 3
+
+#SQL[@13,N13]Result[]
 drop table t1;
+
+#SQL[@15,N47]Result[]
 create table t2(a varchar, b varchar, index(b));
+
+#SQL[@16,N76]Result[65, 4]
 select add_fault_point('fj/cn/flush_small_objs',':::','echo',40,'testdb.t2');
-add_fault_point(fj/cn/flush_small_objs, :::, echo, 40, tesdb.t2)
+add_fault_point(fj/cn/flush_small_objs, :::, echo, 40, testdb.t2)
 true
+
+#SQL[@17,N100]Result[]
 insert into t2 values('1','2'),('3','4'),('5','6'),('7','8'),('a','b'),('c','d'),('e','f'),('g','h');
+
+#SQL[@18,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@19,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@20,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@21,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@22,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@23,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@24,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@25,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@26,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@27,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@28,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@29,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@30,N31]Result[]
 insert into t2 select * from t2;
+
+#SQL[@31,N23]Result[8, 5]
 select count(*) from t2;
 count(*)
 65536
+
+#SQL[@32,N39]Result[1, 1]
 select distinct a from t2 where b = '2';
-distinct a
+a
 1
+
+#SQL[@33,N53]Result[1, 1, 1, 1]
 select distinct a from t2 where b between '2' and '6';
-distinct a
+a
 1
 3
 5
+
+#SQL[@34,N50]Result[1, 1, 1, 1]
 select distinct a from t2 where b in ('2','4','6');
-distinct a
+a
 1
 3
 5
+
+#SQL[@35,N13]Result[]
 drop table t2;
+
+#SQL[@37,N44]Result[]
 create table t3 (a float, b float, index(b));
+
+#SQL[@38,N76]Result[65, 4]
 select add_fault_point('fj/cn/flush_small_objs',':::','echo',40,'testdb.t3');
-add_fault_point(fj/cn/flush_small_objs, :::, echo, 40, testdb.t1)
+add_fault_point(fj/cn/flush_small_objs, :::, echo, 40, testdb.t3)
 true
+
+#SQL[@39,N58]Result[]
 insert into t3 select *, * from generate_series(1, 40960)g;
+
+#SQL[@40,N28]Result[1, 1]
 select a from t3 where b = 1;
 a
 1
+
+#SQL[@41,N40]Result[1, 1, 1, 1]
 select a from t3 where b between 1 and 3;
 a
 1
 2
 3
+
+#SQL[@42,N35]Result[1, 1, 1, 1]
 select a from t3 where b in (1,2,3);
 a
 1
 2
 3
+
+#SQL[@43,N13]Result[]
 drop table t3;
+
+#SQL[@46,N41]Result[]
 create table t4(a int primary key, b int);
+
+#SQL[@47,N76]Result[65, 4]
 select add_fault_point('fj/cn/flush_small_objs',':::','echo',40,'testdb.t4');
 add_fault_point(fj/cn/flush_small_objs, :::, echo, 40, testdb.t4)
 true
+
+#SQL[@48,N58]Result[]
 insert into t4 select *, * from generate_series(1, 40960)g;
+
+#SQL[@49,N28]Result[1, 1, 1]
 select b from t4 where a < 3;
 b
 1
 2
+
+#SQL[@50,N29]Result[1, 1, 1, 1]
 select b from t4 where a <= 3;
 b
 1
 2
 3
+
+#SQL[@51,N38]Result[1, 1]
 select b from t4 where a > 1 and a < 3;
 b
 2
+
+#SQL[@52,N39]Result[1, 1, 1]
 select b from t4 where a >= 1 and a < 3;
 b
 1
 2
+
+#SQL[@53,N39]Result[1, 1, 1]
 select b from t4 where a > 1 and a <= 3;
 b
 2
 3
+
+#SQL[@54,N40]Result[1, 1, 1, 1]
 select b from t4 where a >= 1 and a <= 3;
 b
 1
 2
 3
+
+#SQL[@55,N38]Result[]
 select b from t4 where a < 3 and a = 3;
-b
+
+#SQL[@56,N37]Result[1, 1, 1]
 select b from t4 where a < 1 or a < 3;
 b
 1
 2
+
+#SQL[@57,N39]Result[1, 1, 1, 1]
 select b from t4 where a <= 1 or a <= 3;
 b
 1
 2
 3
+
+#SQL[@58,N37]Result[1, 1, 1]
 select b from t4 where a < 2 or a = 3;
 b
 1
 3
+
+#SQL[@59,N37]Result[1, 1, 1]
 select b from t4 where a < 3 or a = 2;
 b
 1
 2
+
+#SQL[@60,N13]Result[]
 drop table t4;
+
+#SQL[@61,N20]Result[]
 drop database testdb;
+
+#SQL[@63,N32]Result[25, 4]
 select disable_fault_injection();
 disable_fault_injection()
 true
+

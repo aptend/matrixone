@@ -1,72 +1,186 @@
+#SQL[@1,N30]Result[]
 drop database if exists mts_db;
+
+#SQL[@2,N22]Result[]
 create database mts_db;
+
+#SQL[@3,N10]Result[]
 use mts_db;
+
+#SQL[@6,N67]Result[54, 152]
 select mo_ctl("cn", "MoTableStats", "restore_default_setting:true");
 mo_ctl(cn, MoTableStats, restore_default_setting:true)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "move_on(true), use_old_impl(false), force_update(false)"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "move_on(true), use_old_impl(false), force_update(false)"
+  }
+}
+
+
+#SQL[@8,N52]Result[39, 119]
 select mo_ctl("cn", "MoTableStats", "move_on:false");
 mo_ctl(cn, MoTableStats, move_on:false)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "move on state, true to false"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "move on: true to false"
+  }
+}
+
+
+#SQL[@11,N27]Result[]
 create table mts_t1 (a int);
+
+#SQL[@12,N58]Result[]
 insert into mts_t1 select * from generate_series(1, 1000)g;
+
+#SQL[@14,N40]Result[29, 1]
 select mo_table_rows("mts_db", "mts_t1");
 mo_table_rows(mts_db, mts_t1)
 0
+
+#SQL[@17,N56]Result[43, 124]
 select mo_ctl("cn", "MoTableStats", "force_update:true");
 mo_ctl(cn, MoTableStats, force_update:true)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update, false to true"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update: false to true"
+  }
+}
+
+
+#SQL[@19,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t1");
 mo_table_rows(mts_db, mts_t1)
 1000
+
+#SQL[@22,N31]Result[]
 insert into mts_t1 values(1001);
+
+#SQL[@24,N57]Result[44, 124]
 select mo_ctl("cn", "MoTableStats", "force_update:false");
-mo_ctl(cn, MoTableStats, force_update:true)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update, true to false"\n  }\n}\n
+mo_ctl(cn, MoTableStats, force_update:false)
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update: true to false"
+  }
+}
+
+
+#SQL[@26,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t1");
 mo_table_rows(mts_db, mts_t1)
 1000
+
+#SQL[@29,N56]Result[43, 124]
 select mo_ctl("cn", "MoTableStats", "force_update:true");
 mo_ctl(cn, MoTableStats, force_update:true)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update, false to true"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update: false to true"
+  }
+}
+
+
+#SQL[@31,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t1");
 mo_table_rows(mts_db, mts_t1)
 1001
+
+#SQL[@34,N57]Result[44, 124]
 select mo_ctl("cn", "MoTableStats", "force_update:false");
-mo_ctl(cn, MoTableStats, force_update:true)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update, true to false"\n  }\n}\n
+mo_ctl(cn, MoTableStats, force_update:false)
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "force update: true to false"
+  }
+}
+
+
+#SQL[@37,N27]Result[8, 4]
 select count(*) from mts_t1;
 count(*)
 1001
+
+#SQL[@39,N17]Result[]
 drop table mts_t1;
+
+#SQL[@42,N27]Result[]
 create table mts_t2 (a int);
+
+#SQL[@43,N58]Result[]
 insert into mts_t2 select * from generate_series(1, 1000)g;
+
+#SQL[@45,N40]Result[29, 1]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 0
+
+#SQL[@48,N37]Result[]
 set mo_table_stats.force_update = yes;
+
+#SQL[@49,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1000
+
+#SQL[@52,N32]Result[]
 insert into mts_t2 values (1001);
+
+#SQL[@54,N36]Result[]
 set mo_table_stats.force_update = no;
+
+#SQL[@55,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1000
+
+#SQL[@58,N37]Result[]
 set mo_table_stats.force_update = yes;
+
+#SQL[@59,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1001
+
+#SQL[@62,N31]Result[]
 insert into mts_t2 values(1002);
+
+#SQL[@64,N36]Result[]
 set mo_table_stats.force_update = no;
+
+#SQL[@65,N42]Result[]
 set mo_table_stats.reset_update_time = yes;
+
+#SQL[@66,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1002
+
+#SQL[@69,N67]Result[54, 152]
 select mo_ctl("cn", "MoTableStats", "restore_default_setting:true");
 mo_ctl(cn, MoTableStats, restore_default_setting:true)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "move_on(true), use_old_impl(false), force_update(false)"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "move_on(true), use_old_impl(false), force_update(false)"
+  }
+}
+
+
+#SQL[@72,N27]Result[8, 4]
 select count(*) from mts_t2;
 count(*)
 1002
+
+#SQL[@74,N17]Result[]
 drop table mts_t2;
+
+#SQL[@75,N20]Result[]
 drop database mts_db;
+

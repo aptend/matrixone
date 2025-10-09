@@ -13,8 +13,8 @@ delete from t1 where a = 3;
 insert into t1 values(3,3,3);
 delete from t1 where a = 3;
 insert into t1 values(3,3,3);
--- @ignore:0
 select mo_ctl('dn','checkpoint','');
+| @ignore(0);
 delete from t1 where a = 3;
 insert into t1 values(3,3,3);
 delete from t1 where a = 3;

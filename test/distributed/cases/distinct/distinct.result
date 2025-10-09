@@ -1,127 +1,236 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N39]Result[]
 create table t1(
 a int,
 b varchar(10)
 );
+
+#SQL[@10,N86]Result[]
 insert into t1 values (111, 'a'),(110, 'a'),(100, 'a'),(000, 'b'),(001, 'b'),(011,'b');
+
+#SQL[@12,N25]Result[1, 1, 1]
 select distinct b from t1;
 b
 a
 b
+
+#SQL[@13,N28]Result[8, 10, 10, 10, 8, 8, 9]
 select distinct b, a from t1;
-b    a
-a    111
-a    110
-a    100
-b    0
-b    1
-b    11
+b  ¦  a
+a  ¦  111
+a  ¦  110
+a  ¦  100
+b  ¦  0
+b  ¦  1
+b  ¦  11
+
+#SQL[@15,N32]Result[17, 1]
 select count(distinct a) from t1;
 count(distinct a)
 6
+
+#SQL[@16,N30]Result[15, 3]
 select sum(distinct a) from t1;
 sum(distinct a)
 333
+
+#SQL[@17,N30]Result[15, 4]
 select avg(distinct a) from t1;
 avg(distinct a)
 55.5
+
+#SQL[@18,N30]Result[15, 1]
 select min(distinct a) from t1;
 min(distinct a)
 0
+
+#SQL[@19,N30]Result[15, 3]
 select max(distinct a) from t1;
 max(distinct a)
 111
+
+#SQL[@21,N13]Result[]
 drop table t1;
+
+#SQL[@24,N23]Result[]
 drop table if exists t2;
+
+#SQL[@25,N37]Result[]
 create table t2(a int, b varchar(10));
+
+#SQL[@27,N30]Result[]
 insert into t2 values (1, 'a');
+
+#SQL[@28,N31]Result[]
 insert into t2 values (2, NULL);
+
+#SQL[@29,N33]Result[]
 insert into t2 values (NULL, 'b');
+
+#SQL[@30,N32]Result[]
 insert into t2 values (NULL, '');
+
+#SQL[@31,N29]Result[]
 insert into t2 values (3, '');
+
+#SQL[@32,N34]Result[]
 insert into t2 values (NULL, NULL);
+
+#SQL[@34,N25]Result[1, 1, 1, 4, 1]
 select distinct a from t2;
 a
 1
 2
 null
 3
+
+#SQL[@35,N25]Result[1, 1, 4, 1, 0]
 select distinct b from t2;
 b
 a
 null
 b
 
+
+#SQL[@36,N28]Result[8, 8, 11, 11, 10, 7, 14]
 select distinct a, b from t2;
-a    b
-1    a
-2    null
-null    b
-null    
-3    
-null    null
+a  ¦  b
+1  ¦  a
+2  ¦  null
+null  ¦  b
+null  ¦  
+3  ¦  
+null  ¦  null
+
+#SQL[@38,N13]Result[]
 drop table t2;
+
+#SQL[@41,N23]Result[]
 drop table if exists t3;
+
+#SQL[@42,N30]Result[]
 create table t3 (i int, j int);
+
+#SQL[@43,N48]Result[]
 insert into t3 values (1,1), (1,2), (2,3), (2,4);
+
+#SQL[@44,N46]Result[24, 8, 8]
 select i, count(distinct j) from t3 group by i;
-i    count(distinct j)
-1    2
-2    2
-select i+0.0 as i2, count(distinct j) from t3 group by i2;
-Column 'i2' does not exist
+i  ¦  count(distinct j)
+1  ¦  2
+2  ¦  2
+
+#SQL[@50,N56]Result[25, 10, 10]
 select i+0.0 as i2, count(distinct j) from t3 group by i;
-i2    count(distinct j)
-1.0    2
-2.0    2
+i2  ¦  count(distinct j)
+1.0  ¦  2
+2.0  ¦  2
+
+#SQL[@52,N13]Result[]
 drop table t3;
+
+#SQL[@55,N23]Result[]
 drop table if exists t4;
+
+#SQL[@56,N30]Result[]
 CREATE TABLE t4 (a INT, b INT);
+
+#SQL[@57,N39]Result[]
 INSERT INTO t4 VALUES (1,1),(1,2),(2,3);
+
+#SQL[@60,N58]Error[63]
 SELECT (SELECT COUNT(DISTINCT t4.b)) FROM t4 GROUP BY t4.a;
 correlated columns in aggregate function is not yet implemented
+
+#SQL[@62,N56]Result[27, 1, 1]
 SELECT (SELECT COUNT(DISTINCT 12)) FROM t4 GROUP BY t4.a;
-(select count(distinct 12))
+(select COUNT(distinct 12))
 1
 1
+
+#SQL[@64,N13]Result[]
 drop table t4;
+
+#SQL[@67,N23]Result[]
 drop table if exists t5;
+
+#SQL[@68,N27]Result[]
 create table t5 (ff double);
+
+#SQL[@70,N27]Result[]
 insert into t5 values (2.2);
+
+#SQL[@71,N53]Result[39, 4]
 select cast(sum(distinct ff) as decimal(5,2)) from t5;
 cast(sum(distinct ff) as decimal(5, 2))
 2.20
+
+#SQL[@72,N47]Result[28, 1]
 select cast(sum(distinct ff) as signed) from t5;
 cast(sum(distinct ff) as ff)
 2
+
+#SQL[@73,N50]Result[36, 5]
 select cast(variance(ff) as decimal(10,3)) from t5;
 cast(variance(ff) as decimal(10, 3))
 0.000
+
+#SQL[@74,N44]Result[30, 4]
 select cast(min(ff) as decimal(5,2)) from t5;
 cast(min(ff) as decimal(5, 2))
 2.20
+
+#SQL[@76,N13]Result[]
 drop table t5;
+
+#SQL[@79,N23]Result[]
 drop table if exists t6;
+
+#SQL[@80,N33]Result[]
 create table t6 (df decimal(5,1));
+
+#SQL[@82,N26]Result[]
 insert into t6 values(1.1);
+
+#SQL[@83,N26]Result[]
 insert into t6 values(2.2);
+
+#SQL[@84,N47]Result[28, 1]
 select cast(sum(distinct df) as signed) from t6;
 cast(sum(distinct df) as df)
 3
+
+#SQL[@85,N38]Result[19, 1]
 select cast(min(df) as signed) from t6;
 cast(min(df) as df)
 1
+
+#SQL[@86,N37]Result[22, 9]
 select 1e8 * sum(distinct df) from t6;
 1e8 * sum(distinct df)
-3.3E8
+330000000
+
+#SQL[@87,N28]Result[13, 18]
 select 1e8 * min(df) from t6;
 1e8 * min(df)
-1.1000000000000001E8
+110000000.00000001
+
+#SQL[@89,N13]Result[]
 drop table t6;
+
+#SQL[@93,N23]Result[]
 drop table if exists t7;
+
+#SQL[@94,N32]Result[]
 CREATE TABLE t7 (a VARCHAR(400));
+
+#SQL[@96,N114]Result[]
 INSERT INTO t7 (a) VALUES ("A"), ("a"), ("a "), ("a   "),
-("B"), ("b"), ("b "), ("b   ");
+                          ("B"), ("b"), ("b "), ("b   ");
+
+#SQL[@99,N16]Result[1, 1, 1, 2, 4, 1, 1, 2, 4]
 select * from t7;
 a
 A
@@ -132,88 +241,188 @@ B
 b
 b 
 b   
+
+#SQL[@100,N32]Result[17, 1]
 SELECT COUNT(DISTINCT a) FROM t7;
-count(distinct a)
+COUNT(distinct a)
 8
+
+#SQL[@102,N13]Result[]
 DROP TABLE t7;
+
+#SQL[@105,N23]Result[]
 drop table if exists t8;
+
+#SQL[@106,N30]Result[]
 CREATE TABLE t8 (a INT, b INT);
+
+#SQL[@108,N69]Result[]
 INSERT INTO t8 VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8);
+
+#SQL[@109,N42]Result[]
 INSERT INTO t8 SELECT a, b+8       FROM t8;
+
+#SQL[@110,N42]Result[]
 INSERT INTO t8 SELECT a, b+16      FROM t8;
+
+#SQL[@111,N42]Result[]
 INSERT INTO t8 SELECT a, b+32      FROM t8;
+
+#SQL[@112,N42]Result[]
 INSERT INTO t8 SELECT a, b+64      FROM t8;
+
+#SQL[@113,N42]Result[]
 INSERT INTO t8 SELECT a, b+128     FROM t8;
+
+#SQL[@114,N42]Result[]
 INSERT INTO t8 SELECT a, b+256     FROM t8;
+
+#SQL[@115,N42]Result[]
 INSERT INTO t8 SELECT a, b+512     FROM t8;
+
+#SQL[@116,N42]Result[]
 INSERT INTO t8 SELECT a, b+1024    FROM t8;
+
+#SQL[@117,N42]Result[]
 INSERT INTO t8 SELECT a, b+2048    FROM t8;
+
+#SQL[@118,N42]Result[]
 INSERT INTO t8 SELECT a, b+4096    FROM t8;
+
+#SQL[@119,N42]Result[]
 INSERT INTO t8 SELECT a, b+8192    FROM t8;
+
+#SQL[@120,N42]Result[]
 INSERT INTO t8 SELECT a, b+16384   FROM t8;
+
+#SQL[@121,N42]Result[]
 INSERT INTO t8 SELECT a, b+32768   FROM t8;
+
+#SQL[@124,N68]Result[10, 12]
 SELECT a,COUNT(DISTINCT b) AS cnt FROM t8 GROUP BY a HAVING cnt > 50;
-a    cnt
-1    65536
+a  ¦  cnt
+1  ¦  65536
+
+#SQL[@125,N76]Result[15, 17]
 SELECT a,SUM(DISTINCT b) AS sumation FROM t8 GROUP BY a HAVING sumation > 50;
-a    sumation
-1    2147516416
+a  ¦  sumation
+1  ¦  2147516416
+
+#SQL[@126,N74]Result[14, 14]
 SELECT a,AVG(DISTINCT b) AS average FROM t8 GROUP BY a HAVING average > 50;
-a    average
-1    32768.5
+a  ¦  average
+1  ¦  32768.5
+
+#SQL[@128,N13]Result[]
 DROP TABLE t8;
+
+#SQL[@130,N23]Result[]
 drop table if exists t9;
+
+#SQL[@131,N23]Result[]
 CREATE TABLE t9 (a INT);
+
+#SQL[@132,N30]Result[]
 INSERT INTO t9 values (),(),();
+
+#SQL[@134,N25]Result[1, 4]
 select distinct * from t9;
 a
 null
+
+#SQL[@136,N13]Result[]
 drop table t9;
+
+#SQL[@139,N24]Result[]
 drop table if exists t10;
+
+#SQL[@140,N40]Result[]
 CREATE TABLE t10 (col_int_nokey int(11));
+
+#SQL[@142,N37]Result[]
 INSERT INTO t10 VALUES (7),(8),(NULL);
+
+#SQL[@143,N43]Result[27, 3]
 SELECT AVG(DISTINCT col_int_nokey) FROM t10;
-avg(distinct col_int_nokey)
+AVG(distinct col_int_nokey)
 7.5
+
+#SQL[@144,N123]Result[32, 3]
 SELECT AVG(DISTINCT outr.col_int_nokey) FROM t10 AS outr LEFT JOIN t10 AS outr2 ON
 outr.col_int_nokey = outr2.col_int_nokey;
-avg(distinct outr.col_int_nokey)
+AVG(distinct outr.col_int_nokey)
 7.5
+
+#SQL[@147,N14]Result[]
 DROP TABLE t10;
+
+#SQL[@150,N24]Result[]
 drop table if exists t11;
+
+#SQL[@151,N29]Result[]
 CREATE TABLE t11(c1 CHAR(30));
+
+#SQL[@152,N37]Result[]
 INSERT INTO t11 VALUES('111'),('222');
+
+#SQL[@154,N50]Result[25, 3, 3]
 SELECT DISTINCT substr(c1, 1, 2147483647) FROM t11;
 substr(c1, 1, 2147483647)
 111
 222
+
+#SQL[@155,N50]Result[25, 3, 3]
 SELECT DISTINCT substr(c1, 1, 2147483648) FROM t11;
 substr(c1, 1, 2147483648)
 111
 222
+
+#SQL[@156,N51]Result[26, 1, 1]
 SELECT DISTINCT substr(c1, -1, 2147483648) FROM t11;
 substr(c1, -1, 2147483648)
 1
 2
+
+#SQL[@157,N60]Result[35, 0]
 SELECT DISTINCT substr(c1, -2147483647, 2147483648) FROM t11;
 substr(c1, -2147483647, 2147483648)
 
+
+#SQL[@158,N60]Result[35, 0]
 SELECT DISTINCT substr(c1, 9223372036854775807, 23) FROM t11;
 substr(c1, 9223372036854775807, 23)
 
+
+#SQL[@160,N14]Result[]
 DROP TABLE t11;
+
+#SQL[@163,N24]Result[]
 drop table if exists t12;
+
+#SQL[@164,N22]Result[]
 drop view if exists v1;
+
+#SQL[@165,N36]Result[]
 create table t12(pk int primary key);
+
+#SQL[@166,N50]Result[]
 create view v1 as select pk from t12 where pk < 20;
+
+#SQL[@168,N41]Result[]
 insert into t12 values (1), (2), (3), (4);
+
+#SQL[@169,N26]Result[2, 1, 1, 1, 1]
 select distinct pk from v1;
 pk
 1
 2
 3
 4
+
+#SQL[@171,N36]Result[]
 insert into t12 values (5), (6), (7);
+
+#SQL[@172,N26]Result[2, 1, 1, 1, 1, 1, 1, 1]
 select distinct pk from v1;
 pk
 1
@@ -223,19 +432,35 @@ pk
 5
 6
 7
+
+#SQL[@174,N12]Result[]
 drop view v1;
+
+#SQL[@175,N14]Result[]
 drop table t12;
+
+#SQL[@178,N48]Result[53, 22]
 SELECT AVG(2), BIT_AND(2), BIT_OR(2), BIT_XOR(2);
-avg(2)    bit_and(2)    bit_or(2)    bit_xor(2)
-2.0    2    2    2
+AVG(2)  ¦  BIT_AND(2)  ¦  BIT_OR(2)  ¦  BIT_XOR(2)
+2  ¦  2  ¦  2  ¦  2
+
+#SQL[@180,N15]Result[8, 1]
 select count(*);
 count(*)
 1
+
+#SQL[@182,N78]Result[98, 43]
 select COUNT(12), COUNT(DISTINCT 12), MIN(2),MAX(2),STD(2), VARIANCE(2),SUM(2);
-count(12)    count(distinct 12)    min(2)    max(2)    std(2)    variance(2)    sum(2)
-1    1    2    2    0.0    0.0    2
+COUNT(12)  ¦  COUNT(distinct 12)  ¦  MIN(2)  ¦  MAX(2)  ¦  STD(2)  ¦  VARIANCE(2)  ¦  SUM(2)
+1  ¦  1  ¦  2  ¦  2  ¦  0  ¦  0  ¦  2
+
+#SQL[@184,N24]Result[]
 drop table if exists t13;
+
+#SQL[@185,N93]Result[]
 CREATE TABLE t13(product VARCHAR(32),country_id INTEGER NOT NULL,year INTEGER,profit INTEGER);
+
+#SQL[@186,N421]Result[]
 INSERT INTO t13 VALUES ( 'Computer', 2,2000, 1200),
 ( 'TV', 1, 1999, 150),
 ( 'Calculator', 1, 1999,50),
@@ -251,13 +476,18 @@ INSERT INTO t13 VALUES ( 'Computer', 2,2000, 1200),
 ( 'Computer', 2, 2000,1500),
 ( 'Calculator', 2, 2000,75),
 ( 'Phone', 3, 2003,10);
+
+#SQL[@202,N113]Result[63, 31, 31, 29, 29, 26, 23, 23]
 SELECT product, country_id, COUNT(*), COUNT(distinct year) FROM t13 GROUP BY product, country_id order by product;
-product    country_id    count(*)    count(distinct year)
-Calculator    1    2    2
-Calculator    2    2    1
-Computer    2    2    1
-Computer    1    3    2
-Phone    3    1    1
-TV    1    3    2
-TV    2    2    1
+product  ¦  country_id  ¦  COUNT(*)  ¦  COUNT(distinct year)
+Calculator  ¦  1  ¦  2  ¦  2
+Calculator  ¦  2  ¦  2  ¦  1
+Computer  ¦  2  ¦  2  ¦  1
+Computer  ¦  1  ¦  3  ¦  2
+Phone  ¦  3  ¦  1  ¦  1
+TV  ¦  1  ¦  3  ¦  2
+TV  ¦  2  ¦  2  ¦  1
+
+#SQL[@204,N14]Result[]
 drop table t13;
+

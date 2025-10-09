@@ -1,91 +1,191 @@
+#SQL[@2,N29]Result[]
 drop database if exists wf_db;
+
+#SQL[@3,N21]Result[]
 create database wf_db;
+
+#SQL[@4,N9]Result[]
 use wf_db;
+
+#SQL[@6,N34]Result[]
 create table t1(a int primary key);
+
+#SQL[@7,N32]Result[]
 insert into t1 values(1),(2),(3);
+
+#SQL[@9,N5]Result[]
 begin;
+
+#SQL[@10,N32]Result[]
 update t1 set a = 11 where a = 1;
+
+#SQL[@11,N32]Result[]
 update t1 set a = 22 where a = 2;
+
+#SQL[@12,N32]Result[]
 update t1 set a = 33 where a = 3;
+
+#SQL[@13,N25]Result[]
 insert into t1 values(44);
+
+#SQL[@14,N25]Result[]
 insert into t1 values(55);
+
+#SQL[@15,N29]Result[1, 2]
 select * from t1 where a > 44;
 a
 55
+
+#SQL[@16,N30]Result[1, 2]
 select * from t1 where a >= 55;
 a
 55
+
+#SQL[@17,N29]Result[1, 2]
 select * from t1 where a < 22;
 a
 11
+
+#SQL[@18,N30]Result[1, 2]
 select * from t1 where a <= 11;
 a
 11
+
+#SQL[@19,N57]Result[1, 2, 2]
 select * from t1 where a >= 11 and a <= 22 order by a asc;
 a
 11
 22
+
+#SQL[@20,N41]Result[1, 2]
 select * from t1 where a >= 11 and a < 22;
 a
 11
+
+#SQL[@21,N41]Result[1, 2]
 select * from t1 where a > 11 and a <= 22;
 a
 22
+
+#SQL[@22,N40]Result[1, 2]
 select * from t1 where a > 11 and a < 33;
 a
 22
+
+#SQL[@23,N27]Result[]
 delete from t1 where a = 44;
+
+#SQL[@24,N6]Result[]
 commit;
+
+#SQL[@25,N31]Result[1, 2, 2, 2, 2]
 select * from t1 order by a asc;
 a
 11
 22
 33
 55
+
+#SQL[@27,N38]Result[]
 create table t2(a varchar primary key);
+
+#SQL[@28,N38]Result[]
 insert into t2 values("1"),("2"),("3");
+
+#SQL[@29,N5]Result[]
 begin;
+
+#SQL[@30,N36]Result[]
 update t2 set a = "11" where a = "1";
+
+#SQL[@31,N36]Result[]
 update t2 set a = "22" where a = "2";
+
+#SQL[@32,N36]Result[]
 update t2 set a = "33" where a = "3";
+
+#SQL[@33,N27]Result[]
 insert into t2 values("44");
+
+#SQL[@34,N27]Result[]
 insert into t2 values("55");
+
+#SQL[@35,N29]Result[]
 delete from t2 where a = "44";
+
+#SQL[@36,N6]Result[]
 commit;
+
+#SQL[@37,N31]Result[1, 2, 2, 2, 2]
 select * from t2 order by a asc;
 a
 11
 22
 33
 55
+
+#SQL[@39,N48]Result[]
 create table t3(a int, b int, primary key (a,b));
+
+#SQL[@40,N39]Result[]
 insert into t3 values(1,1),(2, 2),(3,3);
+
+#SQL[@41,N5]Result[]
 begin;
+
+#SQL[@42,N32]Result[]
 update t3 set a = 11 where a = 1;
+
+#SQL[@43,N32]Result[]
 update t3 set a = 22 where a = 2;
+
+#SQL[@44,N32]Result[]
 update t3 set a = 33 where a = 3;
+
+#SQL[@45,N28]Result[]
 insert into t3 values(44, 4);
+
+#SQL[@46,N28]Result[]
 insert into t3 values(55, 5);
+
+#SQL[@47,N57]Result[8, 9, 9, 9, 9, 9]
 select * from t3 where a >= 11 and a <= 55 order by a asc;
-a    b
-11    1
-22    2
-33    3
-44    4
-55    5
+a  ¦  b
+11  ¦  1
+22  ¦  2
+33  ¦  3
+44  ¦  4
+55  ¦  5
+
+#SQL[@48,N51]Result[8, 9, 9]
 select * from t3 where a in (11, 22) order by a asc;
-a    b
-11    1
-22    2
+a  ¦  b
+11  ¦  1
+22  ¦  2
+
+#SQL[@49,N27]Result[]
 delete from t3 where a = 44;
+
+#SQL[@50,N6]Result[]
 commit;
+
+#SQL[@51,N34]Result[8, 9, 9, 9, 9]
 select * from t3 order by a, b asc;
-a    b
-11    1
-22    2
-33    3
-55    5
+a  ¦  b
+11  ¦  1
+22  ¦  2
+33  ¦  3
+55  ¦  5
+
+#SQL[@53,N23]Result[]
 drop table if exists t1;
+
+#SQL[@54,N23]Result[]
 drop table if exists t2;
+
+#SQL[@55,N23]Result[]
 drop table if exists t3;
+
+#SQL[@56,N29]Result[]
 drop database if exists wf_db;
+

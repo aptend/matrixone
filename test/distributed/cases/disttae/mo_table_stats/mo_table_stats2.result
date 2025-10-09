@@ -1,32 +1,76 @@
+#SQL[@1,N30]Result[]
 drop account if exists acc_mts;
+
+#SQL[@2,N60]Result[]
 create account acc_mts admin_name='root' identified by '111';
+
+#SQL[@5,N30]Result[]
 drop database if exists mts_db;
+
+#SQL[@6,N22]Result[]
 create database mts_db;
+
+#SQL[@7,N10]Result[]
 use mts_db;
+
+#SQL[@10,N27]Result[]
 create table mts_t2 (a int);
+
+#SQL[@11,N58]Result[]
 insert into mts_t2 select * from generate_series(1, 1000)g;
+
+#SQL[@13,N40]Result[29, 1]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 0
+
+#SQL[@16,N37]Result[]
 set mo_table_stats.force_update = yes;
+
+#SQL[@17,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1000
+
+#SQL[@20,N32]Result[]
 insert into mts_t2 values (1001);
+
+#SQL[@22,N36]Result[]
 set mo_table_stats.force_update = no;
+
+#SQL[@23,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1000
+
+#SQL[@26,N37]Result[]
 set mo_table_stats.force_update = yes;
+
+#SQL[@27,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1001
+
+#SQL[@30,N31]Result[]
 insert into mts_t2 values(1002);
+
+#SQL[@32,N36]Result[]
 set mo_table_stats.force_update = no;
+
+#SQL[@33,N42]Result[]
 set mo_table_stats.reset_update_time = yes;
+
+#SQL[@34,N40]Result[29, 4]
 select mo_table_rows("mts_db", "mts_t2");
 mo_table_rows(mts_db, mts_t2)
 1002
+
+#SQL[@37,N17]Result[]
 drop table mts_t2;
+
+#SQL[@38,N20]Result[]
 drop database mts_db;
+
+#SQL[@41,N20]Result[]
 drop account acc_mts;
+

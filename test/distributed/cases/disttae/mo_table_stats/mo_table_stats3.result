@@ -1,69 +1,135 @@
+#SQL[@2,N14]Result[]
 use mo_catalog;
+
+#SQL[@3,N17]Result[293, 192, 193, 195, 191, 203, 189, 194, 212, 192, 193, 193, 189, 203, 195, 208, 199, 197, 185, 185, 188, 191, 195, 206, 187, 196, 190, 187, 197, 185, 197, 202, 210, 188, 195, 188, 202, 194, 207, 191]
 show table status;
-Name    Engine    Row_format    Rows    Avg_row_length    Data_length    Max_data_length    Index_length    Data_free    Auto_increment    Create_time    Update_time    Check_time    Collation    Checksum    Create_options    Comment    Role_id    Role_name
-mo_database    Tae    Dynamic    8    0    2158    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_tables    Tae    Dynamic    129    0    52461    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_columns    Tae    Dynamic    1384    0    71602    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_account    Tae    Dynamic    1    0    1399    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_cache    null    null    null    null    null    null    null    null    null    2025-09-01 10:22:32    null    null    null    null    null    VIEW    0    moadmin
-mo_cdc_task    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_cdc_watermark    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_configurations    null    null    null    null    null    null    null    null    null    2025-09-01 10:22:32    null    null    null    null    null    VIEW    0    moadmin
-mo_data_key    Tae    Dynamic    1    0    1218    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_foreign_keys    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_indexes    Tae    Dynamic    116    0    6496    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_iscp_log    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_locks    null    null    null    null    null    null    null    null    null    2025-09-01 10:22:32    null    null    null    null    null    VIEW    0    moadmin
-mo_merge_settings    Tae    Dynamic    1    0    1504    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_mysql_compatibility_mode    Tae    Dynamic    4    0    1451    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_partition_metadata    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_partition_tables    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_pitr    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_pubs    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_role    Tae    Dynamic    2    0    1086    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_role_grant    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_role_privs    Tae    Dynamic    35    0    2713    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_sessions    null    null    null    null    null    null    null    null    null    2025-09-01 10:22:32    null    null    null    null    null    VIEW    0    moadmin
-mo_shards    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_shards_metadata    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_snapshots    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_stages    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_stored_procedure    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_subs    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_table_partitions    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_table_stats_alpha    Tae    Dynamic    103    0    9921    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_transactions    null    null    null    null    null    null    null    null    null    2025-09-01 10:22:32    null    null    null    null    null    VIEW    0    moadmin
-mo_upgrade    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_upgrade_tenant    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_user    Tae    Dynamic    2    0    2159    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_user_defined_function    Tae    Dynamic    0    0    0    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_user_grant    Tae    Dynamic    4    0    1038    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
-mo_variables    null    null    null    null    null    null    null    null    null    2025-09-01 10:22:32    null    null    null    null    null    VIEW    0    moadmin
-mo_version    Tae    Dynamic    1    0    1073    0    0    NULL    0    2025-09-01 10:22:32    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
+Name  ¦  Engine  ¦  Row_format  ¦  Rows  ¦  Avg_row_length  ¦  Data_length  ¦  Max_data_length  ¦  Index_length  ¦  Data_free  ¦  Auto_increment  ¦  Create_time  ¦  Update_time  ¦  Check_time  ¦  Collation  ¦  Checksum  ¦  Create_options  ¦  Comment  ¦  Role_id  ¦  Role_name
+mo_database  ¦  Tae  ¦  Dynamic  ¦  8  ¦  0  ¦  2109  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:56  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_tables  ¦  Tae  ¦  Dynamic  ¦  129  ¦  0  ¦  55570  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:56  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_columns  ¦  Tae  ¦  Dynamic  ¦  1384  ¦  0  ¦  72360  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:56  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_account  ¦  Tae  ¦  Dynamic  ¦  1  ¦  0  ¦  1394  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_cache  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  2025-10-09 08:42:58  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  VIEW  ¦  0  ¦  moadmin
+mo_cdc_task  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_cdc_watermark  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_configurations  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  2025-10-09 08:42:58  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  VIEW  ¦  0  ¦  moadmin
+mo_data_key  ¦  Tae  ¦  Dynamic  ¦  1  ¦  0  ¦  1218  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_foreign_keys  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_indexes  ¦  Tae  ¦  Dynamic  ¦  116  ¦  0  ¦  6764  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:57  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_iscp_log  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_locks  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  2025-10-09 08:42:58  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  VIEW  ¦  0  ¦  moadmin
+mo_merge_settings  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_mysql_compatibility_mode  ¦  Tae  ¦  Dynamic  ¦  4  ¦  0  ¦  1273  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_partition_metadata  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_partition_tables  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_pitr  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_pubs  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_role  ¦  Tae  ¦  Dynamic  ¦  2  ¦  0  ¦  1081  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_role_grant  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_role_privs  ¦  Tae  ¦  Dynamic  ¦  35  ¦  0  ¦  2713  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_sessions  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  2025-10-09 08:42:58  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  VIEW  ¦  0  ¦  moadmin
+mo_shards  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_shards_metadata  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_snapshots  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_stages  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_stored_procedure  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_subs  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_table_partitions  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:57  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_table_stats_alpha  ¦  Tae  ¦  Dynamic  ¦  34  ¦  0  ¦  6522  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_transactions  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  2025-10-09 08:42:58  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  VIEW  ¦  0  ¦  moadmin
+mo_upgrade  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_upgrade_tenant  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_user  ¦  Tae  ¦  Dynamic  ¦  2  ¦  0  ¦  2156  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_user_defined_function  ¦  Tae  ¦  Dynamic  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_user_grant  ¦  Tae  ¦  Dynamic  ¦  4  ¦  0  ¦  1037  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+mo_variables  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  2025-10-09 08:42:58  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  VIEW  ¦  0  ¦  moadmin
+mo_version  ¦  Tae  ¦  Dynamic  ¦  1  ¦  0  ¦  1074  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:42:58  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+
+#SQL[@6,N30]Result[]
 drop database if exists testdb;
+
+#SQL[@7,N22]Result[]
 create database testdb;
+
+#SQL[@9,N10]Result[]
 use testdb;
+
+#SQL[@11,N23]Result[]
 create table t1 (a int);
+
+#SQL[@12,N58]Result[]
 insert into t1 select * from generate_series(1, 100*1000)g;
+
+#SQL[@13,N17]Result[293, 190]
 show table status;
-Name    Engine    Row_format    Rows    Avg_row_length    Data_length    Max_data_length    Index_length    Data_free    Auto_increment    Create_time    Update_time    Check_time    Collation    Checksum    Create_options    Comment    Role_id    Role_name
-t1    Tae    Dynamic    100000    0    804690    0    0    NULL    0    2025-09-02 15:36:09    NULL    NULL    utf8mb4_bin    NULL            0    moadmin
+Name  ¦  Engine  ¦  Row_format  ¦  Rows  ¦  Avg_row_length  ¦  Data_length  ¦  Max_data_length  ¦  Index_length  ¦  Data_free  ¦  Auto_increment  ¦  Create_time  ¦  Update_time  ¦  Check_time  ¦  Collation  ¦  Checksum  ¦  Create_options  ¦  Comment  ¦  Role_id  ¦  Role_name
+t1  ¦  Tae  ¦  Dynamic  ¦  100000  ¦  0  ¦  804690  ¦  0  ¦  0  ¦  NULL  ¦  0  ¦  2025-10-09 08:44:26  ¦  NULL  ¦  NULL  ¦  utf8mb4_bin  ¦  NULL  ¦    ¦    ¦  0  ¦  moadmin
+
+#SQL[@16,N20]Result[]
 drop database testdb;
+
+#SQL[@18,N56]Result[43, 104]
 select mo_ctl("cn", "MoTableStats", "recomputing:acc.0");
 mo_ctl(cn, MoTableStats, recomputing:acc.0)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"
+  }
+}
+
+
+#SQL[@20,N55]Result[42, 104]
 select mo_ctl("cn", "MoTableStats", "recomputing:db.1");
 mo_ctl(cn, MoTableStats, recomputing:db.1)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"
+  }
+}
+
+
+#SQL[@22,N60]Result[47, 104]
 select mo_ctl("cn", "MoTableStats", "recomputing:tbl.1,2,3");
 mo_ctl(cn, MoTableStats, recomputing:tbl.1,2,3)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"
+  }
+}
+
+
+#SQL[@24,N65]Result[52, 104]
 select mo_ctl("cn", "MoTableStats", "recomputing:gama.forgotten");
 mo_ctl(cn, MoTableStats, recomputing:gama.forgotten)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"
+  }
+}
+
+
+#SQL[@26,N61]Result[48, 104]
 select mo_ctl("cn", "MoTableStats", "recomputing:gama.clean");
 mo_ctl(cn, MoTableStats, recomputing:gama.clean)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"
+  }
+}
+
+
+#SQL[@28,N59]Result[46, 104]
 select mo_ctl("cn", "MoTableStats", "recomputing:gama.new");
 mo_ctl(cn, MoTableStats, recomputing:gama.new)
-{\n  "method": "MOTABLESTATS",\n  "result": {\n    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"\n  }\n}\n
+{
+  "method": "MOTABLESTATS",
+  "result": {
+    "dd1dccb4-4d3c-41f8-b482-5251dc7a41bf": "success"
+  }
+}
+
+

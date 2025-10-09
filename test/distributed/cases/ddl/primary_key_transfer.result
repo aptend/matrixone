@@ -1,6 +1,13 @@
+#SQL[@1,N26]Result[]
 drop table if exists test1;
+
+#SQL[@2,N26]Result[]
 drop table if exists test2;
+
+#SQL[@3,N26]Result[]
 drop table if exists test3;
+
+#SQL[@5,N150]Result[]
 create table test1 (
 id int(10) primary key,
 uname varchar(20) unique key,
@@ -9,22 +16,42 @@ birth date,
 department varchar(20),
 address varchar (50)
 );
+
+#SQL[@14,N85]Result[]
 INSERT INTO test1 VALUES (7369,'SMITH', 'Male', '1980-12-17','ACCOUNTING','NEW YORK');
+
+#SQL[@15,N83]Result[]
 INSERT INTO test1 VALUES (7499,'ALLEN', 'Female', '1981-02-20','RESEARCH','DALLAS');
+
+#SQL[@16,N78]Result[]
 INSERT INTO test1 VALUES (7521,'WARD', 'Male', '1981-02-22','SALES','CHICAGO');
+
+#SQL[@17,N86]Result[]
 INSERT INTO test1 VALUES (7839,'KING', 'Female', '1981-11-17','ACCOUNTING','NEW YORK');
+
+#SQL[@18,N83]Result[]
 INSERT INTO test1 VALUES (7844,'TURNER', 'Male', '1981-09-08','RESEARCH', 'DALLAS');
+
+#SQL[@19,N84]Result[]
 INSERT INTO test1 VALUES (7902,'FORD', 'Male', '1981-12-03','ACCOUNTING','NEW YORK');
+
+#SQL[@21,N19]Result[62, 71, 69, 64, 72, 68, 70]
 select * from test1;
-id    uname    sex    birth    department    address
-7369    SMITH    Male    1980-12-17    ACCOUNTING    NEW YORK
-7499    ALLEN    Female    1981-02-20    RESEARCH    DALLAS
-7521    WARD    Male    1981-02-22    SALES    CHICAGO
-7839    KING    Female    1981-11-17    ACCOUNTING    NEW YORK
-7844    TURNER    Male    1981-09-08    RESEARCH    DALLAS
-7902    FORD    Male    1981-12-03    ACCOUNTING    NEW YORK
+id  ¦  uname  ¦  sex  ¦  birth  ¦  department  ¦  address
+7369  ¦  SMITH  ¦  Male  ¦  1980-12-17  ¦  ACCOUNTING  ¦  NEW YORK
+7499  ¦  ALLEN  ¦  Female  ¦  1981-02-20  ¦  RESEARCH  ¦  DALLAS
+7521  ¦  WARD  ¦  Male  ¦  1981-02-22  ¦  SALES  ¦  CHICAGO
+7839  ¦  KING  ¦  Female  ¦  1981-11-17  ¦  ACCOUNTING  ¦  NEW YORK
+7844  ¦  TURNER  ¦  Male  ¦  1981-09-08  ¦  RESEARCH  ¦  DALLAS
+7902  ¦  FORD  ¦  Male  ¦  1981-12-03  ¦  ACCOUNTING  ¦  NEW YORK
+
+#SQL[@22,N49]Result[]
 update test1 set id = 1200 where uname = 'TURNER';
+
+#SQL[@23,N16]Result[]
 drop table test1;
+
+#SQL[@26,N156]Result[]
 create table test2 (
 id int(10),
 uname varchar(20)  unique key,
@@ -34,22 +61,42 @@ department varchar(20),
 address varchar (50),
 primary key(id)
 );
+
+#SQL[@36,N85]Result[]
 INSERT INTO test2 VALUES (7369,'SMITH', 'Male', '1980-12-17','ACCOUNTING','NEW YORK');
+
+#SQL[@37,N83]Result[]
 INSERT INTO test2 VALUES (7499,'ALLEN', 'Female', '1981-02-20','RESEARCH','DALLAS');
+
+#SQL[@38,N78]Result[]
 INSERT INTO test2 VALUES (7521,'WARD', 'Male', '1981-02-22','SALES','CHICAGO');
+
+#SQL[@39,N86]Result[]
 INSERT INTO test2 VALUES (7839,'KING', 'Female', '1981-11-17','ACCOUNTING','NEW YORK');
+
+#SQL[@40,N83]Result[]
 INSERT INTO test2 VALUES (7844,'TURNER', 'Male', '1981-09-08','RESEARCH', 'DALLAS');
+
+#SQL[@41,N84]Result[]
 INSERT INTO test2 VALUES (7902,'FORD', 'Male', '1981-12-03','ACCOUNTING','NEW YORK');
+
+#SQL[@43,N49]Result[]
 update test2 set id = 1200 where uname = 'TURNER';
+
+#SQL[@44,N19]Result[62, 71, 69, 64, 72, 70, 68]
 select * from test2;
-id    uname    sex    birth    department    address
-7369    SMITH    Male    1980-12-17    ACCOUNTING    NEW YORK
-7499    ALLEN    Female    1981-02-20    RESEARCH    DALLAS
-7521    WARD    Male    1981-02-22    SALES    CHICAGO
-7839    KING    Female    1981-11-17    ACCOUNTING    NEW YORK
-7902    FORD    Male    1981-12-03    ACCOUNTING    NEW YORK
-1200    TURNER    Male    1981-09-08    RESEARCH    DALLAS
+id  ¦  uname  ¦  sex  ¦  birth  ¦  department  ¦  address
+7369  ¦  SMITH  ¦  Male  ¦  1980-12-17  ¦  ACCOUNTING  ¦  NEW YORK
+7499  ¦  ALLEN  ¦  Female  ¦  1981-02-20  ¦  RESEARCH  ¦  DALLAS
+7521  ¦  WARD  ¦  Male  ¦  1981-02-22  ¦  SALES  ¦  CHICAGO
+7839  ¦  KING  ¦  Female  ¦  1981-11-17  ¦  ACCOUNTING  ¦  NEW YORK
+7902  ¦  FORD  ¦  Male  ¦  1981-12-03  ¦  ACCOUNTING  ¦  NEW YORK
+1200  ¦  TURNER  ¦  Male  ¦  1981-09-08  ¦  RESEARCH  ¦  DALLAS
+
+#SQL[@45,N16]Result[]
 drop table test2;
+
+#SQL[@47,N166]Result[]
 create table test3 (
 id int unsigned,
 uname varchar(20),
@@ -59,19 +106,38 @@ department varchar(20),
 address varchar (50),
 primary key(id,uname)
 );
+
+#SQL[@57,N85]Result[]
 INSERT INTO test3 VALUES (7369,'SMITH', 'Male', '1980-12-17','ACCOUNTING','NEW YORK');
+
+#SQL[@58,N83]Result[]
 INSERT INTO test3 VALUES (7499,'ALLEN', 'Female', '1981-02-20','RESEARCH','DALLAS');
+
+#SQL[@59,N78]Result[]
 INSERT INTO test3 VALUES (7521,'WARD', 'Male', '1981-02-22','SALES','CHICAGO');
+
+#SQL[@60,N86]Result[]
 INSERT INTO test3 VALUES (7839,'KING', 'Female', '1981-11-17','ACCOUNTING','NEW YORK');
+
+#SQL[@61,N83]Result[]
 INSERT INTO test3 VALUES (7844,'TURNER', 'Male', '1981-09-08','RESEARCH', 'DALLAS');
+
+#SQL[@62,N84]Result[]
 INSERT INTO test3 VALUES (7902,'FORD', 'Male', '1981-12-03','ACCOUNTING','NEW YORK');
+
+#SQL[@63,N49]Result[]
 update test3 set id = 1200 where uname = 'TURNER';
+
+#SQL[@64,N19]Result[62, 71, 69, 64, 72, 70, 68]
 select * from test3;
-id    uname    sex    birth    department    address
-7369    SMITH    Male    1980-12-17    ACCOUNTING    NEW YORK
-7499    ALLEN    Female    1981-02-20    RESEARCH    DALLAS
-7521    WARD    Male    1981-02-22    SALES    CHICAGO
-7839    KING    Female    1981-11-17    ACCOUNTING    NEW YORK
-7902    FORD    Male    1981-12-03    ACCOUNTING    NEW YORK
-1200    TURNER    Male    1981-09-08    RESEARCH    DALLAS
+id  ¦  uname  ¦  sex  ¦  birth  ¦  department  ¦  address
+7369  ¦  SMITH  ¦  Male  ¦  1980-12-17  ¦  ACCOUNTING  ¦  NEW YORK
+7499  ¦  ALLEN  ¦  Female  ¦  1981-02-20  ¦  RESEARCH  ¦  DALLAS
+7521  ¦  WARD  ¦  Male  ¦  1981-02-22  ¦  SALES  ¦  CHICAGO
+7839  ¦  KING  ¦  Female  ¦  1981-11-17  ¦  ACCOUNTING  ¦  NEW YORK
+7902  ¦  FORD  ¦  Male  ¦  1981-12-03  ¦  ACCOUNTING  ¦  NEW YORK
+1200  ¦  TURNER  ¦  Male  ¦  1981-09-08  ¦  RESEARCH  ¦  DALLAS
+
+#SQL[@65,N16]Result[]
 drop table test3;
+

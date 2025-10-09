@@ -1,6 +1,19 @@
+#SQL[@1,N32]Result[]
 drop database if exists test_use;
+
+#SQL[@2,N24]Result[]
 create database test_use;
-use ;show tables;
+
+#SQL[@3,N4]Error[17]
+use ;
 Unknown database 
+
+#SQL[@3,N11]Result[]
+show tables;
+
+#SQL[@4,N12]Result[]
 use test_use;
+
+#SQL[@5,N32]Result[]
 drop database if exists test_use;
+

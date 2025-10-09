@@ -1,648 +1,1463 @@
+#SQL[@5,N30]Result[]
 DROP DATABASE IF EXISTS TEST01;
+
+#SQL[@6,N22]Result[]
 CREATE DATABASE TEST01;
+
+#SQL[@7,N27]Result[29, 36]
 show CREATE DATABASE test01;
-Database    Create Database
-test01    CREATE DATABASE `test01`
+Database  ¦  Create Database
+test01  ¦  CREATE DATABASE `test01`
+
+#SQL[@8,N20]Result[]
 DROP DATABASE test01;
+
+#SQL[@11,N30]Result[]
 DROP DATABASE IF EXISTS test02;
+
+#SQL[@12,N22]Result[]
 CREATE DATABASE test02;
+
+#SQL[@13,N27]Result[29, 36]
 show CREATE DATABASE TEST02;
-Database    Create Database
-test02    CREATE DATABASE `test02`
+Database  ¦  Create Database
+test02  ¦  CREATE DATABASE `test02`
+
+#SQL[@14,N20]Result[]
 DROP DATABASE test02;
+
+#SQL[@17,N34]Result[]
 DROP DATABASE IF EXISTS mysql_TEST;
+
+#SQL[@18,N26]Result[]
 CREATE DATABASE mysql_TEST;
+
+#SQL[@19,N31]Result[29, 44]
 show CREATE DATABASE mysql_TEST;
-Database    Create Database
-mysql_test    CREATE DATABASE `mysql_test`
+Database  ¦  Create Database
+mysql_test  ¦  CREATE DATABASE `mysql_test`
+
+#SQL[@20,N24]Result[]
 DROP DATABASE mysql_TEST;
+
+#SQL[@23,N30]Result[]
 DROP DATABASE IF EXISTS test03;
+
+#SQL[@24,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@25,N22]Result[]
 CREATE DATABASE test03;
+
+#SQL[@26,N10]Result[]
 USE test03;
+
+#SQL[@27,N34]Result[]
 CREATE TEMPORARY TABLE t1(a float);
+
+#SQL[@28,N32]Result[]
 INSERT INTO T1 VALUES(213823.12);
+
+#SQL[@29,N35]Result[]
 INSERT INTO t1 VALUES(-45412.38920);
+
+#SQL[@30,N16]Result[1, 9, 9]
 SELECT * FROM t1;
 a
 213823.12
 -45412.39
+
+#SQL[@31,N13]Result[]
 DROP TABLE T1;
+
+#SQL[@34,N28]Result[]
 drop table IF EXISTS table01;
+
+#SQL[@35,N135]Result[]
 CREATE external table table01(clo1 int,clo2 bigint)infile{"filepath"='$resources/external_table_file/aaa.csv'} fields terminated by ',';
+
+#SQL[@36,N21]Result[14, 23, 16, 9]
 SELECT * FROM Table01;
-clo1    clo2
-1    2131420000000000
-2    325465476
-3    -1
+clo1  ¦  clo2
+1  ¦  2131420000000000
+2  ¦  325465476
+3  ¦  -1
+
+#SQL[@37,N24]Result[4, 1, 1, 1]
 SELECT Clo1 FROM table01;
 Clo1
 1
 2
 3
+
+#SQL[@38,N18]Result[]
 DROP table table01;
+
+#SQL[@41,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@42,N75]Result[]
 CREATE TABLE t1(id int PRIMARY KEY, Word VARCHAR(40) NOT NULL, INDEX(Word));
+
+#SQL[@43,N20]Result[23, 125]
 show CREATE TABLE t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `id` int NOT NULL,\n  `Word` varchar(40) NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `word` (`Word`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `id` int NOT NULL,
+  `Word` varchar(40) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `word` (`Word`)
+)
+
+#SQL[@44,N30]Result[]
 INSERT INTO t1 VALUES (1, 'a');
+
+#SQL[@45,N30]Result[]
 INSERT INTO t1 VALUES (2, 'b');
+
+#SQL[@46,N30]Result[]
 INSERT INTO t1 VALUES (3, 'c');
+
+#SQL[@47,N30]Result[]
 INSERT INTO T1 VALUES (4, 'd');
+
+#SQL[@49,N16]Result[12, 8, 8, 8, 8]
 SELECT * FROM t1;
-id    word
-1    a
-2    b
-3    c
-4    d
+id  ¦  word
+1  ¦  a
+2  ¦  b
+3  ¦  c
+4  ¦  d
+
+#SQL[@50,N16]Result[12, 8, 8, 8, 8]
 SELECT * FROM T1;
-id    word
-1    a
-2    b
-3    c
-4    d
+id  ¦  word
+1  ¦  a
+2  ¦  b
+3  ¦  c
+4  ¦  d
+
+#SQL[@51,N28]Result[2, 1]
 SELECT T1.id FROM T1 LIMIT 1;
 id
 1
+
+#SQL[@52,N28]Result[2, 1]
 SELECT T1.id FROM t1 LIMIT 1;
 id
 1
+
+#SQL[@53,N17]Result[2, 1, 1, 1, 1]
 SELECT id FROM T1;
 id
 1
 2
 3
 4
+
+#SQL[@54,N17]Result[2, 1, 1, 1, 1]
 select ID FROM t1;
 ID
 1
 2
 3
 4
+
+#SQL[@55,N17]Result[2, 1, 1, 1, 1]
 SELECT Id FROM t1;
 Id
 1
 2
 3
 4
+
+#SQL[@56,N23]Result[8, 1]
 SELECT COUNT(*) FROM t1;
 COUNT(*)
 4
+
+#SQL[@57,N23]Result[8, 1]
 SELECT COUNT(*) FROM T1;
 COUNT(*)
 4
+
+#SQL[@58,N27]Result[12, 1]
 SELECT COUNT(t1.id) FROM t1;
 COUNT(t1.id)
 4
+
+#SQL[@59,N27]Result[12, 1]
 SELECT COUNT(T1.Id) FROM t1;
 COUNT(T1.Id)
 4
+
+#SQL[@60,N29]Result[12, 8]
 SELECT * FROM t1 WHERE Id = 2;
-id    word
-2    b
+id  ¦  word
+2  ¦  b
+
+#SQL[@62,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@63,N75]Result[]
 CREATE table t2(id int PRIMARY KEY, Word VARCHAR(40) NOT NULL, INDEX(Word));
+
+#SQL[@64,N31]Result[]
 INSERT INTO T2 SELECT * from T1;
+
+#SQL[@65,N16]Result[12, 8, 8, 8, 8]
 SELECT * FROM T2;
-id    word
-1    a
-2    b
-3    c
-4    d
+id  ¦  word
+1  ¦  a
+2  ¦  b
+3  ¦  c
+4  ¦  d
+
+#SQL[@66,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@68,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@69,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@70,N75]Result[]
 CREATE TABLE T2(id int PRIMARY KEY, Word VARCHAR(40) NOT NULL, INDEX(Word));
+
+#SQL[@71,N62]Result[]
 CREATE TABLE t3(id int primary key, Word varchar(40) NOT NULL);
+
+#SQL[@72,N20]Result[23, 125]
 show CREATE TABLE t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `id` int NOT NULL,\n  `Word` varchar(40) NOT NULL,\n  PRIMARY KEY (`id`),\n  KEY `word` (`Word`)\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `id` int NOT NULL,
+  `Word` varchar(40) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `word` (`Word`)
+)
+
+#SQL[@73,N20]Result[23, 102]
 show CREATE TABLE t3;
-Table    Create Table
-t3    CREATE TABLE `t3` (\n  `id` int NOT NULL,\n  `Word` varchar(40) NOT NULL,\n  PRIMARY KEY (`id`)\n)
+Table  ¦  Create Table
+t3  ¦  CREATE TABLE `t3` (
+  `id` int NOT NULL,
+  `Word` varchar(40) NOT NULL,
+  PRIMARY KEY (`id`)
+)
+
+#SQL[@74,N30]Result[]
 INSERT INTO T2 VALUES (1, 'a');
+
+#SQL[@75,N30]Result[]
 INSERT INTO t2 VALUES (2, 'b');
+
+#SQL[@76,N30]Result[]
 INSERT INTO t2 VALUES (3, 'c');
+
+#SQL[@77,N30]Result[]
 INSERT INTO T2 VALUES (4, 'd');
+
+#SQL[@78,N33]Result[]
 INSERT INTO t3 VALUES (1,'match');
+
+#SQL[@79,N27]Result[]
 DELETE FROM t2 WHERE id = 1;
+
+#SQL[@80,N27]Result[]
 DELETE FROM T2 WHERE ID = 2;
+
+#SQL[@82,N16]Result[12, 8, 8]
 SELECT * FROM T2;
-id    word
-3    c
-4    d
+id  ¦  word
+3  ¦  c
+4  ¦  d
+
+#SQL[@83,N16]Result[12, 12]
 SELECT * FROM t3;
-id    word
-1    match
+id  ¦  word
+1  ¦  match
+
+#SQL[@85,N28]Result[2, 1]
 SELECT T2.id FROM T2 LIMIT 1;
 id
 3
+
+#SQL[@86,N23]Result[12, 8, 8]
 SELECT Id, WORD FROM t2;
-Id    WORD
-3    c
-4    d
+Id  ¦  WORD
+3  ¦  c
+4  ¦  d
+
+#SQL[@87,N37]Result[12, 12]
 SELECT * FROM t3 WHERE WORD = 'match';
-id    word
-1    match
+id  ¦  word
+1  ¦  match
+
+#SQL[@90,N37]Result[5, 1]
 SELECT t3.id AS t3_ID FROM T3 LIMIT 1;
 t3_ID
 1
+
+#SQL[@91,N37]Result[5, 1]
 SELECT t3.ID AS t3_ID FROM t3 LIMIT 1;
 t3_ID
 1
+
+#SQL[@93,N78]Result[]
 SELECT * FROM t2 left join t3 ON (test.t2.id= TEST.t3.id) WHERE t2.id >= t3.id;
-id    word    id    word
+
+#SQL[@94,N13]Result[]
 DROP TABLE t2;
+
+#SQL[@95,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@98,N23]Result[]
 DROP TABLE IF EXISTS t4;
+
+#SQL[@99,N23]Result[]
 DROP TABLE IF EXISTS t5;
+
+#SQL[@100,N47]Result[]
 CREATE TABLE t4(a int primary key,b varchar(5));
+
+#SQL[@101,N90]Result[]
 CREATE TABLE t5(a int ,b varchar(5), C int, constraint fc foreign key(C) references t4(a));
+
+#SQL[@102,N34]Result[]
 ALTER table t5 DROP FOREIGN KEY fC;
+
+#SQL[@103,N64]Result[]
 ALTER table t5 ADD constraint fC foreign key(c) REFERENCES t4(a);
+
+#SQL[@104,N20]Result[23, 100]
 show CREATE TABLE t4;
-Table    Create Table
-t4    CREATE TABLE `t4` (\n  `a` int NOT NULL,\n  `b` varchar(5) DEFAULT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t4  ¦  CREATE TABLE `t4` (
+  `a` int NOT NULL,
+  `b` varchar(5) DEFAULT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@105,N20]Result[23, 204]
 show CREATE TABLE T5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL,\n  `b` varchar(5) DEFAULT NULL,\n  `C` int DEFAULT NULL,\n  CONSTRAINT `fc` FOREIGN KEY (`C`) REFERENCES `t4` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL,
+  `b` varchar(5) DEFAULT NULL,
+  `C` int DEFAULT NULL,
+  CONSTRAINT `fc` FOREIGN KEY (`C`) REFERENCES `t4` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@106,N13]Result[]
 DROP table t5;
+
+#SQL[@107,N13]Result[]
 DROP table t4;
+
+#SQL[@110,N26]Result[]
 DROP USER IF EXISTS u_name;
+
+#SQL[@111,N41]Result[]
 CREATE USER u_name IDENTIFIED BY '123456';
+
+#SQL[@112,N41]Error[38]
 CREATE USER U_NAME IDENTIFIED BY '123456';
 internal error: the user u_name exists
+
+#SQL[@113,N41]Error[38]
 CREATE USER U_name IDENTIFIED BY '123456';
 internal error: the user u_name exists
+
+#SQL[@114,N84]Result[]
 SELECT user_host,user_name,status FROM mo_catalog.mo_user WHERE user_name = 'U_name';
-user_host    user_name    status
+
+#SQL[@115,N57]Result[36, 33, 31, 31, 32, 32]
 SELECT user_host,user_name,status FROM mo_catalog.mo_user;
-user_host    user_name    status
-localhost    root    unlock
-localhost    dump    unlock
-localhost    u_name    unlock
+user_host  ¦  user_name  ¦  status
+localhost  ¦  u_name  ¦  unlock
+localhost  ¦  root  ¦  unlock
+localhost  ¦  dump  ¦  unlock
+localhost  ¦  user1  ¦  unlock
+localhost  ¦  user2  ¦  unlock
+
+#SQL[@116,N16]Result[]
 DROP USER u_name;
+
+#SQL[@117,N20]Result[]
 DROP DATABASE test03;
+
+#SQL[@120,N30]Result[]
 DROP database IF EXISTS test03;
+
+#SQL[@121,N22]Result[]
 create database test03;
+
+#SQL[@122,N10]Result[]
 use test03;
+
+#SQL[@123,N23]Result[]
 create table t6 (a int);
+
+#SQL[@124,N24]Result[]
 INSERT INTO t6 VALUES(1);
+
+#SQL[@125,N31]Result[]
 INSERT INTO t6 VALUES(24845615);
+
+#SQL[@126,N30]Result[]
 INSERT INTO T6 VALUES(-289173);
+
+#SQL[@127,N26]Result[1, 1, 8, 7]
 select T6.a from test03.T6;
 a
 1
 24845615
 -289173
+
+#SQL[@128,N26]Result[1, 1, 8, 7]
 select t6.a from test03.T6;
 a
 1
 24845615
 -289173
+
+#SQL[@129,N33]Result[1, 1, 8, 7]
 select test03.t6.a from TEST03.t6;
 a
 1
 24845615
 -289173
+
+#SQL[@130,N33]Result[1, 1, 8, 7]
 select TEST03.t6.a from TEST03.t6;
 a
 1
 24845615
 -289173
+
+#SQL[@131,N33]Result[1, 1, 8, 7]
 select TEST03.T6.a from TEST03.T6;
 a
 1
 24845615
 -289173
+
+#SQL[@132,N26]Result[1, 1, 8, 7]
 select TEST03.T6.a from T6;
 a
 1
 24845615
 -289173
+
+#SQL[@133,N33]Result[1, 1, 8, 7]
 select TEST03.t6.a from TEST03.t6;
 a
 1
 24845615
 -289173
+
+#SQL[@134,N13]Result[]
 DROP TABLE t6;
+
+#SQL[@137,N23]Result[]
 DROP TABLE IF EXISTS t7;
+
+#SQL[@138,N23]Result[]
 DROP TABLE IF EXISTS t8;
+
+#SQL[@139,N23]Result[]
 create table t7 (a int);
+
+#SQL[@140,N23]Result[]
 create table t8 (a int);
+
+#SQL[@141,N24]Result[]
 INSERT INTO t7 VALUES(1);
+
+#SQL[@142,N24]Result[]
 INSERT INTO t8 VALUES(1);
+
+#SQL[@143,N59]Result[]
 update t7 as p1, t8 as p2 SET p1.a=1,p2.a=1 where p1.a=p2.a;
+
+#SQL[@144,N62]Result[]
 update t7 as P1, t8 as P2 SET P1.a=10,p2.a=100 where P1.a=p2.a;
+
+#SQL[@145,N16]Result[1, 2]
 SELECT * FROM t7;
 a
 10
+
+#SQL[@146,N16]Result[1, 3]
 SELECT * FROM t8;
 a
 100
+
+#SQL[@147,N13]Result[]
 DROP TABLE t7;
+
+#SQL[@148,N13]Result[]
 DROP TABLE t8;
+
+#SQL[@149,N20]Result[]
 drop database test03;
+
+#SQL[@152,N30]Result[]
 DROP DATABASE IF EXISTS test04;
+
+#SQL[@153,N22]Result[]
 CREATE DATABASE test04;
+
+#SQL[@154,N10]Result[]
 USE test04;
+
+#SQL[@155,N23]Result[]
 DROP table IF EXISTS t9;
+
+#SQL[@156,N24]Result[]
 DROP table IF EXISTS t10;
+
+#SQL[@157,N23]Result[]
 CREATE TABLE t9 (a int);
+
+#SQL[@158,N23]Result[]
 CREATE TABLE t10(a int);
+
+#SQL[@159,N26]Result[]
 INSERT INTO t9 VALUES(100);
+
+#SQL[@160,N28]Result[]
 INSERT INTO t10 VALUES(1000);
+
+#SQL[@161,N39]Result[8, 13]
 SELECT t9.a AS a,t10.A as B from t9,t10;
-a    B
-100    1000
+a  ¦  B
+100  ¦  1000
+
+#SQL[@162,N13]Result[]
 DROP TABLE t9;
+
+#SQL[@163,N14]Result[]
 DROP TABLE t10;
+
+#SQL[@166,N24]Result[]
 DROP TABLE if EXISTS t10;
+
+#SQL[@167,N62]Result[]
 create table t10(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@168,N36]Result[]
 insert into t10 values(1,"Abby", 24);
+
+#SQL[@169,N35]Result[]
 insert into t10 values(2,"Bob", 25);
+
+#SQL[@170,N36]Result[]
 create unique index idx on t10(name);
+
+#SQL[@171,N17]Result[21, 19, 18]
 select * from t10;
-id    name    age
-1    Abby    24
-2    Bob    25
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+
+#SQL[@172,N21]Result[23, 164]
 show CREATE TABLE t10;
-Table    Create Table
-t10    CREATE TABLE `t10` (\n  `id` int NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `idx` (`name`)\n)
+Table  ¦  Create Table
+t10  ¦  CREATE TABLE `t10` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx` (`name`)
+)
+
+#SQL[@173,N14]Result[]
 DROP TABLE t10;
+
+#SQL[@175,N24]Result[]
 DROP table IF EXISTS t11;
+
+#SQL[@176,N59]Result[]
 CREATE table t11(col1 int PRIMARY KEY,col2 CHAR,col3 float);
+
+#SQL[@177,N41]Result[]
 INSERT INTO t11 VALUES(1,'a',898021.8392);
+
+#SQL[@178,N42]Result[]
 INSERT INTO t11 VALUES(2, NULL, 213145.45);
+
+#SQL[@179,N17]Result[24, 22, 26]
 select * from t11;
-col1    col2    col3
-1    a    898021.8
-2    null    213145.45
+col1  ¦  col2  ¦  col3
+1  ¦  a  ¦  898021.8
+2  ¦  null  ¦  213145.45
+
+#SQL[@180,N21]Result[23, 137]
 show CREATE table t11;
-Table    Create Table
-t11    CREATE TABLE `t11` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT NULL,\n  `col3` float DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+t11  ¦  CREATE TABLE `t11` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT NULL,
+  `col3` float DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@181,N14]Result[]
 DROP TABLE t11;
+
+#SQL[@183,N24]Result[]
 DROP TABLE IF EXISTS t12;
+
+#SQL[@184,N55]Result[]
 CREATE TABLE t12(col1 int,col2 varchar(20),col3 double);
+
+#SQL[@185,N29]Result[]
 CREATE INDEX ABc ON t12(col2);
+
+#SQL[@186,N21]Result[]
 DROP INDEX abc on t12;
+
+#SQL[@187,N17]Result[]
 select * from t12;
-col1    col2    col3
+
+#SQL[@188,N21]Result[23, 122]
 show CREATE table t12;
-Table    Create Table
-t12    CREATE TABLE `t12` (\n  `col1` int DEFAULT NULL,\n  `col2` varchar(20) DEFAULT NULL,\n  `col3` double DEFAULT NULL\n)
+Table  ¦  Create Table
+t12  ¦  CREATE TABLE `t12` (
+  `col1` int DEFAULT NULL,
+  `col2` varchar(20) DEFAULT NULL,
+  `col3` double DEFAULT NULL
+)
+
+#SQL[@189,N14]Result[]
 DROP TABLE t12;
+
+#SQL[@192,N34]Result[]
 DROP ACCOUNT IF EXISTS tenant_test;
+
+#SQL[@193,N93]Result[]
 CREATE ACCOUNT tenant_test admin_name = 'root' identified by '111' open comment 'tenant_test';
+
+#SQL[@194,N225]Result[]
 ALTER ACCOUNT tenant_TEST comment 'abcddddddfsfafaffsefsfsefljofiseosfjosisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss24444444444444444444444444222222222@fffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+#SQL[@195,N93]Error[45]
 CREATE ACCOUNT tenant_TEST admin_name = 'root' identified by '111' open comment 'tenant_test';
 internal error: the tenant tenant_test exists
+
+#SQL[@196,N93]Error[45]
 CREATE ACCOUNT TENANT_TEST admin_name = 'root' identified by '111' open comment 'tenant_test';
 internal error: the tenant tenant_test exists
+
+#SQL[@197,N97]Result[38, 216]
 SELECT account_name,status,comments FROM mo_catalog.mo_account WHERE account_name = 'tenant_test';
-account_name    status    comments
-tenant_test    open    abcddddddfsfafaffsefsfsefljofiseosfjosisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss24444444444444444444444444222222222@fffffffffffffffffffffffffffffffffffffffffffffffffffff
+account_name  ¦  status  ¦  comments
+tenant_test  ¦  open  ¦  abcddddddfsfafaffsefsfsefljofiseosfjosisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss24444444444444444444444444222222222@fffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+#SQL[@198,N34]Result[]
 DROP ACCOUNT IF EXISTS TENANT_TEST;
+
+#SQL[@202,N25]Result[]
 DROP ROLE IF EXISTS rolex;
+
+#SQL[@203,N17]Result[]
 CREATE ROLE rolex;
+
+#SQL[@204,N17]Error[37]
 CREATE ROLE Rolex;
 internal error: the role rolex exists
+
+#SQL[@205,N17]Error[37]
 CREATE ROLE ROLEX;
 internal error: the role rolex exists
+
+#SQL[@206,N49]Result[23, 11, 13, 12]
 SELECT role_name,COmments FROM mo_catalog.mo_role;
-role_name    COmments
-moadmin    
-public    
-rolex    
+role_name  ¦  COmments
+rolex  ¦  
+moadmin  ¦  
+public  ¦  
+
+#SQL[@207,N75]Result[]
 SELECT role_name,COmments FROM mo_catalog.mo_role WHERE role_name = 'Rolex';
-role_name    COmments
+
+#SQL[@208,N15]Result[]
 DROP ROLE rolex;
+
+#SQL[@211,N27]Result[]
 DROP SEQUENCE IF EXISTS SEQ;
+
+#SQL[@212,N42]Result[]
 CREATE SEQUENCE SEQ increment 100 start 30;
+
+#SQL[@213,N42]Error[24]
 CREATE SEQUENCE seq increment 100 start 30;
 table seq already exists
+
+#SQL[@214,N17]Result[106, 73]
 SELECT * FROM SEQ;
-last_seq_num    min_value    max_value    start_value    increment_value    cycle    is_called
-30    1    9223372036854775807    30    100    false    false
+last_seq_num  ¦  min_value  ¦  max_value  ¦  start_value  ¦  increment_value  ¦  cycle  ¦  is_called
+30  ¦  1  ¦  9223372036854775807  ¦  30  ¦  100  ¦  false  ¦  false
+
+#SQL[@215,N50]Result[44, 17]
 SELECT laSt_seq_nuM,min_value,start_value FROM Seq;
-laSt_seq_nuM    min_value    start_value
-30    1    30
+laSt_seq_nuM  ¦  min_value  ¦  start_value
+30  ¦  1  ¦  30
+
+#SQL[@216,N17]Result[]
 DROP SEQUENCE SEQ;
+
+#SQL[@219,N24]Result[]
 DROP TABLE IF EXISTS t12;
+
+#SQL[@220,N24]Result[]
 DROP TABLE IF EXISTS t13;
+
+#SQL[@221,N25]Result[]
 DROP view IF EXISTS view1;
+
+#SQL[@222,N27]Result[]
 CREATE TABLE t12(a INTEGER);
+
+#SQL[@223,N30]Result[]
 INSERT INTO t12 VALUES (1),(2);
+
+#SQL[@224,N27]Result[]
 CREATE TABLE t13(a INTEGER);
+
+#SQL[@225,N26]Result[]
 INSERT INTO t13 VALUES (1);
+
+#SQL[@226,N77]Result[]
 CREATE VIEW view1 AS SELECT t12.a, t13.a AS b FROM t12 LEFT JOIN t13 USING(a);
+
+#SQL[@227,N77]Error[26]
 CREATE VIEW VIEW1 AS SELECT t12.a, t13.a AS b FROM t12 LEFT JOIN t13 USING(a);
 table view1 already exists
+
+#SQL[@228,N15]Result[]
 DROP VIEW view1;
+
+#SQL[@229,N14]Result[]
 DROP TABLE t12;
+
+#SQL[@230,N14]Result[]
 DROP TABLE t13;
+
+#SQL[@233,N24]Result[]
 DROP TABLE IF EXISTS TaB;
+
+#SQL[@234,N23]Result[]
 DROP VIEW IF EXISTS vie;
+
+#SQL[@235,N27]Result[]
 CREATE TABLE TaB(Field int);
+
+#SQL[@236,N36]Result[]
 CREATE VIEW ViE AS SELECT * FROM TAb;
+
+#SQL[@237,N21]Result[73, 82]
 show CREATE TABLE VIe;
-View    Create View    character_set_client    collation_connection
-vie    CREATE VIEW ViE AS SELECT * FROM TAb;    utf8mb4    utf8mb4_general_ci
+View  ¦  Create View  ¦  character_set_client  ¦  collation_connection
+vie  ¦  CREATE VIEW ViE AS SELECT * FROM TAb  ¦  utf8mb4  ¦  utf8mb4_general_ci
+
+#SQL[@238,N13]Result[]
 DROP VIEW vie;
+
+#SQL[@239,N14]Result[]
 DROP table TAB;
+
+#SQL[@242,N24]Result[]
 DROP TABLE IF EXISTS t13;
+
+#SQL[@243,N26]Result[]
 DROP VIEW IF EXISTS view01;
+
+#SQL[@244,N24]Result[]
 CREATE TABLE t13 (a int);
+
+#SQL[@245,N37]Result[]
 INSERT INTO t13 VALUES(1),(2),(3),(4);
+
+#SQL[@246,N39]Result[]
 CREATE VIEW view01 AS SELECT * FROM t13;
+
+#SQL[@247,N57]Result[]
 ALTER VIEW VIEW01 AS SELECT * FROM t13 WHERE a=1 or a = 2;
+
+#SQL[@248,N24]Result[73, 107]
 show CREATE TABLE vieW01;
-View    Create View    character_set_client    collation_connection
-view01    CREATE VIEW VIEW01 AS SELECT * FROM t13 WHERE a=1 or a = 2;    utf8mb4    utf8mb4_general_ci
+View  ¦  Create View  ¦  character_set_client  ¦  collation_connection
+view01  ¦  CREATE VIEW VIEW01 AS SELECT * FROM t13 WHERE a=1 or a = 2  ¦  utf8mb4  ¦  utf8mb4_general_ci
+
+#SQL[@249,N20]Result[1, 1, 1]
 SELECT * FROM view01;
 a
 1
 2
+
+#SQL[@250,N41]Result[1, 1, 1]
 SELECT * FROM vieW01 WHERE A = 1 OR a = 2;
 a
 1
 2
+
+#SQL[@251,N16]Result[]
 DROP view view01;
+
+#SQL[@252,N14]Result[]
 drop table t13;
+
+#SQL[@253,N20]Result[]
 drop database test04;
+
+#SQL[@256,N32]Result[]
 DROP DATABASE IF EXISTS `TEST01`;
+
+#SQL[@257,N24]Result[]
 CREATE DATABASE `TEST01`;
+
+#SQL[@258,N29]Result[29, 36]
 show CREATE DATABASE `test01`;
-Database    Create Database
-test01    CREATE DATABASE `test01`
+Database  ¦  Create Database
+test01  ¦  CREATE DATABASE `test01`
+
+#SQL[@259,N22]Result[]
 DROP DATABASE `test01`;
+
+#SQL[@262,N32]Result[]
 DROP DATABASE IF EXISTS `test02`;
+
+#SQL[@263,N24]Result[]
 CREATE DATABASE `test02`;
+
+#SQL[@264,N29]Result[29, 36]
 show CREATE DATABASE `TEST02`;
-Database    Create Database
-test02    CREATE DATABASE `test02`
+Database  ¦  Create Database
+test02  ¦  CREATE DATABASE `test02`
+
+#SQL[@265,N22]Result[]
 DROP DATABASE `test02`;
+
+#SQL[@268,N36]Result[]
 DROP DATABASE IF EXISTS `mysql_TEST`;
+
+#SQL[@269,N28]Result[]
 CREATE DATABASE `mysql_TEST`;
+
+#SQL[@270,N33]Result[29, 44]
 show CREATE DATABASE `mysql_TEST`;
-Database    Create Database
-mysql_test    CREATE DATABASE `mysql_test`
+Database  ¦  Create Database
+mysql_test  ¦  CREATE DATABASE `mysql_test`
+
+#SQL[@271,N26]Result[]
 DROP DATABASE `mysql_TEST`;
+
+#SQL[@274,N32]Result[]
 DROP DATABASE IF EXISTS `test05`;
+
+#SQL[@275,N24]Result[]
 CREATE DATABASE `test05`;
+
+#SQL[@276,N12]Result[]
 use `Test05`;
+
+#SQL[@277,N28]Result[]
 CREATE TABLE `t11`(aa float);
+
+#SQL[@278,N32]Result[]
 INSERT INTO `t11` VALUES(12.322);
+
+#SQL[@279,N32]Result[]
 INSERT INTO `T11` VALUES(-56.23);
+
+#SQL[@280,N19]Result[2, 6, 6]
 SELECT * FROM `t11`;
 aa
 12.322
 -56.23
+
+#SQL[@281,N14]Result[]
 DROP table t11;
+
+#SQL[@284,N26]Result[]
 DROP TABLE IF EXISTS `t12`;
+
+#SQL[@285,N26]Result[]
 create table `t12` (a int);
+
+#SQL[@286,N27]Result[]
 INSERT INTO `t12` VALUES(1);
+
+#SQL[@287,N34]Result[]
 INSERT INTO `t12` VALUES(24845615);
+
+#SQL[@288,N33]Result[]
 INSERT INTO `T12` VALUES(-289173);
+
+#SQL[@289,N32]Result[1, 1, 8, 7]
 select `T12`.a from `test05`.T12;
 a
 1
 24845615
 -289173
+
+#SQL[@290,N32]Result[1, 1, 8, 7]
 select `t12`.a from `test05`.T12;
 a
 1
 24845615
 -289173
+
+#SQL[@291,N37]Result[1, 1, 8, 7]
 select test05.t12.a from `TEST05`.t12;
 a
 1
 24845615
 -289173
+
+#SQL[@292,N37]Result[1, 1, 8, 7]
 select `TEST05`.t12.a from TEST05.t12;
 a
 1
 24845615
 -289173
+
+#SQL[@293,N37]Result[1, 1, 8, 7]
 select TEST05.T12.a from TEST05.`T12`;
 a
 1
 24845615
 -289173
+
+#SQL[@294,N30]Result[1, 1, 8, 7]
 select TEST05.T12.a from `T12`;
 a
 1
 24845615
 -289173
+
+#SQL[@295,N37]Result[1, 1, 8, 7]
 select TEST05.t12.a from `TEST05`.t12;
 a
 1
 24845615
 -289173
+
+#SQL[@296,N14]Result[]
 DROP TABLE t12;
+
+#SQL[@297,N20]Result[]
 DROP DATABASE TEST05;
+
+#SQL[@300,N32]Result[]
 DROP DATABASE IF EXISTS `test06`;
+
+#SQL[@301,N24]Result[]
 CREATE DATABASE `test06`;
+
+#SQL[@302,N10]Result[]
 USE test06;
+
+#SQL[@303,N26]Result[]
 DROP table IF EXISTS `t13`;
+
+#SQL[@304,N26]Result[]
 DROP table IF EXISTS `t14`;
+
+#SQL[@305,N26]Result[]
 CREATE TABLE `t13` (a int);
+
+#SQL[@306,N26]Result[]
 CREATE TABLE `t14` (a int);
+
+#SQL[@307,N29]Result[]
 INSERT INTO `t13` VALUES(100);
+
+#SQL[@308,N30]Result[]
 INSERT INTO `t14` VALUES(1000);
+
+#SQL[@309,N49]Result[8, 13]
 SELECT `t13`.a AS a,`t14`.A as B from `t13`,`t14`;
-a    B
-100    1000
+a  ¦  B
+100  ¦  1000
+
+#SQL[@310,N16]Result[]
 DROP TABLE `t13`;
+
+#SQL[@311,N16]Result[]
 DROP TABLE `t14`;
+
+#SQL[@314,N26]Result[]
 DROP TABLE IF EXISTS `t15`;
+
+#SQL[@315,N26]Result[]
 DROP TABLE IF EXISTS `t16`;
+
+#SQL[@316,N26]Result[]
 create table `t15` (a int);
+
+#SQL[@317,N26]Result[]
 create table `t16` (a int);
+
+#SQL[@318,N27]Result[]
 INSERT INTO `t15` VALUES(1);
+
+#SQL[@319,N27]Result[]
 INSERT INTO `t16` VALUES(1);
+
+#SQL[@320,N65]Result[]
 update `t15` as p1, `t16` as p2 SET p1.a=1,P2.a=1 where p1.a=P2.a;
+
+#SQL[@321,N68]Result[]
 update `t15` as P1, `t16` as P2 SET P1.a=10,p2.a=100 where P1.a=p2.a;
+
+#SQL[@322,N19]Result[1, 2]
 SELECT * FROM `t15`;
 a
 10
+
+#SQL[@323,N19]Result[1, 3]
 SELECT * FROM `T16`;
 a
 100
+
+#SQL[@324,N16]Result[]
 DROP TABLE `t15`;
+
+#SQL[@325,N16]Result[]
 DROP TABLE `t16`;
+
+#SQL[@328,N26]Result[]
 DROP TABLE if EXISTS `t17`;
+
+#SQL[@329,N64]Result[]
 create table `t17`(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@330,N38]Result[]
 insert into `t17` values(1,"Abby", 24);
+
+#SQL[@331,N37]Result[]
 insert into `t17` values(2,"Bob", 25);
+
+#SQL[@332,N38]Result[]
 create unique index `Idx` on t17(name);
+
+#SQL[@333,N19]Result[21, 19, 18]
 select * from `t17`;
-id    name    age
-1    Abby    24
-2    Bob    25
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+
+#SQL[@334,N23]Result[23, 164]
 show CREATE TABLE `t17`;
-Table    Create Table
-t17    CREATE TABLE `t17` (\n  `id` int NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  UNIQUE KEY `idx` (`name`)\n)
+Table  ¦  Create Table
+t17  ¦  CREATE TABLE `t17` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx` (`name`)
+)
+
+#SQL[@335,N16]Result[]
 DROP TABLE `t17`;
+
+#SQL[@338,N29]Result[]
 DROP SEQUENCE IF EXISTS `SEQ`;
+
+#SQL[@339,N44]Result[]
 CREATE SEQUENCE `SEQ` increment 100 start 30;
+
+#SQL[@340,N44]Error[24]
 CREATE SEQUENCE `seq` increment 100 start 30;
 table seq already exists
+
+#SQL[@341,N19]Result[106, 73]
 SELECT * FROM `SEQ`;
-last_seq_num    min_value    max_value    start_value    increment_value    cycle    is_called
-30    1    9223372036854775807    30    100    false    false
+last_seq_num  ¦  min_value  ¦  max_value  ¦  start_value  ¦  increment_value  ¦  cycle  ¦  is_called
+30  ¦  1  ¦  9223372036854775807  ¦  30  ¦  100  ¦  false  ¦  false
+
+#SQL[@342,N56]Result[44, 17]
 SELECT `laSt_seq_nuM`,`min_value`,`start_value` FROM Seq;
-laSt_seq_nuM    min_value    start_value
-30    1    30
+laSt_seq_nuM  ¦  min_value  ¦  start_value
+30  ¦  1  ¦  30
+
+#SQL[@343,N19]Result[]
 DROP SEQUENCE `SEQ`;
+
+#SQL[@345,N26]Result[]
 DROP table IF EXISTS `t18`;
+
+#SQL[@346,N61]Result[]
 CREATE table `t18`(col1 int PRIMARY KEY,col2 CHAR,col3 float);
+
+#SQL[@347,N43]Result[]
 INSERT INTO `t18` VALUES(1,'a',898021.8392);
+
+#SQL[@348,N44]Result[]
 INSERT INTO `t18` VALUES(2, NULL, 213145.45);
+
+#SQL[@349,N19]Result[24, 22, 26]
 select * from `t18`;
-col1    col2    col3
-1    a    898021.8
-2    null    213145.45
+col1  ¦  col2  ¦  col3
+1  ¦  a  ¦  898021.8
+2  ¦  null  ¦  213145.45
+
+#SQL[@350,N23]Result[23, 137]
 show CREATE table `t18`;
-Table    Create Table
-t18    CREATE TABLE `t18` (\n  `col1` int NOT NULL,\n  `col2` char(1) DEFAULT NULL,\n  `col3` float DEFAULT NULL,\n  PRIMARY KEY (`col1`)\n)
+Table  ¦  Create Table
+t18  ¦  CREATE TABLE `t18` (
+  `col1` int NOT NULL,
+  `col2` char(1) DEFAULT NULL,
+  `col3` float DEFAULT NULL,
+  PRIMARY KEY (`col1`)
+)
+
+#SQL[@351,N16]Result[]
 DROP TABLE `t18`;
+
+#SQL[@353,N26]Result[]
 DROP TABLE IF EXISTS `t19`;
+
+#SQL[@354,N57]Result[]
 CREATE TABLE `t19`(col1 int,col2 varchar(20),col3 double);
+
+#SQL[@355,N31]Result[]
 CREATE INDEX `ABc` ON t19(col2);
+
+#SQL[@356,N23]Result[]
 DROP INDEX `abc` ON t19;
+
+#SQL[@357,N19]Result[]
 select * from `t19`;
-col1    col2    col3
+
+#SQL[@358,N23]Result[23, 122]
 show CREATE table `t19`;
-Table    Create Table
-t19    CREATE TABLE `t19` (\n  `col1` int DEFAULT NULL,\n  `col2` varchar(20) DEFAULT NULL,\n  `col3` double DEFAULT NULL\n)
+Table  ¦  Create Table
+t19  ¦  CREATE TABLE `t19` (
+  `col1` int DEFAULT NULL,
+  `col2` varchar(20) DEFAULT NULL,
+  `col3` double DEFAULT NULL
+)
+
+#SQL[@359,N16]Result[]
 DROP TABLE `t19`;
+
+#SQL[@362,N36]Result[]
 DROP ACCOUNT IF EXISTS `tenant_test`;
+
+#SQL[@363,N95]Result[]
 CREATE ACCOUNT `tenant_test` admin_name = 'root' identified by '111' open comment 'tenant_test';
+
+#SQL[@364,N227]Result[]
 ALTER ACCOUNT `tenant_TEST` comment 'abcddddddfsfafaffsefsfsefljofiseosfjosisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss24444444444444444444444444222222222@fffffffffffffffffffffffffffffffffffffffffffffffffffff';
+
+#SQL[@365,N95]Error[45]
 CREATE ACCOUNT `tenant_TEST` admin_name = 'root' identified by '111' open comment 'tenant_test';
 internal error: the tenant tenant_test exists
+
+#SQL[@366,N95]Error[45]
 CREATE ACCOUNT `TENANT_TEST` admin_name = 'root' identified by '111' open comment 'tenant_test';
 internal error: the tenant tenant_test exists
+
+#SQL[@367,N109]Result[38, 216]
 SELECT `account_name`,`status`,`comments` FROM `mo_catalog`.`mo_account` WHERE `account_name` = 'tenant_test';
-account_name    status    comments
-tenant_test    open    abcddddddfsfafaffsefsfsefljofiseosfjosisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss24444444444444444444444444222222222@fffffffffffffffffffffffffffffffffffffffffffffffffffff
+account_name  ¦  status  ¦  comments
+tenant_test  ¦  open  ¦  abcddddddfsfafaffsefsfsefljofiseosfjosisssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss24444444444444444444444444222222222@fffffffffffffffffffffffffffffffffffffffffffffffffffff
+
+#SQL[@368,N34]Result[]
 DROP ACCOUNT IF EXISTS TENANT_TEST;
+
+#SQL[@371,N27]Result[]
 DROP ROLE IF EXISTS `rolex`;
+
+#SQL[@372,N19]Result[]
 CREATE ROLE `rolex`;
+
+#SQL[@373,N19]Error[37]
 CREATE ROLE `Rolex`;
 internal error: the role rolex exists
+
+#SQL[@374,N19]Error[37]
 CREATE ROLE `ROLEX`;
 internal error: the role rolex exists
+
+#SQL[@375,N53]Result[23, 11, 13, 12]
 SELECT role_name,comments FROM `mo_catalog`.`mo_role`;
-role_name    comments
-moadmin    
-public    
-rolex    
+role_name  ¦  comments
+rolex  ¦  
+moadmin  ¦  
+public  ¦  
+
+#SQL[@376,N81]Result[]
 SELECT role_name,COmments FROM `mo_catalog`.`mo_role` WHERE `role_name` = 'Rolex';
-role_name    COmments
+
+#SQL[@377,N17]Result[]
 DROP ROLE `Rolex`;
+
+#SQL[@380,N31]Result[]
 DROP USER IF EXISTS `user_name`;
+
+#SQL[@381,N46]Result[]
 CREATE USER `user_name` IDENTIFIED BY '123456';
+
+#SQL[@382,N46]Error[41]
 CREATE USER `USER_NAME` IDENTIFIED BY '123456';
 internal error: the user user_name exists
+
+#SQL[@383,N46]Error[41]
 CREATE USER `USER_name` IDENTIFIED BY '123456';
 internal error: the user user_name exists
+
+#SQL[@384,N67]Result[36, 36, 31, 31, 32, 32]
 SELECT `user_host`,`user_name`,`status` FROM `mo_catalog`.`mo_user`;
-user_host    user_name    status
-localhost    root    unlock
-localhost    dump    unlock
-localhost    user_name    unlock
+user_host  ¦  user_name  ¦  status
+localhost  ¦  user_name  ¦  unlock
+localhost  ¦  root  ¦  unlock
+localhost  ¦  dump  ¦  unlock
+localhost  ¦  user1  ¦  unlock
+localhost  ¦  user2  ¦  unlock
+
+#SQL[@385,N97]Result[]
 SELECT `user_host`,`user_name`,`status` FROM `mo_catalog`.`mo_user` WHERE user_name = 'User_name';
-user_host    user_name    status
+
+#SQL[@386,N21]Result[]
 DROP USER `user_name`;
+
+#SQL[@387,N22]Result[]
 DROP DATABASE `test06`;
+
+#SQL[@390,N32]Result[]
 drop database if exists `test10`;
+
+#SQL[@391,N24]Result[]
 create database `test10`;
+
+#SQL[@392,N12]Result[]
 use `test10`;
+
+#SQL[@393,N26]Result[]
 DROP TABLE IF EXISTS `t20`;
+
+#SQL[@394,N26]Result[]
 DROP TABLE IF EXISTS `t21`;
+
+#SQL[@395,N27]Result[]
 DROP VIEW IF EXISTS `view1`;
+
+#SQL[@396,N29]Result[]
 CREATE TABLE `t20`(a INTEGER);
+
+#SQL[@397,N32]Result[]
 INSERT INTO `t20` VALUES (1),(2);
+
+#SQL[@398,N29]Result[]
 CREATE TABLE `t21`(a INTEGER);
+
+#SQL[@399,N28]Result[]
 INSERT INTO `t21` VALUES (1);
+
+#SQL[@400,N79]Result[]
 CREATE VIEW `view1` AS SELECT t20.a, T21.a AS b FROM t20 LEFT JOIN t21 USING(a);
+
+#SQL[@401,N79]Error[26]
 CREATE VIEW `VIEW1` AS SELECT t20.a, t21.a AS b FROM t20 LEFT JOIN t21 USING(a);
 table view1 already exists
+
+#SQL[@402,N21]Result[8, 8, 11]
 SELECT * FROM `view1`;
-a    b
-1    1
-2    null
+a  ¦  b
+1  ¦  1
+2  ¦  null
+
+#SQL[@403,N17]Result[]
 DROP VIEW `view1`;
+
+#SQL[@404,N16]Result[]
 DROP TABLE `t20`;
+
+#SQL[@405,N16]Result[]
 DROP TABLE `t21`;
+
+#SQL[@408,N26]Result[]
 DROP TABLE IF EXISTS `TaB`;
+
+#SQL[@409,N25]Result[]
 DROP VIEW IF EXISTS `ViE`;
+
+#SQL[@410,N29]Result[]
 CREATE TABLE `TaB`(Field int);
+
+#SQL[@411,N26]Result[]
 INSERT INTO TAB VALUES(10);
+
+#SQL[@412,N40]Result[]
 CREATE VIEW `ViE` AS SELECT * FROM `TAb`;
+
+#SQL[@413,N23]Result[73, 86]
 show CREATE TABLE `VIe`;
-View    Create View    character_set_client    collation_connection
-vie    CREATE VIEW `ViE` AS SELECT * FROM `TAb`;    utf8mb4    utf8mb4_general_ci
+View  ¦  Create View  ¦  character_set_client  ¦  collation_connection
+vie  ¦  CREATE VIEW `ViE` AS SELECT * FROM `TAb`  ¦  utf8mb4  ¦  utf8mb4_general_ci
+
+#SQL[@414,N15]Result[]
 DROP view `VIE`;
+
+#SQL[@415,N16]Result[]
 DROP table `TAB`;
+
+#SQL[@418,N26]Result[]
 DROP TABLE IF EXISTS `t22`;
+
+#SQL[@419,N28]Result[]
 DROP VIEW IF EXISTS `view01`;
+
+#SQL[@420,N26]Result[]
 CREATE TABLE `t22` (a int);
+
+#SQL[@421,N39]Result[]
 INSERT INTO `t22` VALUES(1),(2),(3),(4);
+
+#SQL[@422,N43]Result[]
 CREATE VIEW `view01` AS SELECT * FROM `t22`;
+
+#SQL[@423,N52]Result[]
 ALTER VIEW `VIEW01` AS SELECT * FROM `t22` WHERE a=1;
+
+#SQL[@424,N22]Result[1, 1]
 SELECT * FROM `view01`;
 a
 1
+
+#SQL[@425,N34]Result[1, 1]
 SELECT * FROM `view01` WHERE A = 1;
 a
 1
+
+#SQL[@426,N18]Result[]
 DROP view `vieW01`;
+
+#SQL[@427,N32]Result[]
 drop database if exists `test10`;
+
+#SQL[@430,N32]Result[]
 DROP DATABASE IF EXISTS `test07`;
+
+#SQL[@431,N25]Error[20]
 DROP TABLE IF EXISTS `t1`;
 No database selected
+
+#SQL[@432,N24]Result[]
 CREATE DATABASE `test07`;
+
+#SQL[@433,N12]Result[]
 USE `test07`;
+
+#SQL[@434,N36]Result[]
 CREATE TEMPORARY TABLE `t1`(a float);
+
+#SQL[@435,N34]Result[]
 INSERT INTO `T1` VALUES(213823.12);
+
+#SQL[@436,N37]Result[]
 INSERT INTO `t1` VALUES(-45412.38920);
+
+#SQL[@437,N18]Result[1, 9, 9]
 SELECT * FROM `t1`;
 a
 213823.12
 -45412.39
+
+#SQL[@438,N15]Result[]
 DROP TABLE `t1`;
+
+#SQL[@439,N22]Result[]
 DROP DATABASE `TEST07`;
+
+#SQL[@442,N32]Result[]
 drop database if exists `test11`;
+
+#SQL[@443,N24]Result[]
 create database `test11`;
+
+#SQL[@444,N12]Result[]
 use `test11`;
+
+#SQL[@445,N25]Result[]
 DROP TABLE IF EXISTS `t4`;
+
+#SQL[@446,N25]Result[]
 DROP TABLE IF EXISTS `t5`;
+
+#SQL[@447,N49]Result[]
 CREATE TABLE `t4`(a int primary key,b varchar(5));
+
+#SQL[@448,N92]Result[]
 CREATE TABLE `t5`(a int ,b varchar(5), C int, constraint fc foreign key(C) references t4(a));
+
+#SQL[@449,N36]Result[]
 ALTER table `t5` DROP FOREIGN KEY fC;
+
+#SQL[@450,N66]Result[]
 ALTER table `t5` ADD constraint fC foreign key(c) REFERENCES t4(a);
+
+#SQL[@451,N22]Result[23, 100]
 show CREATE TABLE `t4`;
-Table    Create Table
-t4    CREATE TABLE `t4` (\n  `a` int NOT NULL,\n  `b` varchar(5) DEFAULT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t4  ¦  CREATE TABLE `t4` (
+  `a` int NOT NULL,
+  `b` varchar(5) DEFAULT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@452,N22]Result[23, 204]
 show CREATE TABLE `T5`;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `a` int DEFAULT NULL,\n  `b` varchar(5) DEFAULT NULL,\n  `C` int DEFAULT NULL,\n  CONSTRAINT `fc` FOREIGN KEY (`C`) REFERENCES `t4` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `a` int DEFAULT NULL,
+  `b` varchar(5) DEFAULT NULL,
+  `C` int DEFAULT NULL,
+  CONSTRAINT `fc` FOREIGN KEY (`C`) REFERENCES `t4` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@453,N15]Result[]
 DROP table `t5`;
+
+#SQL[@454,N15]Result[]
 DROP table `t4`;
+
+#SQL[@455,N32]Result[]
 drop database if exists `test11`;
+
+#SQL[@458,N32]Result[]
 DROP DATABASE IF EXISTS `test08`;
+
+#SQL[@459,N24]Result[]
 CREATE DATABASE `test08`;
+
+#SQL[@460,N13]Result[]
 use  `test08`;
+
+#SQL[@461,N30]Result[]
 DROP table IF EXISTS `table02`;
+
+#SQL[@462,N137]Result[]
 CREATE external table `table02`(clo1 int,clo2 bigint)infile{"filepath"='$resources/external_table_file/aaa.csv'} fields terminated by ',';
+
+#SQL[@463,N23]Result[14, 23, 16, 9]
 SELECT * FROM `Table02`;
-clo1    clo2
-1    2131420000000000
-2    325465476
-3    -1
+clo1  ¦  clo2
+1  ¦  2131420000000000
+2  ¦  325465476
+3  ¦  -1
+
+#SQL[@464,N18]Result[]
 drop table table02;
+
+#SQL[@465,N22]Result[]
 DROP DATABASE `TEST08`;
+

@@ -1,118 +1,266 @@
+#SQL[@2,N23]Result[]
 drop table if exists t1;
+
+#SQL[@3,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@4,N29]Result[]
 create index idx1 on t1(name);
+
+#SQL[@5,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@6,N34]Result[]
 insert into t1 values(2,"Deb", 26);
+
+#SQL[@7,N16]Result[21, 19, 18]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Deb    26
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Deb  ¦  26
+
+#SQL[@8,N40]Result[]
 update t1 set name = "Dora" where id = 2;
+
+#SQL[@9,N16]Result[21, 19, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Dora    26
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Dora  ¦  26
+
+#SQL[@10,N29]Result[]
 update t1 set id=3 where id=2;
+
+#SQL[@11,N40]Result[]
 update t1 set name = "Abby" where id = 3;
+
+#SQL[@12,N16]Result[21, 19, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-3    Abby    26
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+3  ¦  Abby  ¦  26
+
+#SQL[@13,N18]Result[233, 118, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    1    idx1    1    name    A    0    NULL    NULL    YES                    YES    name
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  1  ¦  idx1  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+
+#SQL[@14,N20]Result[23, 156]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `id` int NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx1` (`name`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx1` (`name`)
+)
+
+#SQL[@15,N78]Result[31, 28, 37]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx1";
-name    type    column_name
-idx1    MULTIPLE    name
-idx1    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx1  ¦  MULTIPLE  ¦  name
+idx1  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@18,N23]Result[]
 drop table if exists t1;
+
+#SQL[@19,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@20,N29]Result[]
 create index idx2 on t1(name);
+
+#SQL[@21,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@22,N35]Result[]
 insert into t1 values(2,"Abby", 26);
+
+#SQL[@23,N16]Result[21, 19, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Abby    26
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Abby  ¦  26
+
+#SQL[@26,N23]Result[]
 drop table if exists t1;
+
+#SQL[@27,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@28,N29]Result[]
 create index idx3 on t1(name);
+
+#SQL[@29,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@30,N35]Result[]
 insert into t1 values(2,"Dora", 25);
+
+#SQL[@31,N40]Result[]
 update t1 set name = "Abby" where id = 2;
+
+#SQL[@32,N16]Result[21, 19, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Abby    25
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Abby  ¦  25
+
+#SQL[@35,N23]Result[]
 drop table if exists t1;
+
+#SQL[@36,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@37,N29]Result[]
 create index idx4 on t1(name);
+
+#SQL[@38,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@39,N35]Result[]
 insert into t1 values(2,"Dora", 25);
+
+#SQL[@40,N38]Result[]
 update t1 set name = null where id = 2;
+
+#SQL[@41,N16]Result[21, 19, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    null    25
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  null  ¦  25
+
+#SQL[@44,N23]Result[]
 drop table if exists t1;
+
+#SQL[@45,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@46,N29]Result[]
 create index idx5 on t1(name);
+
+#SQL[@47,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@48,N38]Result[]
 insert into t1 (id, age) values(2, 25);
+
+#SQL[@49,N16]Result[21, 19, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    null    25
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  null  ¦  25
+
+#SQL[@52,N23]Result[]
 drop table if exists t1;
+
+#SQL[@53,N79]Result[]
 create table t1(id VARCHAR(255) PRIMARY KEY,name VARCHAR(255),age VARCHAR(255));
+
+#SQL[@54,N30]Result[]
 create  index idx6 on t1(name);
+
+#SQL[@55,N48]Result[]
 insert into t1 values("a","Abby", "twenty four");
+
+#SQL[@56,N48]Result[]
 insert into t1 values("b","Debby", "twenty six");
+
+#SQL[@57,N16]Result[21, 28, 28]
 select * from t1;
-id    name    age
-a    Abby    twenty four
-b    Debby    twenty six
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  twenty four
+b  ¦  Debby  ¦  twenty six
+
+#SQL[@58,N40]Result[]
 update t1 set name = null where id = "b";
+
+#SQL[@59,N16]Result[21, 28, 27]
 select * from t1;
-id    name    age
-a    Abby    twenty four
-b    null    twenty six
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  twenty four
+b  ¦  null  ¦  twenty six
+
+#SQL[@60,N41]Result[]
 update t1 set name = "Cia" where id = "b";
+
+#SQL[@61,N16]Result[21, 28, 26]
 select * from t1;
-id    name    age
-a    Abby    twenty four
-b    Cia    twenty six
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  twenty four
+b  ¦  Cia  ¦  twenty six
+
+#SQL[@62,N40]Result[]
 update t1 set name = null where id = "b";
+
+#SQL[@63,N16]Result[21, 28, 27]
 select * from t1;
-id    name    age
-a    Abby    twenty four
-b    null    twenty six
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  twenty four
+b  ¦  null  ¦  twenty six
+
+#SQL[@64,N29]Result[]
 delete from t1 where id = "b";
+
+#SQL[@65,N16]Result[21, 28]
 select * from t1;
-id    name    age
-a    Abby    twenty four
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  twenty four
+
+#SQL[@67,N23]Result[]
 drop table if exists t1;
+
+#SQL[@68,N51]Result[]
 create table t1(id int primary key, val int unique);
+
+#SQL[@69,N57]Result[]
 insert into t1 select *, * from generate_series(500000) g;
+
+#SQL[@71,N57]Result[44, 79]
 select mo_ctl('dn', 'flush', 'secondary_index_insert.t1');
 mo_ctl(dn, flush, secondary_index_insert.t1)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@72,N23]Result[]
 create table t2 like t1;
+
+#SQL[@73,N31]Result[]
 insert into t2 select * from t1;
+
+#SQL[@74,N23]Result[8, 6]
 select count(*) from t2;
 count(*)
 500000
+
+#SQL[@75,N14]Result[]
 delete from t2;
+
+#SQL[@76,N44]Result[]
 insert into t2 select * from t1 limit 100000;
+
+#SQL[@77,N23]Result[8, 6]
 select count(*) from t2;
 count(*)
 100000
+
+#SQL[@78,N14]Result[]
 delete from t2;
+
+#SQL[@79,N44]Result[]
 insert into t2 select * from t1 limit 300000;
+
+#SQL[@80,N23]Result[8, 6]
 select count(*) from t2;
 count(*)
 300000
+

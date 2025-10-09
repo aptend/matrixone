@@ -1,304 +1,550 @@
+#SQL[@1,N27]Result[]
 DROP DATABASE IF EXISTS db1;
+
+#SQL[@2,N19]Result[]
 create database db1;
+
+#SQL[@3,N7]Result[]
 use db1;
+
+#SQL[@5,N23]Result[]
 drop table if exists t1;
+
+#SQL[@6,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@7,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@8,N34]Result[]
 insert into t1 values(2,"Bob", 25);
+
+#SQL[@9,N36]Result[]
 insert into t1 values(3,"Carol", 23);
+
+#SQL[@10,N35]Result[]
 insert into t1 values(4,"Dora", 29);
+
+#SQL[@11,N36]Result[]
 create unique index idx1 on t1(name);
+
+#SQL[@12,N16]Result[21, 19, 18, 20, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Bob    25
-3    Carol    23
-4    Dora    29
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+3  ¦  Carol  ¦  23
+4  ¦  Dora  ¦  29
+
+#SQL[@13,N18]Result[233, 118, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    0    idx1    1    name    A    0    NULL    NULL    YES                    YES    name
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  0  ¦  idx1  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+
+#SQL[@15,N156]Result[31, 26]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1');
-name    type    column_name
-idx1    UNIQUE    name
+name  ¦  type  ¦  column_name
+idx1  ¦  UNIQUE  ¦  name
+
+#SQL[@16,N218]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1'));
 relkind
 i
+
+#SQL[@18,N34]Result[]
 create index idx2 on t1(name, age);
+
+#SQL[@19,N16]Result[21, 19, 18, 20, 19]
 select * from t1;
-id    name    age
-1    Abby    24
-2    Bob    25
-3    Carol    23
-4    Dora    29
+id  ¦  name  ¦  age
+1  ¦  Abby  ¦  24
+2  ¦  Bob  ¦  25
+3  ¦  Carol  ¦  23
+4  ¦  Dora  ¦  29
+
+#SQL[@20,N18]Result[233, 118, 122, 122, 120]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    0    idx1    1    name    A    0    NULL    NULL    YES                    YES    name
-t1    1    idx2    1    name    A    0    NULL    NULL    YES                    YES    name
-t1    1    idx2    2    age    A    0    NULL    NULL    YES                    YES    age
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  0  ¦  idx1  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+t1  ¦  1  ¦  idx2  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+t1  ¦  1  ¦  idx2  ¦  2  ¦  age  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  age
+
+#SQL[@21,N156]Result[31, 28, 27, 37]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1');
-name    type    column_name
-idx2    MULTIPLE    name
-idx2    MULTIPLE    age
-idx2    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx2  ¦  MULTIPLE  ¦  name
+idx2  ¦  MULTIPLE  ¦  age
+idx2  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@22,N218]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1'));
 relkind
 i
+
+#SQL[@24,N46]Result[]
 alter table t1 add column sal int default 2000;
+
+#SQL[@25,N156]Result[31, 26]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1');
-name    type    column_name
-idx1    UNIQUE    name
+name  ¦  type  ¦  column_name
+idx1  ¦  UNIQUE  ¦  name
+
+#SQL[@26,N218]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1'));
 relkind
 i
+
+#SQL[@28,N156]Result[31, 28, 27, 37]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1');
-name    type    column_name
-idx2    MULTIPLE    name
-idx2    MULTIPLE    age
-idx2    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx2  ¦  MULTIPLE  ¦  name
+idx2  ¦  MULTIPLE  ¦  age
+idx2  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@29,N218]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't1'));
 relkind
 i
+
+#SQL[@32,N30]Result[]
 SET experimental_ivf_index = 1;
+
+#SQL[@34,N23]Result[]
 drop table if exists t2;
+
+#SQL[@35,N77]Result[]
 create table t2(a int primary key, b vecf32(3), index idx9 using ivfflat (b));
+
+#SQL[@37,N16]Result[]
 select * from t2;
-a    b
+
+#SQL[@38,N18]Result[233, 162, 116]
 show index from t2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t2    1    idx9    1    b    A    0    NULL    NULL    YES    ivfflat            {"lists":"1","op_type":"vector_l2_ops"}    YES    b
-t2    0    PRIMARY    1    a    A    0    NULL    NULL                        YES    a
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t2  ¦  1  ¦  idx9  ¦  1  ¦  b  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  ivfflat  ¦    ¦    ¦  {"lists":"1","op_type":"vector_l2_ops"}  ¦  YES  ¦  b
+t2  ¦  0  ¦  PRIMARY  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+
+#SQL[@39,N156]Result[31, 25, 25, 25]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx9' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't2');
-name    type    column_name
-idx9    MULTIPLE    b
-idx9    MULTIPLE    b
-idx9    MULTIPLE    b
+name  ¦  type  ¦  column_name
+idx9  ¦  MULTIPLE  ¦  b
+idx9  ¦  MULTIPLE  ¦  b
+idx9  ¦  MULTIPLE  ¦  b
+
+#SQL[@40,N218]Result[7, 8, 9, 7]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx9' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't2'));
 relkind
 metadata
 centroids
 entries
+
+#SQL[@43,N23]Result[]
 drop table if exists t3;
+
+#SQL[@44,N78]Result[]
 create table t3(a int primary key, b vecf32(3), index idx10 using ivfflat (b));
+
+#SQL[@45,N35]Result[]
 insert into t3 values(1, "[1,2,3]");
+
+#SQL[@46,N35]Result[]
 insert into t3 values(2, "[1,2,4]");
+
+#SQL[@48,N18]Result[233, 163, 116]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    1    idx10    1    b    A    0    NULL    NULL    YES    ivfflat            {"lists":"1","op_type":"vector_l2_ops"}    YES    b
-t3    0    PRIMARY    1    a    A    0    NULL    NULL                        YES    a
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  1  ¦  idx10  ¦  1  ¦  b  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  ivfflat  ¦    ¦    ¦  {"lists":"1","op_type":"vector_l2_ops"}  ¦  YES  ¦  b
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+
+#SQL[@49,N20]Result[23, 170]
 show create table t3;
-Table    Create Table
-t3    CREATE TABLE `t3` (\n  `a` int NOT NULL,\n  `b` vecf32(3) DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  KEY `idx10` USING ivfflat (`b`) lists = 1  op_type 'vector_l2_ops' \n)
+Table  ¦  Create Table
+t3  ¦  CREATE TABLE `t3` (
+  `a` int NOT NULL,
+  `b` vecf32(3) DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  KEY `idx10` USING ivfflat (`b`) lists = 1  op_type 'vector_l2_ops' 
+)
+
+#SQL[@50,N157]Result[31, 26, 26, 26]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx10' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't3');
-name    type    column_name
-idx10    MULTIPLE    b
-idx10    MULTIPLE    b
-idx10    MULTIPLE    b
+name  ¦  type  ¦  column_name
+idx10  ¦  MULTIPLE  ¦  b
+idx10  ¦  MULTIPLE  ¦  b
+idx10  ¦  MULTIPLE  ¦  b
+
+#SQL[@51,N219]Result[7, 8, 9, 7]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx10' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't3'));
 relkind
 metadata
 centroids
 entries
+
+#SQL[@53,N28]Result[]
 alter table t3 drop column b;
+
+#SQL[@54,N18]Result[233, 116]
 show index from t3;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t3    0    PRIMARY    1    a    A    0    NULL    NULL                        YES    a
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t3  ¦  0  ¦  PRIMARY  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+
+#SQL[@55,N20]Result[23, 69]
 show create table t3;
-Table    Create Table
-t3    CREATE TABLE `t3` (\n  `a` int NOT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t3  ¦  CREATE TABLE `t3` (
+  `a` int NOT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@56,N157]Result[]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'idx10' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't3');
-name    type    column_name
+
+#SQL[@57,N219]Result[]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx10' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 't3'));
-relkind
+
+#SQL[@60,N24]Result[]
 drop table if exists tbl;
+
+#SQL[@61,N57]Result[]
 create table tbl(id int primary key, embedding vecf32(3));
+
+#SQL[@62,N36]Result[]
 insert into tbl values(1, "[1,2,3]");
+
+#SQL[@63,N36]Result[]
 insert into tbl values(2, "[1,2,4]");
+
+#SQL[@64,N38]Result[]
 insert into tbl values(3, "[1,2.4,4]");
+
+#SQL[@65,N36]Result[]
 insert into tbl values(4, "[1,2,5]");
+
+#SQL[@66,N36]Result[]
 insert into tbl values(5, "[1,3,5]");
+
+#SQL[@67,N40]Result[]
 insert into tbl values(6, "[100,44,50]");
+
+#SQL[@68,N40]Result[]
 insert into tbl values(7, "[120,50,70]");
+
+#SQL[@69,N40]Result[]
 insert into tbl values(8, "[130,40,90]");
+
+#SQL[@71,N83]Result[]
 create index idx1 using IVFFLAT on tbl(embedding) lists = 2 op_type 'vector_l2_ops';
+
+#SQL[@72,N19]Result[233, 119, 179]
 show index from tbl;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-tbl    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-tbl    1    idx1    1    embedding    A    0    NULL    NULL    YES    ivfflat            {"lists":"2","op_type":"vector_l2_ops"}    YES    embedding
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+tbl  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+tbl  ¦  1  ¦  idx1  ¦  1  ¦  embedding  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  ivfflat  ¦    ¦    ¦  {"lists":"2","op_type":"vector_l2_ops"}  ¦  YES  ¦  embedding
+
+#SQL[@73,N21]Result[23, 189]
 show create table tbl;
-Table    Create Table
-tbl    CREATE TABLE `tbl` (\n  `id` int NOT NULL,\n  `embedding` vecf32(3) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx1` USING ivfflat (`embedding`) lists = 2  op_type 'vector_l2_ops' \n)
+Table  ¦  Create Table
+tbl  ¦  CREATE TABLE `tbl` (
+  `id` int NOT NULL,
+  `embedding` vecf32(3) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx1` USING ivfflat (`embedding`) lists = 2  op_type 'vector_l2_ops' 
+)
+
+#SQL[@74,N192]Result[79, 105, 106, 104]
 select name, type, column_name, algo, algo_table_type,algo_params from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl');
-name    type    column_name    algo    algo_table_type    algo_params
-idx1    MULTIPLE    embedding    ivfflat    metadata    {"lists":"2","op_type":"vector_l2_ops"}
-idx1    MULTIPLE    embedding    ivfflat    centroids    {"lists":"2","op_type":"vector_l2_ops"}
-idx1    MULTIPLE    embedding    ivfflat    entries    {"lists":"2","op_type":"vector_l2_ops"}
+name  ¦  type  ¦  column_name  ¦  algo  ¦  algo_table_type  ¦  algo_params
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  metadata  ¦  {"lists":"2","op_type":"vector_l2_ops"}
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  centroids  ¦  {"lists":"2","op_type":"vector_l2_ops"}
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  entries  ¦  {"lists":"2","op_type":"vector_l2_ops"}
+
+#SQL[@75,N219]Result[7, 8, 9, 7]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl'));
 relkind
 metadata
 centroids
 entries
+
+#SQL[@78,N50]Result[]
 alter table tbl alter reindex idx1 ivfflat lists=3;
+
+#SQL[@79,N19]Result[233, 119, 179]
 show index from tbl;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-tbl    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-tbl    1    idx1    1    embedding    A    0    NULL    NULL    YES    ivfflat            {"lists":"3","op_type":"vector_l2_ops"}    YES    embedding
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+tbl  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+tbl  ¦  1  ¦  idx1  ¦  1  ¦  embedding  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  ivfflat  ¦    ¦    ¦  {"lists":"3","op_type":"vector_l2_ops"}  ¦  YES  ¦  embedding
+
+#SQL[@80,N21]Result[23, 189]
 show create table tbl;
-Table    Create Table
-tbl    CREATE TABLE `tbl` (\n  `id` int NOT NULL,\n  `embedding` vecf32(3) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx1` USING ivfflat (`embedding`) lists = 3  op_type 'vector_l2_ops' \n)
+Table  ¦  Create Table
+tbl  ¦  CREATE TABLE `tbl` (
+  `id` int NOT NULL,
+  `embedding` vecf32(3) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx1` USING ivfflat (`embedding`) lists = 3  op_type 'vector_l2_ops' 
+)
+
+#SQL[@81,N192]Result[79, 105, 106, 104]
 select name, type, column_name, algo, algo_table_type,algo_params from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl');
-name    type    column_name    algo    algo_table_type    algo_params
-idx1    MULTIPLE    embedding    ivfflat    metadata    {"lists":"3","op_type":"vector_l2_ops"}
-idx1    MULTIPLE    embedding    ivfflat    centroids    {"lists":"3","op_type":"vector_l2_ops"}
-idx1    MULTIPLE    embedding    ivfflat    entries    {"lists":"3","op_type":"vector_l2_ops"}
+name  ¦  type  ¦  column_name  ¦  algo  ¦  algo_table_type  ¦  algo_params
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  metadata  ¦  {"lists":"3","op_type":"vector_l2_ops"}
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  centroids  ¦  {"lists":"3","op_type":"vector_l2_ops"}
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  entries  ¦  {"lists":"3","op_type":"vector_l2_ops"}
+
+#SQL[@82,N219]Result[7, 8, 9, 7]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl'));
 relkind
 metadata
 centroids
 entries
+
+#SQL[@85,N31]Result[]
 alter table tbl add c vecf32(3);
+
+#SQL[@86,N19]Result[233, 179, 119]
 show index from tbl;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-tbl    1    idx1    1    embedding    A    0    NULL    NULL    YES    ivfflat            {"lists":"3","op_type":"vector_l2_ops"}    YES    embedding
-tbl    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+tbl  ¦  1  ¦  idx1  ¦  1  ¦  embedding  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  ivfflat  ¦    ¦    ¦  {"lists":"3","op_type":"vector_l2_ops"}  ¦  YES  ¦  embedding
+tbl  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+
+#SQL[@87,N21]Result[23, 219]
 show create table tbl;
-Table    Create Table
-tbl    CREATE TABLE `tbl` (\n  `id` int NOT NULL,\n  `embedding` vecf32(3) DEFAULT NULL,\n  `c` vecf32(3) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx1` USING ivfflat (`embedding`) lists = 3  op_type 'vector_l2_ops' \n)
+Table  ¦  Create Table
+tbl  ¦  CREATE TABLE `tbl` (
+  `id` int NOT NULL,
+  `embedding` vecf32(3) DEFAULT NULL,
+  `c` vecf32(3) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx1` USING ivfflat (`embedding`) lists = 3  op_type 'vector_l2_ops' 
+)
+
+#SQL[@88,N192]Result[79, 105, 106, 104]
 select name, type, column_name, algo, algo_table_type,algo_params from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl');
-name    type    column_name    algo    algo_table_type    algo_params
-idx1    MULTIPLE    embedding    ivfflat    metadata    {"lists":"3","op_type":"vector_l2_ops"}
-idx1    MULTIPLE    embedding    ivfflat    centroids    {"lists":"3","op_type":"vector_l2_ops"}
-idx1    MULTIPLE    embedding    ivfflat    entries    {"lists":"3","op_type":"vector_l2_ops"}
+name  ¦  type  ¦  column_name  ¦  algo  ¦  algo_table_type  ¦  algo_params
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  metadata  ¦  {"lists":"3","op_type":"vector_l2_ops"}
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  centroids  ¦  {"lists":"3","op_type":"vector_l2_ops"}
+idx1  ¦  MULTIPLE  ¦  embedding  ¦  ivfflat  ¦  entries  ¦  {"lists":"3","op_type":"vector_l2_ops"}
+
+#SQL[@89,N219]Result[7, 8, 9, 7]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx1' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl'));
 relkind
 metadata
 centroids
 entries
+
+#SQL[@92,N24]Result[]
 drop table if exists tbl;
+
+#SQL[@93,N60]Result[]
 create table tbl(a int primary key,b vecf32(3), c vecf64(5));
+
+#SQL[@94,N75]Result[]
 create index idx2 using IVFFLAT on tbl(b) lists = 2 op_type 'vector_l2_ops';
+
+#SQL[@96,N19]Result[233, 117, 163]
 show index from tbl;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-tbl    0    PRIMARY    1    a    A    0    NULL    NULL                        YES    a
-tbl    1    idx2    1    b    A    0    NULL    NULL    YES    ivfflat            {"lists":"2","op_type":"vector_l2_ops"}    YES    b
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+tbl  ¦  0  ¦  PRIMARY  ¦  1  ¦  a  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  a
+tbl  ¦  1  ¦  idx2  ¦  1  ¦  b  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  ivfflat  ¦    ¦    ¦  {"lists":"2","op_type":"vector_l2_ops"}  ¦  YES  ¦  b
+
+#SQL[@97,N21]Result[23, 201]
 show create table tbl;
-Table    Create Table
-tbl    CREATE TABLE `tbl` (\n  `a` int NOT NULL,\n  `b` vecf32(3) DEFAULT NULL,\n  `c` vecf64(5) DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  KEY `idx2` USING ivfflat (`b`) lists = 2  op_type 'vector_l2_ops' \n)
+Table  ¦  Create Table
+tbl  ¦  CREATE TABLE `tbl` (
+  `a` int NOT NULL,
+  `b` vecf32(3) DEFAULT NULL,
+  `c` vecf64(5) DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  KEY `idx2` USING ivfflat (`b`) lists = 2  op_type 'vector_l2_ops' 
+)
+
+#SQL[@99,N192]Result[79, 97, 98, 96]
 select name, type, column_name, algo, algo_table_type,algo_params from mo_catalog.mo_indexes where name = 'idx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl');
-name    type    column_name    algo    algo_table_type    algo_params
-idx2    MULTIPLE    b    ivfflat    metadata    {"lists":"2","op_type":"vector_l2_ops"}
-idx2    MULTIPLE    b    ivfflat    centroids    {"lists":"2","op_type":"vector_l2_ops"}
-idx2    MULTIPLE    b    ivfflat    entries    {"lists":"2","op_type":"vector_l2_ops"}
+name  ¦  type  ¦  column_name  ¦  algo  ¦  algo_table_type  ¦  algo_params
+idx2  ¦  MULTIPLE  ¦  b  ¦  ivfflat  ¦  metadata  ¦  {"lists":"2","op_type":"vector_l2_ops"}
+idx2  ¦  MULTIPLE  ¦  b  ¦  ivfflat  ¦  centroids  ¦  {"lists":"2","op_type":"vector_l2_ops"}
+idx2  ¦  MULTIPLE  ¦  b  ¦  ivfflat  ¦  entries  ¦  {"lists":"2","op_type":"vector_l2_ops"}
+
+#SQL[@100,N219]Result[7, 8, 9, 7]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'idx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'tbl'));
 relkind
 metadata
 centroids
 entries
+
+#SQL[@103,N33]Result[]
 set experimental_fulltext_index=1;
+
+#SQL[@104,N35]Result[]
 set ft_relevancy_algorithm="TF-IDF";
+
+#SQL[@106,N67]Result[]
 create table src1 (id bigint primary key, body varchar, title text);
+
+#SQL[@107,N1040]Result[]
 insert into src1 values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy car'), (2, 'sky is blue', 'no limit'), (3, 'blue is not red', 'colorful'),
-(4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
-(5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
-(6, '各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。', '中文短篇小說'),
-(7, '59個簡單的英文和中文短篇小說', '適合初學者'),
-(8, NULL, 'NOT INCLUDED'),
-(9, 'NOT INCLUDED BODY', NULL),
-(10, NULL, NULL);
+                        (4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
+                        (5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
+                        (6, '各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。', '中文短篇小說'),
+                        (7, '59個簡單的英文和中文短篇小說', '適合初學者'),
+                        (8, NULL, 'NOT INCLUDED'),
+                        (9, 'NOT INCLUDED BODY', NULL),
+                        (10, NULL, NULL);
+
+#SQL[@116,N49]Result[]
 create fulltext index ftidx on src1 (body, title);
+
+#SQL[@117,N20]Result[233, 120, 133, 135]
 show index from src1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-src1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-src1    1    ftidx    1    body    A    0    NULL    NULL    YES    fulltext                YES    body
-src1    1    ftidx    2    title    A    0    NULL    NULL    YES    fulltext                YES    title
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+src1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+src1  ¦  1  ¦  ftidx  ¦  1  ¦  body  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  body
+src1  ¦  1  ¦  ftidx  ¦  2  ¦  title  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  title
+
+#SQL[@118,N159]Result[31, 29, 30]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'ftidx' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'src1');
-name    type    column_name
-ftidx    MULTIPLE    body
-ftidx    MULTIPLE    title
+name  ¦  type  ¦  column_name
+ftidx  ¦  MULTIPLE  ¦  body
+ftidx  ¦  MULTIPLE  ¦  title
+
+#SQL[@119,N221]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'ftidx' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'src1'));
 relkind
 i
+
+#SQL[@122,N49]Result[]
 alter table src1 add fulltext index ftidx2 (body);
+
+#SQL[@123,N20]Result[233, 120, 133, 135, 134]
 show index from src1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-src1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-src1    1    ftidx    1    body    A    0    NULL    NULL    YES    fulltext                YES    body
-src1    1    ftidx    2    title    A    0    NULL    NULL    YES    fulltext                YES    title
-src1    1    ftidx2    1    body    A    0    NULL    NULL    YES    fulltext                YES    body
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+src1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+src1  ¦  1  ¦  ftidx  ¦  1  ¦  body  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  body
+src1  ¦  1  ¦  ftidx  ¦  2  ¦  title  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  title
+src1  ¦  1  ¦  ftidx2  ¦  1  ¦  body  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  body
+
+#SQL[@124,N160]Result[31, 30]
 select name, type, column_name from mo_catalog.mo_indexes where name = 'ftidx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'src1');
-name    type    column_name
-ftidx2    MULTIPLE    body
+name  ¦  type  ¦  column_name
+ftidx2  ¦  MULTIPLE  ¦  body
+
+#SQL[@125,N222]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where name = 'ftidx2' and table_id in (select rel_id from mo_catalog.mo_tables where relname = 'src1'));
 relkind
 i
+
+#SQL[@127,N58]Result[23, 27, 36]
 select * from src1 where match(body, title) against('red');
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@128,N90]Result[34, 42]
 select *, match(body, title) against('is red' in natural language mode) as score from src1;
-id    body    title    score
-0    color is red    t1    1.6311431
+id  ¦  body  ¦  title  ¦  score
+0  ¦  color is red  ¦  t1  ¦  1.6311431
+
+#SQL[@129,N67]Result[23, 261]
 select * from src1 where match(body, title) against('教學指引');
-id    body    title
-6    各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。    中文短篇小說
+id  ¦  body  ¦  title
+6  ¦  各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。  ¦  中文短篇小說
+
+#SQL[@130,N86]Result[23, 157]
 select * from src1 where match(body, title) against('彩圖' in natural language mode);
-id    body    title
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@131,N86]Result[23, 156, 157]
 select * from src1 where match(body, title) against('遠東' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@132,N95]Result[23, 156]
 select * from src1 where match(body, title) against('版一、二冊' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+
+#SQL[@133,N15]Result[]
 drop table src1;
+
+#SQL[@135,N90]Result[]
 create table src2 (id bigint primary key, body varchar, title text, FULLTEXT(title, body));
+
+#SQL[@136,N1041]Result[]
 insert into src2 values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy car'), (2, 'sky is blue', 'no limit'), (3, 'blue is not red', 'colorful'),
-(4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
-(5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
-(6, '各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。', '中文短篇小說
+                        (4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
+                        (5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
+                        (6, '各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。', '中文短篇小說
 '),
-(7, '59個簡單的英文和中文短篇小說', '適合初學者'),
-(8, NULL, 'NOT INCLUDED'),
-(9, 'NOT INCLUDED BODY', NULL),
-(10, NULL, NULL);
+                        (7, '59個簡單的英文和中文短篇小說', '適合初學者'),
+                        (8, NULL, 'NOT INCLUDED'),
+                        (9, 'NOT INCLUDED BODY', NULL),
+                        (10, NULL, NULL);
+
+#SQL[@147,N20]Result[233, 130, 128, 120]
 show index from src2;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-src2    1        1    title    A    0    NULL    NULL    YES    fulltext                YES    title
-src2    1        2    body    A    0    NULL    NULL    YES    fulltext                YES    body
-src2    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+src2  ¦  1  ¦    ¦  1  ¦  title  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  title
+src2  ¦  1  ¦    ¦  2  ¦  body  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦  fulltext  ¦    ¦    ¦    ¦  YES  ¦  body
+src2  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+
+#SQL[@148,N140]Result[31, 25, 24, 28]
 select name, type, column_name from mo_catalog.mo_indexes where table_id in (select rel_id from mo_catalog.mo_tables where relname = 'src2');
-name    type    column_name
-    MULTIPLE    title
-    MULTIPLE    body
-PRIMARY    PRIMARY    id
+name  ¦  type  ¦  column_name
+  ¦  MULTIPLE  ¦  title
+  ¦  MULTIPLE  ¦  body
+PRIMARY  ¦  PRIMARY  ¦  id
+
+#SQL[@149,N224]Result[7, 1]
 select relkind from mo_catalog.mo_tables where relname in (select distinct index_table_name from mo_catalog.mo_indexes where table_id in (select rel_id from mo_catalog.mo_tables where relname = 'src2') and name != 'PRIMARY');
 relkind
 i
+
+#SQL[@151,N58]Result[23, 27, 36]
 select * from src2 where match(body, title) against('red');
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@152,N90]Result[34, 42]
 select *, match(body, title) against('is red' in natural language mode) as score from src2;
-id    body    title    score
-0    color is red    t1    1.6311431
+id  ¦  body  ¦  title  ¦  score
+0  ¦  color is red  ¦  t1  ¦  1.6311431
+
+#SQL[@153,N67]Result[23, 262]
 select * from src2 where match(body, title) against('教學指引');
-id    body    title
-6    各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。    中文短篇小說\n
+id  ¦  body  ¦  title
+6  ¦  各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。  ¦  中文短篇小說
+
+
+#SQL[@154,N86]Result[23, 157]
 select * from src2 where match(body, title) against('彩圖' in natural language mode);
-id    body    title
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@155,N86]Result[23, 156, 157]
 select * from src2 where match(body, title) against('遠東' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@156,N95]Result[23, 156]
 select * from src2 where match(body, title) against('版一、二冊' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+
+#SQL[@157,N102]Result[34, 171, 173]
 select *, match(body, title) against('遠東兒童中文' in natural language mode) as score from src2;
-id    body    title    score
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文    1.4499049
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文    0.72495246
+id  ¦  body  ¦  title  ¦  score
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文  ¦  1.4499049
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文  ¦  0.72495246
+
+#SQL[@158,N15]Result[]
 drop table src2;
+
+#SQL[@160,N27]Result[]
 DROP DATABASE IF EXISTS db1;
+

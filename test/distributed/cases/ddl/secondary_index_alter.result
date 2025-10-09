@@ -1,131 +1,263 @@
+#SQL[@2,N23]Result[]
 drop table if exists t1;
+
+#SQL[@3,N69]Result[]
 create table t1(id VARCHAR(20) PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@4,N29]Result[]
 create index idx1 on t1(name);
+
+#SQL[@5,N37]Result[]
 insert into t1 values("a","Abby", 24);
+
+#SQL[@6,N36]Result[]
 insert into t1 values("b","Deb", 26);
+
+#SQL[@7,N16]Result[21, 19, 18]
 select * from t1;
-id    name    age
-a    Abby    24
-b    Deb    26
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  24
+b  ¦  Deb  ¦  26
+
+#SQL[@8,N18]Result[233, 118, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    1    idx1    1    name    A    0    NULL    NULL    YES                    YES    name
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  1  ¦  idx1  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+
+#SQL[@9,N20]Result[23, 164]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `id` varchar(20) NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx1` (`name`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `id` varchar(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx1` (`name`)
+)
+
+#SQL[@10,N78]Result[31, 28, 37]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx1";
-name    type    column_name
-idx1    MULTIPLE    name
-idx1    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx1  ¦  MULTIPLE  ¦  name
+idx1  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@11,N41]Result[]
 alter table t1 add column id2 VARCHAR(20);
+
+#SQL[@12,N22]Result[]
 update t1 set id2 = id;
+
+#SQL[@13,N58]Result[]
 ALTER TABLE t1 DROP PRIMARY KEY, ADD PRIMARY KEY (id, id2);
+
+#SQL[@14,N18]Result[233, 122, 118, 120]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    1    idx1    1    name    A    0    NULL    NULL    YES                    YES    name
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    0    PRIMARY    2    id2    A    0    NULL    NULL                        YES    id2
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  1  ¦  idx1  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  0  ¦  PRIMARY  ¦  2  ¦  id2  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id2
+
+#SQL[@15,N20]Result[23, 200]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `id` varchar(20) NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  `id2` varchar(20) NOT NULL,\n  PRIMARY KEY (`id`,`id2`),\n  KEY `idx1` (`name`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `id` varchar(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  `id2` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`,`id2`),
+  KEY `idx1` (`name`)
+)
+
+#SQL[@16,N78]Result[31, 28, 49]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx1";
-name    type    column_name
-idx1    MULTIPLE    name
-idx1    MULTIPLE    __mo_alias___mo_cpkey_col
+name  ¦  type  ¦  column_name
+idx1  ¦  MULTIPLE  ¦  name
+idx1  ¦  MULTIPLE  ¦  __mo_alias___mo_cpkey_col
+
+#SQL[@17,N42]Result[]
 insert into t1 values("d","Abby", 24,"d2");
+
+#SQL[@18,N30]Result[]
 alter table t1 drop column id2;
+
+#SQL[@19,N7]Result[71, 58, 62, 53]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-id    VARCHAR(20)    NO    PRI    null        
-name    VARCHAR(255)    YES    MUL    null        
-age    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  VARCHAR(20)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+name  ¦  VARCHAR(255)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+age  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@20,N18]Result[233, 122, 118]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    1    idx1    1    name    A    0    NULL    NULL    YES                    YES    name
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  1  ¦  idx1  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+
+#SQL[@21,N20]Result[23, 164]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `id` varchar(20) NOT NULL,\n  `name` varchar(255) DEFAULT NULL,\n  `age` int DEFAULT NULL,\n  PRIMARY KEY (`id`),\n  KEY `idx1` (`name`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `id` varchar(20) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `age` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx1` (`name`)
+)
+
+#SQL[@22,N78]Result[31, 28, 37]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx1";
-name    type    column_name
-idx1    MULTIPLE    name
-idx1    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx1  ¦  MULTIPLE  ¦  name
+idx1  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@25,N23]Result[]
 drop table if exists t1;
+
+#SQL[@26,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@27,N29]Result[]
 create index idx2 on t1(name);
+
+#SQL[@28,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@29,N35]Result[]
 insert into t1 values(2,"Dora", 25);
+
+#SQL[@30,N18]Result[233, 118, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    1    idx2    1    name    A    0    NULL    NULL    YES                    YES    name
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  1  ¦  idx2  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+
+#SQL[@31,N78]Result[31, 28, 37]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx2";
-name    type    column_name
-idx2    MULTIPLE    name
-idx2    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx2  ¦  MULTIPLE  ¦  name
+idx2  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@32,N31]Result[]
 alter table t1 drop column name;
+
+#SQL[@33,N18]Result[233, 118]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+
+#SQL[@34,N78]Result[]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx2";
-name    type    column_name
+
+#SQL[@38,N23]Result[]
 drop table if exists t1;
+
+#SQL[@39,N61]Result[]
 create table t1(id int PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@40,N33]Result[]
 create index idx3 on t1(name,age);
+
+#SQL[@41,N35]Result[]
 insert into t1 values(1,"Abby", 24);
+
+#SQL[@42,N35]Result[]
 insert into t1 values(2,"Dora", 25);
+
+#SQL[@43,N18]Result[233, 118, 122, 120]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    1    idx3    1    name    A    0    NULL    NULL    YES                    YES    name
-t1    1    idx3    2    age    A    0    NULL    NULL    YES                    YES    age
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  1  ¦  idx3  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+t1  ¦  1  ¦  idx3  ¦  2  ¦  age  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  age
+
+#SQL[@44,N78]Result[31, 28, 27, 37]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx3";
-name    type    column_name
-idx3    MULTIPLE    name
-idx3    MULTIPLE    age
-idx3    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx3  ¦  MULTIPLE  ¦  name
+idx3  ¦  MULTIPLE  ¦  age
+idx3  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@45,N31]Result[]
 alter table t1 drop column name;
+
+#SQL[@46,N18]Result[233, 120, 118]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    1    idx3    1    age    A    0    NULL    NULL    YES                    YES    age
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  1  ¦  idx3  ¦  1  ¦  age  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  age
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+
+#SQL[@47,N78]Result[31, 27, 37]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx3";
-name    type    column_name
-idx3    MULTIPLE    age
-idx3    MULTIPLE    __mo_alias_id
+name  ¦  type  ¦  column_name
+idx3  ¦  MULTIPLE  ¦  age
+idx3  ¦  MULTIPLE  ¦  __mo_alias_id
+
+#SQL[@52,N23]Result[]
 drop table if exists t1;
+
+#SQL[@53,N70]Result[]
 create table t1(id VARCHAR(255) PRIMARY KEY,name VARCHAR(255),age int);
+
+#SQL[@54,N32]Result[]
 create index idx4 on t1(id,name);
+
+#SQL[@55,N37]Result[]
 insert into t1 values("a","Abby", 24);
+
+#SQL[@56,N36]Result[]
 insert into t1 values("b","Bob", 25);
+
+#SQL[@57,N38]Result[]
 insert into t1 values("c","Carol", 23);
+
+#SQL[@58,N16]Result[21, 19, 18, 20]
 select * from t1;
-id    name    age
-a    Abby    24
-b    Bob    25
-c    Carol    23
+id  ¦  name  ¦  age
+a  ¦  Abby  ¦  24
+b  ¦  Bob  ¦  25
+c  ¦  Carol  ¦  23
+
+#SQL[@59,N18]Result[233, 118, 115, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    0    PRIMARY    1    id    A    0    NULL    NULL                        YES    id
-t1    1    idx4    1    id    A    0    NULL    NULL                        YES    id
-t1    1    idx4    2    name    A    0    NULL    NULL    YES                    YES    name
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  0  ¦  PRIMARY  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  1  ¦  idx4  ¦  1  ¦  id  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  id
+t1  ¦  1  ¦  idx4  ¦  2  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+
+#SQL[@60,N78]Result[31, 26, 28]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx4";
-name    type    column_name
-idx4    MULTIPLE    id
-idx4    MULTIPLE    name
+name  ¦  type  ¦  column_name
+idx4  ¦  MULTIPLE  ¦  id
+idx4  ¦  MULTIPLE  ¦  name
+
+#SQL[@61,N29]Result[]
 alter table t1 drop column id;
+
+#SQL[@62,N18]Result[233, 122]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    1    idx4    1    name    A    0    NULL    NULL    YES                    YES    name
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  1  ¦  idx4  ¦  1  ¦  name  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦  YES  ¦    ¦    ¦    ¦    ¦  YES  ¦  name
+
+#SQL[@63,N78]Result[31, 28, 51]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx4";
-name    type    column_name
-idx4    MULTIPLE    name
-idx4    MULTIPLE    __mo_alias___mo_fake_pk_col
+name  ¦  type  ¦  column_name
+idx4  ¦  MULTIPLE  ¦  name
+idx4  ¦  MULTIPLE  ¦  __mo_alias___mo_fake_pk_col
+
+#SQL[@64,N33]Result[]
 insert into t1 values("Dora", 29);
+
+#SQL[@65,N31]Result[]
 alter table t1 drop column name;
+
+#SQL[@66,N18]Result[]
 show index from t1;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
+
+#SQL[@67,N78]Result[]
 select name, type, column_name from mo_catalog.mo_indexes mi where name="idx4";
-name    type    column_name
+
+#SQL[@68,N25]Result[]
 insert into t1 values(29);
+

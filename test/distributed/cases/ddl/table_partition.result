@@ -1,51 +1,150 @@
+#SQL[@1,N88]Result[]
 CREATE TABLE tp1 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY KEY(col3) PARTITIONS 4;
+
+#SQL[@2,N21]Result[23, 169]
 show create table tp1;
-Table    Create Table
-tp1    CREATE TABLE `tp1` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by key algorithm = 2 (`col3`) partitions 4
+Table  ¦  Create Table
+tp1  ¦  CREATE TABLE `tp1` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by key algorithm = 2 (`col3`) partitions 4
+
+#SQL[@3,N88]Result[]
 CREATE TABLE tp2 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY KEY(col3) PARTITIONS 4;
+
+#SQL[@4,N21]Result[23, 169]
 show create table tp2;
-Table    Create Table
-tp2    CREATE TABLE `tp2` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by key algorithm = 2 (`col3`) partitions 4
+Table  ¦  Create Table
+tp2  ¦  CREATE TABLE `tp2` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by key algorithm = 2 (`col3`) partitions 4
+
+#SQL[@6,N95]Result[]
 CREATE TABLE tp3 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY LINEAR KEY(col3) PARTITIONS 5;
+
+#SQL[@7,N21]Result[23, 176]
 show create table tp3;
-Table    Create Table
-tp3    CREATE TABLE `tp3` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by linear key algorithm = 2 (`col3`) partitions 5
+Table  ¦  Create Table
+tp3  ¦  CREATE TABLE `tp3` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by linear key algorithm = 2 (`col3`) partitions 5
+
+#SQL[@8,N103]Result[]
 CREATE TABLE tp4 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY KEY ALGORITHM = 1 (col3) PARTITIONS 5;
+
+#SQL[@9,N21]Result[23, 169]
 show create table tp4;
-Table    Create Table
-tp4    CREATE TABLE `tp4` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by key algorithm = 1 (`col3`) partitions 5
+Table  ¦  Create Table
+tp4  ¦  CREATE TABLE `tp4` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by key algorithm = 1 (`col3`) partitions 5
+
+#SQL[@10,N110]Result[]
 CREATE TABLE tp5 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY LINEAR KEY ALGORITHM = 1 (col3) PARTITIONS 5;
+
+#SQL[@11,N21]Result[23, 176]
 show create table tp5;
-Table    Create Table
-tp5    CREATE TABLE `tp5` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by linear key algorithm = 1 (`col3`) partitions 5
+Table  ¦  Create Table
+tp5  ¦  CREATE TABLE `tp5` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by linear key algorithm = 1 (`col3`) partitions 5
+
+#SQL[@12,N94]Result[]
 CREATE TABLE tp6 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY KEY(col1, col2) PARTITIONS 4;
+
+#SQL[@13,N21]Result[23, 177]
 show create table tp6;
-Table    Create Table
-tp6    CREATE TABLE `tp6` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by key algorithm = 2 (`col1`, `col2`) partitions 4
+Table  ¦  Create Table
+tp6  ¦  CREATE TABLE `tp6` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by key algorithm = 2 (`col1`, `col2`) partitions 4
+
+#SQL[@14,N142]Result[]
 CREATE TABLE tp7 (col1 INT NOT NULL PRIMARY KEY, col2 DATE NOT NULL, col3 INT NOT NULL, col4 INT NOT NULL) PARTITION BY KEY(col1) PARTITIONS 4;
+
+#SQL[@15,N21]Result[23, 200]
 show create table tp7;
-Table    Create Table
-tp7    CREATE TABLE `tp7` (\n  `col1` int NOT NULL,\n  `col2` date NOT NULL,\n  `col3` int NOT NULL,\n  `col4` int NOT NULL,\n  PRIMARY KEY (`col1`)\n) partition by key algorithm = 2 (`col1`) partitions 4
+Table  ¦  Create Table
+tp7  ¦  CREATE TABLE `tp7` (
+  `col1` int NOT NULL,
+  `col2` date NOT NULL,
+  `col3` int NOT NULL,
+  `col4` int NOT NULL,
+  PRIMARY KEY (`col1`)
+) partition by key algorithm = 2 (`col1`) partitions 4
+
+#SQL[@16,N78]Result[]
 CREATE TABLE tp8 (col1 INT, col2 CHAR(5)) PARTITION BY HASH(col1) PARTITIONS 4;
+
+#SQL[@17,N21]Result[23, 128]
 show create table tp8;
-Table    Create Table
-tp8    CREATE TABLE `tp8` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL\n) partition by hash (`col1`) partitions 4
+Table  ¦  Create Table
+tp8  ¦  CREATE TABLE `tp8` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL
+) partition by hash (`col1`) partitions 4
+
+#SQL[@18,N78]Result[]
 CREATE TABLE tp9 (col1 INT, col2 CHAR(5)) PARTITION BY HASH(col1) PARTITIONS 4;
+
+#SQL[@19,N21]Result[23, 128]
 show create table tp9;
-Table    Create Table
-tp9    CREATE TABLE `tp9` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL\n) partition by hash (`col1`) partitions 4
+Table  ¦  Create Table
+tp9  ¦  CREATE TABLE `tp9` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL
+) partition by hash (`col1`) partitions 4
+
+#SQL[@20,N101]Result[]
 CREATE TABLE tp10 (col1 INT, col2 CHAR(5), col3 DATETIME) PARTITION BY HASH (YEAR(col3)) PARTITIONS 4;
+
+#SQL[@21,N22]Result[23, 168]
 show create table tp10;
-Table    Create Table
-tp10    CREATE TABLE `tp10` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` datetime DEFAULT NULL\n) partition by hash (YEAR(`col3`)) partitions 4
+Table  ¦  Create Table
+tp10  ¦  CREATE TABLE `tp10` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` datetime DEFAULT NULL
+) partition by hash (YEAR(`col3`)) partitions 4
+
+#SQL[@22,N104]Result[]
 CREATE TABLE tp11 (col1 INT, col2 CHAR(5), col3 DATE) PARTITION BY LINEAR HASH( YEAR(col3)) PARTITIONS 6;
+
+#SQL[@23,N22]Result[23, 171]
 show create table tp11;
-Table    Create Table
-tp11    CREATE TABLE `tp11` (\n  `col1` int DEFAULT NULL,\n  `col2` char(5) DEFAULT NULL,\n  `col3` date DEFAULT NULL\n) partition by linear hash (YEAR(`col3`)) partitions 6
+Table  ¦  Create Table
+tp11  ¦  CREATE TABLE `tp11` (
+  `col1` int DEFAULT NULL,
+  `col2` char(5) DEFAULT NULL,
+  `col3` date DEFAULT NULL
+) partition by linear hash (YEAR(`col3`)) partitions 6
+
+#SQL[@24,N144]Result[]
 CREATE TABLE tp12 (col1 INT NOT NULL PRIMARY KEY, col2 DATE NOT NULL, col3 INT NOT NULL, col4 INT NOT NULL) PARTITION BY HASH(col1) PARTITIONS 4;
+
+#SQL[@25,N22]Result[23, 189]
 show create table tp12;
-Table    Create Table
-tp12    CREATE TABLE `tp12` (\n  `col1` int NOT NULL,\n  `col2` date NOT NULL,\n  `col3` int NOT NULL,\n  `col4` int NOT NULL,\n  PRIMARY KEY (`col1`)\n) partition by hash (`col1`) partitions 4
+Table  ¦  Create Table
+tp12  ¦  CREATE TABLE `tp12` (
+  `col1` int NOT NULL,
+  `col2` date NOT NULL,
+  `col3` int NOT NULL,
+  `col4` int NOT NULL,
+  PRIMARY KEY (`col1`)
+) partition by hash (`col1`) partitions 4
+
+#SQL[@26,N391]Result[]
 CREATE TABLE tp13 (
 id INT NOT NULL PRIMARY KEY,
 fname VARCHAR(30),
@@ -61,9 +160,22 @@ PARTITION p1 VALUES LESS THAN (11),
 PARTITION p2 VALUES LESS THAN (16),
 PARTITION p3 VALUES LESS THAN (21)
 );
+
+#SQL[@41,N22]Result[23, 467]
 show create table tp13;
-Table    Create Table
-tp13    CREATE TABLE `tp13` (\n  `id` int NOT NULL,\n  `fname` varchar(30) DEFAULT NULL,\n  `lname` varchar(30) DEFAULT NULL,\n  `hired` date NOT NULL DEFAULT '1970-01-01',\n  `separated` date NOT NULL DEFAULT '9999-12-31',\n  `job_code` int NOT NULL,\n  `store_id` int NOT NULL,\n  PRIMARY KEY (`id`)\n) partition by range (`id`) (partition p0 values less than (6), partition p1 values less than (11), partition p2 values less than (16), partition p3 values less than (21))
+Table  ¦  Create Table
+tp13  ¦  CREATE TABLE `tp13` (
+  `id` int NOT NULL,
+  `fname` varchar(30) DEFAULT NULL,
+  `lname` varchar(30) DEFAULT NULL,
+  `hired` date NOT NULL DEFAULT '1970-01-01',
+  `separated` date NOT NULL DEFAULT '9999-12-31',
+  `job_code` int NOT NULL,
+  `store_id` int NOT NULL,
+  PRIMARY KEY (`id`)
+) partition by range (`id`) (partition p0 values less than (6), partition p1 values less than (11), partition p2 values less than (16), partition p3 values less than (21))
+
+#SQL[@42,N387]Result[]
 CREATE TABLE tp14 (
 id INT NOT NULL,
 fname VARCHAR(30),
@@ -79,9 +191,21 @@ PARTITION p1 VALUES LESS THAN (1996),
 PARTITION p2 VALUES LESS THAN (2001),
 PARTITION p3 VALUES LESS THAN MAXVALUE
 );
+
+#SQL[@57,N22]Result[23, 479]
 show create table tp14;
-Table    Create Table
-tp14    CREATE TABLE `tp14` (\n  `id` int NOT NULL,\n  `fname` varchar(30) DEFAULT NULL,\n  `lname` varchar(30) DEFAULT NULL,\n  `hired` date NOT NULL DEFAULT '1970-01-01',\n  `separated` date NOT NULL DEFAULT '9999-12-31',\n  `job_code` int DEFAULT NULL,\n  `store_id` int DEFAULT NULL\n) partition by range (YEAR(`separated`)) (partition p0 values less than (1991), partition p1 values less than (1996), partition p2 values less than (2001), partition p3 values less than (MAXVALUE))
+Table  ¦  Create Table
+tp14  ¦  CREATE TABLE `tp14` (
+  `id` int NOT NULL,
+  `fname` varchar(30) DEFAULT NULL,
+  `lname` varchar(30) DEFAULT NULL,
+  `hired` date NOT NULL DEFAULT '1970-01-01',
+  `separated` date NOT NULL DEFAULT '9999-12-31',
+  `job_code` int DEFAULT NULL,
+  `store_id` int DEFAULT NULL
+) partition by range (YEAR(`separated`)) (partition p0 values less than (1991), partition p1 values less than (1996), partition p2 values less than (2001), partition p3 values less than (MAXVALUE))
+
+#SQL[@58,N291]Result[]
 CREATE TABLE tp16 (
 id   INT PRIMARY KEY,
 name VARCHAR(35),
@@ -93,9 +217,18 @@ PARTITION r1 VALUES IN (2, 6, 10, 14, 18, 22),
 PARTITION r2 VALUES IN (3, 7, 11, 15, 19, 23),
 PARTITION r3 VALUES IN (4, 8, 12, 16, 20, 24)
 );
+
+#SQL[@69,N22]Result[23, 358]
 show create table tp16;
-Table    Create Table
-tp16    CREATE TABLE `tp16` (\n  `id` int NOT NULL,\n  `name` varchar(35) DEFAULT NULL,\n  `age` int unsigned DEFAULT NULL,\n  PRIMARY KEY (`id`)\n) partition by list (`id`) (partition r0 values in (1, 5, 9, 13, 17, 21), partition r1 values in (2, 6, 10, 14, 18, 22), partition r2 values in (3, 7, 11, 15, 19, 23), partition r3 values in (4, 8, 12, 16, 20, 24))
+Table  ¦  Create Table
+tp16  ¦  CREATE TABLE `tp16` (
+  `id` int NOT NULL,
+  `name` varchar(35) DEFAULT NULL,
+  `age` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) partition by list (`id`) (partition r0 values in (1, 5, 9, 13, 17, 21), partition r1 values in (2, 6, 10, 14, 18, 22), partition r2 values in (3, 7, 11, 15, 19, 23), partition r3 values in (4, 8, 12, 16, 20, 24))
+
+#SQL[@70,N279]Result[]
 CREATE TABLE tp17 (
 id   INT,
 name VARCHAR(35),
@@ -107,9 +240,17 @@ PARTITION r1 VALUES IN (2, 6, 10, 14, 18, 22),
 PARTITION r2 VALUES IN (3, 7, 11, 15, 19, 23),
 PARTITION r3 VALUES IN (4, 8, 12, 16, 20, 24)
 );
+
+#SQL[@81,N22]Result[23, 340]
 show create table tp17;
-Table    Create Table
-tp17    CREATE TABLE `tp17` (\n  `id` int DEFAULT NULL,\n  `name` varchar(35) DEFAULT NULL,\n  `age` int unsigned DEFAULT NULL\n) partition by list (`id`) (partition r0 values in (1, 5, 9, 13, 17, 21), partition r1 values in (2, 6, 10, 14, 18, 22), partition r2 values in (3, 7, 11, 15, 19, 23), partition r3 values in (4, 8, 12, 16, 20, 24))
+Table  ¦  Create Table
+tp17  ¦  CREATE TABLE `tp17` (
+  `id` int DEFAULT NULL,
+  `name` varchar(35) DEFAULT NULL,
+  `age` int unsigned DEFAULT NULL
+) partition by list (`id`) (partition r0 values in (1, 5, 9, 13, 17, 21), partition r1 values in (2, 6, 10, 14, 18, 22), partition r2 values in (3, 7, 11, 15, 19, 23), partition r3 values in (4, 8, 12, 16, 20, 24))
+
+#SQL[@82,N140]Result[]
 CREATE TABLE tp19 (
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -118,9 +259,19 @@ col4 INT NOT NULL
 )
 PARTITION BY KEY(col3)
 PARTITIONS 4;
+
+#SQL[@90,N22]Result[23, 208]
 show create table tp19;
-Table    Create Table
-tp19    CREATE TABLE `tp19` (\n  `col1` int NOT NULL,\n  `col2` date NOT NULL,\n  `col3` int NOT NULL,\n  `col4` int NOT NULL,\n  UNIQUE KEY `col3` (`col3`)\n) partition by key algorithm = 2 (`col3`) partitions 4
+Table  ¦  Create Table
+tp19  ¦  CREATE TABLE `tp19` (
+  `col1` int NOT NULL,
+  `col2` date NOT NULL,
+  `col3` int NOT NULL,
+  `col4` int NOT NULL,
+  UNIQUE KEY `col3` (`col3`)
+) partition by key algorithm = 2 (`col3`) partitions 4
+
+#SQL[@92,N141]Result[]
 CREATE TABLE tp20 (
 col1 INT NOT NULL,
 col2 DATE NOT NULL,
@@ -129,96 +280,201 @@ col4 INT NOT NULL
 )
 PARTITION BY HASH(col3)
 PARTITIONS 4;
+
+#SQL[@100,N22]Result[23, 195]
 show create table tp20;
-Table    Create Table
-tp20    CREATE TABLE `tp20` (\n  `col1` int NOT NULL,\n  `col2` date NOT NULL,\n  `col3` int NOT NULL,\n  `col4` int NOT NULL,\n  UNIQUE KEY `col3` (`col3`)\n) partition by hash (`col3`) partitions 4
+Table  ¦  Create Table
+tp20  ¦  CREATE TABLE `tp20` (
+  `col1` int NOT NULL,
+  `col2` date NOT NULL,
+  `col3` int NOT NULL,
+  `col4` int NOT NULL,
+  UNIQUE KEY `col3` (`col3`)
+) partition by hash (`col3`) partitions 4
+
+#SQL[@102,N14]Result[]
 drop table tp1;
+
+#SQL[@103,N14]Result[]
 drop table tp2;
+
+#SQL[@104,N14]Result[]
 drop table tp3;
+
+#SQL[@105,N14]Result[]
 drop table tp4;
+
+#SQL[@106,N14]Result[]
 drop table tp5;
+
+#SQL[@107,N14]Result[]
 drop table tp6;
+
+#SQL[@108,N14]Result[]
 drop table tp7;
+
+#SQL[@109,N14]Result[]
 drop table tp8;
+
+#SQL[@110,N14]Result[]
 drop table tp9;
+
+#SQL[@111,N15]Result[]
 drop table tp10;
+
+#SQL[@112,N15]Result[]
 drop table tp11;
+
+#SQL[@113,N15]Result[]
 drop table tp12;
+
+#SQL[@114,N15]Result[]
 drop table tp13;
+
+#SQL[@115,N15]Result[]
 drop table tp14;
+
+#SQL[@116,N15]Result[]
 drop table tp16;
+
+#SQL[@117,N15]Result[]
 drop table tp17;
+
+#SQL[@118,N15]Result[]
 drop table tp19;
+
+#SQL[@119,N15]Result[]
 drop table tp20;
+
+#SQL[@120,N28]Result[]
 drop database if exists test;
+
+#SQL[@121,N20]Result[]
 create database test;
+
+#SQL[@122,N8]Result[]
 use test;
+
+#SQL[@124,N57]Result[]
 /*!40101 SET @saved_cs_client = @@character_set_client */;
+
+#SQL[@125,N46]Result[]
 /*!50503 SET character_set_client = utf8mb4 */;
+
+#SQL[@126,N2001]Result[]
 CREATE TABLE test01 (
-`id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',
-`pk_id` bigint NOT NULL COMMENT 'pk_id',
-`config_id` bigint NOT NULL COMMENT 'config_id',
-`trace_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-`type` varchar(8) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'message_type',
-`data` varchar(1024) COLLATE utf8mb4_general_ci NOT NULL,
-`times` tinyint NOT NULL,
-`status` tinyint NOT NULL,
-`push_time` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`,`create_time`) USING BTREE,
-UNIQUE KEY (`trace_id`,`create_time`)
+                       `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',
+                       `pk_id` bigint NOT NULL COMMENT 'pk_id',
+                       `config_id` bigint NOT NULL COMMENT 'config_id',
+                       `trace_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+                       `type` varchar(8) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'message_type',
+                       `data` varchar(1024) COLLATE utf8mb4_general_ci NOT NULL,
+                       `times` tinyint NOT NULL,
+                       `status` tinyint NOT NULL,
+                       `push_time` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+                       `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                       `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                       PRIMARY KEY (`id`,`create_time`) USING BTREE,
+                       UNIQUE KEY (`trace_id`,`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=654 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='trace id'
 /*!50500 PARTITION BY RANGE  COLUMNS(create_time)
 (PARTITION p20240115 VALUES LESS THAN ('2024-01-15 00:00:00') ENGINE = InnoDB,
-PARTITION p20240116 VALUES LESS THAN ('2024-01-16 00:00:00') ENGINE = InnoDB,
-PARTITION p20240117 VALUES LESS THAN ('2024-01-17 00:00:00') ENGINE = InnoDB,
-PARTITION p20240118 VALUES LESS THAN ('2024-01-18 00:00:00') ENGINE = InnoDB,
-PARTITION p20240119 VALUES LESS THAN ('2024-01-19 00:00:00') ENGINE = InnoDB,
-PARTITION p20240120 VALUES LESS THAN ('2024-01-20 00:00:00') ENGINE = InnoDB,
-PARTITION p20240121 VALUES LESS THAN ('2024-01-21 00:00:00') ENGINE = InnoDB,
-PARTITION p20240122 VALUES LESS THAN ('2024-01-22 00:00:00') ENGINE = InnoDB,
-PARTITION p20240123 VALUES LESS THAN ('2024-01-23 00:00:00') ENGINE = InnoDB,
-PARTITION p20240124 VALUES LESS THAN ('2024-01-24 00:00:00') ENGINE = InnoDB,
-PARTITION p20240125 VALUES LESS THAN ('2024-01-25 00:00:00') ENGINE = InnoDB) */;
+ PARTITION p20240116 VALUES LESS THAN ('2024-01-16 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240117 VALUES LESS THAN ('2024-01-17 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240118 VALUES LESS THAN ('2024-01-18 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240119 VALUES LESS THAN ('2024-01-19 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240120 VALUES LESS THAN ('2024-01-20 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240121 VALUES LESS THAN ('2024-01-21 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240122 VALUES LESS THAN ('2024-01-22 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240123 VALUES LESS THAN ('2024-01-23 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240124 VALUES LESS THAN ('2024-01-24 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240125 VALUES LESS THAN ('2024-01-25 00:00:00') ENGINE = InnoDB) */;
+
+#SQL[@153,N55]Result[]
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+#SQL[@154,N24]Result[23, 1357]
 show create table test01;
-Table    Create Table
-test01    CREATE TABLE `test01` (\n  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',\n  `pk_id` bigint NOT NULL COMMENT 'pk_id',\n  `config_id` bigint NOT NULL COMMENT 'config_id',\n  `trace_id` varchar(255) NOT NULL,\n  `type` varchar(8) NOT NULL COMMENT 'message_type',\n  `data` varchar(1024) NOT NULL,\n  `times` tinyint NOT NULL,\n  `status` tinyint NOT NULL,\n  `push_time` varchar(255) NOT NULL,\n  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),\n  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`id`,`create_time`),\n  UNIQUE KEY `trace_id` (`trace_id`,`create_time`)\n) COMMENT='trace id' partition by range columns (`create_time`) (partition p20240115 values less than ('2024-01-15 00:00:00'), partition p20240116 values less than ('2024-01-16 00:00:00'), partition p20240117 values less than ('2024-01-17 00:00:00'), partition p20240118 values less than ('2024-01-18 00:00:00'), partition p20240119 values less than ('2024-01-19 00:00:00'), partition p20240120 values less than ('2024-01-20 00:00:00'), partition p20240121 values less than ('2024-01-21 00:00:00'), partition p20240122 values less than ('2024-01-22 00:00:00'), partition p20240123 values less than ('2024-01-23 00:00:00'), partition p20240124 values less than ('2024-01-24 00:00:00'), partition p20240125 values less than ('2024-01-25 00:00:00'))
+Table  ¦  Create Table
+test01  ¦  CREATE TABLE `test01` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',
+  `pk_id` bigint NOT NULL COMMENT 'pk_id',
+  `config_id` bigint NOT NULL COMMENT 'config_id',
+  `trace_id` varchar(255) NOT NULL,
+  `type` varchar(8) NOT NULL COMMENT 'message_type',
+  `data` varchar(1024) NOT NULL,
+  `times` tinyint NOT NULL,
+  `status` tinyint NOT NULL,
+  `push_time` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`id`,`create_time`),
+  UNIQUE KEY `trace_id` (`trace_id`,`create_time`)
+) COMMENT='trace id' partition by range columns (`create_time`) (partition p20240115 values less than ('2024-01-15 00:00:00'), partition p20240116 values less than ('2024-01-16 00:00:00'), partition p20240117 values less than ('2024-01-17 00:00:00'), partition p20240118 values less than ('2024-01-18 00:00:00'), partition p20240119 values less than ('2024-01-19 00:00:00'), partition p20240120 values less than ('2024-01-20 00:00:00'), partition p20240121 values less than ('2024-01-21 00:00:00'), partition p20240122 values less than ('2024-01-22 00:00:00'), partition p20240123 values less than ('2024-01-23 00:00:00'), partition p20240124 values less than ('2024-01-24 00:00:00'), partition p20240125 values less than ('2024-01-25 00:00:00'))
+
+#SQL[@155,N17]Result[]
 drop table test01;
+
+#SQL[@157,N57]Result[]
 /*!40101 SET @saved_cs_client = @@character_set_client */;
+
+#SQL[@158,N46]Result[]
 /*!50503 SET character_set_client = utf8mb4 */;
+
+#SQL[@159,N2002]Result[]
 CREATE TABLE test02 (
-`id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',
-`pk_id` bigint NOT NULL COMMENT 'pk_id',
-`config_id` bigint NOT NULL COMMENT 'config_id',
-`trace_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-`type` varchar(8) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'message_type',
-`data` varchar(1024) COLLATE utf8mb4_general_ci NOT NULL,
-`times` tinyint NOT NULL,
-`status` tinyint NOT NULL,
-`push_time` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-`create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-`update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (`id`,`create_time`) USING BTREE,
-UNIQUE KEY (`trace_id`,`create_time`)
+                        `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',
+                        `pk_id` bigint NOT NULL COMMENT 'pk_id',
+                        `config_id` bigint NOT NULL COMMENT 'config_id',
+                        `trace_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+                        `type` varchar(8) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'message_type',
+                        `data` varchar(1024) COLLATE utf8mb4_general_ci NOT NULL,
+                        `times` tinyint NOT NULL,
+                        `status` tinyint NOT NULL,
+                        `push_time` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+                        `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                        PRIMARY KEY (`id`,`create_time`) USING BTREE,
+                        UNIQUE KEY (`trace_id`,`create_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=654 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='trace id'
 PARTITION BY RANGE  COLUMNS(create_time)
 (PARTITION p20240115 VALUES LESS THAN ('2024-01-15 00:00:00') ENGINE = InnoDB,
-PARTITION p20240116 VALUES LESS THAN ('2024-01-16 00:00:00') ENGINE = InnoDB,
-PARTITION p20240117 VALUES LESS THAN ('2024-01-17 00:00:00') ENGINE = InnoDB,
-PARTITION p20240118 VALUES LESS THAN ('2024-01-18 00:00:00') ENGINE = InnoDB,
-PARTITION p20240119 VALUES LESS THAN ('2024-01-19 00:00:00') ENGINE = InnoDB,
-PARTITION p20240120 VALUES LESS THAN ('2024-01-20 00:00:00') ENGINE = InnoDB,
-PARTITION p20240121 VALUES LESS THAN ('2024-01-21 00:00:00') ENGINE = InnoDB,
-PARTITION p20240122 VALUES LESS THAN ('2024-01-22 00:00:00') ENGINE = InnoDB,
-PARTITION p20240123 VALUES LESS THAN ('2024-01-23 00:00:00') ENGINE = InnoDB,
-PARTITION p20240124 VALUES LESS THAN ('2024-01-24 00:00:00') ENGINE = InnoDB,
-PARTITION p20240125 VALUES LESS THAN ('2024-01-25 00:00:00') ENGINE = InnoDB);
+ PARTITION p20240116 VALUES LESS THAN ('2024-01-16 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240117 VALUES LESS THAN ('2024-01-17 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240118 VALUES LESS THAN ('2024-01-18 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240119 VALUES LESS THAN ('2024-01-19 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240120 VALUES LESS THAN ('2024-01-20 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240121 VALUES LESS THAN ('2024-01-21 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240122 VALUES LESS THAN ('2024-01-22 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240123 VALUES LESS THAN ('2024-01-23 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240124 VALUES LESS THAN ('2024-01-24 00:00:00') ENGINE = InnoDB,
+ PARTITION p20240125 VALUES LESS THAN ('2024-01-25 00:00:00') ENGINE = InnoDB);
+
+#SQL[@186,N55]Result[]
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+#SQL[@187,N24]Result[23, 1357]
 show create table test02;
-Table    Create Table
-test02    CREATE TABLE `test02` (\n  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',\n  `pk_id` bigint NOT NULL COMMENT 'pk_id',\n  `config_id` bigint NOT NULL COMMENT 'config_id',\n  `trace_id` varchar(255) NOT NULL,\n  `type` varchar(8) NOT NULL COMMENT 'message_type',\n  `data` varchar(1024) NOT NULL,\n  `times` tinyint NOT NULL,\n  `status` tinyint NOT NULL,\n  `push_time` varchar(255) NOT NULL,\n  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),\n  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`id`,`create_time`),\n  UNIQUE KEY `trace_id` (`trace_id`,`create_time`)\n) COMMENT='trace id' partition by range columns (`create_time`) (partition p20240115 values less than ('2024-01-15 00:00:00'), partition p20240116 values less than ('2024-01-16 00:00:00'), partition p20240117 values less than ('2024-01-17 00:00:00'), partition p20240118 values less than ('2024-01-18 00:00:00'), partition p20240119 values less than ('2024-01-19 00:00:00'), partition p20240120 values less than ('2024-01-20 00:00:00'), partition p20240121 values less than ('2024-01-21 00:00:00'), partition p20240122 values less than ('2024-01-22 00:00:00'), partition p20240123 values less than ('2024-01-23 00:00:00'), partition p20240124 values less than ('2024-01-24 00:00:00'), partition p20240125 values less than ('2024-01-25 00:00:00'))
+Table  ¦  Create Table
+test02  ¦  CREATE TABLE `test02` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT 'pk',
+  `pk_id` bigint NOT NULL COMMENT 'pk_id',
+  `config_id` bigint NOT NULL COMMENT 'config_id',
+  `trace_id` varchar(255) NOT NULL,
+  `type` varchar(8) NOT NULL COMMENT 'message_type',
+  `data` varchar(1024) NOT NULL,
+  `times` tinyint NOT NULL,
+  `status` tinyint NOT NULL,
+  `push_time` varchar(255) NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`id`,`create_time`),
+  UNIQUE KEY `trace_id` (`trace_id`,`create_time`)
+) COMMENT='trace id' partition by range columns (`create_time`) (partition p20240115 values less than ('2024-01-15 00:00:00'), partition p20240116 values less than ('2024-01-16 00:00:00'), partition p20240117 values less than ('2024-01-17 00:00:00'), partition p20240118 values less than ('2024-01-18 00:00:00'), partition p20240119 values less than ('2024-01-19 00:00:00'), partition p20240120 values less than ('2024-01-20 00:00:00'), partition p20240121 values less than ('2024-01-21 00:00:00'), partition p20240122 values less than ('2024-01-22 00:00:00'), partition p20240123 values less than ('2024-01-23 00:00:00'), partition p20240124 values less than ('2024-01-24 00:00:00'), partition p20240125 values less than ('2024-01-25 00:00:00'))
+
+#SQL[@188,N17]Result[]
 drop table test02;
+
+#SQL[@190,N18]Result[]
 drop database test;
+

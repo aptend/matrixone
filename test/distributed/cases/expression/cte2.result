@@ -1,66 +1,92 @@
+#SQL[@1,N32]Result[]
 drop database if exists cte_test;
+
+#SQL[@2,N24]Result[]
 create database cte_test;
+
+#SQL[@3,N12]Result[]
 use cte_test;
+
+#SQL[@4,N22]Result[]
 create table t1(a int);
+
+#SQL[@5,N29]Result[]
 insert into t1 values (1),(2);
+
+#SQL[@8,N89]Result[]
 create view v1 as
 with
-c as (
-select * from  t1
-)
+    c as (
+        select * from  t1
+    )
 select
-*
+    *
 from
-c;
+    c;
+
+#SQL[@18,N16]Result[1, 1, 1]
 select * from v1;
 a
 1
 2
+
+#SQL[@21,N144]Result[1, 1, 1, 1, 1]
 with
-c as (
-select * from t1
-)
+    c as (
+        select * from t1
+    )
 select
-*
+    *
 from
-(
-select * from c
-union all
-select * from v1
-)
+    (
+        select * from c
+        union all
+        select * from v1
+    )
 ;
 a
 1
 2
 1
 2
+
+#SQL[@37,N130]Result[]
 create view v2 as
 with
-v2 as (
-select a from t1
-)
+    v2 as (
+        select a from t1
+    )
 select distinct
-*
+    *
 from
-(
-select * from v2
-)
+    (
+        select * from v2
+    )
 ;
+
+#SQL[@50,N16]Result[1, 1, 1]
 select * from v2;
 a
 1
 2
+
+#SQL[@55,N99]Result[]
 create view v3 as
 with
-v3 as (
-select a from t1
-)
+    v3 as (
+        select a from t1
+    )
 select distinct
-*
+    *
 from
-v3;
+    v3;
+
+#SQL[@65,N16]Result[1, 1, 1]
 select * from v3;
 a
 1
 2
+
+#SQL[@67,N32]Result[]
 drop database if exists cte_test;
+

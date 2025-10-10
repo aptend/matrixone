@@ -1,222 +1,343 @@
+#SQL[@6,N23]Result[]
 drop table if exists t1;
+
+#SQL[@7,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@8,N45]Result[]
 insert into t1 values(null,null,null),(2,3,4);
+
+#SQL[@10,N46]Result[1, 4, 1]
 WITH qn AS (SELECT a FROM t1) SELECT * FROM qn;
 a
 null
 2
+
+#SQL[@11,N73]Result[1, 4, 1]
 WITH qn AS (SELECT a FROM t1), qn2 as (select b from t1)
 SELECT * FROM qn;
 a
 null
 2
+
+#SQL[@13,N74]Result[1, 4, 1]
 WITH qn AS (SELECT a FROM t1), qn2 as (select b from t1)
 SELECT * FROM qn2;
 b
 null
 3
+
+#SQL[@16,N72]Error[65]
 WITH qn AS (SELECT a FROM t1), qn as (select b from t1)
 SELECT 1 FROM qn;
-SQL syntax error: WITH query name "qn" specified more than once
+SQL syntax error: WITH query name \"qn\" specified more than once
+
+#SQL[@19,N53]Error[241]
 with test.qn as (select "with") select * from test.qn;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 10 near ".qn as (select "with") select * from test.qn;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 10 near \".qn as (select \"with\") select * from test.qn\";
+
+#SQL[@20,N81]Error[248]
 with qn as (select "with" as a)
 with qn2 as (select "with" as a)
 select a from qn;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 2 column 5 near "
-with qn2 as (select "with" as a)
-select a from qn;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 2 column 5 near \"\nwith qn2 as (select \"with\" as a)\nselect a from qn\";
+
+#SQL[@23,N219]Result[22, 34, 31]
 with qne as (select a from t1),
-qnm as (select a from t1),
-qnea as (select a from t1),
-qnma as (select a from t1)
+     qnm as (select a from t1),
+     qnea as (select a from t1),
+     qnma as (select a from t1)
 select qne.a,qnm.a,alias1.a,alias2.a
 from qne, qnm, qnea as alias1, qnma as alias2 limit 2;
-a	a	a	a
-null    null    null    null
-2    null    null    null
+a  ¦  a  ¦  a  ¦  a
+null  ¦  null  ¦  null  ¦  null
+2  ¦  null  ¦  null  ¦  null
+
+#SQL[@33,N23]Result[]
 drop table if exists t1;
+
+#SQL[@34,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@35,N45]Result[]
 insert into t1 values(null,null,null),(2,3,4);
+
+#SQL[@37,N73]Result[8, 14, 11, 11, 8]
 WITH qn AS (SELECT b as a FROM t1)
 SELECT qn.a, qn2.a  FROM qn, qn as qn2;
-a	a
-3	null
-null	null
-3	3
-null	3
+a  ¦  a
+null  ¦  null
+3  ¦  null
+null  ¦  3
+3  ¦  3
+
+#SQL[@39,N117]Result[8, 14, 11, 11, 8]
 WITH qn AS (SELECT b as a FROM t1),
 qn2 AS (SELECT c FROM t1 WHERE a IS NULL or a>0)
 SELECT qn.a, qn2.c  FROM qn, qn2;
-a	c
-null	4
-null	null
-3	4
-3	null
+a  ¦  c
+null  ¦  null
+3  ¦  null
+null  ¦  4
+3  ¦  4
+
+#SQL[@46,N23]Result[]
 drop table if exists t1;
+
+#SQL[@47,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@48,N45]Result[]
 insert into t1 values(null,null,null),(2,3,4);
+
+#SQL[@49,N83]Result[8, 4, 2]
 WITH qn AS (SELECT 10*a as a FROM t1),qn2 AS (SELECT 3*a FROM qn)
 SELECT * from qn2;
-3*a
+3 * qn.a
 null
 60
+
+#SQL[@52,N74]Result[1, 4, 1]
 WITH qn AS (SELECT a FROM t1), qn2 AS (SELECT a FROM qn)
 SELECT * from qn2;
 a
 null
 2
+
+#SQL[@55,N117]Result[8, 14, 11, 11, 8]
 WITH qn AS (SELECT b as a FROM t1),
 qn2 AS (SELECT a FROM qn WHERE a IS NULL or a>0)
 SELECT qn.a, qn2.a  FROM qn, qn2;
-a	a
-null	3
-null	null
-3	3
-3	null
+a  ¦  a
+null  ¦  null
+3  ¦  null
+null  ¦  3
+3  ¦  3
+
+#SQL[@59,N120]Result[1, 1]
 with qn0 as (select 1), qn1 as (select * from qn0), qn2 as (select 1), qn3 as (select 1 from qn1, qn2) select 1 from qn3;
 1
 1
+
+#SQL[@62,N107]Error[45]
 WITH qn2 AS (SELECT a FROM qn WHERE a IS NULL or a>0),
 qn AS (SELECT b as a FROM t1)
 SELECT qn2.a  FROM qn2;
-SQL parser error: table "qn" does not exist
+SQL parser error: table \"qn\" does not exist
+
+#SQL[@67,N105]Error[46]
 with qn1 as (with qn3 as (select * from qn2) select * from qn3),
-qn2 as (select 1)
+     qn2 as (select 1)
 select * from qn1;
-SQL parser error: table "qn2" does not exist
+SQL parser error: table \"qn2\" does not exist
+
+#SQL[@72,N106]Error[45]
 WITH qn2 AS (SELECT a FROM qn WHERE a IS NULL or a>0),
 qn AS (SELECT b as a FROM qn2)
 SELECT qn.a  FROM qn;
-SQL parser error: table "qn" does not exist
+SQL parser error: table \"qn\" does not exist
+
+#SQL[@79,N23]Result[]
 drop table if exists t1;
+
+#SQL[@80,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@81,N45]Result[]
 insert into t1 values(null,null,null),(2,3,4);
+
+#SQL[@82,N30]Result[1, 1]
 with qn as (select 1) select 2;
 2
 2
+
+#SQL[@87,N23]Result[]
 drop table if exists t1;
+
+#SQL[@88,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@89,N53]Result[]
 insert into t1 values(null,null,null),(2,3,4),(4,5,6);
+
+#SQL[@90,N60]Result[23, 1]
 with qn as (select * from t1) select (select max(a) from qn);
 (select max(a) from qn)
 4
+
+#SQL[@92,N130]Result[103, 4, 4, 4]
 SELECT (WITH qn AS (SELECT 10*a as a FROM t1),
-qn2 AS (SELECT 3*a AS b FROM qn)
-SELECT * from qn2 LIMIT 1)
+        qn2 AS (SELECT 3*a AS b FROM qn)
+        SELECT * from qn2 LIMIT 1)
 FROM t1;
 (with qn as (select 10 * a as a from t1), qn2 as (select 3 * a as b from qn) select * from qn2 limit 1)
 null
 null
 null
+
+#SQL[@97,N123]Result[1, 4, 2, 3]
 SELECT *
 FROM (WITH qn AS (SELECT 10*a as a FROM t1),
-qn2 AS (SELECT 3*a AS b FROM qn)
-SELECT * from qn2)
+      qn2 AS (SELECT 3*a AS b FROM qn)
+      SELECT * from qn2)
 AS dt;
 b
 null
 60
 120
+
+#SQL[@103,N121]Result[76, 11]
 with qn as (select * from t1 limit 10)
 select (select max(a) from qn where a=0),
-(select min(b) from qn where b=3);
-(select max(a) from qn where a=0)	(select min(b) from qn where b=3)
-null	3
+       (select min(b) from qn where b=3);
+(select max(a) from qn where a = 0)  ¦  (select min(b) from qn where b = 3)
+null  ¦  3
+
+#SQL[@107,N31]Result[]
 drop table if exists sales_days;
+
+#SQL[@108,N53]Result[]
 create table sales_days(day_of_sale DATE, amount INT);
+
+#SQL[@109,N149]Result[]
 insert into sales_days values('2015-01-02', 100), ('2015-01-05', 200),('2015-02-02', 10),  ('2015-02-10', 100),('2015-03-02', 10),  ('2015-03-18', 1);
+
+#SQL[@111,N502]Result[27, 20, 20]
 with sales_by_month(month,total) as
-(select month(day_of_sale), sum(amount) from sales_days
-where year(day_of_sale)=2015
-group by month(day_of_sale)),
-best_month(month, total, award) as
-(select month, total, "best" from sales_by_month
-where total=(select max(total) from sales_by_month)),
-worst_month(month, total, award) as
-(select month, total, "worst" from sales_by_month
-where total=(select min(total) from sales_by_month))
-select * from best_month union all select * from worst_month;
-month	total	award
-1	300	best
-3	11	worst
+ (select month(day_of_sale), sum(amount) from sales_days
+  where year(day_of_sale)=2015
+  group by month(day_of_sale)),
+ best_month(month, total, award) as
+ (select month, total, "best" from sales_by_month
+  where total=(select max(total) from sales_by_month)),
+ worst_month(month, total, award) as
+ (select month, total, "worst" from sales_by_month
+  where total=(select min(total) from sales_by_month))
+ select * from best_month union all select * from worst_month;
+month  ¦  total  ¦  award
+1  ¦  300  ¦  best
+3  ¦  11  ¦  worst
+
+#SQL[@123,N31]Result[]
 drop table if exists sales_days;
+
+#SQL[@125,N23]Result[]
 drop table if exists t1;
+
+#SQL[@126,N22]Result[]
 create table t1(a int);
+
+#SQL[@127,N28]Result[]
 insert into t1 values(1),(2);
+
+#SQL[@129,N114]Result[1, 1, 1]
 with qn(a) as (select 1 from t1 limit 2)
 select * from qn where qn.a=(select * from qn qn1 limit 1) union select 2;
 a
-1
 2
+1
+
+#SQL[@135,N23]Result[]
 drop table if exists t1;
+
+#SQL[@136,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@137,N53]Result[]
 insert into t1 values(null,null,null),(2,3,4),(4,5,6);
+
+#SQL[@138,N95]Result[9, 11, 11, 11]
 with qn as
-(with qn2 as (select "qn2" as a from t1) select "qn", a from qn2)
+  (with qn2 as (select "qn2" as a from t1) select "qn", a from qn2)
 select * from qn;
-qn	a
-qn	qn2
-qn	qn2
-qn	qn2
-SELECT (WITH qn AS (SELECT t2.a*a as a FROM t1),
-qn2 AS (SELECT 3*a AS b FROM qn)
-SELECT * from qn2 LIMIT 1)
-FROM t1 as t2;
-(WITH qn AS (SELECT t2.a*a as a FROM t1),
-qn2 AS (SELECT 3*a AS b FROM qn)
-SELECT * from qn2 LIMIT 1)
-null
-null
-null
+qn  ¦  a
+qn  ¦  qn2
+qn  ¦  qn2
+qn  ¦  qn2
+
+#SQL[@148,N135]Error[55]
 WITH qn AS (SELECT b as a FROM t1)
 SELECT (WITH qn2 AS (SELECT a FROM qn WHERE a IS NULL or a>0)
-SELECT qn2.a FROM qn2) FROM qn;
+        SELECT qn2.a FROM qn2) FROM qn;
 internal error: scalar subquery returns more than 1 row
+
+#SQL[@152,N112]Result[56, 16]
 WITH qn AS (select "outer" as a)
 SELECT (WITH qn AS (SELECT "inner" as a) SELECT a from qn),
-qn.a
+       qn.a
 FROM qn;
-(WITH qn AS (SELECT "inner" as a) SELECT a from qn)	a
-inner	outer
+(with qn as (select inner as a) select a from qn)  ¦  a
+inner  ¦  outer
+
+#SQL[@160,N23]Result[]
 drop table if exists t1;
+
+#SQL[@161,N23]Result[]
 drop table if exists t2;
+
+#SQL[@162,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@163,N22]Result[]
 create table t2(a int);
+
+#SQL[@164,N53]Result[]
 insert into t1 values(null,null,null),(2,3,4),(4,5,6);
+
+#SQL[@165,N116]Result[]
 INSERT INTO t2
 WITH qn AS (SELECT 10*a as a FROM t1),
-qn2 AS (SELECT 3*a AS b FROM qn)
-SELECT * from qn2;
+      qn2 AS (SELECT 3*a AS b FROM qn)
+      SELECT * from qn2;
+
+#SQL[@169,N16]Result[1, 4, 2, 3]
 SELECT * FROM t2;
 a
 null
 60
 120
+
+#SQL[@170,N23]Result[]
 drop table if exists t1;
+
+#SQL[@171,N23]Result[]
 drop table if exists t2;
+
+#SQL[@176,N23]Result[]
 drop table if exists t1;
+
+#SQL[@177,N23]Result[]
 drop table if exists t2;
+
+#SQL[@178,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@179,N53]Result[]
 insert into t1 values(null,null,null),(2,3,4),(4,5,6);
+
+#SQL[@180,N57]Result[1, 4, 1, 1]
 with qn as (select a from t1 order by 1)
 select a from qn;
 a
 null
 2
 4
+
+#SQL[@183,N70]Result[1, 4, 1, 1, 4, 1, 1, 4, 1, 1]
 with qn as (select a from t1 order by 1)
 select qn.a from qn, t1 as t2;
 a
 null
+2
+4
 null
+2
+4
 null
 2
-2
-2
 4
-4
-4
+
+#SQL[@186,N79]Result[1, 4, 4, 4, 1, 1, 1, 1, 1, 1]
 with qn as (select a from t1 order by 1 limit 10)
 select qn.a from qn, t1 as t2;
 a
@@ -229,180 +350,328 @@ null
 4
 4
 4
+
+#SQL[@192,N23]Result[]
 drop table if exists t1;
+
+#SQL[@193,N23]Result[]
 drop table if exists t2;
+
+#SQL[@194,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@195,N53]Result[]
 insert into t1 values(null,null,null),(2,3,4),(4,5,6);
+
+#SQL[@196,N60]Error[104]
 with qn as (select a, b from t1)
 select b from qn group by a;
-SQL syntax error: column "qn.b" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"qn.b\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@199,N70]Error[104]
 with qn as (select a, b from t1 where a=b)
 select b from qn group by a;
-SQL syntax error: column "qn.b" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"qn.b\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@202,N81]Error[104]
 with qn as (select a, sum(b) as s from t1 group by a)
 select s from qn group by a;
-SQL syntax error: column "qn.s" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"qn.s\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@208,N23]Result[]
 drop table if exists t1;
+
+#SQL[@209,N23]Result[]
 drop table if exists t2;
+
+#SQL[@210,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@211,N70]Result[]
 insert into t1 values(null,null,null),(2,3,4),(4,5,6),(4,5,6),(8,9,10);
+
+#SQL[@213,N49]Error[235]
 with qn () as (select 1) select * from qn, qn qn1;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 10 near ") as (select 1) select * from qn, qn qn1;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 10 near \") as (select 1) select * from qn, qn qn1\";
+
+#SQL[@214,N57]Error[78]
 with qn (foo, bar) as (select 1) select * from qn, qn qn1;
-SQL syntax error: table "qn" has 1 columns available but 2 columns specified
+SQL syntax error: table \"qn\" has 1 columns available but 2 columns specified
+
+#SQL[@215,N40]Error[48]
 with qn as (select 1,1) select * from qn;
 invalid input: ambiguous column reference 'qn.1'
+
+#SQL[@216,N48]Error[48]
 with qn as (select 1,1 from t1) select * from qn;
 invalid input: ambiguous column reference 'qn.1'
+
+#SQL[@217,N51]Error[50]
 with qn (foo, foo) as (select 1,2) select * from qn;
 invalid input: ambiguous column reference 'qn.foo'
+
+#SQL[@219,N59]Result[12, 8, 8, 8, 8, 8]
 with qn (foo, bar) as (select 1,1 from t1) select * from qn;
-foo	bar
-1	1
-1	1
-1	1
-1	1
-1	1
+foo  ¦  bar
+1  ¦  1
+1  ¦  1
+1  ¦  1
+1  ¦  1
+1  ¦  1
+
+#SQL[@220,N51]Result[12, 8]
 with qn (foo, bar) as (select 1,1) select * from qn;
-foo	bar
-1	1
+foo  ¦  bar
+1  ¦  1
+
+#SQL[@221,N76]Result[30, 22, 22, 22, 22]
 with qn (foo, bar) as (select 1, 2 from t1 limit 2) select * from qn, qn qn1;
-foo	bar	foo	bar
-1	2	1	2
-1	2	1	2
-1	2	1	2
-1	2	1	2
+foo  ¦  bar  ¦  foo  ¦  bar
+1  ¦  2  ¦  1  ¦  2
+1  ¦  2  ¦  1  ¦  2
+1  ¦  2  ¦  1  ¦  2
+1  ¦  2  ¦  1  ¦  2
+
+#SQL[@222,N91]Result[30, 22, 22, 22, 22]
 with qn (foo, bar) as (select 1 as col, 2 as coll from t1 limit 2) select * from qn, qn qn1;
-foo	bar	foo	bar
-1	2	1	2
-1	2	1	2
-1	2	1	2
-1	2	1	2
+foo  ¦  bar  ¦  foo  ¦  bar
+1  ¦  2  ¦  1  ¦  2
+1  ¦  2  ¦  1  ¦  2
+1  ¦  2  ¦  1  ¦  2
+1  ¦  2  ¦  1  ¦  2
+
+#SQL[@223,N138]Result[3, 4, 1, 1, 1, 1]
 with qn (foo, bar) as (select 1 as col, 2 as coll union
-select a,b from t1 order by col) select qn1.bar from qn qn1;
+                       select a,b from t1 order by col) select qn1.bar from qn qn1;
 bar
 null
 2
 3
 5
 9
+
+#SQL[@225,N77]Result[12, 14, 8]
 with qn (foo, bar) as (select a, b from t1 limit 2) select qn.bar,foo from qn;
-bar	foo
-null	null
-3	2
+bar  ¦  foo
+null  ¦  null
+3  ¦  2
+
+#SQL[@230,N23]Result[]
 drop table if exists t1;
+
+#SQL[@231,N23]Result[]
 drop table if exists t2;
+
+#SQL[@232,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@233,N42]Result[]
 create table t1 (s1 char(5), index s1(s1));
+
+#SQL[@234,N42]Result[]
 create table t2 (s1 char(5), index s1(s1));
+
+#SQL[@235,N42]Result[]
 insert into t1 values ('a1'),('a2'),('a3');
+
+#SQL[@236,N35]Result[]
 insert into t2 values ('a1'),('a2');
+
+#SQL[@237,N77]Result[35, 12, 12, 13]
 with qn as (SELECT s1 FROM t2)
 select s1, s1 = ANY (select * from qn) from t1;
-s1	s1 = ANY (select * from qn)
-a1	true
-a2	true
-a3	false
+s1  ¦  s1 = any (select * from qn)
+a1  ¦  true
+a2  ¦  true
+a3  ¦  false
+
+#SQL[@239,N77]Result[35, 12, 13, 13]
 with qn as (SELECT s1 FROM t2)
 select s1, s1 < ANY (select * from qn) from t1;
-s1	s1 < ANY (select * from qn)
-a1	true
-a2	false
-a3	false
+s1  ¦  s1 < any (select * from qn)
+a1  ¦  true
+a2  ¦  false
+a3  ¦  false
+
+#SQL[@241,N77]Result[35, 12, 12, 13]
 with qn as (SELECT s1 FROM t2)
 select s1, s1 = ANY (select * from qn) from t1;
-s1	s1 = ANY (select * from qn)
-a1	true
-a2	true
-a3	false
+s1  ¦  s1 = any (select * from qn)
+a1  ¦  true
+a2  ¦  true
+a3  ¦  false
+
+#SQL[@244,N23]Result[]
 drop table if exists t1;
+
+#SQL[@245,N23]Result[]
 drop table if exists t2;
+
+#SQL[@246,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@247,N23]Result[]
 create table t1 (a int);
+
+#SQL[@248,N30]Result[]
 create table t2 (a int, b int);
+
+#SQL[@249,N23]Result[]
 create table t3 (a int);
+
+#SQL[@250,N48]Result[]
 create table t4 (a int not null, b int not null);
+
+#SQL[@251,N25]Result[]
 insert into t1 values (2);
+
+#SQL[@252,N39]Result[]
 insert into t2 values (1,7),(2,7),(2,9);
+
+#SQL[@253,N39]Result[]
 insert into t4 values (4,8),(3,8),(5,9);
+
+#SQL[@254,N36]Result[]
 insert into t3 values(1),(0),(2),(9);
+
+#SQL[@255,N30]Result[]
 insert into t2 values (100, 5);
+
+#SQL[@256,N76]Result[1, 1]
 with qn as (select b from t2)
 select * from t3 where a in (select * from qn);
 a
 9
+
+#SQL[@259,N88]Result[1, 1]
 with qn as (select b from t2 where b > 7)
 select * from t3 where a in (select * from qn);
 a
 9
+
+#SQL[@262,N92]Result[1, 1, 1, 1]
 with qn as (select b from t2 where b > 7)
 select * from t3 where a not in (select * from qn);
 a
 1
 0
 2
+
+#SQL[@265,N23]Result[]
 drop table if exists t1;
+
+#SQL[@266,N23]Result[]
 drop table if exists t2;
+
+#SQL[@267,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@268,N23]Result[]
 DROP TABLE IF EXISTS t4;
+
+#SQL[@269,N23]Result[]
 DROP TABLE IF EXISTS t5;
+
+#SQL[@270,N23]Result[]
 DROP TABLE IF EXISTS t6;
+
+#SQL[@271,N23]Result[]
 DROP TABLE IF EXISTS t7;
+
+#SQL[@272,N23]Result[]
 create table t1 (a int);
+
+#SQL[@273,N30]Result[]
 create table t2 (a int, b int);
+
+#SQL[@274,N23]Result[]
 create table t3 (a int);
+
+#SQL[@275,N48]Result[]
 create table t4 (a int not null, b int not null);
+
+#SQL[@276,N25]Result[]
 insert into t1 values (2);
+
+#SQL[@277,N33]Result[]
 insert into t2 values (1,7),(2,7);
+
+#SQL[@278,N39]Result[]
 insert into t4 values (4,8),(3,8),(5,9);
+
+#SQL[@279,N33]Result[]
 insert into t3 values (6),(7),(3);
+
+#SQL[@280,N94]Error[55]
 with qn as (select * from t2 where t2.b=t3.a)
 select * from t3 where exists (select * from qn);
 invalid input: missing FROM-clause entry for table 't3'
+
+#SQL[@283,N98]Error[55]
 with qn as (select * from t2 where t2.b=t3.a)
 select * from t3 where not exists (select * from qn);
 invalid input: missing FROM-clause entry for table 't3'
+
+#SQL[@285,N23]Result[]
 drop table if exists t1;
+
+#SQL[@286,N23]Result[]
 drop table if exists t2;
+
+#SQL[@287,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@288,N23]Result[]
 DROP TABLE IF EXISTS t4;
+
+#SQL[@289,N23]Result[]
 DROP TABLE IF EXISTS t5;
+
+#SQL[@290,N23]Result[]
 DROP TABLE IF EXISTS t6;
+
+#SQL[@291,N23]Result[]
 DROP TABLE IF EXISTS t7;
+
+#SQL[@296,N24]Result[]
 drop table if exists `t`;
+
+#SQL[@297,N940]Result[]
 CREATE TABLE `t` (
-`c1` int(11) DEFAULT NULL,
-`c2` int(11) DEFAULT NULL,
-`c3` int(11) DEFAULT NULL,
-`c4` int(11) DEFAULT NULL,
-`c5` int(11) DEFAULT NULL,
-`c6` int(11) DEFAULT NULL,
-`c7` int(11) DEFAULT NULL,
-`c8` int(11) DEFAULT NULL,
-`c9` int(11) DEFAULT NULL,
-`c10` int(11) DEFAULT NULL,
-`c11` int(11) DEFAULT NULL,
-`c12` int(11) DEFAULT NULL,
-`c13` int(11) DEFAULT NULL,
-`c14` int(11) DEFAULT NULL,
-`c15` int(11) DEFAULT NULL,
-`c16` int(11) DEFAULT NULL,
-`c17` int(11) DEFAULT NULL,
-`c18` int(11) DEFAULT NULL,
-`c19` int(11) DEFAULT NULL,
-`c20` int(11) DEFAULT NULL,
-`c21` int(11) DEFAULT NULL,
-`c22` int(11) DEFAULT NULL,
-`c23` int(11) DEFAULT NULL,
-`c24` int(11) DEFAULT NULL,
-`c25` int(11) DEFAULT NULL,
-`c26` int(11) DEFAULT NULL,
-`c27` int(11) DEFAULT NULL,
-`c28` int(11) DEFAULT NULL,
-`c29` int(11) DEFAULT NULL,
-`c30` int(11) DEFAULT NULL,
-`c31` int(11) DEFAULT NULL
+  `c1` int(11) DEFAULT NULL,
+  `c2` int(11) DEFAULT NULL,
+  `c3` int(11) DEFAULT NULL,
+  `c4` int(11) DEFAULT NULL,
+  `c5` int(11) DEFAULT NULL,
+  `c6` int(11) DEFAULT NULL,
+  `c7` int(11) DEFAULT NULL,
+  `c8` int(11) DEFAULT NULL,
+  `c9` int(11) DEFAULT NULL,
+  `c10` int(11) DEFAULT NULL,
+  `c11` int(11) DEFAULT NULL,
+  `c12` int(11) DEFAULT NULL,
+  `c13` int(11) DEFAULT NULL,
+  `c14` int(11) DEFAULT NULL,
+  `c15` int(11) DEFAULT NULL,
+  `c16` int(11) DEFAULT NULL,
+  `c17` int(11) DEFAULT NULL,
+  `c18` int(11) DEFAULT NULL,
+  `c19` int(11) DEFAULT NULL,
+  `c20` int(11) DEFAULT NULL,
+  `c21` int(11) DEFAULT NULL,
+  `c22` int(11) DEFAULT NULL,
+  `c23` int(11) DEFAULT NULL,
+  `c24` int(11) DEFAULT NULL,
+  `c25` int(11) DEFAULT NULL,
+  `c26` int(11) DEFAULT NULL,
+  `c27` int(11) DEFAULT NULL,
+  `c28` int(11) DEFAULT NULL,
+  `c29` int(11) DEFAULT NULL,
+  `c30` int(11) DEFAULT NULL,
+  `c31` int(11) DEFAULT NULL
 );
+
+#SQL[@330,N1334]Result[]
 with qn as (select * from t limit 2)
 select
 (select max(c1) from qn where qn.c1=1),
@@ -436,5 +705,7 @@ select
 (select max(c29) from qn where qn.c29=1),
 (select max(c30) from qn where qn.c30=1),
 (select max(c31) from qn where qn.c31=1) from qn;
-(select max(c1) from qn where qn.c1=1)	(select max(c2) from qn where qn.c2=1)	(select max(c3) from qn where qn.c3=1)	(select max(c4) from qn where qn.c4=1)	(select max(c5) from qn where qn.c5=1)	(select max(c6) from qn where qn.c6=1)	(select max(c7) from qn where qn.c7=1)	(select max(c8) from qn where qn.c8=1)	(select max(c9) from qn where qn.c9=1)	(select max(c10) from qn where qn.c10=1)	(select max(c11) from qn where qn.c11=1)	(select max(c12) from qn where qn.c12=1)	(select max(c13) from qn where qn.c13=1)	(select max(c14) from qn where qn.c14=1)	(select max(c15) from qn where qn.c15=1)	(select max(c16) from qn where qn.c16=1)	(select max(c17) from qn where qn.c17=1)	(select max(c18) from qn where qn.c18=1)	(select max(c19) from qn where qn.c19=1)	(select max(c20) from qn where qn.c20=1)	(select max(c21) from qn where qn.c21=1)	(select max(c22) from qn where qn.c22=1)	(select max(c23) from qn where qn.c23=1)	(select max(c24) from qn where qn.c24=1)	(select max(c25) from qn where qn.c25=1)	(select max(c26) from qn where qn.c26=1)	(select max(c27) from qn where qn.c27=1)	(select max(c28) from qn where qn.c28=1)	(select max(c29) from qn where qn.c29=1)	(select max(c30) from qn where qn.c30=1)	(select max(c31) from qn where qn.c31=1)
+
+#SQL[@363,N24]Result[]
 drop table if exists `t`;
+

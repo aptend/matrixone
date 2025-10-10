@@ -1,36 +1,72 @@
+#SQL[@1,N30]Result[]
 SET @val = CAST(0 AS UNSIGNED);
+
+#SQL[@2,N11]Result[4, 1]
 select @val;
 @val
 0
+
+#SQL[@4,N26]Result[]
 SET @val = CAST(0 AS bool);
+
+#SQL[@5,N11]Result[4, 5]
 select @val;
 @val
 false
+
+#SQL[@7,N29]Result[]
 SET @val = CAST(0 AS varchar);
+
+#SQL[@8,N11]Result[4, 1]
 select @val;
 @val
 0
+
+#SQL[@10,N26]Result[]
 SET @val = CAST(0 AS char);
+
+#SQL[@11,N11]Result[4, 1]
 select @val;
 @val
 0
+
+#SQL[@13,N37]Result[]
 SET @val = CAST("2022-10-10" AS date);
+
+#SQL[@14,N11]Result[4, 10]
 select @val;
 @val
 2022-10-10
+
+#SQL[@15,N41]Result[]
 SET @val = CAST("2022-10-10" AS datetime);
+
+#SQL[@16,N11]Result[4, 19]
 select @val;
 @val
 2022-10-10 00:00:00
+
+#SQL[@17,N42]Result[]
 SET @val = CAST("2022-10-10" AS timestamp);
+
+#SQL[@18,N11]Result[4, 19]
 select @val;
 @val
 2022-10-10 00:00:00
+
+#SQL[@20,N28]Result[]
 SET @val = CAST('0' AS text);
+
+#SQL[@21,N11]Result[4, 1]
 select @val;
 @val
 0
+
+#SQL[@23,N28]Result[]
 SET @val = CAST('0' AS blob);
+
+#SQL[@24,N11]Result[4, 1]
 select @val;
 @val
 0
+

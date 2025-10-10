@@ -138,12 +138,12 @@ insert into t1 values(null,null,null),(2,3,4),(4,5,6);
 with qn as
   (with qn2 as (select "qn2" as a from t1) select "qn", a from qn2)
 select * from qn;
--- @bvt:issue#3307
-SELECT (WITH qn AS (SELECT t2.a*a as a FROM t1),
-        qn2 AS (SELECT 3*a AS b FROM qn)
-        SELECT * from qn2 LIMIT 1)
-FROM t1 as t2;
--- @bvt:issue
+@issue(no=3307) {
+    SELECT (WITH qn AS (SELECT t2.a*a as a FROM t1),
+            qn2 AS (SELECT 3*a AS b FROM qn)
+            SELECT * from qn2 LIMIT 1)
+    FROM t1 as t2;
+}
 
 WITH qn AS (SELECT b as a FROM t1)
 SELECT (WITH qn2 AS (SELECT a FROM qn WHERE a IS NULL or a>0)

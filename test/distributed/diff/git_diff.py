@@ -40,6 +40,16 @@ class SmartDiff:
         # 标准化标点符号
         normalized = re.sub(r'\s*([(),;])\s*', r'\1', normalized)
         
+        # 转换为小写以忽略大小写差异
+        normalized = normalized.lower()
+        
+        # 标准化引号：将所有类型的引号统一处理
+        # 将所有单引号和双引号统一为单引号（或者可以选择统一去除）
+        normalized = normalized.replace('"', "'")
+        # 也可以处理中文引号
+        normalized = normalized.replace('"', "'").replace('"', "'")
+        normalized = normalized.replace(''', "'").replace(''', "'")
+        
         return normalized
     
     def parse_file(self, filepath: str) -> List[str]:
@@ -153,8 +163,8 @@ class SmartDiff:
         """判断是否是真正的数据差异，而不是格式差异"""
         if not diff['file1_lines'] or not diff['file2_lines']:
             # 检查是否是表头行
-            content = ' '.join(diff['file1_lines'] + diff['file2_lines']).strip()
-            if 'Table Non_unique Key_name' in content:
+            content = ' '.join(diff['file1_lines'] + diff['file2_lines']).strip().lower()
+            if 'table non_unique key_name' in content:
                 return False
             return True  # 新增或删除的内容
         
@@ -173,18 +183,28 @@ class SmartDiff:
         if content1_no_comment == content2_no_comment:
             return False
         
-        # 检查是否是引号转义差异
-        if (content1.replace('\\"', '"') == content2.replace('\\"', '"')):
-            return False
+        # 进一步标准化比较：忽略大小写和引号差异
+        def deep_normalize(text: str) -> str:
+            """深度标准化文本，用于最终比较"""
+            # 转换为小写
+            text = text.lower()
+            # 统一所有引号类型
+            text = text.replace('"', "'").replace('"', "'").replace('"', "'")
+            text = text.replace(''', "'").replace(''', "'")
+            # 移除引号转义
+            text = text.replace("\\'", "'").replace('\\"', "'")
+            # 移除分号等标点符号
+            text = text.replace(';', '').strip()
+            return text
         
-        # 检查是否是标点符号差异（分号、引号等）
-        content1_normalized = content1.replace(';', '').replace('\\"', '"').strip()
-        content2_normalized = content2.replace(';', '').replace('\\"', '"').strip()
-        if content1_normalized == content2_normalized:
+        # 深度标准化后比较
+        content1_deep = deep_normalize(content1)
+        content2_deep = deep_normalize(content2)
+        if content1_deep == content2_deep:
             return False
         
         # 检查是否是表头行
-        if 'Table Non_unique Key_name' in content1 or 'Table Non_unique Key_name' in content2:
+        if 'table non_unique key_name' in content1_deep or 'table non_unique key_name' in content2_deep:
             return False
         
         return True
@@ -355,7 +375,7 @@ class GitDiff:
 def main():
     parser = argparse.ArgumentParser(description='Git版本diff工具 - 比较文件与git历史版本')
     parser.add_argument('file', help='要比较的文件路径')
-    parser.add_argument('--commit', '-c', default='HEAD~1', help='要比较的git commit (默认: HEAD~1)')
+    parser.add_argument('--commit', '-c', default='HEAD', help='要比较的git commit (默认: HEAD)')
     parser.add_argument('--context', action='store_true', help='显示上下文信息')
     parser.add_argument('--verbose', '-v', action='store_true', help='详细输出')
     parser.add_argument('--history', action='store_true', help='显示文件的git提交历史')

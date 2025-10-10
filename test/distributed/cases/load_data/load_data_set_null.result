@@ -1,4 +1,7 @@
+#SQL[@1,N23]Result[]
 drop table if exists t1;
+
+#SQL[@2,N80]Result[]
 create table t1(
 col1 int,
 col2 varchar(100),
@@ -6,101 +9,174 @@ col3 float,
 col4 date,
 col5 text
 );
+
+#SQL[@10,N116]Error[64]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set a=nullif(col1,'1');
 invalid input: the nullif func first param must equal to colName
+
+#SQL[@12,N119]Error[64]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set col2=nullif(col3,'1');
 invalid input: the nullif func first param must equal to colName
+
+#SQL[@14,N93]Error[51]
 load data infile "$resources/load_data/not_exists.csv" into table t1 fields terminated by ',';
 invalid input: the file does not exist in load flow
+
+#SQL[@16,N119]Result[]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set col1=nullif(col1,'1');
+
+#SQL[@17,N16]Result[44, 41]
 select * from t1;
-col1    col2    col3    col4    col5
-null    1    1.0    1111-11-11    1
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+
+#SQL[@19,N119]Result[]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set col2=nullif(col2,'1');
+
+#SQL[@20,N16]Result[44, 41, 41]
 select * from t1;
-col1    col2    col3    col4    col5
-null    1    1.0    1111-11-11    1
-1    null    1.0    1111-11-11    1
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  null  ¦  1  ¦  1111-11-11  ¦  1
+
+#SQL[@22,N130]Error[64]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set col2=nullif(col3,'"1111-11-11"');
 invalid input: the nullif func first param must equal to colName
+
+#SQL[@23,N16]Result[44, 41, 41]
 select * from t1;
-col1    col2    col3    col4    col5
-null    1    1.0    1111-11-11    1
-1    null    1.0    1111-11-11    1
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  null  ¦  1  ¦  1111-11-11  ¦  1
+
+#SQL[@25,N119]Result[]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set col4=nullif(col4,'1');
+
+#SQL[@26,N16]Result[44, 41, 41, 38]
 select * from t1;
-col1    col2    col3    col4    col5
-null    1    1.0    1111-11-11    1
-1    null    1.0    1111-11-11    1
-1    1    1.0    1111-11-11    1
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  null  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+
+#SQL[@28,N210]Result[]
 load data infile "$resources/load_data/set_null_1.csv" into table t1 fields terminated by ',' set col1=nullif(col1,1), col2=nullif(col2,1),col3=nullif(col3,1) ,col4=nullif(col4,'1111-11-11'),col5=nullif(col5,1);
+
+#SQL[@29,N16]Result[44, 41, 41, 38, 44]
 select * from t1;
-col1    col2    col3    col4    col5
-null    1    1.0    1111-11-11    1
-1    null    1.0    1111-11-11    1
-1    1    1.0    1111-11-11    1
-null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  null  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@31,N210]Result[]
 load data infile "$resources/load_data/set_null_2.csv" into table t1 fields terminated by ',' set col1=nullif(col1,1), col2=nullif(col2,2),col3=nullif(col3,2) ,col4=nullif(col4,'1111-04-11'),col5=nullif(col5,5);
+
+#SQL[@32,N16]Result[44, 41, 41, 38, 44, 41, 44, 38, 32, 41, 38, 38, 38, 38, 42]
 select * from t1;
-col1    col2    col3    col4    col5
-null    1    1.0    1111-11-11    1
-1    null    1.0    1111-11-11    1
-1    1    1.0    1111-11-11    1
-null    null    null    null    null
-null    1    1.0    1111-11-11    1
-2    null    null    1111-02-11    2
-3    3    3.0    1111-03-11    3
-4    4    4.0    null    4
-5    5    5.0    1111-05-11    null
-6    6    6.0    1111-06-11    6
-7    7    7.0    1111-07-11    7
-8    8    8.0    1111-08-11    8
-9    9    9.0    1111-09-11    9
-10    10    10.0    1111-10-11    10
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  null  ¦  1  ¦  1111-11-11  ¦  1
+1  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+null  ¦  null  ¦  null  ¦  null  ¦  null
+null  ¦  1  ¦  1  ¦  1111-11-11  ¦  1
+2  ¦  null  ¦  null  ¦  1111-02-11  ¦  2
+3  ¦  3  ¦  3  ¦  1111-03-11  ¦  3
+4  ¦  4  ¦  4  ¦  null  ¦  4
+5  ¦  5  ¦  5  ¦  1111-05-11  ¦  null
+6  ¦  6  ¦  6  ¦  1111-06-11  ¦  6
+7  ¦  7  ¦  7  ¦  1111-07-11  ¦  7
+8  ¦  8  ¦  8  ¦  1111-08-11  ¦  8
+9  ¦  9  ¦  9  ¦  1111-09-11  ¦  9
+10  ¦  10  ¦  10  ¦  1111-10-11  ¦  10
+
+#SQL[@34,N13]Result[]
 drop table t1;
+
+#SQL[@36,N23]Result[]
 drop table if exists t2;
+
+#SQL[@37,N73]Result[]
 create table t2(
 col1 int primary key auto_increment,
 col2 varchar(100)
 );
+
+#SQL[@42,N122]Result[]
 load data infile "$resources/load_data/set_null_3.csv" into table t2 fields terminated by ',' set col1=nullif(col1,'null');
+
+#SQL[@43,N16]Result[14, 8, 8, 8, 8, 8, 8, 8, 11]
 select * from t2;
-col1    col2
-1    a
-2    b
-3    c
-4    d
-5    e
-6    f
-7    g
-8    null
+col1  ¦  col2
+1  ¦  a
+2  ¦  b
+3  ¦  c
+4  ¦  d
+5  ¦  e
+6  ¦  f
+7  ¦  g
+8  ¦  null
+
+#SQL[@44,N14]Result[]
 delete from t2;
+
+#SQL[@45,N23]Result[]
 insert into t2 values();
+
+#SQL[@46,N16]Result[14, 11]
 select * from t2;
-col1    col2
-9    null
+col1  ¦  col2
+9  ¦  null
+
+#SQL[@49,N141]Result[]
 load data infile "$resources/load_data/set_null_3.csv" into table t2 character set utf8 fields terminated by ',' set col1=nullif(col1,'null');
+
+#SQL[@51,N13]Result[]
 drop table t2;
+
+#SQL[@53,N23]Result[]
 drop table if exists t3;
+
+#SQL[@54,N51]Result[]
 create table t3(col1 varchar(20), col2 varchar(20));
+
+#SQL[@55,N123]Result[]
 load data infile "$resources/load_data/set_null_4.csv" into table t3 fields terminated by ',' set col1=nullif(col1,'hello');
+
+#SQL[@56,N30]Result[14, 15, 16, 16]
 select * from t3 order by col1;
-col1    col2
-null    world
-HELLO    world
-Hello    WORLD
+col1  ¦  col2
+null  ¦  world
+HELLO  ¦  world
+Hello  ¦  WORLD
+
+#SQL[@57,N14]Result[]
 delete from t3;
+
+#SQL[@58,N151]Result[]
 load data infile "$resources/load_data/set_null_4.csv" into table t3 fields terminated by ',' set col1=nullif(col1,'hello'), col2=nullif(col2, 'world');
+
+#SQL[@59,N30]Result[14, 14, 15, 16]
 select * from t3 order by col1;
-col1    col2
-null    null
-HELLO    null
-Hello    WORLD
+col1  ¦  col2
+null  ¦  null
+HELLO  ¦  null
+Hello  ¦  WORLD
+
+#SQL[@60,N14]Result[]
 delete from t3;
+
+#SQL[@61,N151]Result[]
 load data infile "$resources/load_data/set_null_4.csv" into table t3 fields terminated by ',' set col1=nullif(col1,'hello'), col1=nullif(col1, 'HELLO');
+
+#SQL[@62,N30]Result[14, 15, 15, 16]
 select * from t3 order by col1;
-col1    col2
-null    world
-null    world
-Hello    WORLD
+col1  ¦  col2
+null  ¦  world
+null  ¦  world
+Hello  ¦  WORLD
+
+#SQL[@63,N13]Result[]
 drop table t3;
+

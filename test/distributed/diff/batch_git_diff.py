@@ -188,7 +188,7 @@ def generate_git_diff_report(all_differences, output_file, commit):
 def main():
     parser = argparse.ArgumentParser(description='批量Git diff工具 - 比较指定目录下的.result文件')
     parser.add_argument('--directory', '-d', help='指定目录路径，如果不指定则比较git状态中修改的文件')
-    parser.add_argument('--commit', '-c', default='HEAD~1', help='要比较的git commit (默认: HEAD~1)')
+    parser.add_argument('--commit', '-c', default='HEAD', help='要比较的git commit (默认: HEAD)')
     parser.add_argument('--output', '-o', help='输出报告文件路径')
     parser.add_argument('--verbose', '-v', action='store_true', help='详细输出')
     

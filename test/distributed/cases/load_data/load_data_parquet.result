@@ -1,32 +1,55 @@
+#SQL[@2,N28]Result[]
 drop database if exists parq;
+
+#SQL[@3,N20]Result[]
 create database parq;
+
+#SQL[@4,N8]Result[]
 use parq;
+
+#SQL[@7,N39]Result[]
 create table t1(id bigint,name varchar);
+
+#SQL[@8,N98]Result[]
 load data infile {'filepath'='$resources/load_data/simple.parq', 'format'='parquet'} into table t1;
+
+#SQL[@9,N16]Result[12, 14, 14, 12, 12, 12, 14, 12, 14]
 select * from t1;
-id    name
-1    user1
-2    user2
-7    user7
-8    user8
-10    user10
-12    user12
-15    user15
-16    user16
+id  ¦  name
+15  ¦  user15
+16  ¦  user16
+1  ¦  user1
+2  ¦  user2
+8  ¦  user8
+10  ¦  user10
+7  ¦  user7
+12  ¦  user12
+
+#SQL[@11,N84]Result[]
 create table t2(id bigint not null, name varchar not null, sex bool, f32 float(5,2));
+
+#SQL[@12,N99]Result[]
 load data infile {'filepath'='$resources/load_data/simple2.parq', 'format'='parquet'} into table t2;
+
+#SQL[@13,N16]Result[30, 30, 32, 33, 35, 35, 34, 30, 33]
 select * from t2;
-id    name    sex    f32
-1    user1    false    1.0
-2    user2    false    null
-7    user7    false    7.0
-8    user8    true    null
-10    user10    false    10.0
-12    user12    false    null
-15    user15    false    null
-16    user16    true    null
+id  ¦  name  ¦  sex  ¦  f32
+7  ¦  user7  ¦  false  ¦  7
+8  ¦  user8  ¦  true  ¦  null
+10  ¦  user10  ¦  false  ¦  10
+12  ¦  user12  ¦  false  ¦  null
+15  ¦  user15  ¦  false  ¦  null
+16  ¦  user16  ¦  true  ¦  null
+1  ¦  user1  ¦  false  ¦  1
+2  ¦  user2  ¦  false  ¦  null
+
+#SQL[@15,N26]Result[]
 create table t3(c varchar);
+
+#SQL[@16,N103]Result[]
 load data infile {'filepath'='$resources/load_data/indexed_str.parq', 'format'='parquet'} into table t3;
+
+#SQL[@17,N16]Result[1, 4, 2, 4, 2, 2, 60, 60, 2, 2, 60, 4, 4, 60]
 select * from t3;
 c
 null
@@ -42,18 +65,31 @@ xyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABC
 null
 null
 xyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABCxyzABC
+
+#SQL[@20,N84]Result[]
 create table t4(id bigint not null, name varchar not null, sex bool, f32 float(5,2));
+
+#SQL[@21,N58]Result[]
 create stage parqstage URL='file:///$resources/load_data/';
+
+#SQL[@22,N96]Result[]
 load data infile {'filepath'='stage://parqstage/simple2.parq', 'format'='parquet'} into table t4;
+
+#SQL[@23,N16]Result[30, 30, 35, 34, 35, 32, 33, 30, 33]
 select * from t4;
-id    name    sex    f32
-1    user1    false    1.0
-2    user2    false    null
-7    user7    false    7.0
-8    user8    true    null
-10    user10    false    10.0
-12    user12    false    null
-15    user15    false    null
-16    user16    true    null
+id  ¦  name  ¦  sex  ¦  f32
+7  ¦  user7  ¦  false  ¦  7
+15  ¦  user15  ¦  false  ¦  null
+16  ¦  user16  ¦  true  ¦  null
+12  ¦  user12  ¦  false  ¦  null
+8  ¦  user8  ¦  true  ¦  null
+10  ¦  user10  ¦  false  ¦  10
+1  ¦  user1  ¦  false  ¦  1
+2  ¦  user2  ¦  false  ¦  null
+
+#SQL[@24,N20]Result[]
 drop stage parqstage;
+
+#SQL[@27,N18]Result[]
 drop database parq;
+

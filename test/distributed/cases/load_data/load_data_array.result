@@ -1,16 +1,40 @@
+#SQL[@2,N30]Result[]
 drop database if exists vecdb2;
+
+#SQL[@3,N22]Result[]
 create database vecdb2;
+
+#SQL[@4,N10]Result[]
 use vecdb2;
+
+#SQL[@5,N30]Result[]
 drop table if exists vec_table;
+
+#SQL[@6,N55]Result[]
 create table vec_table(a int, b vecf32(3), c vecf64(3));
+
+#SQL[@9,N114]Result[]
 load data infile '$resources/load_data/array_out.csv' into table vec_table fields terminated by ',' ignore 1 lines;
+
+#SQL[@10,N23]Result[15, 31]
 select * from vec_table;
-a    b    c
-1    [1, 2, 3]    [4, 5, 6]
+a  ¦  b  ¦  c
+1  ¦  [1, 2, 3]  ¦  [4, 5, 6]
+
+#SQL[@14,N76]Result[]
 select * from vec_table into outfile '$resources/into_outfile/array_out.csv';
+
+#SQL[@15,N21]Result[]
 delete from vec_table;
+
+#SQL[@18,N117]Result[]
 load data infile '$resources/into_outfile/array_out.csv' into table vec_table fields terminated by ',' ignore 1 lines;
+
+#SQL[@19,N23]Result[15, 31]
 select * from vec_table;
-a    b    c
-1    [1, 2, 3]    [4, 5, 6]
+a  ¦  b  ¦  c
+1  ¦  [1, 2, 3]  ¦  [4, 5, 6]
+
+#SQL[@22,N20]Result[]
 drop database vecdb2;
+

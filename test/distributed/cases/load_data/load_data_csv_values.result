@@ -1,49 +1,83 @@
+#SQL[@2,N23]Result[]
 drop table if exists t1;
+
+#SQL[@3,N31]Result[]
 create table t1(
 col1 tinyint
 );
+
+#SQL[@8,N83]Result[]
 load data inline format='csv', data='1\n2\n' into table t1 fields terminated by ',';
+
+#SQL[@9,N66]Result[]
 load data  inline format='csv', data=$XXX$
 1
 2
 $XXX$
 into table t1;
+
+#SQL[@14,N16]Result[4, 1, 1, 1, 1]
 select * from t1;
 col1
 1
 2
 1
 2
+
+#SQL[@17,N23]Result[]
 drop table if exists t1;
+
+#SQL[@18,N28]Result[]
 create table t1(
 col1 text
 );
+
+#SQL[@23,N65]Result[]
 load data inline format='csv', data='"1
-2"\n"2"\n' into table t1;
+ 2"\n"2"\n' into table t1;
+
+#SQL[@26,N16]Result[4, 4, 1]
 select * from t1;
 col1
-1\n2
+1
+ 2
 2
+
+#SQL[@29,N23]Result[]
 drop table if exists t4;
+
+#SQL[@30,N70]Result[]
 create table t4(
 col1 date,
 col2 datetime,
 col3 timestamp,
 col4 bool
 );
+
+#SQL[@38,N131]Result[]
 load data inline format='csv', data='1000-01-01,0001-01-01,1970-01-01 00:00:01,0
 9999-12-31,9999-12-31,2038-01-19,1
 ' into table t4;
+
+#SQL[@41,N16]Result[34, 71, 70]
 select * from t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    1970-01-01 00:00:01    false
-9999-12-31    9999-12-31 00:00:00    2038-01-19 00:00:00    true
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  1969-12-31 16:00:01  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  2038-01-18 16:00:00  ¦  true
+
+#SQL[@44,N28]Result[]
 create table t5(
 col1 text
 );
+
+#SQL[@47,N95]Result[]
 load data inline format='jsonline', data='{"col1":"good"}' , jsontype = 'object'  into table t5;
+
+#SQL[@48,N93]Error[43]
 load data inline format='unknow', data='{"col1":"good"}' , jsontype = 'object'  into table t5;
 load format 'unknow' is not yet implemented
+
+#SQL[@50,N363]Result[]
 CREATE TABLE IF NOT EXISTS `t6`(
 `str` VARCHAR(32) NOT NULL COMMENT "str column",
 `int64` BIGINT DEFAULT "0" COMMENT "int64 column",
@@ -52,20 +86,36 @@ CREATE TABLE IF NOT EXISTS `t6`(
 `datetime_6` Datetime(6) NOT NULL COMMENT "datetime.6 column",
 `json_col` TEXT NOT NULL COMMENT "json column"
 );
+
+#SQL[@58,N155]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='row5,1,1.1,1,2023-05-16 16:06:18.070277,"{""key1"":""insert charactor \\''""}"' INTO TABLE t6 FIELDS TERMINATED BY ',';
+
+#SQL[@59,N130]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='row5,1,1.1,1,2023-05-16 16:06:18.070277,"{""key1"":""insert charactor \\''""}"' INTO TABLE t6;
+
+#SQL[@60,N146]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='row7,1,1.1,1,2023-05-16 16:06:18.070277,"{""key1"":""newline: \\n""}"' INTO TABLE t6 FIELDS TERMINATED BY ',';
+
+#SQL[@61,N121]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='row7,1,1.1,1,2023-05-16 16:06:18.070277,"{""key1"":""newline: \\n""}"' INTO TABLE t6;
+
+#SQL[@62,N143]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='row\\8,1,1.1,1,2023-05-16 16:06:18.070277,"{""key1"":""newline""}"' INTO TABLE t6 FIELDS TERMINATED BY ',';
+
+#SQL[@63,N118]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='row\\8,1,1.1,1,2023-05-16 16:06:18.070277,"{""key1"":""newline""}"' INTO TABLE t6;
+
+#SQL[@64,N29]Result[69, 95, 95, 87, 87, 84, 84]
 select * from t6 order by str;
-str    int64    float64    uint64    datetime_6    json_col
-row5    1    1.1    1    2023-05-16 16:06:18.070277000    {"key1":"insert charactor \'"}
-row5    1    1.1    1    2023-05-16 16:06:18.070277000    {"key1":"insert charactor \'"}
-row7    1    1.1    1    2023-05-16 16:06:18.070277000    {"key1":"newline: \n"}
-row7    1    1.1    1    2023-05-16 16:06:18.070277000    {"key1":"newline: \n"}
-row\8    1    1.1    1    2023-05-16 16:06:18.070277000    {"key1":"newline"}
-row\8    1    1.1    1    2023-05-16 16:06:18.070277000    {"key1":"newline"}
+str  ¦  int64  ¦  float64  ¦  uint64  ¦  datetime_6  ¦  json_col
+row5  ¦  1  ¦  1.1  ¦  1  ¦  2023-05-16 16:06:18.070277  ¦  {"key1":"insert charactor \'"}
+row5  ¦  1  ¦  1.1  ¦  1  ¦  2023-05-16 16:06:18.070277  ¦  {"key1":"insert charactor \'"}
+row7  ¦  1  ¦  1.1  ¦  1  ¦  2023-05-16 16:06:18.070277  ¦  {"key1":"newline: \n"}
+row7  ¦  1  ¦  1.1  ¦  1  ¦  2023-05-16 16:06:18.070277  ¦  {"key1":"newline: \n"}
+row\8  ¦  1  ¦  1.1  ¦  1  ¦  2023-05-16 16:06:18.070277  ¦  {"key1":"newline"}
+row\8  ¦  1  ¦  1.1  ¦  1  ¦  2023-05-16 16:06:18.070277  ¦  {"key1":"newline"}
+
+#SQL[@65,N1576]Result[]
 CREATE TABLE `rawlog` (
 `raw_item` VARCHAR(1024) NOT NULL COMMENT 'raw log item',
 `node_uuid` VARCHAR(36) NOT NULL COMMENT 'node uuid, which node gen this data.',
@@ -91,7 +141,12 @@ CREATE TABLE `rawlog` (
 `statement_id` VARCHAR(36) NOT NULL COMMENT 'statement id',
 `session_id` VARCHAR(36) NOT NULL COMMENT 'session id'
 );
+
+#SQL[@90,N683]Result[]
 LOAD DATA INLINE FORMAT='csv', DATA='log_info,7c4dccb4-4d3c-41f8-b482-5251dc7a41bf,ALL,7c4dccb44d3c41f8,,,2024-05-06 18:28:54.956415,info,compile/sql_executor.go:355,sql_executor exec,"{""sql"":""insert into mo_catalog.mo_account(\\n\\t\\t\\t\\taccount_id,\\n\\t\\t\\t\\taccount_name,\\n\\t\\t\\t\\tstatus,\\n\\t\\t\\t\\tcreated_time,\\n\\t\\t\\t\\tcomments,\\n                create_version) values (0,\\""sys\\"",\\""open\\"",\\""2024-05-06 10:28:54\\"",\\""system account\\"",\\""1.2.0\\"");"",""txn-id"":""018f4d73053c7667a7fbe169f33a12d1"",""duration"":0.011872,""AffectedRows"":1}",0,,,,0,0001-01-01 00:00:00.000000,0001-01-01 00:00:00.000000,0,{},internal,,' INTO TABLE rawlog;
+
+#SQL[@91,N27]Result[8, 8]
 select raw_item from rawlog;
 raw_item
 log_info
+

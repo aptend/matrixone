@@ -1,14 +1,29 @@
+#SQL[@1,N28]Result[]
 drop database if exists test;
+
+#SQL[@2,N20]Result[]
 create database test;
+
+#SQL[@3,N8]Result[]
 use test;
+
+#SQL[@5,N34]Result[]
 create table t1 (name varchar(25));
+
+#SQL[@6,N145]Result[]
 load data infile '$resources/load_data/load.csv' INTO TABLE `t1` FIELDS TERMINATED BY '\t' escaped by '' LINES TERMINATED BY '\n' PARALLEL 'TRUE';
+
+#SQL[@7,N16]Result[4, 8, 8, 8]
 select * from t1;
 name
 ABC\|DEF
 HIJ|KLMN
 OPQ\|RDT
+
+#SQL[@8,N131]Result[]
 load data infile '$resources/load_data/load.csv' INTO TABLE `t1` FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' PARALLEL 'TRUE';
+
+#SQL[@9,N16]Result[4, 8, 8, 8, 7, 8, 7]
 select * from t1;
 name
 ABC\|DEF
@@ -17,7 +32,11 @@ OPQ\|RDT
 ABC|DEF
 HIJ|KLMN
 OPQ|RDT
+
+#SQL[@10,N147]Result[]
 load data infile '$resources/load_data/load.csv' INTO TABLE `t1` FIELDS TERMINATED BY '\t' escaped by '\\' LINES TERMINATED BY '\n' PARALLEL 'TRUE';
+
+#SQL[@11,N16]Result[4, 8, 8, 8, 7, 8, 7, 7, 8, 7]
 select * from t1;
 name
 ABC\|DEF
@@ -29,5 +48,10 @@ OPQ|RDT
 ABC|DEF
 HIJ|KLMN
 OPQ|RDT
+
+#SQL[@13,N13]Result[]
 drop table t1;
+
+#SQL[@14,N18]Result[]
 drop database test;
+

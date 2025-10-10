@@ -40,6 +40,8 @@ python3 batch_git_diff.py --output report.md
 2. **分隔符变化**: 将 `  ¦  ` 分隔符标准化为空格
 3. **多行数据格式**: 处理转义的 `\n` 和实际换行符
 4. **整体删除**: 识别被整体删除的语句和输出
+5. **大小写差异**: 忽略所有文本的大小写差异（如 `SELECT` vs `select`）
+6. **引号类型差异**: 忽略单引号、双引号及中文引号的差异（如 `"text"` vs `'text'` vs `"text"`）
 
 ### 识别的实际差异
 - 数据值的变化
@@ -66,6 +68,18 @@ python3 batch_git_diff.py
 # 生成详细报告
 python3 batch_git_diff.py --output git_diff_report.md
 ```
+
+### 测试新功能
+```bash
+# 测试大小写和引号差异忽略功能
+python3 test_ignore_case_and_quotes.py
+```
+
+### 忽略大小写和引号的示例
+工具现在会将以下内容识别为相同：
+- `SELECT * FROM users` 与 `select * from USERS` （忽略大小写）
+- `name = "John"` 与 `name = 'John'` （忽略引号类型）
+- `SELECT "Name" FROM Users` 与 `select 'name' from USERS` （同时忽略大小写和引号）
 
 ## 输出说明
 

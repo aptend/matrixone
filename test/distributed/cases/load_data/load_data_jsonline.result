@@ -1,32 +1,59 @@
+#SQL[@1,N24]Result[]
 set time_zone = 'SYSTEM';
+
+#SQL[@2,N23]Result[]
 drop table if exists t1;
+
+#SQL[@3,N160]Result[]
 create table t1(col1 bool,col2 int,col3 varchar(100), col4 date,col5 datetime,col6 timestamp,col7 decimal,col8 float,col9 json,col10 text,col11 json,col12 bool);
+
+#SQL[@4,N125]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_object.jl','format'='jsonline','jsondata'='object'} into table t1;
+
+#SQL[@5,N16]Result[117, 179, 177, 178, 177]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8    col9    col10    col11    col12
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1az    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1qaz    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10  ¦  col11  ¦  col12
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1az  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1qaz  ¦  null  ¦  null
+
+#SQL[@6,N14]Result[]
 delete from t1;
+
+#SQL[@7,N123]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_array.jl','format'='jsonline','jsondata'='array'} into table t1;
+
+#SQL[@8,N149]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_array.jl.bz2','format'='jsonline','jsondata'='array','compression'='bzip2'} into table t1;
+
+#SQL[@9,N147]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_array.jl.gz','format'='jsonline','jsondata'='array','compression'='gzip'} into table t1;
+
+#SQL[@10,N107]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_array.jl.bz2','jsondata'='array'} into table t1;
+
+#SQL[@11,N106]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_array.jl.gz','jsondata'='array'} into table t1;
+
+#SQL[@12,N16]Result[117, 179, 177, 179, 177, 179, 177, 179, 177, 179, 177]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8    col9    col10    col11    col12
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10  ¦  col11  ¦  col12
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-07 00:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+
+#SQL[@15,N32]Result[]
 drop table if exists jsonline_t1;
+
+#SQL[@16,N166]Result[]
 create table jsonline_t1(
 col1 tinyint,
 col2 smallint,
@@ -37,193 +64,316 @@ col6 smallint unsigned,
 col7 int unsigned,
 col8 bigint unsigned
 );
+
+#SQL[@26,N134]Result[]
 load data infile{'filepath'='$resources/load_data/integer_numbers_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t1;
+
+#SQL[@27,N25]Result[74, 117, 87, 57, 74]
 select * from jsonline_t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-40    0    60    50    100    0    90    20
-null    null    null    null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+40  ¦  0  ¦  60  ¦  50  ¦  100  ¦  0  ¦  90  ¦  20
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@29,N99]Result[]
 select * from jsonline_t1 into outfile '$resources/into_outfile/json_outfile_integer_numbers_1.csv';
+
+#SQL[@30,N25]Result[74, 117, 87, 57, 74]
 select * from jsonline_t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-40    0    60    50    100    0    90    20
-null    null    null    null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+40  ¦  0  ¦  60  ¦  50  ¦  100  ¦  0  ¦  90  ¦  20
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@31,N23]Result[]
 delete from jsonline_t1;
+
+#SQL[@32,N140]Result[]
 load data infile '$resources/into_outfile/json_outfile_integer_numbers_1.csv' into table jsonline_t1 fields terminated by ',' ignore 1 lines;
+
+#SQL[@33,N25]Result[74, 117, 87, 57, 74]
 select * from jsonline_t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-40    0    60    50    100    0    90    20
-null    null    null    null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+40  ¦  0  ¦  60  ¦  50  ¦  100  ¦  0  ¦  90  ¦  20
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@34,N23]Result[]
 delete from jsonline_t1;
+
+#SQL[@35,N139]Result[]
 load data infile{'filepath'='$resources/load_data/integer_numbers_1_array.jl','format'='jsonline','jsondata'='array'}into table jsonline_t1;
+
+#SQL[@36,N25]Result[74, 117, 87, 50, 74, 117]
 select * from jsonline_t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-0    0    0    0    0    0    0    0
-null    null    null    null    null    null    null    null
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+
+#SQL[@39,N32]Result[]
 drop table if exists jsonline_t2;
+
+#SQL[@40,N91]Result[]
 create table jsonline_t2(
 col1 char(225),
 col2 varchar(225),
 col3 text,
 col4 varchar(225)
 );
+
+#SQL[@46,N131]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t2;
+
+#SQL[@47,N25]Result[34, 50, 30, 35, 36, 41, 38, 27, 34]
 select * from jsonline_t2;
-col1    col2    col3    col4
-a    中文    #¥%……&#    234cccc重要
-"a"    "b"    "c"    "d"
-'d'    '123456'    'b'    'a'
-"'a'"    "'b'"    "'c'"    abc
- 123f fff     yeah     红tu    bb"
-"aa""""    aa"    "bb""""    bb"
-null         null
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  中文  ¦  #¥%……&#  ¦  234cccc重要
+"a"  ¦  "b"  ¦  "c"  ¦  "d"
+'d'  ¦  '123456'  ¦  'b'  ¦  'a'
+"'a'"  ¦  "'b'"  ¦  "'c'"  ¦  abc
+ 123f fff  ¦   yeah   ¦  红tu  ¦  bb"
+"aa""""  ¦  aa"  ¦  "bb""""  ¦  bb"
+null  ¦     ¦  null  ¦  
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@49,N96]Result[]
 select * from jsonline_t2 into outfile '$resources/into_outfile/json_outfile_char_varchar_1.csv';
+
+#SQL[@50,N25]Result[34, 50, 30, 35, 36, 41, 38, 27, 34]
 select * from jsonline_t2;
-col1    col2    col3    col4
-a    中文    #¥%……&#    234cccc重要
-"a"    "b"    "c"    "d"
-'d'    '123456'    'b'    'a'
-"'a'"    "'b'"    "'c'"    abc
- 123f fff     yeah     红tu    bb"
-"aa""""    aa"    "bb""""    bb"
-null         null
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  中文  ¦  #¥%……&#  ¦  234cccc重要
+"a"  ¦  "b"  ¦  "c"  ¦  "d"
+'d'  ¦  '123456'  ¦  'b'  ¦  'a'
+"'a'"  ¦  "'b'"  ¦  "'c'"  ¦  abc
+ 123f fff  ¦   yeah   ¦  红tu  ¦  bb"
+"aa""""  ¦  aa"  ¦  "bb""""  ¦  bb"
+null  ¦     ¦  null  ¦  
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@51,N23]Result[]
 delete from jsonline_t2;
+
+#SQL[@53,N137]Result[]
 load data infile '$resources/into_outfile/json_outfile_char_varchar_1.csv' into table jsonline_t2 fields terminated by ',' ignore 1 lines;
+
+#SQL[@54,N25]Result[34, 50, 30, 35, 36, 41, 38, 27, 34]
 select * from jsonline_t2;
-col1    col2    col3    col4
-a    中文    #¥%……&#    234cccc重要
-"a"    "b"    "c"    "d"
-'d'    '123456'    'b'    'a'
-"'a'"    "'b'"    "'c'"    abc
- 123f fff     yeah     红tu    bb"
-"aa""""    aa"    "bb""""    bb"
-null         null
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  中文  ¦  #¥%……&#  ¦  234cccc重要
+"a"  ¦  "b"  ¦  "c"  ¦  "d"
+'d'  ¦  '123456'  ¦  'b'  ¦  'a'
+"'a'"  ¦  "'b'"  ¦  "'c'"  ¦  abc
+ 123f fff  ¦   yeah   ¦  红tu  ¦  bb"
+"aa""""  ¦  aa"  ¦  "bb""""  ¦  bb"
+null  ¦     ¦  null  ¦  
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@55,N23]Result[]
 delete from jsonline_t2;
+
+#SQL[@56,N138]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_1_array.json','format'='jsonline','jsondata'='array'}into table jsonline_t2;
+
+#SQL[@57,N25]Result[34, 44, 30, 63, 33, 80, 34]
 select * from jsonline_t2;
-col1    col2    col3    col4
-a    重工    4546    @#¥%……&*()
-'a'    'b'    'c'    'd'
-aa,aa    bb,bb    [20 50 <nil> map[col:9] <nil>]    dd,dd
-null     e f g          fff
-aa',',,aa    _yeah_123    1111111111uuuuuuuuuhhhhzzzzzzzzffff    dd',',,dd
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  重工  ¦  4546  ¦  @#¥%……&*()
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+aa,aa  ¦  bb,bb  ¦  [20 50 <nil> map[col:9] <nil>]  ¦  dd,dd
+null  ¦   e f g   ¦    ¦   fff
+aa',',,aa  ¦  _yeah_123  ¦  1111111111uuuuuuuuuhhhhzzzzzzzzffff  ¦  dd',',,dd
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@60,N32]Result[]
 drop table if exists jsonline_t3;
+
+#SQL[@61,N93]Result[]
 create table jsonline_t3(
 col1 float,
 col2 double,
 col3 decimal(38,16),
 col4 decimal(38,16)
 );
+
+#SQL[@67,N126]Result[]
 load data infile{'filepath'='$resources/load_data/float_1.json','format'='jsonline','jsondata'='object'}into table jsonline_t3;
+
+#SQL[@68,N25]Result[34, 58, 70, 49, 94, 154]
 select * from jsonline_t3;
-col1    col2    col3    col4
-1.3    5.0    2.0000000000000000    0.4000000000000000
-1.0    null    635437923742.3333333330000000    1.0000000000000000
-null    null    null    40.0200000000000000
--1.763835E21    -1.0E-14    1.2345600000000000    3.9800000000000000
--345.34244    -1.1118772349834299E73    8349538974359357.0000000000000000    3.9484359854839584
+col1  ¦  col2  ¦  col3  ¦  col4
+1.3  ¦  5  ¦  2.0000000000000000  ¦  0.4000000000000000
+1  ¦  null  ¦  635437923742.3333333330000000  ¦  1.0000000000000000
+null  ¦  null  ¦  null  ¦  40.0200000000000000
+-1763835000000000000000  ¦  -0.00000000000001  ¦  1.2345600000000000  ¦  3.9800000000000000
+-345.34244  ¦  -11118772349834299000000000000000000000000000000000000000000000000000000000  ¦  8349538974359357.0000000000000000  ¦  3.9484359854839584
+
+#SQL[@69,N26]Result[]
 truncate table jsonline_t3;
+
+#SQL[@70,N129]Result[]
 load data infile{'filepath'='$resources/load_data/float_1_array.jl','format'='jsonline','jsondata'='array'}into table jsonline_t3;
+
+#SQL[@71,N25]Result[34, 58, 70, 49, 100, 114]
 select * from jsonline_t3;
-col1    col2    col3    col4
-1.3    5.0    2.0000000000000000    0.4000000000000000
-1.0    null    635437923742.3333333330000000    1.0000000000000000
-null    null    null    40.0200000000000000
--1.7638359E25    -1.9348593579835793    1.2345600000000000    3.9800000000000000
--345.34244    -1.1118772349834298    83495389743593573.0000000000000000    9484359854839584.0000000000000000
+col1  ¦  col2  ¦  col3  ¦  col4
+1.3  ¦  5  ¦  2.0000000000000000  ¦  0.4000000000000000
+1  ¦  null  ¦  635437923742.3333333330000000  ¦  1.0000000000000000
+null  ¦  null  ¦  null  ¦  40.0200000000000000
+-17638359000000000000000000  ¦  -1.9348593579835793  ¦  1.2345600000000000  ¦  3.9800000000000000
+-345.34244  ¦  -1.1118772349834298  ¦  83495389743593573.0000000000000000  ¦  9484359854839584.0000000000000000
+
+#SQL[@73,N32]Result[]
 drop table if exists jsonline_t4;
+
+#SQL[@74,N85]Result[]
 create table jsonline_t4(
 col1 date,
 col2 datetime(6),
 col3 timestamp(3),
 col4 bool
 );
+
+#SQL[@80,N24]Result[]
 set time_zone = 'SYSTEM';
+
+#SQL[@81,N128]Result[]
 load data infile{'filepath'='$resources/load_data/time_date_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t4;
+
+#SQL[@82,N25]Result[34, 82, 81, 63, 62, 63, 34, 34, 63]
 select * from jsonline_t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    1970-01-01 00:00:01    false
-9999-12-31    9999-12-31 00:00:00    2038-01-19 00:00:00    true
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    true
-1000-01-01    0001-01-01 00:00:00.000001000    null    false
-null    null    null    null
-null    null    null    null
-9999-12-31    9999-12-30 23:59:59.999999000    null    false
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  1970-01-01 00:00:01.000  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00.000000  ¦  2038-01-19 00:00:00.000  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000001  ¦  null  ¦  false
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+9999-12-31  ¦  9999-12-30 23:59:59.999999  ¦  null  ¦  false
+
+#SQL[@84,N93]Result[]
 select * from jsonline_t4 into outfile '$resources/into_outfile/json_outfile_time_date_1.csv';
+
+#SQL[@86,N134]Result[]
 load data infile '$resources/into_outfile/json_outfile_time_date_1.csv' into table jsonline_t4 fields terminated by ',' ignore 1 lines;
+
+#SQL[@87,N25]Result[34, 82, 81, 63, 62, 63, 34, 34, 63, 82, 81, 63, 62, 63, 34, 34, 63]
 select * from jsonline_t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    1970-01-01 00:00:01    false
-9999-12-31    9999-12-31 00:00:00    2038-01-19 00:00:00    true
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    true
-1000-01-01    0001-01-01 00:00:00.000001000    null    false
-null    null    null    null
-null    null    null    null
-9999-12-31    9999-12-30 23:59:59.999999000    null    false
-1000-01-01    0001-01-01 00:00:00    1970-01-01 00:00:01    false
-9999-12-31    9999-12-31 00:00:00    2038-01-19 00:00:00    true
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    true
-1000-01-01    0001-01-01 00:00:00.000001000    null    false
-null    null    null    null
-null    null    null    null
-9999-12-31    9999-12-30 23:59:59.999999000    null    false
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  1970-01-01 00:00:01.000  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00.000000  ¦  2038-01-19 00:00:00.000  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000001  ¦  null  ¦  false
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+9999-12-31  ¦  9999-12-30 23:59:59.999999  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  1970-01-01 00:00:01.000  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00.000000  ¦  2038-01-19 00:00:00.000  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000001  ¦  null  ¦  false
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+9999-12-31  ¦  9999-12-30 23:59:59.999999  ¦  null  ¦  false
+
+#SQL[@88,N26]Result[]
 truncate table jsonline_t4;
+
+#SQL[@89,N133]Result[]
 load data infile{'filepath'='$resources/load_data/time_date_1_array.jl','format'='jsonline','jsondata'='array'}into table jsonline_t4;
+
+#SQL[@90,N25]Result[34, 63, 81, 81, 82, 34]
 select * from jsonline_t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    2023-01-12 10:02:34    true
-1000-01-01    0001-01-01 00:00:00    2022-09-10 00:00:00    true
-9999-12-31    9999-12-30 23:59:59.999999000    2023-01-12 10:02:34.093000000    false
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  2023-01-12 10:02:34.000  ¦  true
+1000-01-01  ¦  0001-01-01 00:00:00.000000  ¦  2022-09-10 00:00:00.000  ¦  true
+9999-12-31  ¦  9999-12-30 23:59:59.999999  ¦  2023-01-12 10:02:34.093  ¦  false
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@93,N75]Result[]
 create table jsonline_t5 (a char(225),b varchar(225),c text,d varchar(225));
+
+#SQL[@94,N131]Error[40]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t5;
 invalid input: the attr a is not in json
+
+#SQL[@95,N25]Result[]
 select * from jsonline_t5;
-a    b    c    d
+
+#SQL[@96,N22]Result[]
 drop table jsonline_t5;
+
+#SQL[@97,N107]Result[]
 create table jsonline_t5 (col1 char(225),col2 varchar(225),col3 text,col4 varchar(225),col5 int default 10);
+
+#SQL[@98,N131]Error[65]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t5;
 internal error: the table column is larger than input data column
+
+#SQL[@101,N77]Result[]
 create table jsonline_t6 (col1 char(225),col2 varchar(225),col4 varchar(225));
+
+#SQL[@102,N131]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t6;
+
+#SQL[@103,N40]Result[24, 32]
 select * from jsonline_t6 where col1='a';
-col1    col2    col4
-a    中文    234cccc重要
+col1  ¦  col2  ¦  col4
+a  ¦  中文  ¦  234cccc重要
+
+#SQL[@106,N88]Result[]
 create table  jsonline_t7 (col1 char(225),col2 varchar(225),col3 text,col4 varchar(225));
+
+#SQL[@107,N122]Error[51]
 load data infile{'filepath'='$resources/load_data/char1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t7;
 invalid input: the file does not exist in load flow
+
+#SQL[@108,N93]Error[53]
 load data infile{'filepath'='','format'='jsonline','jsondata'='object'}into table jsonline_t7;
 invalid configuration: the filepath must be specified
+
+#SQL[@109,N130]Error[31]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','jsondata'='array'}into table jsonline_t7;
 invalid input: not a json array
+
+#SQL[@110,N111]Error[53]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline'}into table jsonline_t7;
 invalid configuration: the jsondata must be specified
+
+#SQL[@111,N152]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','compression'='none','jsondata'='object'}into table jsonline_t7;
+
+#SQL[@112,N152]Error[20]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','compression'='gzip','jsondata'='object'}into table jsonline_t7;
 gzip: invalid header
+
+#SQL[@113,N111]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','jsondata'='object'}into table jsonline_t7;
+
+#SQL[@114,N22]Result[]
 drop table jsonline_t7;
+
+#SQL[@115,N88]Result[]
 create table jsonline_t7(col1 float,col2 double,col3 decimal(38,16),col4 decimal(38,16));
+
+#SQL[@116,N127]Error[85]
 load data infile{'filepath'='$resources/load_data/float_1.json','format'='csv'} into table jsonline_t7 fields terminated by ',';
-internal error: the input value '{"col1": "1.3"' is not float32 type for column 0
+internal error: the input value '{\"col1\": \"1.3\"' is not float32 type for column 0
+
+#SQL[@117,N131]Error[68]
 load data infile{'filepath'='$resources/load_data/char_varchar_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t7;
 internal error: the input value 'a' is not float32 type for column 0
+
+#SQL[@120,N187]Result[]
 create table jsonline_t8(
 col1 tinyint not null primary key,
 col2 smallint,
@@ -234,9 +384,15 @@ col6 smallint unsigned,
 col7 int unsigned,
 col8 bigint unsigned
 );
+
+#SQL[@130,N134]Error[50]
 load data infile{'filepath'='$resources/load_data/integer_numbers_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t8;
 constraint violation: Column 'col1' cannot be null
+
+#SQL[@131,N22]Result[]
 drop table jsonline_t8;
+
+#SQL[@132,N177]Result[]
 create table jsonline_t8(
 col1 tinyint default 10,
 col2 smallint,
@@ -247,8 +403,14 @@ col6 smallint unsigned,
 col7 int unsigned,
 col8 bigint unsigned
 );
+
+#SQL[@142,N134]Result[]
 load data infile{'filepath'='$resources/load_data/integer_numbers_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t8;
+
+#SQL[@143,N22]Result[]
 drop table jsonline_t8;
+
+#SQL[@144,N178]Result[]
 create table jsonline_t8(
 col1 tinyint primary key,
 col2 smallint,
@@ -259,39 +421,72 @@ col6 smallint unsigned,
 col7 int unsigned,
 col8 bigint unsigned
 );
+
+#SQL[@154,N134]Error[50]
 load data infile{'filepath'='$resources/load_data/integer_numbers_1.jl','format'='jsonline','jsondata'='object'}into table jsonline_t8;
 constraint violation: Column 'col1' cannot be null
+
+#SQL[@155,N22]Result[]
 drop table jsonline_t8;
+
+#SQL[@158,N88]Result[]
 create table jsonline_gzip(col1 char(225),col2 varchar(225),col3 text,col4 varchar(225));
+
+#SQL[@159,N164]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_1_array.json.gz','format'='jsonline','compression'='gzip','jsondata'='array'}into table jsonline_gzip;
+
+#SQL[@160,N27]Result[34, 44, 30, 63, 33, 80, 34]
 select * from jsonline_gzip;
-col1    col2    col3    col4
-a    重工    4546    @#¥%……&*()
-'a'    'b'    'c'    'd'
-aa,aa    bb,bb    [20 50 <nil> map[col:9] <nil>]    dd,dd
-null     e f g          fff
-aa',',,aa    _yeah_123    1111111111uuuuuuuuuhhhhzzzzzzzzffff    dd',',,dd
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  重工  ¦  4546  ¦  @#¥%……&*()
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+aa,aa  ¦  bb,bb  ¦  [20 50 <nil> map[col:9] <nil>]  ¦  dd,dd
+null  ¦   e f g   ¦    ¦   fff
+aa',',,aa  ¦  _yeah_123  ¦  1111111111uuuuuuuuuhhhhzzzzzzzzffff  ¦  dd',',,dd
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@161,N28]Result[]
 truncate table jsonline_gzip;
+
+#SQL[@162,N160]Result[]
 create table jsonline_bzip2(col1 tinyint,col2 smallint,col3 int,col4 bigint,col5 tinyint unsigned,col6 smallint unsigned,col7 int unsigned,col8 bigint unsigned);
+
+#SQL[@163,N161]Result[]
 load data infile{'filepath'='$resources/load_data/integer_numbers_1.jl.bz2','format'='jsonline','compression'='bz2','jsondata'='object'}into table jsonline_bzip2;
+
+#SQL[@164,N28]Result[74, 117, 87, 57, 74]
 select * from jsonline_bzip2;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-40    0    60    50    100    0    90    20
-null    null    null    null    null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+40  ¦  0  ¦  60  ¦  50  ¦  100  ¦  0  ¦  90  ¦  20
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@165,N89]Result[]
 create table jsonline_lz4(col1 float,col2 double,col3 decimal(38,16),col4 decimal(38,16));
+
+#SQL[@166,N151]Result[]
 load data infile{'filepath'='$resources/load_data/float_1.json.lz4','format'='jsonline','compression'='lz4','jsondata'='object'}into table jsonline_lz4;
+
+#SQL[@167,N26]Result[34, 58, 70, 49, 94, 154]
 select * from jsonline_lz4;
-col1    col2    col3    col4
-1.3    5.0    2.0000000000000000    0.4000000000000000
-1.0    null    635437923742.3333333330000000    1.0000000000000000
-null    null    null    40.0200000000000000
--1.763835E21    -1.0E-14    1.2345600000000000    3.9800000000000000
--345.34244    -1.1118772349834299E73    8349538974359357.0000000000000000    3.9484359854839584
+col1  ¦  col2  ¦  col3  ¦  col4
+1.3  ¦  5  ¦  2.0000000000000000  ¦  0.4000000000000000
+1  ¦  null  ¦  635437923742.3333333330000000  ¦  1.0000000000000000
+null  ¦  null  ¦  null  ¦  40.0200000000000000
+-1763835000000000000000  ¦  -0.00000000000001  ¦  1.2345600000000000  ¦  3.9800000000000000
+-345.34244  ¦  -11118772349834299000000000000000000000000000000000000000000000000000000000  ¦  8349538974359357.0000000000000000  ¦  3.9484359854839584
+
+#SQL[@170,N31]Result[]
 drop table if exists jsonline01;
+
+#SQL[@171,N120]Result[]
 create table jsonline01(col1 bool,col2 int,col3 varchar, col4 date,col5 datetime,col6 timestamp,col7 decimal,col8 float);
+
+#SQL[@172,N133]Error[159]
 load data infile {'filepath'='$resources/load_data/jsonline_array01.jl','format'='jsonline','jsondata'='array'} into table jsonline01;
-invalid input: [true,1,"var","2020-09-07","2020-09-07 00:00:00","2020-09-07 00:00:00","18",121.11,"1","1qaz",null,null] , wrong number of colunms
+invalid input: [true,1,\"var\",\"2020-09-07\",\"2020-09-07 00:00:00\",\"2020-09-07 00:00:00\",\"18\",121.11,\"1\",\"1qaz\",null,null] , wrong number of colunms
+
+#SQL[@173,N21]Result[]
 drop table jsonline01;
+

@@ -1,4 +1,7 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@4,N157]Result[]
 create table t1(
 col1 tinyint,
 col2 smallint,
@@ -9,418 +12,643 @@ col6 smallint unsigned,
 col7 int unsigned,
 col8 bigint unsigned
 );
+
+#SQL[@16,N100]Error[67]
 load data infile '$resources/load_data/integer_numbers_4.csv' into table t1 fields terminated by ',';
 internal error: the input value '1.2' is not int8 type for column 0
+
+#SQL[@17,N16]Result[]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8
+
+#SQL[@18,N14]Result[]
 delete from t1;
+
+#SQL[@20,N100]Result[]
 load data infile '$resources/load_data/integer_numbers_1.csv' into table t1 fields terminated by ',';
+
+#SQL[@21,N16]Result[74, 117, 87, 50, 74, 62, 74, 117]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-0    0    0    0    0    0    0    0
-null    null    null    null    null    null    null    null
-1    null    null    0    0    0    null    null
-null    null    null    null    null    null    null    null
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+1  ¦  null  ¦  null  ¦  0  ¦  0  ¦  0  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+
+#SQL[@24,N85]Result[]
 select * from t1 into outfile '$resources/into_outfile/outfile_integer_numbers_1.csv';
+
+#SQL[@25,N14]Result[]
 delete from t1;
+
+#SQL[@28,N126]Result[]
 load data infile '$resources/into_outfile/outfile_integer_numbers_1.csv' into table t1 fields terminated by ',' ignore 1 lines;
+
+#SQL[@29,N16]Result[74, 117, 87, 50, 74, 62, 74, 117]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-0    0    0    0    0    0    0    0
-null    null    null    null    null    null    null    null
-1    null    null    0    0    0    null    null
-null    null    null    null    null    null    null    null
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+1  ¦  null  ¦  null  ¦  0  ¦  0  ¦  0  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+
+#SQL[@30,N14]Result[]
 delete from t1;
+
+#SQL[@32,N99]Result[]
 load data infile '$resources/load_data/integer_numbers_2.csv' into table t1 fields terminated by'*';
+
+#SQL[@33,N16]Result[74, 117, 87, 50, 74, 62, 74, 117]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
--128    -32768    -2147483648    -9223372036854775808    0    0    0    0
-0    0    0    0    0    0    0    0
-null    null    null    null    null    null    null    null
-1    null    null    0    0    0    null    null
-null    null    null    null    null    null    null    null
-127    32767    2147483647    9223372036854775807    255    65535    4294967295    18446744073709551615
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808  ¦  0  ¦  0  ¦  0  ¦  0
+0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0  ¦  0
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+1  ¦  null  ¦  null  ¦  0  ¦  0  ¦  0  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807  ¦  255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+
+#SQL[@34,N14]Result[]
 delete from t1;
+
+#SQL[@36,N13]Result[]
 drop table t1;
+
+#SQL[@40,N23]Result[]
 drop table if exists t2;
+
+#SQL[@41,N82]Result[]
 create table t2(
 col1 char(225),
 col2 varchar(225),
 col3 text,
 col4 varchar(225)
 );
+
+#SQL[@49,N97]Result[]
 load data infile '$resources/load_data/char_varchar_1.csv' into table t2 fields terminated by ',';
+
+#SQL[@50,N16]Result[34, 22, 22, 30, 30, 38, 30, 46, 54, 38, 38, 38, 42, 42, 42, 46, 18, 18, 34, 18, 22, 26]
 select * from t2;
-col1    col2    col3    col4
-a    b    c    d
-a    b    c    d
-'a'    'b'    'c'    'd'
-'a'    'b'    'c'    'd'
-aa,aa    bb,bb    cc,cc    dd,dd
-aa,    bb,    cc,    dd,
-aa,,,aa    bb,,,bb    cc,,,cc    dd,,,dd
-aa',',,aa    bb',',,bb    cc',',,cc    dd',',,dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa",aa    bb",bb    cc",cc    dd",dd
-aa"",aa    bb"",bb    cc"",cc    dd"",dd
-            
-            
-null    null    null    null
-            
-"    "    "    "
-""    ""    ""    ""
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  b  ¦  c  ¦  d
+a  ¦  b  ¦  c  ¦  d
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+aa,aa  ¦  bb,bb  ¦  cc,cc  ¦  dd,dd
+aa,  ¦  bb,  ¦  cc,  ¦  dd,
+aa,,,aa  ¦  bb,,,bb  ¦  cc,,,cc  ¦  dd,,,dd
+aa',',,aa  ¦  bb',',,bb  ¦  cc',',,cc  ¦  dd',',,dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa",aa  ¦  bb",bb  ¦  cc",cc  ¦  dd",dd
+aa"",aa  ¦  bb"",bb  ¦  cc"",cc  ¦  dd"",dd
+  ¦    ¦    ¦  
+  ¦    ¦    ¦  
+null  ¦  null  ¦  null  ¦  null
+  ¦    ¦    ¦  
+"  ¦  "  ¦  "  ¦  "
+""  ¦  ""  ¦  ""  ¦  ""
+
+#SQL[@53,N82]Result[]
 select * from t2 into outfile '$resources/into_outfile/outfile_char_varchar_1.csv';
+
+#SQL[@54,N14]Result[]
 delete from t2;
+
+#SQL[@57,N123]Result[]
 load data infile '$resources/into_outfile/outfile_char_varchar_1.csv' into table t2 fields terminated by ',' ignore 1 lines;
+
+#SQL[@58,N16]Result[34, 22, 22, 30, 30, 38, 30, 46, 54, 38, 38, 38, 42, 42, 42, 46, 18, 18, 34, 18, 22, 26]
 select * from t2;
-col1    col2    col3    col4
-a    b    c    d
-a    b    c    d
-'a'    'b'    'c'    'd'
-'a'    'b'    'c'    'd'
-aa,aa    bb,bb    cc,cc    dd,dd
-aa,    bb,    cc,    dd,
-aa,,,aa    bb,,,bb    cc,,,cc    dd,,,dd
-aa',',,aa    bb',',,bb    cc',',,cc    dd',',,dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa",aa    bb",bb    cc",cc    dd",dd
-aa"",aa    bb"",bb    cc"",cc    dd"",dd
-            
-            
-null    null    null    null
-            
-"    "    "    "
-""    ""    ""    ""
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  b  ¦  c  ¦  d
+a  ¦  b  ¦  c  ¦  d
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+aa,aa  ¦  bb,bb  ¦  cc,cc  ¦  dd,dd
+aa,  ¦  bb,  ¦  cc,  ¦  dd,
+aa,,,aa  ¦  bb,,,bb  ¦  cc,,,cc  ¦  dd,,,dd
+aa',',,aa  ¦  bb',',,bb  ¦  cc',',,cc  ¦  dd',',,dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa",aa  ¦  bb",bb  ¦  cc",cc  ¦  dd",dd
+aa"",aa  ¦  bb"",bb  ¦  cc"",cc  ¦  dd"",dd
+  ¦    ¦    ¦  
+  ¦    ¦    ¦  
+null  ¦  null  ¦  null  ¦  null
+  ¦    ¦    ¦  
+"  ¦  "  ¦  "  ¦  "
+""  ¦  ""  ¦  ""  ¦  ""
+
+#SQL[@59,N14]Result[]
 delete from t2;
+
+#SQL[@61,N97]Result[]
 load data infile '$resources/load_data/char_varchar_2.csv' into table t2 fields terminated by ',';
+
+#SQL[@62,N16]Result[34, 42, 38, 46, 42, 50, 43]
 select * from t2;
-col1    col2    col3    col4
-aa""aa    bb""bb    cc""cc    dd""dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"""aa    bb"""bb    cc"""cc    dd"""dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa""""aa    bb""""bb    cc""""cc    dd""""dd
-aa"""aa    bb""bb    cc""cc    dd""dd
+col1  ¦  col2  ¦  col3  ¦  col4
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"""aa  ¦  bb"""bb  ¦  cc"""cc  ¦  dd"""dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa""""aa  ¦  bb""""bb  ¦  cc""""cc  ¦  dd""""dd
+aa"""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+
+#SQL[@63,N14]Result[]
 delete from t2;
+
+#SQL[@66,N97]Error[72]
 load data infile '$resources/load_data/char_varchar_3.csv' into table t2 fields terminated by ',';
 invalid input: the data of row 2 contained is not equal to input columns
+
+#SQL[@67,N16]Result[]
 select * from t2;
-col1    col2    col3    col4
+
+#SQL[@68,N14]Result[]
 delete from t2;
+
+#SQL[@70,N96]Result[]
 load data infile '$resources/load_data/char_varchar_4.csv' into table t2 fields terminated by'|';
+
+#SQL[@71,N16]Result[34, 22, 22, 30, 30, 38, 30, 46, 54, 38, 38, 38, 42, 42, 42, 46, 18, 18, 18, 22, 26]
 select * from t2;
-col1    col2    col3    col4
-a    b    c    d
-a    b    c    d
-'a'    'b'    'c'    'd'
-'a'    'b'    'c'    'd'
-aa|aa    bb|bb    cc|cc    dd|dd
-aa|    bb|    cc|    dd|
-aa|||aa    bb|||bb    cc|||cc    dd|||dd
-aa'|'||aa    bb'|'||bb    cc'|'||cc    dd'|'||dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa"|aa    bb"|bb    cc"|cc    dd"|dd
-aa""|aa    bb""|bb    cc""|cc    dd""|dd
-            
-            
-            
-"    "    "    "
-""    ""    ""    ""
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  b  ¦  c  ¦  d
+a  ¦  b  ¦  c  ¦  d
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+aa|aa  ¦  bb|bb  ¦  cc|cc  ¦  dd|dd
+aa|  ¦  bb|  ¦  cc|  ¦  dd|
+aa|||aa  ¦  bb|||bb  ¦  cc|||cc  ¦  dd|||dd
+aa'|'||aa  ¦  bb'|'||bb  ¦  cc'|'||cc  ¦  dd'|'||dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa"|aa  ¦  bb"|bb  ¦  cc"|cc  ¦  dd"|dd
+aa""|aa  ¦  bb""|bb  ¦  cc""|cc  ¦  dd""|dd
+  ¦    ¦    ¦  
+  ¦    ¦    ¦  
+  ¦    ¦    ¦  
+"  ¦  "  ¦  "  ¦  "
+""  ¦  ""  ¦  ""  ¦  ""
+
+#SQL[@72,N14]Result[]
 delete from t2;
+
+#SQL[@74,N96]Result[]
 load data infile '$resources/load_data/char_varchar_5.csv' into table t2 fields terminated by'?';
+
+#SQL[@75,N16]Result[34, 22, 22, 30, 30, 38, 30, 46, 54, 38, 38, 38, 42, 42, 42, 46, 18, 18, 18, 22, 26]
 select * from t2;
-col1    col2    col3    col4
-a    b    c    d
-a    b    c    d
-'a'    'b'    'c'    'd'
-'a'    'b'    'c'    'd'
-aa?aa    bb?bb    cc?cc    dd?dd
-aa?    bb?    cc?    dd?
-aa???aa    bb???bb    cc???cc    dd???dd
-aa'?'??aa    bb'?'??bb    cc'?'??cc    dd'?'??dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa"aa    bb"bb    cc"cc    dd"dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa""aa    bb""bb    cc""cc    dd""dd
-aa"?aa    bb"?bb    cc"?cc    dd"?dd
-aa""?aa    bb""?bb    cc""?cc    dd""?dd
-            
-            
-            
-"    "    "    "
-""    ""    ""    ""
+col1  ¦  col2  ¦  col3  ¦  col4
+a  ¦  b  ¦  c  ¦  d
+a  ¦  b  ¦  c  ¦  d
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+'a'  ¦  'b'  ¦  'c'  ¦  'd'
+aa?aa  ¦  bb?bb  ¦  cc?cc  ¦  dd?dd
+aa?  ¦  bb?  ¦  cc?  ¦  dd?
+aa???aa  ¦  bb???bb  ¦  cc???cc  ¦  dd???dd
+aa'?'??aa  ¦  bb'?'??bb  ¦  cc'?'??cc  ¦  dd'?'??dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa"aa  ¦  bb"bb  ¦  cc"cc  ¦  dd"dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa""aa  ¦  bb""bb  ¦  cc""cc  ¦  dd""dd
+aa"?aa  ¦  bb"?bb  ¦  cc"?cc  ¦  dd"?dd
+aa""?aa  ¦  bb""?bb  ¦  cc""?cc  ¦  dd""?dd
+  ¦    ¦    ¦  
+  ¦    ¦    ¦  
+  ¦    ¦    ¦  
+"  ¦  "  ¦  "  ¦  "
+""  ¦  ""  ¦  ""  ¦  ""
+
+#SQL[@76,N14]Result[]
 delete from t2;
+
+#SQL[@78,N13]Result[]
 drop table t2;
+
+#SQL[@82,N23]Result[]
 drop table if exists t3;
+
+#SQL[@83,N81]Result[]
 create table t3(
 col1 float,
 col2 double,
 col3 decimal(5,2),
 col4 decimal(20,5)
 );
+
+#SQL[@90,N39]Result[]
 insert into t3 values (1.3,1.3,1.3,1.3);
+
+#SQL[@91,N16]Result[34, 35]
 select * from t3;
-col1    col2    col3    col4
-1.3    1.3    1.30    1.30000
+col1  ¦  col2  ¦  col3  ¦  col4
+1.3  ¦  1.3  ¦  1.30  ¦  1.30000
+
+#SQL[@92,N90]Result[]
 load data infile '$resources/load_data/float_1.csv' into table t3 fields terminated by ',';
+
+#SQL[@93,N16]Result[34, 35, 35]
 select * from t3;
-col1    col2    col3    col4
-1.3    1.3    1.30    1.30000
-1.3    1.3    1.30    1.30000
+col1  ¦  col2  ¦  col3  ¦  col4
+1.3  ¦  1.3  ¦  1.30  ¦  1.30000
+1.3  ¦  1.3  ¦  1.30  ¦  1.30000
+
+#SQL[@94,N14]Result[]
 delete from t3;
+
+#SQL[@97,N90]Result[]
 load data infile '$resources/load_data/float_2.csv' into table t3 fields terminated by ',';
+
+#SQL[@98,N16]Result[34, 31, 34, 43, 48, 50, 53]
 select * from t3;
-col1    col2    col3    col4
-1.0    1.0    1.00    1.00000
-null    null    null    null
-1.23456    1.23456    1.23    1.23456
-1.2345679    1.23456789    1.23    1.23457
-1.0123457    1.0123456789    1.01    1.01235
-1.0E-10    1.0E-10    0.00    0.00000
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  1  ¦  1.00  ¦  1.00000
+null  ¦  null  ¦  null  ¦  null
+1.23456  ¦  1.23456  ¦  1.23  ¦  1.23456
+1.2345679  ¦  1.23456789  ¦  1.23  ¦  1.23457
+1.0123457  ¦  1.0123456789  ¦  1.01  ¦  1.01235
+0.0000000001  ¦  0.0000000001  ¦  0.00  ¦  0.00000
+
+#SQL[@101,N75]Result[]
 select * from t3 into outfile '$resources/into_outfile/outfile_float_2.csv';
+
+#SQL[@102,N14]Result[]
 delete from t3;
+
+#SQL[@105,N116]Result[]
 load data infile '$resources/into_outfile/outfile_float_2.csv' into table t3 fields terminated by ',' ignore 1 lines;
+
+#SQL[@106,N16]Result[34, 31, 34, 43, 47, 47, 53]
 select * from t3;
-col1    col2    col3    col4
-1.0    1.0    1.00    1.00000
-null    null    null    null
-1.23456    1.23456    1.23    1.23456
-1.2345679    1.2345679    1.23    1.23457
-1.0123457    1.0123457    1.01    1.01235
-1.0E-10    1.0E-10    0.00    0.00000
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  1  ¦  1.00  ¦  1.00000
+null  ¦  null  ¦  null  ¦  null
+1.23456  ¦  1.23456  ¦  1.23  ¦  1.23456
+1.2345679  ¦  1.2345679  ¦  1.23  ¦  1.23457
+1.0123457  ¦  1.0123457  ¦  1.01  ¦  1.01235
+0.0000000001  ¦  0.0000000001  ¦  0.00  ¦  0.00000
+
+#SQL[@107,N14]Result[]
 delete from t3;
+
+#SQL[@109,N90]Error[81]
 load data infile '$resources/load_data/float_3.csv' into table t3 fields terminated by ',';
 internal error: the input value '1000.001' is invalid Decimal64 type for column 2
+
+#SQL[@111,N13]Result[]
 drop table t3;
+
+#SQL[@114,N23]Result[]
 drop table if exists t4;
+
+#SQL[@115,N70]Result[]
 create table t4(
 col1 date,
 col2 datetime,
 col3 timestamp,
 col4 bool
 );
+
+#SQL[@121,N24]Result[]
 set time_zone = 'SYSTEM';
+
+#SQL[@122,N94]Result[]
 load data infile '$resources/load_data/time_date_1.csv' into table t4 fields terminated by ',';
+
+#SQL[@123,N16]Result[34, 71, 70]
 select * from t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    1970-01-01 00:00:01    false
-9999-12-31    9999-12-31 00:00:00    2038-01-19 00:00:00    true
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  1970-01-01 00:00:01  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  2038-01-19 00:00:00  ¦  true
+
+#SQL[@124,N14]Result[]
 delete from t4;
+
+#SQL[@127,N94]Result[]
 load data infile '$resources/load_data/time_date_2.csv' into table t4 fields terminated by ',';
+
+#SQL[@128,N16]Result[34, 56, 56, 56, 56, 55, 55, 55, 34, 34, 35, 34, 34, 34]
 select * from t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-9999-12-31    9999-12-31 00:00:00    null    true
-9999-12-31    9999-12-31 00:00:00    null    true
-9999-12-31    9999-12-31 23:59:59    null    true
-null    null    null    true
-null    null    null    true
-null    null    null    false
-null    null    null    true
-null    null    null    null
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  null  ¦  true
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  null  ¦  true
+9999-12-31  ¦  9999-12-31 23:59:59  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  false
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@131,N79]Result[]
 select * from t4 into outfile '$resources/into_outfile/outfile_time_date_2.csv';
+
+#SQL[@132,N14]Result[]
 delete from t4;
+
+#SQL[@135,N120]Result[]
 load data infile '$resources/into_outfile/outfile_time_date_2.csv' into table t4 fields terminated by ',' ignore 1 lines;
+
+#SQL[@136,N16]Result[34, 56, 56, 56, 56, 55, 55, 55, 34, 34, 35, 34, 34, 34]
 select * from t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-9999-12-31    9999-12-31 00:00:00    null    true
-9999-12-31    9999-12-31 00:00:00    null    true
-9999-12-31    9999-12-31 23:59:59    null    true
-null    null    null    true
-null    null    null    true
-null    null    null    false
-null    null    null    true
-null    null    null    null
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  null  ¦  true
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  null  ¦  true
+9999-12-31  ¦  9999-12-31 23:59:59  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  false
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@137,N14]Result[]
 delete from t4;
+
+#SQL[@139,N94]Result[]
 load data infile '$resources/load_data/time_date_3.csv' into table t4 fields terminated by ',';
+
+#SQL[@140,N14]Result[]
 delete from t4;
+
+#SQL[@142,N93]Result[]
 load data infile '$resources/load_data/time_date_4.csv' into table t4 fields terminated by';';
+
+#SQL[@143,N16]Result[34, 56, 56, 55, 55, 34, 34, 35, 34, 34, 34]
 select * from t4;
-col1    col2    col3    col4
-1000-01-01    0001-01-01 00:00:00    null    false
-1000-01-01    0001-01-01 00:00:00    null    false
-9999-12-31    9999-12-31 00:00:00    null    true
-9999-12-31    9999-12-31 00:00:00    null    true
-null    null    null    true
-null    null    null    true
-null    null    null    false
-null    null    null    true
-null    null    null    null
-null    null    null    null
+col1  ¦  col2  ¦  col3  ¦  col4
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+1000-01-01  ¦  0001-01-01 00:00:00  ¦  null  ¦  false
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  null  ¦  true
+9999-12-31  ¦  9999-12-31 00:00:00  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  false
+null  ¦  null  ¦  null  ¦  true
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@144,N14]Result[]
 delete from t4;
+
+#SQL[@146,N94]Error[94]
 load data infile '$resources/load_data/time_date_5.csv' into table t4 fields terminated by ',';
 internal error: the input value '9999-12-31 23:59:59.999999' is not Datetime type for column 1
+
+#SQL[@147,N16]Result[]
 select * from t4;
-col1    col2    col3    col4
+
+#SQL[@148,N14]Result[]
 delete from t4;
+
+#SQL[@150,N13]Result[]
 drop table t4;
+
+#SQL[@153,N23]Result[]
 drop table if exists t5;
+
+#SQL[@154,N74]Result[]
 create table t5(
 col1 int auto_increment primary key,
 col2 int,
 col3 int
 );
+
+#SQL[@160,N29]Result[]
 insert into t5 values (1,1,1);
+
+#SQL[@161,N16]Result[24, 15]
 select * from t5;
-col1    col2    col3
-1    1    1
+col1  ¦  col2  ¦  col3
+1  ¦  1  ¦  1
+
+#SQL[@163,N13]Result[]
 drop table t5;
+
+#SQL[@165,N23]Result[]
 drop table if exists t6;
+
+#SQL[@166,N74]Result[]
 create table t6(
 col1 int auto_increment primary key,
 col2 int,
 col3 int
 );
-load data infile '$resources/load_data/auto_increment_2.csv' into table t6 fields terminated by ',';
-Duplicate entry '4' for key 'col1'
-select * from t6;
-col1    col2    col3
+
+#SQL[@177,N115]Result[]
 load data infile '$resources/load_data/auto_increment_2.csv' into table t6 FIELDS ESCAPED BY '\\' TERMINATED BY ',';
+
+#SQL[@178,N123]Result[]
 load data infile '$resources/load_data/auto_increment_2.csv' into table t6 FIELDS TERMINATED BY ',' LINES STARTING BY 'aaa';
+
+#SQL[@179,N13]Result[]
 drop table t6;
+
+#SQL[@181,N47]Result[]
 create table t7(
 col1 int,
 col2 int,
 col3 int
 );
+
+#SQL[@186,N115]Result[]
 load data infile '$resources/load_data/auto_increment_2.csv' into table t7 fields terminated by ',' parallel 'true';
+
+#SQL[@187,N30]Result[24, 15, 15, 15, 15, 15]
 select * from t7 order by col1;
-col1    col2    col3
-1    1    1
-2    2    2
-3    3    3
-4    4    4
-5    5    5
+col1  ¦  col2  ¦  col3
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+
+#SQL[@188,N13]Result[]
 drop table t7;
+
+#SQL[@190,N59]Result[]
 create table t9(a varchar, b varchar, c varchar, d varchar);
+
+#SQL[@191,N181]Error[72]
 load data infile {"filepath"="$resources/load_data/parallel.txt.gz", "compression"="gzip"} into table t9 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n';
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@192,N16]Result[]
 select * from t9;
-a    b    c    d
+
+#SQL[@193,N197]Error[72]
 load data infile {"filepath"="$resources/load_data/parallel.txt.gz", "compression"="gzip"} into table t9 FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' parallel 'true';
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@194,N16]Result[]
 select * from t9;
-a    b    c    d
+
+#SQL[@196,N73]Result[]
 create account if not exists `abc2` admin_name 'user' identified by '111';
+
+#SQL[@198,N33]Result[]
 create database if not exists ssb;
+
+#SQL[@199,N7]Result[]
 use ssb;
+
+#SQL[@200,N168]Result[]
 create table test_table(
-col1 int AUTO_INCREMENT,
-col2 float,
-col3 bool,
-col4 Date,
-col5 varchar(255),
-col6 text,
-PRIMARY KEY (`col1`)
-);
+    col1 int AUTO_INCREMENT,
+    col2 float,
+    col3 bool,
+    col4 Date,
+    col5 varchar(255),
+    col6 text,
+    PRIMARY KEY (`col1`)
+    );
+
+#SQL[@209,N113]Result[]
 load data infile '$resources/load_data/test_1.csv' into table test_table fields terminated by ',' parallel 'true';
+
+#SQL[@210,N24]Result[54, 63, 64, 63, 64, 63, 64, 63, 64, 63, 64, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68]
 select * from test_table;
-col1    col2    col3    col4    col5    col6
-0    0.1    true    1982-03-24    varchar_0    text_0
-1    1.1    false    1982-07-31    varchar_1    text_1
-2    2.1    true    2002-04-13    varchar_2    text_2
-3    3.1    false    2019-09-29    varchar_3    text_3
-4    4.1    true    1996-08-20    varchar_4    text_4
-5    5.1    false    2008-10-13    varchar_5    text_5
-6    6.1    true    2002-03-05    varchar_6    text_6
-7    7.1    false    1993-11-07    varchar_7    text_7
-8    8.1    true    1994-01-08    varchar_8    text_8
-9    9.1    false    1999-09-17    varchar_9    text_9
-10    10.1    true    2003-09-28    varchar_10    text_10
-11    11.1    false    1984-01-22    varchar_11    text_11
-12    12.1    true    1994-02-10    varchar_12    text_12
-13    13.1    false    1994-12-02    varchar_13    text_13
-14    14.1    true    2013-01-19    varchar_14    text_14
-15    15.1    false    2002-09-29    varchar_15    text_15
-16    16.1    true    2001-12-07    varchar_16    text_16
-17    17.1    false    1989-03-11    varchar_17    text_17
-18    18.1    true    2019-11-04    varchar_18    text_18
-19    19.1    false    2002-08-15    varchar_19    text_19
-20    20.1    true    1995-12-20    varchar_20    text_20
-21    21.1    false    2018-08-03    varchar_21    text_21
-22    22.1    true    1998-03-10    varchar_22    text_22
-23    23.1    false    2022-04-08    varchar_23    text_23
-24    24.1    true    1989-04-27    varchar_24    text_24
-25    25.1    false    2009-03-14    varchar_25    text_25
-26    26.1    true    2019-03-27    varchar_26    text_26
-27    27.1    false    1983-10-28    varchar_27    text_27
-28    28.1    true    1993-07-19    varchar_28    text_28
-29    29.1    false    1986-09-11    varchar_29    text_29
-30    30.1    true    1992-08-19    varchar_30    text_30
-31    31.1    false    1981-08-07    varchar_31    text_31
-32    32.1    true    1984-03-25    varchar_32    text_32
-33    33.1    false    2001-09-05    varchar_33    text_33
-34    34.1    true    2022-03-17    varchar_34    text_34
-35    35.1    false    2008-06-24    varchar_35    text_35
-36    36.1    true    1987-11-23    varchar_36    text_36
-37    37.1    false    2008-11-10    varchar_37    text_37
-38    38.1    true    1986-01-29    varchar_38    text_38
-39    39.1    false    1985-02-27    varchar_39    text_39
-40    40.1    true    2016-11-28    varchar_40    text_40
-41    41.1    false    1991-02-11    varchar_41    text_41
-42    42.1    true    2019-01-08    varchar_42    text_42
-43    43.1    false    2009-05-01    varchar_43    text_43
-44    44.1    true    1986-11-15    varchar_44    text_44
-45    45.1    false    2000-07-22    varchar_45    text_45
-46    46.1    true    2002-09-07    varchar_46    text_46
-47    47.1    false    1987-09-23    varchar_47    text_47
-48    48.1    true    1985-10-25    varchar_48    text_48
-49    49.1    false    1988-10-06    varchar_49    text_49
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6
+0  ¦  0.1  ¦  true  ¦  1982-03-24  ¦  varchar_0  ¦  text_0
+1  ¦  1.1  ¦  false  ¦  1982-07-31  ¦  varchar_1  ¦  text_1
+2  ¦  2.1  ¦  true  ¦  2002-04-13  ¦  varchar_2  ¦  text_2
+3  ¦  3.1  ¦  false  ¦  2019-09-29  ¦  varchar_3  ¦  text_3
+4  ¦  4.1  ¦  true  ¦  1996-08-20  ¦  varchar_4  ¦  text_4
+5  ¦  5.1  ¦  false  ¦  2008-10-13  ¦  varchar_5  ¦  text_5
+6  ¦  6.1  ¦  true  ¦  2002-03-05  ¦  varchar_6  ¦  text_6
+7  ¦  7.1  ¦  false  ¦  1993-11-07  ¦  varchar_7  ¦  text_7
+8  ¦  8.1  ¦  true  ¦  1994-01-08  ¦  varchar_8  ¦  text_8
+9  ¦  9.1  ¦  false  ¦  1999-09-17  ¦  varchar_9  ¦  text_9
+10  ¦  10.1  ¦  true  ¦  2003-09-28  ¦  varchar_10  ¦  text_10
+11  ¦  11.1  ¦  false  ¦  1984-01-22  ¦  varchar_11  ¦  text_11
+12  ¦  12.1  ¦  true  ¦  1994-02-10  ¦  varchar_12  ¦  text_12
+13  ¦  13.1  ¦  false  ¦  1994-12-02  ¦  varchar_13  ¦  text_13
+14  ¦  14.1  ¦  true  ¦  2013-01-19  ¦  varchar_14  ¦  text_14
+15  ¦  15.1  ¦  false  ¦  2002-09-29  ¦  varchar_15  ¦  text_15
+16  ¦  16.1  ¦  true  ¦  2001-12-07  ¦  varchar_16  ¦  text_16
+17  ¦  17.1  ¦  false  ¦  1989-03-11  ¦  varchar_17  ¦  text_17
+18  ¦  18.1  ¦  true  ¦  2019-11-04  ¦  varchar_18  ¦  text_18
+19  ¦  19.1  ¦  false  ¦  2002-08-15  ¦  varchar_19  ¦  text_19
+20  ¦  20.1  ¦  true  ¦  1995-12-20  ¦  varchar_20  ¦  text_20
+21  ¦  21.1  ¦  false  ¦  2018-08-03  ¦  varchar_21  ¦  text_21
+22  ¦  22.1  ¦  true  ¦  1998-03-10  ¦  varchar_22  ¦  text_22
+23  ¦  23.1  ¦  false  ¦  2022-04-08  ¦  varchar_23  ¦  text_23
+24  ¦  24.1  ¦  true  ¦  1989-04-27  ¦  varchar_24  ¦  text_24
+25  ¦  25.1  ¦  false  ¦  2009-03-14  ¦  varchar_25  ¦  text_25
+26  ¦  26.1  ¦  true  ¦  2019-03-27  ¦  varchar_26  ¦  text_26
+27  ¦  27.1  ¦  false  ¦  1983-10-28  ¦  varchar_27  ¦  text_27
+28  ¦  28.1  ¦  true  ¦  1993-07-19  ¦  varchar_28  ¦  text_28
+29  ¦  29.1  ¦  false  ¦  1986-09-11  ¦  varchar_29  ¦  text_29
+30  ¦  30.1  ¦  true  ¦  1992-08-19  ¦  varchar_30  ¦  text_30
+31  ¦  31.1  ¦  false  ¦  1981-08-07  ¦  varchar_31  ¦  text_31
+32  ¦  32.1  ¦  true  ¦  1984-03-25  ¦  varchar_32  ¦  text_32
+33  ¦  33.1  ¦  false  ¦  2001-09-05  ¦  varchar_33  ¦  text_33
+34  ¦  34.1  ¦  true  ¦  2022-03-17  ¦  varchar_34  ¦  text_34
+35  ¦  35.1  ¦  false  ¦  2008-06-24  ¦  varchar_35  ¦  text_35
+36  ¦  36.1  ¦  true  ¦  1987-11-23  ¦  varchar_36  ¦  text_36
+37  ¦  37.1  ¦  false  ¦  2008-11-10  ¦  varchar_37  ¦  text_37
+38  ¦  38.1  ¦  true  ¦  1986-01-29  ¦  varchar_38  ¦  text_38
+39  ¦  39.1  ¦  false  ¦  1985-02-27  ¦  varchar_39  ¦  text_39
+40  ¦  40.1  ¦  true  ¦  2016-11-28  ¦  varchar_40  ¦  text_40
+41  ¦  41.1  ¦  false  ¦  1991-02-11  ¦  varchar_41  ¦  text_41
+42  ¦  42.1  ¦  true  ¦  2019-01-08  ¦  varchar_42  ¦  text_42
+43  ¦  43.1  ¦  false  ¦  2009-05-01  ¦  varchar_43  ¦  text_43
+44  ¦  44.1  ¦  true  ¦  1986-11-15  ¦  varchar_44  ¦  text_44
+45  ¦  45.1  ¦  false  ¦  2000-07-22  ¦  varchar_45  ¦  text_45
+46  ¦  46.1  ¦  true  ¦  2002-09-07  ¦  varchar_46  ¦  text_46
+47  ¦  47.1  ¦  false  ¦  1987-09-23  ¦  varchar_47  ¦  text_47
+48  ¦  48.1  ¦  true  ¦  1985-10-25  ¦  varchar_48  ¦  text_48
+49  ¦  49.1  ¦  false  ¦  1988-10-06  ¦  varchar_49  ¦  text_49
+
+#SQL[@211,N21]Result[]
 drop table test_table;
+
+#SQL[@212,N17]Result[]
 drop database ssb;
+
+#SQL[@214,N19]Result[]
 drop account `abc2`;
+
+#SQL[@216,N23]Result[]
 drop table if exists t1;
+
+#SQL[@217,N82]Result[]
 create table t1(
 col1 char(225),
 col2 varchar(225),
 col3 text,
 col4 varchar(225)
 );
+
+#SQL[@224,N96]Result[]
 load data infile '$resources/load_data/char_varchar_5.csv' into table t1 fields terminated by'?';
+
+#SQL[@225,N14]Result[]
 delete from t1;
+
+#SQL[@226,N96]Result[]
 load data infile '$resources/load_data/char_varchar_5.csv' into table t1 fields terminated by'?';
+
+#SQL[@227,N14]Result[]
 delete from t1;
+
+#SQL[@228,N96]Result[]
 load data infile '$resources/load_data/char_varchar_5.csv' into table t1 fields terminated by'?';
+
+#SQL[@229,N14]Result[]
 delete from t1;
+
+#SQL[@230,N13]Result[]
 drop table t1;
+
+#SQL[@232,N23]Result[]
 drop table if exists t1;
+
+#SQL[@233,N26]Result[]
 create table t1 (col1 int);
+
+#SQL[@234,N157]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET utf8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@235,N16]Result[4, 1, 1, 1]
 select * from t1;
 col1
 1
 2
 3
+
+#SQL[@236,N158]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET utf_8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@237,N16]Result[4, 1, 1, 1, 1, 1, 1]
 select * from t1;
 col1
 1
@@ -429,7 +657,11 @@ col1
 1
 2
 3
+
+#SQL[@238,N156]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET gbk FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@239,N16]Result[4, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 select * from t1;
 col1
 1
@@ -441,7 +673,11 @@ col1
 1
 2
 3
+
+#SQL[@240,N159]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET utf_16 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@241,N16]Result[4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 select * from t1;
 col1
 1
@@ -456,7 +692,11 @@ col1
 1
 2
 3
+
+#SQL[@242,N159]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET utf_xx FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@243,N16]Result[4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 select * from t1;
 col1
 1
@@ -474,7 +714,11 @@ col1
 1
 2
 3
+
+#SQL[@244,N161]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET "utf-xx" FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@245,N16]Result[4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 select * from t1;
 col1
 1
@@ -495,7 +739,11 @@ col1
 1
 2
 3
+
+#SQL[@246,N161]Result[]
 load data infile '$resources/load_data/test_character.csv' into table t1 CHARACTER SET "utf-16" FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@247,N16]Result[4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 select * from t1;
 col1
 1
@@ -519,531 +767,948 @@ col1
 1
 2
 3
+
+#SQL[@248,N13]Result[]
 drop table t1;
+
+#SQL[@250,N23]Result[]
 drop table if exists t1;
+
+#SQL[@251,N43]Result[]
 create table t1(col1 int, col2 varchar(10));
+
+#SQL[@252,N159]Result[]
 load data infile '$resources/load_data/test_character01.csv' into table t1 CHARACTER SET abcd FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@253,N16]Result[14, 8, 8, 8, 10, 10]
 select * from t1;
-col1    col2
-1    A
-2    B
-3    C
-4    陈
-5    李
+col1  ¦  col2
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+
+#SQL[@254,N160]Result[]
 load data infile '$resources/load_data/test_character01.csv' into table t1 CHARACTER SET utf_8 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@255,N16]Result[14, 8, 8, 8, 10, 10, 8, 8, 8, 10, 10]
 select * from t1;
-col1    col2
-1    A
-2    B
-3    C
-4    陈
-5    李
-1    A
-2    B
-3    C
-4    陈
-5    李
+col1  ¦  col2
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+
+#SQL[@256,N163]Result[]
 load data infile '$resources/load_data/test_character01.csv' into table t1 CHARACTER SET "utf-16" FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@257,N16]Result[14, 8, 8, 8, 10, 10, 8, 8, 8, 10, 10, 8, 8, 8, 10, 10]
 select * from t1;
-col1    col2
-1    A
-2    B
-3    C
-4    陈
-5    李
-1    A
-2    B
-3    C
-4    陈
-5    李
-1    A
-2    B
-3    C
-4    陈
-5    李
+col1  ¦  col2
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+
+#SQL[@258,N163]Result[]
 load data infile '$resources/load_data/test_character01.csv' into table t1 CHARACTER SET "utf_xx" FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n';
+
+#SQL[@259,N16]Result[14, 8, 8, 8, 10, 10, 8, 8, 8, 10, 10, 8, 8, 8, 10, 10, 8, 8, 8, 10, 10]
 select * from t1;
-col1    col2
-1    A
-2    B
-3    C
-4    陈
-5    李
-1    A
-2    B
-3    C
-4    陈
-5    李
-1    A
-2    B
-3    C
-4    陈
-5    李
-1    A
-2    B
-3    C
-4    陈
-5    李
+col1  ¦  col2
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+1  ¦  A
+2  ¦  B
+3  ¦  C
+4  ¦  陈
+5  ¦  李
+
+#SQL[@260,N13]Result[]
 drop table t1;
+
+#SQL[@262,N27]Result[]
 drop table if exists test01;
+
+#SQL[@263,N47]Result[]
 create table test01(col1 int, col2 varchar(20));
+
+#SQL[@264,N151]Result[]
 load data infile '$resources/load_data/test_starting_by02.csv' into table test01 CHARACTER SET "utf_8" fields terminated by ',' lines starting by 'cha';
+
+#SQL[@265,N20]Result[14, 14, 12]
 select * from test01;
-col1    col2
-null    chai
-3    yicha
+col1  ¦  col2
+null  ¦  chai
+3  ¦  yicha
+
+#SQL[@266,N17]Result[]
 drop table test01;
+
+#SQL[@268,N27]Result[]
 drop table if exists test02;
+
+#SQL[@269,N60]Result[]
 create table test02(col1 int, col2 bigint, col3 varchar(30));
+
+#SQL[@270,N146]Result[]
 load data infile '$resources/load_data/test_starting_by03.csv' into table test02 fields terminated by '|' lines starting by '1' terminated by '\n';
+
+#SQL[@271,N20]Result[24, 27, 32, 30, 33]
 select * from test02;
-col1    col2    col3
-1    2    2342424124312
-234    242324    3243vevewvw
-0    123123    32424234234
-110    234323    csrvevreerev
+col1  ¦  col2  ¦  col3
+1  ¦  2  ¦  2342424124312
+234  ¦  242324  ¦  3243vevewvw
+0  ¦  123123  ¦  32424234234
+110  ¦  234323  ¦  csrvevreerev
+
+#SQL[@272,N17]Result[]
 drop table test02;
+
+#SQL[@275,N27]Result[]
 drop table if exists test03;
+
+#SQL[@276,N55]Result[]
 create table test03(col1 varchar(20), col2 varchar(20));
+
+#SQL[@277,N152]Result[]
 load data infile '$resources/load_data/test_starting_by01.csv' into table test03 CHARACTER SET "utf_8" fields terminated by ',' lines terminated by '\n';
+
+#SQL[@278,N20]Result[14, 14, 13, 15, 14]
 select * from test03;
-col1    col2
-cha1    chai
-2    测试
-cha3    yicha
-4    chayige
+col1  ¦  col2
+cha1  ¦  chai
+2  ¦  测试
+cha3  ¦  yicha
+4  ¦  chayige
+
+#SQL[@279,N17]Result[]
 drop table test03;
+
+#SQL[@281,N27]Result[]
 drop table if exists test04;
+
+#SQL[@282,N56]Result[]
 create table test04 (col1 varchar(20), col2 varchar(60));
+
+#SQL[@283,N161]Result[]
 load data infile '$resources/load_data/test_escaped_by01.csv' into table test04 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@284,N20]Result[14, 43, 44]
 select * from test04;
-col1    col2
-John Doe    Programmer,aSoftware Engineer
-Jane Smith    Data Scientist,,Data Analyst
+col1  ¦  col2
+John Doe  ¦  Programmer,aSoftware Engineer
+Jane Smith  ¦  Data Scientist,,Data Analyst
+
+#SQL[@285,N17]Result[]
 drop table test04;
+
+#SQL[@287,N27]Result[]
 drop table if exists test05;
+
+#SQL[@288,N56]Result[]
 create table test05 (col1 varchar(20), col2 varchar(60));
+
+#SQL[@289,N161]Result[]
 load data infile '$resources/load_data/test_escaped_by02.csv' into table test05 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@290,N20]Result[14, 43, 46, 46, 45, 38, 25, 36, 31, 29, 20, 24, 26]
 select * from test05;
-col1    col2
-John Doe    Programmer, Software Engineer
-Jane Smith    Data Scientist, , Data Analyst
-John Doe    Programmer, ，Software Engineer
-Jane Smith    Data Scientist,,Data Analyst
-Bob    Data Scientist, ,Data Analyst
-Mary    Manager,Teacher
-DO Smith    Data Manager,,Teacher
-DO Smith    Doctor,\,Operator
-BenJa    Analyst,%,Operator
-ewfhwj    __ewur4f
-Steve    'wr43vew43g43
-yyWGfve    ""vdvrervevre
+col1  ¦  col2
+John Doe  ¦  Programmer, Software Engineer
+Jane Smith  ¦  Data Scientist, , Data Analyst
+John Doe  ¦  Programmer, ，Software Engineer
+Jane Smith  ¦  Data Scientist,,Data Analyst
+Bob  ¦  Data Scientist, ,Data Analyst
+Mary  ¦  Manager,Teacher
+DO Smith  ¦  Data Manager,,Teacher
+DO Smith  ¦  Doctor,\,Operator
+BenJa  ¦  Analyst,%,Operator
+ewfhwj  ¦  __ewur4f
+Steve  ¦  'wr43vew43g43
+yyWGfve  ¦  ""vdvrervevre
+
+#SQL[@291,N17]Result[]
 drop table test05;
+
+#SQL[@294,N27]Result[]
 drop table if exists test06;
+
+#SQL[@295,N55]Result[]
 create table test06(col1 varchar(20), col2 varchar(20));
+
+#SQL[@296,N162]Error[72]
 load data infile '$resources/load_data/test_enclosed_by01.csv' into table test06 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@297,N20]Result[]
 select * from test06;
-col1    col2
-load data local infile '$resources_local/load_data/test_enclosed_by01.csv' into table test06 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@298,N168]Result[]
+load data local infile '$resources/load_data/test_enclosed_by01.csv' into table test06 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@299,N20]Result[14, 20, 17]
 select * from test06;
-col1    col2
-Hello","Hi    null
-database    "db
+col1  ¦  col2
+Hello","Hi  ¦  null
+database  ¦  "db
+
+#SQL[@300,N18]Result[]
 delete from test06;
-load data local infile {"filepath"="$resources_local/load_data/test_enclosed_by01.csv", "compression"='', "format"='csv'}  into table test06 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@301,N216]Result[]
+load data local infile {"filepath"="$resources/load_data/test_enclosed_by01.csv", "compression"='', "format"='csv'}  into table test06 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@302,N20]Result[14, 20, 17]
 select * from test06;
-col1    col2
-Hello","Hi    null
-database    "db
+col1  ¦  col2
+Hello","Hi  ¦  null
+database  ¦  "db
+
+#SQL[@303,N17]Result[]
 drop table test06;
+
+#SQL[@305,N27]Result[]
 drop table if exists test07;
+
+#SQL[@306,N55]Result[]
 create table test07(col1 varchar(20), col2 varchar(20));
+
+#SQL[@307,N146]Result[]
 load data infile '$resources/load_data/test_enclosed_by02.csv' into table test07 fields terminated by ',' enclosed by '`' lines terminated by '\n';
+
+#SQL[@308,N20]Result[14, 13]
 select * from test07;
-col1    col2
-hello ,    
+col1  ¦  col2
+hello ,  ¦  
+
+#SQL[@309,N17]Result[]
 drop table test07;
+
+#SQL[@311,N27]Result[]
 drop table if exists test08;
+
+#SQL[@312,N56]Result[]
 create table test08 (col1 varchar(20), col2 varchar(20));
+
+#SQL[@313,N146]Result[]
 load data infile '$resources/load_data/test_enclosed_by01.csv' into table test08 fields terminated by ',' enclosed by '`' lines terminated by '\n';
+
+#SQL[@314,N20]Result[14, 18, 21]
 select * from test08;
-col1    col2
-"Hello""    "Hi"
-"database"    ""db"
+col1  ¦  col2
+"Hello""  ¦  "Hi"
+"database"  ¦  ""db"
+
+#SQL[@315,N17]Result[]
 drop table test08;
+
+#SQL[@318,N27]Result[]
 drop table if exists test09;
+
+#SQL[@319,N55]Result[]
 create table test09(col1 varchar(20), col2 varchar(20));
+
+#SQL[@320,N149]Result[]
 load data infile '$resources/load_data/test_starting_by04.csv' into table test09 CHARACTER SET "utf_8" fields terminated by ',' lines starting by ' ';
+
+#SQL[@321,N20]Result[14, 19, 19]
 select * from test09;
-col1    col2
-@@ db"    -234242
-   32423"    3283
+col1  ¦  col2
+@@ db"  ¦  -234242
+   32423"  ¦  3283
+
+#SQL[@322,N17]Result[]
 drop table test09;
+
+#SQL[@324,N27]Result[]
 drop table if exists test10;
+
+#SQL[@325,N41]Result[]
 create table test10(col1 text, col2 text);
+
+#SQL[@326,N193]Result[]
 load data infile {'filepath'='$resources/load_data/text.csv.tar.gz', 'compression'='tar.gz'} into table test10 FIELDS  ENCLOSED BY '"' TERMINATED BY "," LINES TERMINATED BY '\n' parallel 'true';
+
+#SQL[@327,N20]Result[14, 12, 12]
 select * from test10;
-col1    col2
-hello    1
-hello    2
+col1  ¦  col2
+hello  ¦  1
+hello  ¦  2
+
+#SQL[@329,N195]Result[]
 load data infile {'filepath'='$resources/load_data/text.csv.tar.bz2', 'compression'='tar.bz2'} into table test10 FIELDS  ENCLOSED BY '"' TERMINATED BY "," LINES TERMINATED BY '\n' parallel 'true';
+
+#SQL[@330,N20]Result[14, 12, 12, 12, 12]
 select * from test10;
-col1    col2
-hello    1
-hello    2
-hello    1
-hello    2
+col1  ¦  col2
+hello  ¦  1
+hello  ¦  2
+hello  ¦  1
+hello  ¦  2
+
+#SQL[@331,N17]Result[]
 drop table test10;
+
+#SQL[@333,N33]Result[]
 drop table if exists load_data_t1;
+
+#SQL[@334,N120]Result[]
 CREATE TABLE load_data_t1 (
 `name` VARCHAR(255) DEFAULT null,
 `age` INT DEFAULT null,
 `city` VARCHAR(255) DEFAULT null
 );
+
+#SQL[@339,N156]Result[]
 load data inline format='csv', data=$XXX$ zhangsan,26,XiAn $XXX$ into table load_data_t1 fields terminated by ',' lines terminated by '\r\n' (city,age,name);
+
+#SQL[@340,N26]Result[23, 28]
 select * from load_data_t1;
-name    age    city
-XiAn     26     zhangsan
+name  ¦  age  ¦  city
+XiAn   ¦  26  ¦   zhangsan
+
+#SQL[@341,N24]Result[]
 delete from load_data_t1;
+
+#SQL[@342,N142]Result[]
 load data inline format='csv', data=$XXX$ XiAn,26 $XXX$ into table load_data_t1 fields terminated by ',' lines terminated by '\r\n' (city,age);
+
+#SQL[@343,N26]Result[23, 23]
 select * from load_data_t1;
-name    age    city
-null    26     XiAn
+name  ¦  age  ¦  city
+null  ¦  26  ¦   XiAn
+
+#SQL[@344,N24]Result[]
 delete from load_data_t1;
+
+#SQL[@345,N159]Result[]
 load data inline format='csv', data=$XXX$ zhangsan, XiAn,26 $XXX$ into table load_data_t1 fields terminated by ',' lines terminated by '\r\n' (@name, city,age);
+
+#SQL[@346,N26]Result[23, 23]
 select * from load_data_t1;
-name    age    city
-null    26     XiAn
+name  ¦  age  ¦  city
+null  ¦  26  ¦   XiAn
+
+#SQL[@347,N24]Result[]
 delete from load_data_t1;
+
+#SQL[@348,N157]Result[]
 load data inline format='csv', data=$XXX$ zhangsan, XiAn,26 $XXX$ into table load_data_t1 fields terminated by ',' lines terminated by '\r\n' (@aa, city,age);
+
+#SQL[@349,N26]Result[23, 23]
 select * from load_data_t1;
-name    age    city
-null    26     XiAn
+name  ¦  age  ¦  city
+null  ¦  26  ¦   XiAn
+
+#SQL[@350,N24]Result[]
 delete from load_data_t1;
+
+#SQL[@351,N152]Error[72]
 load data inline format='csv', data=$XXX$ zhangsan, XiAn,26 $XXX$ into table load_data_t1 fields terminated by ',' lines terminated by '\r\n' (city,age);
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@352,N143]Error[72]
 load data inline format='csv', data=$XXX$ zhangsan $XXX$ into table load_data_t1 fields terminated by ',' lines terminated by '\r\n' (city,age);
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@353,N23]Result[]
 drop table load_data_t1;
+
+#SQL[@355,N33]Result[]
 drop table if exists load_data_t2;
+
+#SQL[@356,N60]Result[]
 create table load_data_t2(id int, name varchar(20), age int);
+
+#SQL[@357,N155]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_01.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id,   name , age);
+
+#SQL[@358,N38]Result[21, 20, 19, 21, 21, 20, 21]
 select * from load_data_t2 order by id;
-id    name    age
-1     aron    32
-2     ben    35
-3     cindy    22
-4     david    33
-5     emma    18
-6     frank    59
+id  ¦  name  ¦  age
+1  ¦   aron  ¦  32
+2  ¦   ben  ¦  35
+3  ¦   cindy  ¦  22
+4  ¦   david  ¦  33
+5  ¦   emma  ¦  18
+6  ¦   frank  ¦  59
+
+#SQL[@359,N24]Result[]
 delete from load_data_t2;
+
+#SQL[@361,N152]Error[69]
 LOAD DATA infile '$resources/load_data/test_columnlist_01.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (name, id, age);
 internal error: the input value 'aron' is not int32 type for column 1
+
+#SQL[@364,N150]Error[72]
 LOAD DATA infile '$resources/load_data/test_columnlist_01.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id,   name );
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@365,N38]Result[]
 select * from load_data_t2 order by id;
-id    name    age
+
+#SQL[@366,N24]Result[]
 delete from load_data_t2;
+
+#SQL[@368,N164]Error[47]
 LOAD DATA infile '$resources/load_data/test_columnlist_01.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id,   name , age, address);
 internal error: column 'address' does not exist
+
+#SQL[@371,N152]Error[72]
 LOAD DATA infile '$resources/load_data/test_columnlist_02.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id, name, age);
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@372,N26]Result[]
 select * from load_data_t2;
-id    name    age
+
+#SQL[@373,N24]Result[]
 delete from load_data_t2;
+
+#SQL[@375,N147]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_02.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (id, name);
+
+#SQL[@376,N38]Result[21, 22, 21, 23, 23, 22, 23]
 select * from load_data_t2 order by id;
-id    name    age
-1     aron    null
-2     ben    null
-3     cindy    null
-4     david    null
-5     emma    null
-6     frank    null
+id  ¦  name  ¦  age
+1  ¦   aron  ¦  null
+2  ¦   ben  ¦  null
+3  ¦   cindy  ¦  null
+4  ¦   david  ¦  null
+5  ¦   emma  ¦  null
+6  ¦   frank  ¦  null
+
+#SQL[@377,N24]Result[]
 delete from load_data_t2;
+
+#SQL[@379,N148]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_02.csv' into table load_data_t2 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (age, name);
+
+#SQL[@380,N38]Result[21, 22, 21, 23, 23, 22, 23]
 select * from load_data_t2 order by id;
-id    name    age
-null     aron    1
-null     ben    2
-null     cindy    3
-null     david    4
-null     emma    5
-null     frank    6
+id  ¦  name  ¦  age
+null  ¦   aron  ¦  1
+null  ¦   ben  ¦  2
+null  ¦   cindy  ¦  3
+null  ¦   david  ¦  4
+null  ¦   emma  ¦  5
+null  ¦   frank  ¦  6
+
+#SQL[@381,N23]Result[]
 drop table load_data_t2;
+
+#SQL[@383,N33]Result[]
 drop table if exists load_data_t3;
+
+#SQL[@384,N87]Result[]
 create table load_data_t3(col1 int not null, col2 varchar(20) default "jane", col3 int);
+
+#SQL[@385,N149]Error[54]
 LOAD DATA infile '$resources/load_data/test_columnlist_02.csv' into table load_data_t3 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (col3, col2);
 invalid input: invalid default value for column 'col1'
+
+#SQL[@387,N149]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t3 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (col1, col3);
+
+#SQL[@388,N38]Error[39]
 select * from load_data_t3 order by id;
 invalid input: column id does not exist
+
+#SQL[@389,N23]Result[]
 drop table load_data_t3;
+
+#SQL[@391,N33]Result[]
 drop table if exists load_data_t4;
+
+#SQL[@392,N56]Result[]
 create table load_data_t4(col1 int default 22, col2 int);
+
+#SQL[@393,N150]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t4 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (col1, @col2);
+
+#SQL[@394,N26]Result[14, 11, 11]
 select * from load_data_t4;
-col1    col2
-1    null
-2    null
+col1  ¦  col2
+1  ¦  null
+2  ¦  null
+
+#SQL[@395,N24]Result[]
 delete from load_data_t4;
+
+#SQL[@396,N150]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t4 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (@col1, col2);
+
+#SQL[@397,N26]Result[14, 10, 10]
 select * from load_data_t4;
-col1    col2
-22    32
-22    35
+col1  ¦  col2
+22  ¦  32
+22  ¦  35
+
+#SQL[@398,N24]Result[]
 delete from load_data_t4;
+
+#SQL[@400,N150]Error[72]
 LOAD DATA infile '$resources/load_data/test_columnlist_04.csv' into table load_data_t4 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (@col1, col2);
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@401,N23]Result[]
 drop table load_data_t4;
+
+#SQL[@403,N33]Result[]
 drop table if exists load_data_t5;
+
+#SQL[@404,N55]Result[]
 create table load_data_t5(col1 int, col2 int, col3 int);
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (@col1, col2);
+
+#SQL[@405,N156]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (@col1, col2);
+
+#SQL[@406,N26]Result[24, 24, 24]
 select * from load_data_t5;
-col1    col2    col3
-null    null    null
-null    null    null
+col1  ¦  col2  ¦  col3
+null  ¦  null  ¦  null
+null  ¦  null  ¦  null
+
+#SQL[@407,N24]Result[]
 delete from load_data_t5;
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (col1, col2);
+
+#SQL[@408,N155]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n' (col1, col2);
+
+#SQL[@409,N26]Result[24, 21, 21]
 select * from load_data_t5;
-col1    col2    col3
-1    null    null
-2    null    null
+col1  ¦  col2  ¦  col3
+1  ¦  null  ¦  null
+2  ¦  null  ¦  null
+
+#SQL[@410,N24]Result[]
 delete from load_data_t5;
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@411,N142]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@412,N26]Result[24, 21, 21]
 select * from load_data_t5;
-col1    col2    col3
-1    null    null
-2    null    null
+col1  ¦  col2  ¦  col3
+1  ¦  null  ¦  null
+2  ¦  null  ¦  null
+
+#SQL[@413,N24]Result[]
 delete from load_data_t5;
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'(col1, @col2);
+
+#SQL[@414,N155]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_04.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'(col1, @col2);
+
+#SQL[@415,N26]Result[24, 21, 21]
 select * from load_data_t5;
-col1    col2    col3
-1    null    null
-2    null    null
+col1  ¦  col2  ¦  col3
+1  ¦  null  ¦  null
+2  ¦  null  ¦  null
+
+#SQL[@416,N24]Result[]
 delete from load_data_t5;
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_03.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@417,N142]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@418,N26]Result[24, 19, 19]
 select * from load_data_t5;
-col1    col2    col3
-1    32    null
-2    35    null
+col1  ¦  col2  ¦  col3
+1  ¦  32  ¦  null
+2  ¦  35  ¦  null
+
+#SQL[@419,N24]Result[]
 delete from load_data_t5;
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_03.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'(@col1, col2);
+
+#SQL[@420,N155]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t5 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n'(@col1, col2);
+
+#SQL[@421,N26]Result[24, 22, 22]
 select * from load_data_t5;
-col1    col2    col3
-null    32    null
-null    35    null
+col1  ¦  col2  ¦  col3
+null  ¦  32  ¦  null
+null  ¦  35  ¦  null
+
+#SQL[@422,N23]Result[]
 drop table load_data_t5;
+
+#SQL[@424,N33]Result[]
 drop table if exists load_data_t6;
+
+#SQL[@425,N35]Result[]
 create table load_data_t6(col1 int);
-LOAD DATA local infile '$resources_local/load_data/test_columnlist_03.csv' into table load_data_t6 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@426,N142]Result[]
+LOAD DATA local infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t6 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@427,N26]Result[4, 1, 1]
 select * from load_data_t6;
 col1
 1
 2
+
+#SQL[@428,N23]Result[]
 drop table load_data_t6;
+
+#SQL[@430,N33]Result[]
 drop table if exists load_data_t7;
+
+#SQL[@431,N80]Result[]
 create table load_data_t7 (col1 varchar(20), col2 varchar(20), col3 varchar(20));
-load data local infile '$resources_local/load_data/test_escaped_by03.csv' into table load_data_t7 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@432,N173]Result[]
+load data local infile '$resources/load_data/test_escaped_by03.csv' into table load_data_t7 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
+
+#SQL[@433,N26]Result[24, 26]
 select * from load_data_t7;
-col1    col2    col3
-hello ", ,        null
+col1  ¦  col2  ¦  col3
+hello ", ,  ¦    ¦  null
+
+#SQL[@434,N24]Result[]
 delete from load_data_t7;
+
+#SQL[@435,N167]Error[72]
 load data infile '$resources/load_data/test_escaped_by03.csv' into table load_data_t7 fields terminated by ',' enclosed by '"' escaped by '\\' lines terminated by '\n';
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@436,N26]Result[]
 select * from load_data_t7;
-col1    col2    col3
+
+#SQL[@437,N23]Result[]
 drop table load_data_t7;
+
+#SQL[@439,N32]Result[]
 drop account if exists test_load;
+
+#SQL[@440,N66]Result[]
 create account test_load ADMIN_NAME 'admin' IDENTIFIED BY '123456';
+
+#SQL[@442,N38]Result[24, 147]
 show session variables like 'sql_mode';
-Variable_name    Value
-sql_mode    ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES
+Variable_name  ¦  Value
+sql_mode  ¦  ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ONLY_FULL_GROUP_BY,PIPES_AS_CONCAT,STRICT_TRANS_TABLES
+
+#SQL[@443,N47]Result[]
 set session sql_mode = "NO_ENGINE_SUBSTITUTION";
+
+#SQL[@444,N38]Result[24, 36]
 show session variables like 'sql_mode';
-Variable_name    Value
-sql_mode    NO_ENGINE_SUBSTITUTION
+Variable_name  ¦  Value
+sql_mode  ¦  NO_ENGINE_SUBSTITUTION
+
+#SQL[@445,N28]Result[]
 create database test_load_db;
+
+#SQL[@446,N16]Result[]
 use test_load_db;
+
+#SQL[@447,N33]Result[]
 drop table if exists load_data_t8;
+
+#SQL[@448,N35]Result[]
 create table load_data_t8(col1 int);
+
+#SQL[@449,N136]Result[]
 LOAD DATA infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t8 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
+
+#SQL[@450,N26]Result[4, 1, 1]
 select * from load_data_t8;
 col1
 1
 2
+
+#SQL[@451,N142]Result[]
 set session sql_mode = "ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES";
+
+#SQL[@452,N136]Error[72]
 LOAD DATA infile '$resources/load_data/test_columnlist_03.csv' into table load_data_t8 FIELDS TERMINATED BY ',' LINES TERMINATED BY '\n';
 invalid input: the data of row 1 contained is not equal to input columns
+
+#SQL[@453,N23]Result[]
 drop table load_data_t8;
+
+#SQL[@454,N26]Result[]
 drop database test_load_db;
+
+#SQL[@457,N22]Result[]
 drop account test_load;
+
+#SQL[@459,N33]Result[]
 drop table if exists load_data_t9;
+
+#SQL[@460,N73]Result[]
 create table load_data_t9(col1 int, col2 varchar(100), col3 varchar(100));
+
+#SQL[@461,N122]Result[]
 load data infile '$resources/load_data/test_parallel.csv' into table load_data_t9 fields terminated by ',' parallel 'true';
+
+#SQL[@462,N33]Result[8, 5]
 select count(*) from load_data_t9;
 count(*)
 10000
+
+#SQL[@463,N24]Result[]
 delete from load_data_t9;
+
+#SQL[@464,N141]Result[]
 load data infile '$resources/load_data/test_parallel.csv' into table load_data_t9 fields terminated by ',' ignore 99999 lines parallel 'true';
+
+#SQL[@465,N33]Result[8, 1]
 select count(*) from load_data_t9;
 count(*)
 0
+
+#SQL[@466,N24]Result[]
 delete from load_data_t9;
+
+#SQL[@467,N140]Result[]
 load data infile '$resources/load_data/test_parallel.csv' into table load_data_t9 fields terminated by ',' ignore 9999 lines parallel 'true';
+
+#SQL[@468,N33]Result[8, 1]
 select count(*) from load_data_t9;
 count(*)
 1
+
+#SQL[@469,N24]Result[]
 delete from load_data_t9;
+
+#SQL[@470,N163]Result[]
 load data infile '$resources/load_data/test_parallel.csv' into table load_data_t9 fields terminated by ',' enclosed by '"' LINES TERMINATED BY '\n' parallel 'true';
+
+#SQL[@471,N33]Result[8, 5]
 select count(*) from load_data_t9;
 count(*)
 10000
+
+#SQL[@472,N24]Result[]
 delete from load_data_t9;
+
+#SQL[@473,N136]Result[]
 load data infile '$resources/load_data/test_parallel.csv' into table load_data_t9 fields terminated by ',' parallel 'true' strict 'true';
+
+#SQL[@474,N33]Result[8, 5]
 select count(*) from load_data_t9;
 count(*)
 10000
+
+#SQL[@475,N24]Result[]
 delete from load_data_t9;
+
+#SQL[@476,N137]Result[]
 load data infile '$resources/load_data/test_parallel.csv' into table load_data_t9 fields terminated by ',' parallel 'true' strict 'false';
+
+#SQL[@477,N33]Result[8, 5]
 select count(*) from load_data_t9;
 count(*)
 10000
+
+#SQL[@478,N24]Result[]
 delete from load_data_t9;
+
+#SQL[@480,N183]Result[]
 load data infile {'filepath'='$resources/load_data/test_parallel_gz.csv.gz'} into table load_data_t9 FIELDS  ENCLOSED BY '"' TERMINATED BY "," LINES TERMINATED BY '\n' parallel 'true';
+
+#SQL[@481,N33]Result[8, 6]
 select count(*) from load_data_t9;
 count(*)
 400000
+
+#SQL[@483,N23]Result[]
 drop table load_data_t9;
+
+#SQL[@485,N35]Result[]
 drop table if exists load_data_type;
+
+#SQL[@486,N37]Result[]
 create table load_data_type(col1 int);
+
+#SQL[@488,N103]Error[68]
 load data infile '$resources/load_data/test_int.csv' into table load_data_type fields terminated by ',';
 internal error: the input value '1.9' is not int32 type for column 0
+
+#SQL[@489,N118]Result[]
 load data infile '$resources/load_data/test_int.csv' into table load_data_type fields terminated by ',' ignore 1 lines;
+
+#SQL[@490,N28]Result[4, 1]
 select * from load_data_type;
 col1
 1
+
+#SQL[@491,N25]Result[]
 drop table load_data_type;
+
+#SQL[@493,N35]Result[]
 drop table if exists load_data_0303;
+
+#SQL[@494,N4892]Result[]
 CREATE TABLE load_data_0303 (
-mandt VARCHAR(3) NOT NULL COMMENT '客户端',
-vbeln VARCHAR(10) NOT NULL COMMENT '销售凭证号',
-zfkb1 DECIMAL(5,3) COMMENT '折扣比例1',
-zfkb2 DECIMAL(5,3) COMMENT '折扣比例2',
-zfkb3 DECIMAL(5,3) COMMENT '折扣比例3',
-zfkb4 DECIMAL(5,3) COMMENT '折扣比例4',
-zfkb5 DECIMAL(5,3) COMMENT '折扣比例5',
-zfkb6 DECIMAL(5,3) COMMENT '折扣比例6',
-zfkb7 DECIMAL(5,3) COMMENT '折扣比例7',
-zfkb8 DECIMAL(5,3) COMMENT '折扣比例8',
-zfkb9 DECIMAL(5,3) COMMENT '折扣比例9',
-zfkd1 VARCHAR(10) COMMENT '折扣代码1',
-zfkd2 VARCHAR(10) COMMENT '折扣代码2',
-zfkd3 VARCHAR(10) COMMENT '折扣代码3',
-zfkd4 VARCHAR(10) COMMENT '折扣代码4',
-zfkd5 VARCHAR(10) COMMENT '折扣代码5',
-zfkd6 VARCHAR(10) COMMENT '折扣代码6',
-zfkd7 VARCHAR(10) COMMENT '折扣代码7',
-zfkd8 VARCHAR(10) COMMENT '折扣代码8',
-zfkd9 VARCHAR(10) COMMENT '折扣代码9',
-zfkp1 VARCHAR(1) COMMENT '折扣标识1',
-zfkp2 VARCHAR(1) COMMENT '折扣标识2',
-zfkp3 VARCHAR(1) COMMENT '折扣标识3',
-zfkp4 VARCHAR(1) COMMENT '折扣标识4',
-zfkp5 VARCHAR(1) COMMENT '折扣标识5',
-zfkp6 VARCHAR(1) COMMENT '折扣标识6',
-zfkp7 VARCHAR(1) COMMENT '折扣标识7',
-zfkp8 VARCHAR(1) COMMENT '折扣标识8',
-zfkp9 VARCHAR(1) COMMENT '折扣标识9',
-zterm VARCHAR(4) COMMENT '付款条件',
-xsplt VARCHAR(1) COMMENT '销售拆分标识',
-xt000 VARCHAR(1) COMMENT '特殊标识',
-htqrs VARCHAR(1) COMMENT '合同确认标识',
-qrszje DECIMAL(15,2) COMMENT '确认总金额',
-kxfje DECIMAL(15,2) COMMENT '可销金额',
-bkxfje DECIMAL(15,2) COMMENT '不可销金额',
-jsjz DECIMAL(15,2) COMMENT '结算价值',
-xszk DECIMAL(5,2) COMMENT '销售折扣',
-bzf DECIMAL(15,2) COMMENT '保证费',
-gsbjf DECIMAL(15,2) COMMENT '公司拨金额',
-xhsh DECIMAL(15,2) COMMENT '销货赊回',
-xhjy DECIMAL(15,2) COMMENT '销货交易',
-xhpcb DECIMAL(15,2) COMMENT '销货赔偿拨',
-ckfjf DECIMAL(15,2) COMMENT '出口附加费',
-ysf1 DECIMAL(15,2) COMMENT '运输费1',
-ysf2 DECIMAL(15,2) COMMENT '运输费2',
-zbfwf DECIMAL(15,2) COMMENT '资本服务费',
-sjzzf DECIMAL(15,2) COMMENT '实际支付总费',
-wwjgf DECIMAL(15,2) COMMENT '未完工交付费',
-azf1 DECIMAL(15,2) COMMENT '安装费1',
-xjkcf DECIMAL(15,2) COMMENT '现金扣除费',
-khkcf DECIMAL(15,2) COMMENT '客户扣除费',
-syjcf DECIMAL(15,2) COMMENT '商业检查费',
-jsfwb DECIMAL(5,2) COMMENT '技术服务比例',
-jsfwf DECIMAL(15,2) COMMENT '技术服务费',
-shfy DECIMAL(15,2) COMMENT '审核费用',
-crmxm VARCHAR(10) COMMENT 'CRM项目',
-crmht VARCHAR(10) COMMENT 'CRM合同',
-zftdb VARCHAR(1) COMMENT '支付通道',
-zftbl DECIMAL(5,2) COMMENT '支付比例',
-zdkdb VARCHAR(1) COMMENT '折扣通道',
-zftr1 VARCHAR(8) COMMENT '支付期限1 (YYYYMMDD)',
-zftr2 VARCHAR(8) COMMENT '支付期限2 (YYYYMMDD)',
-zftr3 VARCHAR(8) COMMENT '支付期限3 (YYYYMMDD)',
-zftb1 DECIMAL(5,2) COMMENT '支付比例1',
-zftb2 DECIMAL(5,2) COMMENT '支付比例2',
-zftb3 DECIMAL(5,2) COMMENT '支付比例3',
-zvkgrp VARCHAR(3) COMMENT '销售组',
-jssyr VARCHAR(12) COMMENT '结算所有人',
-xclear VARCHAR(1) COMMENT '清算标识',
-uname VARCHAR(12) COMMENT '用户名',
-udate VARCHAR(8) COMMENT '更新日期 (YYYYMMDD)',
-utime VARCHAR(6) COMMENT '更新时间 (HHMMSS)',
-zwwglf DECIMAL(5,2) COMMENT '未完工利率',
-zazglf DECIMAL(5,2) COMMENT '安装管理利率',
-zfksh VARCHAR(1) COMMENT '付款审核标识',
-zfkt1 VARCHAR(4) COMMENT '付款条件1',
-zfkt2 VARCHAR(4) COMMENT '付款条件2',
-zfkt3 VARCHAR(4) COMMENT '付款条件3',
-zfkt4 VARCHAR(4) COMMENT '付款条件4',
-zfkt5 VARCHAR(4) COMMENT '付款条件5',
-zfkt6 VARCHAR(4) COMMENT '付款条件6',
-zfkt7 VARCHAR(4) COMMENT '付款条件7',
-zfkt8 VARCHAR(4) COMMENT '付款条件8',
-zfkt9 VARCHAR(4) COMMENT '付款条件9',
-qrsdat VARCHAR(8) COMMENT '确认日期 (YYYYMMDD)',
-dlaz DECIMAL(15,2) COMMENT '代理安装费',
-zzcbl DECIMAL(5,2) COMMENT '总成本比例',
-zcbbl DECIMAL(5,2) COMMENT '成本比例',
-zydjf VARCHAR(1) COMMENT '重要计费标识',
-zscbjd VARCHAR(8) COMMENT '生产报价单 (YYYYMMDD)',
-jssbhj DECIMAL(15,2) COMMENT '结算拨回金额',
-xszhf DECIMAL(15,2) COMMENT '销售折扣费',
-xsyjj DECIMAL(15,2) COMMENT '销售佣金价',
-xszhbgf DECIMAL(15,2) COMMENT '销售折扣保管费',
-jtxsyj DECIMAL(15,2) COMMENT '具体销售佣金',
-jtxsdj DECIMAL(15,2) COMMENT '具体销售单价',
-zxsfwf DECIMAL(15,2) COMMENT '最新服务费',
-zydbm VARCHAR(10) COMMENT '重要部门',
-zznrl VARCHAR(40) COMMENT '总内容量',
-zgfrl VARCHAR(40) COMMENT '供方容量',
-zgfrldw VARCHAR(3) COMMENT '供方容量单位',
-zbkbl VARCHAR(10) COMMENT '折扣比例备份',
-PRIMARY KEY (mandt, vbeln)
+  mandt VARCHAR(3) NOT NULL COMMENT '客户端',
+  vbeln VARCHAR(10) NOT NULL COMMENT '销售凭证号',
+  zfkb1 DECIMAL(5,3) COMMENT '折扣比例1',
+  zfkb2 DECIMAL(5,3) COMMENT '折扣比例2',
+  zfkb3 DECIMAL(5,3) COMMENT '折扣比例3',
+  zfkb4 DECIMAL(5,3) COMMENT '折扣比例4',
+  zfkb5 DECIMAL(5,3) COMMENT '折扣比例5',
+  zfkb6 DECIMAL(5,3) COMMENT '折扣比例6',
+  zfkb7 DECIMAL(5,3) COMMENT '折扣比例7',
+  zfkb8 DECIMAL(5,3) COMMENT '折扣比例8',
+  zfkb9 DECIMAL(5,3) COMMENT '折扣比例9',
+  zfkd1 VARCHAR(10) COMMENT '折扣代码1',
+  zfkd2 VARCHAR(10) COMMENT '折扣代码2',
+  zfkd3 VARCHAR(10) COMMENT '折扣代码3',
+  zfkd4 VARCHAR(10) COMMENT '折扣代码4',
+  zfkd5 VARCHAR(10) COMMENT '折扣代码5',
+  zfkd6 VARCHAR(10) COMMENT '折扣代码6',
+  zfkd7 VARCHAR(10) COMMENT '折扣代码7',
+  zfkd8 VARCHAR(10) COMMENT '折扣代码8',
+  zfkd9 VARCHAR(10) COMMENT '折扣代码9',
+  zfkp1 VARCHAR(1) COMMENT '折扣标识1',
+  zfkp2 VARCHAR(1) COMMENT '折扣标识2',
+  zfkp3 VARCHAR(1) COMMENT '折扣标识3',
+  zfkp4 VARCHAR(1) COMMENT '折扣标识4',
+  zfkp5 VARCHAR(1) COMMENT '折扣标识5',
+  zfkp6 VARCHAR(1) COMMENT '折扣标识6',
+  zfkp7 VARCHAR(1) COMMENT '折扣标识7',
+  zfkp8 VARCHAR(1) COMMENT '折扣标识8',
+  zfkp9 VARCHAR(1) COMMENT '折扣标识9',
+  zterm VARCHAR(4) COMMENT '付款条件',
+  xsplt VARCHAR(1) COMMENT '销售拆分标识',
+  xt000 VARCHAR(1) COMMENT '特殊标识',
+  htqrs VARCHAR(1) COMMENT '合同确认标识',
+  qrszje DECIMAL(15,2) COMMENT '确认总金额',
+  kxfje DECIMAL(15,2) COMMENT '可销金额',
+  bkxfje DECIMAL(15,2) COMMENT '不可销金额',
+  jsjz DECIMAL(15,2) COMMENT '结算价值',
+  xszk DECIMAL(5,2) COMMENT '销售折扣',
+  bzf DECIMAL(15,2) COMMENT '保证费',
+  gsbjf DECIMAL(15,2) COMMENT '公司拨金额',
+  xhsh DECIMAL(15,2) COMMENT '销货赊回',
+  xhjy DECIMAL(15,2) COMMENT '销货交易',
+  xhpcb DECIMAL(15,2) COMMENT '销货赔偿拨',
+  ckfjf DECIMAL(15,2) COMMENT '出口附加费',
+  ysf1 DECIMAL(15,2) COMMENT '运输费1',
+  ysf2 DECIMAL(15,2) COMMENT '运输费2',
+  zbfwf DECIMAL(15,2) COMMENT '资本服务费',
+  sjzzf DECIMAL(15,2) COMMENT '实际支付总费',
+  wwjgf DECIMAL(15,2) COMMENT '未完工交付费',
+  azf1 DECIMAL(15,2) COMMENT '安装费1',
+  xjkcf DECIMAL(15,2) COMMENT '现金扣除费',
+  khkcf DECIMAL(15,2) COMMENT '客户扣除费',
+  syjcf DECIMAL(15,2) COMMENT '商业检查费',
+  jsfwb DECIMAL(5,2) COMMENT '技术服务比例',
+  jsfwf DECIMAL(15,2) COMMENT '技术服务费',
+  shfy DECIMAL(15,2) COMMENT '审核费用',
+  crmxm VARCHAR(10) COMMENT 'CRM项目',
+  crmht VARCHAR(10) COMMENT 'CRM合同',
+  zftdb VARCHAR(1) COMMENT '支付通道',
+  zftbl DECIMAL(5,2) COMMENT '支付比例',
+  zdkdb VARCHAR(1) COMMENT '折扣通道',
+  zftr1 VARCHAR(8) COMMENT '支付期限1 (YYYYMMDD)',
+  zftr2 VARCHAR(8) COMMENT '支付期限2 (YYYYMMDD)',
+  zftr3 VARCHAR(8) COMMENT '支付期限3 (YYYYMMDD)',
+  zftb1 DECIMAL(5,2) COMMENT '支付比例1',
+  zftb2 DECIMAL(5,2) COMMENT '支付比例2',
+  zftb3 DECIMAL(5,2) COMMENT '支付比例3',
+  zvkgrp VARCHAR(3) COMMENT '销售组',
+  jssyr VARCHAR(12) COMMENT '结算所有人',
+  xclear VARCHAR(1) COMMENT '清算标识',
+  uname VARCHAR(12) COMMENT '用户名',
+  udate VARCHAR(8) COMMENT '更新日期 (YYYYMMDD)',
+  utime VARCHAR(6) COMMENT '更新时间 (HHMMSS)',
+  zwwglf DECIMAL(5,2) COMMENT '未完工利率',
+  zazglf DECIMAL(5,2) COMMENT '安装管理利率',
+  zfksh VARCHAR(1) COMMENT '付款审核标识',
+  zfkt1 VARCHAR(4) COMMENT '付款条件1',
+  zfkt2 VARCHAR(4) COMMENT '付款条件2',
+  zfkt3 VARCHAR(4) COMMENT '付款条件3',
+  zfkt4 VARCHAR(4) COMMENT '付款条件4',
+  zfkt5 VARCHAR(4) COMMENT '付款条件5',
+  zfkt6 VARCHAR(4) COMMENT '付款条件6',
+  zfkt7 VARCHAR(4) COMMENT '付款条件7',
+  zfkt8 VARCHAR(4) COMMENT '付款条件8',
+  zfkt9 VARCHAR(4) COMMENT '付款条件9',
+  qrsdat VARCHAR(8) COMMENT '确认日期 (YYYYMMDD)',
+  dlaz DECIMAL(15,2) COMMENT '代理安装费',
+  zzcbl DECIMAL(5,2) COMMENT '总成本比例',
+  zcbbl DECIMAL(5,2) COMMENT '成本比例',
+  zydjf VARCHAR(1) COMMENT '重要计费标识',
+  zscbjd VARCHAR(8) COMMENT '生产报价单 (YYYYMMDD)',
+  jssbhj DECIMAL(15,2) COMMENT '结算拨回金额',
+  xszhf DECIMAL(15,2) COMMENT '销售折扣费',
+  xsyjj DECIMAL(15,2) COMMENT '销售佣金价',
+  xszhbgf DECIMAL(15,2) COMMENT '销售折扣保管费',
+  jtxsyj DECIMAL(15,2) COMMENT '具体销售佣金',
+  jtxsdj DECIMAL(15,2) COMMENT '具体销售单价',
+  zxsfwf DECIMAL(15,2) COMMENT '最新服务费',
+  zydbm VARCHAR(10) COMMENT '重要部门',
+  zznrl VARCHAR(40) COMMENT '总内容量',
+  zgfrl VARCHAR(40) COMMENT '供方容量',
+  zgfrldw VARCHAR(3) COMMENT '供方容量单位',
+  zbkbl VARCHAR(10) COMMENT '折扣比例备份',
+  PRIMARY KEY (mandt, vbeln)
 );
+
+#SQL[@601,N141]Result[]
 LOAD DATA INFILE '$resources/load_data/test_parse_newline.csv' INTO TABLE load_data_0303 FIELDS TERMINATED BY ','  lines terminated by '\r\n';
+
+#SQL[@602,N35]Result[8, 3]
 select count(*) from load_data_0303;
 count(*)
 100
+
+#SQL[@603,N26]Result[]
 delete from load_data_0303;
+
+#SQL[@604,N139]Result[]
 LOAD DATA INFILE '$resources/load_data/test_parse_newline.csv' INTO TABLE load_data_0303 FIELDS TERMINATED BY ','  lines terminated by '\n';
+
+#SQL[@605,N35]Result[8, 3]
 select count(*) from load_data_0303;
 count(*)
 100
+
+#SQL[@606,N26]Result[]
 delete from load_data_0303;
+
+#SQL[@607,N113]Result[]
 LOAD DATA INFILE '$resources/load_data/test_parse_newline.csv' INTO TABLE load_data_0303 FIELDS TERMINATED BY ',';
+
+#SQL[@608,N35]Result[8, 3]
 select count(*) from load_data_0303;
 count(*)
 100
+
+#SQL[@609,N25]Result[]
 drop table load_data_0303;
+

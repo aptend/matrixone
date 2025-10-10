@@ -1,30 +1,44 @@
+#SQL[@1,N35]Result[22, 8, 8, 8]
 values row(1,1), row(2,2), row(3,3);
-column_0    column_1
-1    1
-2    2
-3    3
+column_0  ¦  column_1
+1  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@2,N58]Result[22, 8, 8, 8]
 values row(1,1), row(2,2), row(3,3) order by column_0 desc;
-column_0    column_1
-3    3
-2    2
-1    1
+column_0  ¦  column_1
+3  ¦  3
+2  ¦  2
+1  ¦  1
+
+#SQL[@3,N53]Result[22, 8, 8, 8]
 select * from (values row(1,1), row(2,2), row(3,3)) a;
-column_0    column_1
-1    1
-2    2
-3    3
+column_0  ¦  column_1
+1  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@4,N59]Result[8, 8, 8, 8]
 select * from (values row(1,1), row(2,2), row(3,3)) a(a, b);
-a    b
-1    1
-2    2
-3    3
+a  ¦  b
+1  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@5,N61]Result[36, 17, 17]
 select * from (values row(1,"1",1.0), row(abs(-2),"2",2.0)) a;
-column_0    column_1    column_2
-1    1    1.0
-2    2    2.0
+column_0  ¦  column_1  ¦  column_2
+1  ¦  1  ¦  1.0
+2  ¦  2  ¦  2.0
+
+#SQL[@6,N71]Result[8, 1]
 select column_1 from (values row(0, 1, cast('[3, 4, 5]' as vecf32(3))));
 column_1
 1
+
+#SQL[@7,N71]Result[8, 9]
 select column_2 from (values row(0, 1, cast('[3, 4, 5]' as vecf32(3))));
 column_2
 [3, 4, 5]
+

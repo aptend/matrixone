@@ -1,512 +1,1040 @@
+#SQL[@1,N27]Result[]
 drop database if exists db1;
+
+#SQL[@2,N27]Result[]
 drop database if exists db2;
+
+#SQL[@3,N19]Result[]
 create database db1;
+
+#SQL[@4,N19]Result[]
 create database db2;
+
+#SQL[@5,N7]Result[]
 use db2;
+
+#SQL[@6,N23]Result[]
 drop table if exists t1;
+
+#SQL[@7,N23]Result[]
 create table t1 (a int);
+
+#SQL[@8,N33]Result[]
 insert into t1 values (1),(2),(4);
+
+#SQL[@9,N7]Result[]
 use db1;
+
+#SQL[@10,N23]Result[]
 drop table if exists t2;
+
+#SQL[@11,N23]Result[]
 create table t2 (b int);
+
+#SQL[@12,N32]Result[]
 insert into t2 values(1),(2),(3);
+
+#SQL[@13,N86]Result[]
 delete from db1.t2, db2.t1 using db1.t2 join db2.t1 on db1.t2.b = db2.t1.a where 2 > 1;
+
+#SQL[@14,N20]Result[1, 1]
 select * from db1.t2;
 b
 3
+
+#SQL[@15,N20]Result[1, 1]
 select * from db2.t1;
 a
 4
+
+#SQL[@16,N23]Result[]
 drop table if exists t1;
+
+#SQL[@17,N23]Result[]
 drop table if exists t2;
+
+#SQL[@18,N27]Result[]
 drop database if exists db1;
+
+#SQL[@19,N27]Result[]
 drop database if exists db2;
+
+#SQL[@20,N19]Result[]
 create database db1;
+
+#SQL[@21,N19]Result[]
 create database db2;
+
+#SQL[@22,N7]Result[]
 use db1;
+
+#SQL[@23,N23]Result[]
 drop table if exists t1;
+
+#SQL[@24,N28]Result[]
 create table t1 (a char(20));
+
+#SQL[@25,N41]Result[]
 insert into t1 values ('a'), ('b'), ('c');
+
+#SQL[@26,N7]Result[]
 use db2;
+
+#SQL[@27,N23]Result[]
 drop table if exists t2;
+
+#SQL[@28,N28]Result[]
 create table t2 (b char(20));
+
+#SQL[@29,N38]Result[]
 insert into t2 values('a'),('b'),('d');
+
+#SQL[@30,N95]Result[]
 delete from db1.t1, db2.t2 using db1.t1 join db2.t2 on db1.t1.a = db2.t2.b where db1.t1.a = 'a';
+
+#SQL[@31,N20]Result[1, 1, 1]
 select * from db1.t1;
 a
 b
 c
+
+#SQL[@32,N20]Result[1, 1, 1]
 select * from db2.t2;
 b
 b
 d
+
+#SQL[@33,N23]Result[]
 drop table if exists t1;
+
+#SQL[@34,N23]Result[]
 drop table if exists t2;
+
+#SQL[@35,N27]Result[]
 drop database if exists db1;
+
+#SQL[@36,N27]Result[]
 drop database if exists db2;
+
+#SQL[@38,N19]Result[]
 create database db1;
+
+#SQL[@39,N7]Result[]
 use db1;
+
+#SQL[@40,N23]Result[]
 drop table if exists t1;
+
+#SQL[@41,N23]Result[]
 drop table if exists t2;
+
+#SQL[@42,N23]Result[]
 create table t1 (a int);
+
+#SQL[@43,N34]Result[]
 insert into t1 values(1), (2), (3);
+
+#SQL[@44,N23]Result[]
 create table t2 (b int);
+
+#SQL[@45,N34]Result[]
 insert into t2 values(1), (2), (3);
+
+#SQL[@46,N89]Result[]
 with t11 as ( select * from t1) delete t2 from t11 join t2 on t11.a = t2.b where t2.b = 3;
+
+#SQL[@47,N16]Result[1, 1, 1]
 select * from t2;
 b
 1
 2
+
+#SQL[@49,N23]Result[]
 drop table if exists t1;
+
+#SQL[@50,N23]Result[]
 drop table if exists t2;
+
+#SQL[@51,N23]Result[]
 create table t1 (a int);
+
+#SQL[@52,N34]Result[]
 insert into t1 values(1), (2), (4);
+
+#SQL[@53,N23]Result[]
 create table t2 (b int);
+
+#SQL[@54,N34]Result[]
 insert into t2 values(1), (2), (5);
+
+#SQL[@55,N40]Result[]
 delete t1 from t1 join t2 where t1.a = 2;
+
+#SQL[@56,N16]Result[1, 1, 1]
 select * from t1;
 a
 1
 4
+
+#SQL[@58,N23]Result[]
 drop table if exists t1;
+
+#SQL[@59,N23]Result[]
 create table t1 (a int);
+
+#SQL[@60,N34]Result[]
 insert into t1 values(1), (2), (3);
+
+#SQL[@61,N35]Result[]
 delete from t1 as a1 where a1.a = 1;
+
+#SQL[@62,N16]Result[1, 1, 1]
 select * from t1;
 a
 2
 3
+
+#SQL[@64,N23]Result[]
 drop table if exists t1;
+
+#SQL[@65,N23]Result[]
 drop table if exists t2;
+
+#SQL[@66,N23]Result[]
 create table t1 (a int);
+
+#SQL[@67,N34]Result[]
 insert into t1 values(1), (2), (4);
+
+#SQL[@68,N23]Result[]
 create table t2 (b int);
+
+#SQL[@69,N34]Result[]
 insert into t2 values(1), (2), (5);
+
+#SQL[@70,N65]Result[]
 DELETE a1, a2 FROM t1 AS a1 INNER JOIN t2 AS a2 WHERE a1.a = a2.b;
+
+#SQL[@71,N16]Result[1, 1]
 select * from t1;
 a
 4
+
+#SQL[@73,N23]Result[]
 drop table if exists t1;
+
+#SQL[@74,N43]Result[]
 create table t1 (a int, b float, c varchar);
+
+#SQL[@75,N34]Result[]
 insert into t1 values(1, 1.5, 'a');
+
+#SQL[@76,N34]Result[]
 insert into t1 values(1, 1.5, 'b');
+
+#SQL[@77,N41]Result[]
 delete from t1 where (a, b) in ((1, 1.5));
+
+#SQL[@78,N16]Result[]
 select * from t1;
-a    b    c
+
+#SQL[@79,N34]Result[]
 insert into t1 values(2, 2.5, 'a');
+
+#SQL[@80,N34]Result[]
 insert into t1 values(2, 2.5, 'b');
+
+#SQL[@81,N55]Result[]
 delete from t1 where (a, b) in ((2.0, 2.5), (2.1, 2.5));
+
+#SQL[@82,N16]Result[]
 select * from t1;
-a    b    c
+
+#SQL[@84,N23]Result[]
 drop table if exists t1;
+
+#SQL[@85,N28]Result[]
 create table t1 (a char(20));
+
+#SQL[@86,N47]Result[]
 insert into t1 values (null), (null), ('hello');
+
+#SQL[@87,N30]Result[]
 delete from t1 where a is null;
+
+#SQL[@88,N16]Result[1, 5]
 select * from t1;
 a
 hello
+
+#SQL[@90,N23]Result[]
 drop table if exists t1;
+
+#SQL[@91,N30]Result[]
 create table t1 (a int, b int);
+
+#SQL[@92,N44]Result[]
 insert into t1 values (1, 2), (3, 4), (5, 6);
+
+#SQL[@93,N26]Result[]
 delete from t1 where a > 1;
+
+#SQL[@94,N16]Result[8, 8]
 select * from t1;
-a    b
-1    2
+a  ¦  b
+1  ¦  2
+
+#SQL[@96,N23]Result[]
 drop table if exists t2;
+
+#SQL[@97,N42]Result[]
 create table t2 (a int primary key, b int);
+
+#SQL[@98,N44]Result[]
 insert into t2 values (1, 2), (3, 4), (5, 6);
+
+#SQL[@99,N45]Result[]
 delete from t2 where a > 1 order by a limit 1;
+
+#SQL[@100,N16]Result[8, 8, 8]
 select * from t2;
-a    b
-1    2
-5    6
+a  ¦  b
+1  ¦  2
+5  ¦  6
+
+#SQL[@102,N23]Result[]
 drop table if exists t1;
+
+#SQL[@103,N34]Result[]
 create table t1(a int primary key);
+
+#SQL[@104,N14]Result[]
 delete from t1;
+
+#SQL[@105,N16]Result[]
 select * from t1;
-a
+
+#SQL[@107,N23]Result[]
 drop table if exists t1;
+
+#SQL[@108,N28]Result[]
 create table t1 (a char(20));
+
+#SQL[@109,N58]Result[]
 insert into t1 values ('heelo'), ('sub'), ('none'), (null);
+
+#SQL[@110,N34]Result[]
 delete from t1 where a is not null;
+
+#SQL[@111,N16]Result[1, 4]
 select * from t1;
 a
 null
+
+#SQL[@113,N23]Result[]
 drop table if exists t1;
+
+#SQL[@114,N23]Result[]
 drop table if exists t2;
+
+#SQL[@115,N23]Result[]
 create table t1 (a int);
+
+#SQL[@116,N34]Result[]
 insert into t1 values(1), (2), (3);
+
+#SQL[@117,N35]Result[]
 create table t2 (b int primary key);
+
+#SQL[@118,N34]Result[]
 insert into t2 values(1), (2), (3);
+
+#SQL[@119,N59]Result[]
 delete t1, t2 from t1 join t2 on t1.a = t2.b where t1.a = 1;
+
+#SQL[@120,N16]Result[1, 1, 1]
 select * from t2;
 b
 2
 3
+
+#SQL[@123,N23]Result[]
 drop table if exists t1;
+
+#SQL[@124,N62]Result[]
 create table t1(a int auto_increment, b bigint auto_increment);
+
+#SQL[@125,N55]Result[]
 insert into t1 values(null, 2), (3, null), (null, null);
+
+#SQL[@126,N16]Result[8, 8, 8, 8]
 select * from t1;
-a    b
-1    2
-3    3
-4    4
+a  ¦  b
+1  ¦  2
+3  ¦  3
+4  ¦  4
+
+#SQL[@127,N57]Result[]
 insert into t1 values(100, 2), (null, null), (null, null);
+
+#SQL[@128,N16]Result[8, 8, 8, 8, 10, 10, 10]
 select * from t1;
-a    b
-1    2
-3    3
-4    4
-100    2
-101    5
-102    6
+a  ¦  b
+1  ¦  2
+3  ¦  3
+4  ¦  4
+100  ¦  2
+101  ¦  5
+102  ¦  6
+
+#SQL[@129,N29]Result[]
 delete from t1 where a >= 100;
+
+#SQL[@130,N16]Result[8, 8, 8, 8]
 select * from t1;
-a    b
-1    2
-3    3
-4    4
+a  ¦  b
+1  ¦  2
+3  ¦  3
+4  ¦  4
+
+#SQL[@131,N61]Result[]
 insert into t1 values(null, null), (null, null), (null, null);
+
+#SQL[@132,N16]Result[8, 8, 8, 8, 10, 10, 10]
 select * from t1;
-a    b
-1    2
-3    3
-4    4
-103    7
-104    8
-105    9
+a  ¦  b
+1  ¦  2
+3  ¦  3
+4  ¦  4
+103  ¦  7
+104  ¦  8
+105  ¦  9
+
+#SQL[@134,N23]Result[]
 drop table if exists t1;
+
+#SQL[@135,N48]Result[]
 create table t1(a int, b int, primary key(a, b));
-insert into t1 values(1, 2);
-insert into t1 values(1, 3);
-insert into t1 values(2, 2);
-insert into t1 values(2, 3);
-select * from t1;
-a    b
-1    2
-1    3
-2    2
-2    3
-delete from t1 where a = 1;
-select * from t1;
-a    b
-2    2
-2    3
-drop table if exists t1;
 
-create table t1(a int, b int, unique key(a));
-
-insert into t1 values(1, 1);
-
-insert into t1 values(2, 2);
-
-insert into t1 values(3, 3);
-
-insert into t1 values(4, 4);
-
-select * from t1;
-
-delete from t1 where a = 1;
-
-select * from t1;
-
+#SQL[@136,N27]Result[]
 insert into t1 values(1, 2);
 
-drop table if exists t1;
-
-create table t1(a int, b int, unique key(a, b));
-
-insert into t1 values(1, 2);
-
+#SQL[@137,N27]Result[]
 insert into t1 values(1, 3);
 
+#SQL[@138,N27]Result[]
 insert into t1 values(2, 2);
 
+#SQL[@139,N27]Result[]
 insert into t1 values(2, 3);
 
+#SQL[@140,N16]Result[8, 8, 8, 8, 8]
 select * from t1;
+a  ¦  b
+1  ¦  2
+1  ¦  3
+2  ¦  2
+2  ¦  3
 
+#SQL[@141,N26]Result[]
 delete from t1 where a = 1;
 
+#SQL[@142,N16]Result[8, 8, 8]
 select * from t1;
+a  ¦  b
+2  ¦  2
+2  ¦  3
 
-insert into t1 values(1, 2);
-
-insert into t1 values(1, null);
-
-delete from t1 where a = 1;
-
+#SQL[@170,N27]Result[]
 drop database if exists db1;
+
+#SQL[@173,N12]Result[]
 use `delete`;
+
+#SQL[@174,N24]Result[]
 create table temp(a int);
+
+#SQL[@175,N56]Result[]
 insert into temp select * from generate_series(1,8192) g;
+
+#SQL[@176,N21]Result[]
 create table t(a int);
+
+#SQL[@177,N32]Result[]
 insert into t select * from temp;
-insert into t select * from t;
-insert into t select * from t;
-insert into t select * from t;
-insert into t select * from t;
-insert into t select * from t;
-insert into t select * from t;
-insert into t select * from t;
-insert into t select * from t;
+
+#SQL[@178,N29]Result[]
 insert into t select * from t;
 
-begin;
-
+#SQL[@179,N29]Result[]
 insert into t select * from t;
 
-delete from t where a = 1;
-
-select count(*) from t;
-
-rollback;
-
-begin;
-
+#SQL[@180,N29]Result[]
 insert into t select * from t;
 
-delete from t where a = 1;
+#SQL[@181,N29]Result[]
+insert into t select * from t;
 
-select count(*) from t;
+#SQL[@182,N29]Result[]
+insert into t select * from t;
 
-commit;
+#SQL[@183,N29]Result[]
+insert into t select * from t;
 
-select count(*) from t;
+#SQL[@184,N29]Result[]
+insert into t select * from t;
 
+#SQL[@185,N29]Result[]
+insert into t select * from t;
+
+#SQL[@203,N25]Result[]
 drop table if exists temp;
+
+#SQL[@204,N22]Result[]
 drop table if exists t;
+
+#SQL[@205,N24]Result[]
 create table temp(a int);
+
+#SQL[@206,N56]Result[]
 insert into temp select * from generate_series(1,8192) g;
+
+#SQL[@207,N21]Result[]
 create table t(a int);
+
+#SQL[@208,N32]Result[]
 insert into t select * from temp;
+
+#SQL[@209,N29]Result[]
 insert into t select * from t;
+
+#SQL[@210,N5]Result[]
 begin;
+
+#SQL[@211,N29]Result[]
 insert into t select * from t;
+
+#SQL[@212,N25]Result[]
 delete from t where a > 1;
+
+#SQL[@213,N22]Result[8, 1]
 select count(*) from t;
 count(*)
 4
+
+#SQL[@214,N8]Result[]
 rollback;
+
+#SQL[@215,N22]Result[8, 5]
 select count(*) from t;
 count(*)
 16384
+
+#SQL[@216,N5]Result[]
 begin;
+
+#SQL[@217,N29]Result[]
 insert into t select * from t;
+
+#SQL[@218,N25]Result[]
 delete from t where a > 1;
+
+#SQL[@219,N25]Result[]
 delete from t where a = 1;
+
+#SQL[@220,N22]Result[8, 1]
 select count(*) from t;
 count(*)
 0
+
+#SQL[@221,N6]Result[]
 commit;
+
+#SQL[@222,N22]Result[8, 1]
 select count(*) from t;
 count(*)
 0
+
+#SQL[@224,N23]Result[]
 drop table if exists t2;
+
+#SQL[@225,N73]Result[]
 create table t2 (a int, b int unique key, c int, d int, primary key(c,d));
+
+#SQL[@226,N31]Result[]
 insert into t2 values (1,2,1,2);
+
+#SQL[@227,N63]Result[]
 delete from t2 where b in (c in (select 1) and d in (select 1));
+
+#SQL[@228,N16]Result[22, 22]
 select * from t2;
-a    b    c    d
-1    2    1    2
+a  ¦  b  ¦  c  ¦  d
+1  ¦  2  ¦  1  ¦  2
+
+#SQL[@230,N23]Result[]
 drop table if exists t7;
+
+#SQL[@231,N78]Result[]
 create table t7(a int primary key, b int unique key, c varchar(20) unique key);
+
+#SQL[@232,N81]Result[]
 insert into t7 select result, result, "a"||result from generate_series(1,20000) g;
+
+#SQL[@233,N23]Result[8, 5]
 select count(*) from t7;
 count(*)
 20000
+
+#SQL[@234,N14]Result[]
 delete from t7;
+
+#SQL[@235,N23]Result[8, 1]
 select count(*) from t7;
 count(*)
 0
+
+#SQL[@237,N32]Result[]
 drop database if exists `delete`;
+
+#SQL[@239,N27]Result[]
 drop database if exists db1;
+
+#SQL[@240,N27]Result[]
 drop database if exists db2;
+
+#SQL[@241,N19]Result[]
 create database db1;
+
+#SQL[@242,N19]Result[]
 create database db2;
+
+#SQL[@243,N7]Result[]
 use db2;
+
+#SQL[@244,N23]Result[]
 drop table if exists t1;
+
+#SQL[@245,N23]Result[]
 create table t1 (a int);
+
+#SQL[@246,N33]Result[]
 insert into t1 values (1),(2),(4);
+
+#SQL[@247,N7]Result[]
 use db1;
+
+#SQL[@248,N23]Result[]
 drop table if exists t2;
+
+#SQL[@249,N23]Result[]
 create table t2 (b int);
+
+#SQL[@250,N32]Result[]
 insert into t2 values(1),(2),(3);
+
+#SQL[@251,N74]Result[]
 delete from db1.t2, db2.t1 using db1.t2 join db2.t1 on db1.t2.b = db2.t1.a;
+
+#SQL[@252,N20]Result[1, 1]
 select * from db1.t2;
 b
 3
+
+#SQL[@253,N20]Result[1, 1]
 select * from db2.t1;
 a
 4
+
+#SQL[@255,N23]Result[]
 drop table if exists t3;
+
+#SQL[@256,N68]Result[]
 create table t3 (a int primary key, b int unique key, c int, key(c));
+
+#SQL[@257,N46]Result[]
 insert into t3 (a, b, c) values (1, 100, 1000);
+
+#SQL[@258,N46]Result[]
 insert into t3 (a, b, c) values (2, 200, 2000);
+
+#SQL[@259,N46]Result[]
 insert into t3 (a, b, c) values (3, 300, 3000);
+
+#SQL[@260,N46]Result[]
 insert into t3 (a, b, c) values (4, 400, 4000);
+
+#SQL[@261,N26]Result[]
 delete from t3 where a > 3;
+
+#SQL[@262,N16]Result[15, 20, 20, 20]
 select * from t3;
-a    b    c
-1    100    1000
-2    200    2000
-3    300    3000
+a  ¦  b  ¦  c
+1  ¦  100  ¦  1000
+2  ¦  200  ¦  2000
+3  ¦  300  ¦  3000
+
+#SQL[@263,N22]Result[]
 delete from t3 limit 1;
+
+#SQL[@264,N16]Result[15, 20, 20]
 select * from t3;
-a    b    c
-2    200    2000
-3    300    3000
+a  ¦  b  ¦  c
+2  ¦  200  ¦  2000
+3  ¦  300  ¦  3000
+
+#SQL[@265,N14]Result[]
 delete from t3;
+
+#SQL[@266,N16]Result[]
 select * from t3;
-a    b    c
+
+#SQL[@268,N23]Result[]
 drop table if exists t4;
+
+#SQL[@269,N37]Result[]
 create table t4 (a int, b int, c int);
+
+#SQL[@270,N46]Result[]
 insert into t4 (a, b, c) values (1, 100, 1000);
+
+#SQL[@271,N46]Result[]
 insert into t4 (a, b, c) values (2, 200, 2000);
+
+#SQL[@272,N46]Result[]
 insert into t4 (a, b, c) values (3, 300, 3000);
+
+#SQL[@273,N46]Result[]
 insert into t4 (a, b, c) values (4, 400, 4000);
+
+#SQL[@274,N26]Result[]
 delete from t4 where a > 3;
+
+#SQL[@275,N16]Result[15, 20, 20, 20]
 select * from t4;
-a    b    c
-1    100    1000
-2    200    2000
-3    300    3000
+a  ¦  b  ¦  c
+1  ¦  100  ¦  1000
+2  ¦  200  ¦  2000
+3  ¦  300  ¦  3000
+
+#SQL[@276,N22]Result[]
 delete from t4 limit 1;
+
+#SQL[@277,N16]Result[15, 20, 20]
 select * from t4;
-a    b    c
-2    200    2000
-3    300    3000
+a  ¦  b  ¦  c
+2  ¦  200  ¦  2000
+3  ¦  300  ¦  3000
+
+#SQL[@278,N14]Result[]
 delete from t4;
+
+#SQL[@279,N16]Result[]
 select * from t4;
-a    b    c
+
+#SQL[@281,N43]Result[]
 create table t5 (id int primary key, c int);
+
+#SQL[@282,N104]Result[]
 create table t6 (id int primary key, t5_id int, foreign KEY (t5_id) references t5(id) on delete cascade);
+
+#SQL[@283,N38]Result[]
 insert into t5 (id, c) values (1, 100);
+
+#SQL[@284,N38]Result[]
 insert into t5 (id, c) values (2, 200);
+
+#SQL[@285,N38]Result[]
 insert into t5 (id, c) values (3, 300);
+
+#SQL[@286,N38]Result[]
 insert into t5 (id, c) values (4, 400);
+
+#SQL[@287,N40]Result[]
 insert into t6 (id, t5_id) values (4, 1);
+
+#SQL[@288,N40]Result[]
 insert into t6 (id, t5_id) values (5, 2);
+
+#SQL[@289,N40]Result[]
 insert into t6 (id, t5_id) values (6, 3);
+
+#SQL[@290,N40]Result[]
 insert into t6 (id, t5_id) values (7, 4);
+
+#SQL[@291,N27]Result[]
 delete from t5 where id > 3;
+
+#SQL[@292,N16]Result[13, 8, 8, 8]
 select * from t6;
-id    t5_id
-4    1
-5    2
-6    3
+id  ¦  t5_id
+4  ¦  1
+5  ¦  2
+6  ¦  3
+
+#SQL[@293,N22]Result[]
 delete from t5 limit 1;
+
+#SQL[@294,N16]Result[13, 8, 8]
 select * from t6;
-id    t5_id
-5    2
-6    3
+id  ¦  t5_id
+5  ¦  2
+6  ¦  3
+
+#SQL[@295,N14]Result[]
 delete from t5;
+
+#SQL[@296,N16]Result[]
 select * from t6;
-id    t5_id
+
+#SQL[@298,N23]Result[]
 drop table if exists t6;
+
+#SQL[@299,N23]Result[]
 drop table if exists t5;
+
+#SQL[@300,N43]Result[]
 create table t5 (id int primary key, c int);
+
+#SQL[@301,N105]Result[]
 create table t6 (id int primary key, t5_id int, foreign KEY (t5_id) references t5(id) on delete set null);
+
+#SQL[@302,N38]Result[]
 insert into t5 (id, c) values (1, 100);
+
+#SQL[@303,N38]Result[]
 insert into t5 (id, c) values (2, 200);
+
+#SQL[@304,N38]Result[]
 insert into t5 (id, c) values (3, 300);
+
+#SQL[@305,N38]Result[]
 insert into t5 (id, c) values (4, 400);
+
+#SQL[@306,N40]Result[]
 insert into t6 (id, t5_id) values (4, 1);
+
+#SQL[@307,N40]Result[]
 insert into t6 (id, t5_id) values (5, 2);
+
+#SQL[@308,N40]Result[]
 insert into t6 (id, t5_id) values (6, 3);
+
+#SQL[@309,N40]Result[]
 insert into t6 (id, t5_id) values (7, 4);
+
+#SQL[@310,N27]Result[]
 delete from t5 where id > 3;
+
+#SQL[@311,N16]Result[13, 8, 8, 8, 11]
 select * from t6;
-id    t5_id
-4    1
-5    2
-6    3
-7    null
+id  ¦  t5_id
+4  ¦  1
+5  ¦  2
+6  ¦  3
+7  ¦  null
+
+#SQL[@312,N22]Result[]
 delete from t5 limit 1;
+
+#SQL[@313,N16]Result[13, 8, 8, 11, 11]
 select * from t6;
-id    t5_id
-5    2
-6    3
-7    null
-4    null
+id  ¦  t5_id
+5  ¦  2
+6  ¦  3
+7  ¦  null
+4  ¦  null
+
+#SQL[@314,N14]Result[]
 delete from t5;
+
+#SQL[@315,N16]Result[13, 11, 11, 11, 11]
 select * from t6;
-id    t5_id
-7    null
-4    null
-5    null
-6    null
+id  ¦  t5_id
+7  ¦  null
+4  ¦  null
+5  ¦  null
+6  ¦  null
+
+#SQL[@316,N23]Result[]
 drop table if exists t1;
+
+#SQL[@317,N60]Result[]
 create table t1(c1 int primary key, c2 int, c3 int, key(c2));
+
+#SQL[@318,N59]Result[]
 insert into t1 select *,*,* from generate_series(1,100000)g;
+
+#SQL[@319,N23]Result[8, 6]
 select count(*) from t1;
 count(*)
 100000
+
+#SQL[@320,N29]Result[]
 delete from t1 where c3>50000;
+
+#SQL[@321,N23]Result[8, 5]
 select count(*) from t1;
 count(*)
 50000
+
+#SQL[@322,N55]Result[]
 update t1 set c1=c1+100000, c2=c2+100000 where c3<40000;
+
+#SQL[@323,N30]Result[]
 delete from t1 where c1>100000;
+
+#SQL[@324,N23]Result[8, 5]
 select count(*) from t1;
 count(*)
 10001
+
+#SQL[@325,N25]Result[]
 DROP TABLE IF EXISTS `t3`;
+
+#SQL[@326,N66]Result[]
 CREATE TABLE t3 ( id INT PRIMARY KEY,col1 INT,key idx_col1 (col1));
+
+#SQL[@327,N59]Result[]
 INSERT INTO t3 (SELECT *,1 FROM generate_series(0,8192,1)g);
+
+#SQL[@328,N27]Result[]
 DELETE FROM t3 WHERE col1=1;
+
+#SQL[@329,N36]Result[8, 1]
 SELECT COUNT(*) FROM t3 WHERE col1=1;
 COUNT(*)
 0
+
+#SQL[@330,N23]Result[]
 drop table if exists t1;
+
+#SQL[@331,N23]Result[]
 drop table if exists t2;
+
+#SQL[@332,N23]Result[]
 drop table if exists t3;
+
+#SQL[@333,N23]Result[]
 drop table if exists t4;
+
+#SQL[@334,N23]Result[]
 drop table if exists t6;
+
+#SQL[@335,N23]Result[]
 drop table if exists t5;
+
+#SQL[@336,N23]Result[]
 drop table if exists t7;
+
+#SQL[@337,N30]Result[]
 create table t7 (i int, j int);
+
+#SQL[@338,N38]Result[]
 insert into t7 values(1,1),(2,2),(3,3);
+
+#SQL[@339,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@340,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@341,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@342,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@343,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@344,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@345,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@346,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@347,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@348,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@349,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@350,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@351,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@352,N31]Result[]
 insert into t7 select * from t7;
+
+#SQL[@353,N23]Result[8, 5]
 select count(*) from t7;
 count(*)
 49152
+
+#SQL[@354,N24]Result[]
 delete from t7 where i=1;
+
+#SQL[@355,N33]Result[8, 1]
 select count(*) from t7 where i=1;
 count(*)
 0
+
+#SQL[@356,N24]Result[]
 delete from t7 where i=2;
+
+#SQL[@357,N33]Result[8, 1]
 select count(*) from t7 where i=2;
 count(*)
 0
+
+#SQL[@358,N23]Result[]
 drop table if exists t7;
+
+#SQL[@359,N7]Result[]
 use db1;
+
+#SQL[@360,N39]Result[]
 drop table if exists repro_delete_error;
+
+#SQL[@361,N50]Result[]
 create table repro_delete_error(a int primary key);
+
+#SQL[@362,N5]Result[]
 begin;
+
+#SQL[@363,N49]Result[]
 insert into repro_delete_error values (1),(2),(3);
+
+#SQL[@364,N40]Result[]
 delete from repro_delete_error where a=1;
+
+#SQL[@365,N32]Result[1, 1, 1]
 select * from repro_delete_error;
 a
 2
 3
+
+#SQL[@366,N6]Result[]
 commit;
+
+#SQL[@367,N32]Result[1, 1, 1]
 select * from repro_delete_error;
 a
 2
 3
+
+#SQL[@368,N27]Result[]
 drop database if exists db1;
+
+#SQL[@369,N27]Result[]
 drop database if exists db2;
+

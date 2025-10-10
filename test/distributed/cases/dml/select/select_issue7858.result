@@ -1,24 +1,50 @@
+#SQL[@2,N30]Result[]
 drop database if exists db7858;
+
+#SQL[@3,N22]Result[]
 create database db7858;
+
+#SQL[@4,N10]Result[]
 use db7858;
+
+#SQL[@5,N24]Result[]
 CREATE TABLE t3 (S1 INT);
+
+#SQL[@6,N29]Result[]
 insert into t3 values (1),(2);
+
+#SQL[@7,N16]Result[2, 1, 1]
 select * from t3;
 s1
 1
 2
+
+#SQL[@8,N40]Error[50]
 SELECT * FROM t3  JOIN t3 on t3.S1=t3.S1;
 invalid input: table 't3' specified more than once
+
+#SQL[@9,N47]Result[10, 8, 8]
 SELECT * FROM t3  JOIN t3 a_t3 on t3.S1=a_t3.S1;
-s1    s1
-1    1
-2    2
+s1  ¦  s1
+1  ¦  1
+2  ¦  2
+
+#SQL[@10,N22]Result[]
 create table t1(a int);
+
+#SQL[@11,N29]Result[]
 insert into t1 values (1),(2);
+
+#SQL[@12,N64]Error[50]
 SELECT * FROM t3  join t1 on t3.S1 = t1.a JOIN t3 on t3.S1=t3.S1;
 invalid input: table 't3' specified more than once
+
+#SQL[@13,N71]Result[17, 15, 15]
 SELECT * FROM t3  join t1 on t3.S1 = t1.a JOIN t3 a_t3 on t3.S1=a_t3.S1;
-s1    a    s1
-1    1    1
-2    2    2
+s1  ¦  a  ¦  s1
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+
+#SQL[@14,N30]Result[]
 drop database if exists db7858;
+

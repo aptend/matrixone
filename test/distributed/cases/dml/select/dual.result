@@ -1,35 +1,77 @@
+#SQL[@1,N25]Result[]
 drop table if exists dual;
+
+#SQL[@2,N17]Error[46]
 create table dual;
 A table must have at least one visible column.
+
+#SQL[@3,N24]Result[]
 create table dual(a int);
+
+#SQL[@4,N27]Result[]
 insert into dual values (1);
+
+#SQL[@5,N18]Error[32]
 select * from dual;
 SQL parser error: No tables used
+
+#SQL[@6,N20]Error[32]
 select * from `dual`;
 SQL parser error: No tables used
+
+#SQL[@7,N23]Result[1, 1]
 select * from dual.dual;
 a
 1
+
+#SQL[@8,N25]Result[1, 1]
 select * from dual.`dual`;
 a
 1
+
+#SQL[@9,N25]Result[]
 drop table if exists dual;
+
+#SQL[@11,N34]Result[]
 drop database if exists `testdual`;
+
+#SQL[@12,N26]Result[]
 create database `testdual`;
+
+#SQL[@13,N14]Result[]
 use `testdual`;
+
+#SQL[@14,N17]Error[46]
 create table dual;
 A table must have at least one visible column.
+
+#SQL[@15,N24]Result[]
 create table dual(a int);
+
+#SQL[@16,N27]Result[]
 insert into dual values (1);
+
+#SQL[@17,N18]Error[32]
 select * from dual;
 SQL parser error: No tables used
+
+#SQL[@18,N20]Error[32]
 select * from `dual`;
 SQL parser error: No tables used
+
+#SQL[@19,N29]Result[1, 1]
 select * from `testdual`.dual;
 a
 1
+
+#SQL[@20,N31]Result[1, 1]
 select * from `testdual`.`dual`;
 a
 1
+
+#SQL[@21,N25]Result[]
 drop table if exists dual;
+
+#SQL[@22,N34]Result[]
 drop database if exists `testdual`;
+

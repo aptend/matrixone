@@ -1,527 +1,1091 @@
+#SQL[@6,N23]Result[]
 drop table if exists t1;
+
+#SQL[@7,N52]Result[]
 create table t1 (spID int,userID int,score smallint);
+
+#SQL[@8,N29]Result[]
 insert into t1 values (1,1,1);
+
+#SQL[@9,N29]Result[]
 insert into t1 values (2,2,2);
+
+#SQL[@10,N29]Result[]
 insert into t1 values (2,1,4);
+
+#SQL[@11,N29]Result[]
 insert into t1 values (3,3,3);
+
+#SQL[@12,N29]Result[]
 insert into t1 values (1,1,5);
+
+#SQL[@13,N30]Result[]
 insert into t1 values (4,6,10);
+
+#SQL[@14,N31]Result[]
 insert into t1 values (5,11,99);
+
+#SQL[@15,N70]Result[22, 10, 9, 8, 8, 8]
 select userID, MIN(score) from t1 group by userID order by userID desc;
-userID    MIN(score)
-11    99
-6    10
-3    3
-2    2
-1    1
+userID  ¦  MIN(score)
+11  ¦  99
+6  ¦  10
+3  ¦  3
+2  ¦  2
+1  ¦  1
+
+#SQL[@16,N69]Result[22, 8, 8, 8, 9, 10]
 select userID, MIN(score) from t1 group by userID order by userID asc;
-userID    MIN(score)
-1    1
-2    2
-3    3
-6    10
-11    99
+userID  ¦  MIN(score)
+1  ¦  1
+2  ¦  2
+3  ¦  3
+6  ¦  10
+11  ¦  99
+
+#SQL[@17,N70]Result[22, 10, 9, 8, 8, 9]
 select userID, SUM(score) from t1 group by userID order by userID desc;
-userID    SUM(score)
-11    99
-6    10
-3    3
-2    2
-1    10
+userID  ¦  SUM(score)
+11  ¦  99
+6  ¦  10
+3  ¦  3
+2  ¦  2
+1  ¦  10
+
+#SQL[@18,N75]Result[8, 8, 8, 8, 9, 10]
 select userID as a, MIN(score) as b from t1 group by userID order by userID;
-a    b
-1    1
-2    2
-3    3
-6    10
-11    99
+a  ¦  b
+1  ¦  1
+2  ¦  2
+3  ¦  3
+6  ¦  10
+11  ¦  99
+
+#SQL[@19,N78]Result[13, 8, 8, 8, 9, 10]
 select userID as user, MAX(score) as max from t1 group by userID order by user;
-user    max
-1    5
-2    2
-3    3
-6    10
-11    99
+user  ¦  max
+1  ¦  5
+2  ¦  2
+3  ¦  3
+6  ¦  10
+11  ¦  99
+
+#SQL[@20,N82]Result[13, 10, 9, 8, 8, 8]
 select userID as user, MAX(score) as max from t1 group by userID order by max desc;
-user    max
-11    99
-6    10
-1    5
-3    3
-2    2
+user  ¦  max
+11  ¦  99
+6  ¦  10
+1  ¦  5
+3  ¦  3
+2  ¦  2
+
+#SQL[@21,N88]Result[24, 8]
 select userID,count(score) from t1 group by userID having count(score)>1 order by userID;
-userID    count(score)
-1    3
+userID  ¦  count(score)
+1  ¦  3
+
+#SQL[@22,N103]Result[]
 select userID,count(score) from t1 where userID>2 group by userID having count(score)>1 order by userID;
-userID    count(score)
+
+#SQL[@23,N76]Result[24, 8, 8, 8, 8, 9]
 select distinct userID, count(score) from t1 group by userID order by userID;
-userID    count(score)
-1    3
-2    1
-3    1
-6    1
-11    1
+userID  ¦  count(score)
+1  ¦  3
+2  ¦  1
+3  ¦  1
+6  ¦  1
+11  ¦  1
+
+#SQL[@24,N35]Result[16, 8, 8, 8, 8, 8, 9]
 select distinct spID,userID from t1;
-spID    userID
-1    1
-2    2
-2    1
-3    3
-4    6
-5    11
+spID  ¦  userID
+1  ¦  1
+2  ¦  2
+2  ¦  1
+3  ¦  3
+4  ¦  6
+5  ¦  11
+
+#SQL[@25,N49]Result[16, 8, 8, 8, 8, 9]
 select distinct spID,userID from t1 where score>2;
-spID    userID
-2    1
-3    3
-1    1
-4    6
-5    11
+spID  ¦  userID
+2  ¦  1
+3  ¦  3
+1  ¦  1
+4  ¦  6
+5  ¦  11
+
+#SQL[@26,N67]Result[16, 8, 8, 8, 8, 9]
 select distinct spID,userID from t1 where score>2 order by spID asc;
-spID    userID
-1    1
-2    1
-3    3
-4    6
-5    11
+spID  ¦  userID
+1  ¦  1
+2  ¦  1
+3  ¦  3
+4  ¦  6
+5  ¦  11
+
+#SQL[@27,N69]Result[16, 9, 8, 8]
 select distinct spID,userID from t1 where spID>2 order by userID desc;
-spID    userID
-5    11
-4    6
-3    3
+spID  ¦  userID
+5  ¦  11
+4  ¦  6
+3  ¦  3
+
+#SQL[@28,N73]Result[3, 1, 1, 1, 1]
 select distinct sum(spID) as sum from t1 group by userID order by sum asc;
 sum
 2
 3
 4
 5
+
+#SQL[@29,N87]Result[3, 1, 1, 1, 1]
 select distinct sum(spID) as sum from t1 where score>1 group by userID order by sum asc;
 sum
 2
 3
 4
 5
+
+#SQL[@30,N93]Result[22, 8, 8]
 select userID,MAX(score) from t1 where userID between 2 and 3 group by userID order by userID;
-userID    MAX(score)
-2    2
-3    3
+userID  ¦  MAX(score)
+2  ¦  2
+3  ¦  3
+
+#SQL[@31,N102]Result[22, 10, 9, 8]
 select userID,MAX(score) from t1 where userID not between 2 and 3 group by userID order by userID desc;
-userID    MAX(score)
-11    99
-6    10
-1    5
+userID  ¦  MAX(score)
+11  ¦  99
+6  ¦  10
+1  ¦  5
+
+#SQL[@32,N42]Result[27, 15]
 select spID,userID,score from t1 limit 2,1;
-spID    userID    score
-2    1    4
+spID  ¦  userID  ¦  score
+2  ¦  1  ¦  4
+
+#SQL[@33,N49]Result[27, 15, 15]
 select spID,userID,score from t1 limit 2 offset 1;
-spID    userID    score
-2    2    2
-2    1    4
+spID  ¦  userID  ¦  score
+2  ¦  2  ¦  2
+2  ¦  1  ¦  4
+
+#SQL[@34,N78]Result[]
 select sum(score) as sum from t1 where spID=6 group by score order by sum desc;
-sum
+
+#SQL[@35,N99]Result[52, 22, 22, 22, 22, 22, 22, 23]
 select userID, userID DIV 2 as user_dir, userID%2 as user_percent, userID MOD 2 as user_mod from t1;
-userID    user_dir    user_percent    user_mod
-1    0    1    1
-2    1    0    0
-1    0    1    1
-3    1    1    1
-1    0    1    1
-6    3    0    0
-11    5    1    1
+userID  ¦  user_dir  ¦  user_percent  ¦  user_mod
+1  ¦  0  ¦  1  ¦  1
+2  ¦  1  ¦  0  ¦  0
+1  ¦  0  ¦  1  ¦  1
+3  ¦  1  ¦  1  ¦  1
+1  ¦  0  ¦  1  ¦  1
+6  ¦  3  ¦  0  ¦  0
+11  ¦  5  ¦  1  ¦  1
+
+#SQL[@36,N22]Result[]
 drop table if exists a;
+
+#SQL[@37,N21]Result[]
 create table a(a int);
+
+#SQL[@38,N51]Result[]
 insert into a values(1),(2),(3),(4),(5),(6),(7),(8);
+
+#SQL[@39,N42]Result[8, 1]
 select count(*) from a where a>=2 and a<=8;
 count(*)
 7
+
+#SQL[@40,N23]Result[]
 drop table if exists t1;
+
+#SQL[@41,N44]Result[]
 create table t1 ( id int, name varchar(50) );
+
+#SQL[@42,N34]Result[]
 insert into t1 values (1, 'aaaaa');
+
+#SQL[@43,N34]Result[]
 insert into t1 values (3, "aaaaa");
+
+#SQL[@44,N36]Result[]
 insert into t1 values (2, 'eeeeeee');
+
+#SQL[@45,N37]Result[5, 5, 7]
 select distinct name as name1 from t1;
 name1
 aaaaa
 eeeeeee
+
+#SQL[@46,N23]Result[]
 drop table if exists t2;
+
+#SQL[@47,N101]Result[]
 create table t2(name char(10),owner char(10), species char(10), gender char(1), weight float,age int);
+
+#SQL[@48,N112]Result[]
 insert into t2 values ('Sunsweet01','Dsant01','otter','f',30.11,2), ('Sunsweet02','Dsant02','otter','m',30.11,3);
+
+#SQL[@49,N155]Result[]
 insert into t2(name, owner, species, gender, weight, age) values ('Sunsweet03','Dsant01','otter','f',30.11,2), ('Sunsweet04','Dsant02','otter','m',30.11,3);
+
+#SQL[@50,N27]Result[61, 59, 59]
 select * from t2 limit 2, 4;
-name    owner    species    gender    weight    age
-Sunsweet03    Dsant01    otter    f    30.11    2
-Sunsweet04    Dsant02    otter    m    30.11    3
+name  ¦  owner  ¦  species  ¦  gender  ¦  weight  ¦  age
+Sunsweet03  ¦  Dsant01  ¦  otter  ¦  f  ¦  30.11  ¦  2
+Sunsweet04  ¦  Dsant02  ¦  otter  ¦  m  ¦  30.11  ¦  3
+
+#SQL[@51,N23]Result[]
 drop table if exists t3;
+
+#SQL[@52,N52]Result[]
 create table t3 (spID int,userID int,score smallint);
+
+#SQL[@53,N29]Result[]
 insert into t3 values (1,1,1);
+
+#SQL[@54,N29]Result[]
 insert into t3 values (2,2,2);
+
+#SQL[@55,N29]Result[]
 insert into t3 values (2,1,4);
+
+#SQL[@56,N29]Result[]
 insert into t3 values (3,3,3);
+
+#SQL[@57,N29]Result[]
 insert into t3 values (1,1,5);
+
+#SQL[@58,N30]Result[]
 insert into t3 values (4,6,10);
+
+#SQL[@59,N31]Result[]
 insert into t3 values (5,11,99);
+
+#SQL[@60,N107]Result[21, 8, 9, 10]
 select userID,MAX(score) max_score from t3 where userID <2 || userID > 3 group by userID order by max_score;
-userID    max_score
-1    5
-6    10
-11    99
+userID  ¦  max_score
+1  ¦  5
+6  ¦  10
+11  ¦  99
+
+#SQL[@61,N117]Result[52, 22, 23]
 select userID, userID DIV 2 as user_dir, userID%2 as user_percent, userID MOD 2 as user_mod from t3 where userID > 3 ;
-userID    user_dir    user_percent    user_mod
-6    3    0    0
-11    5    1    1
+userID  ¦  user_dir  ¦  user_percent  ¦  user_mod
+6  ¦  3  ¦  0  ¦  0
+11  ¦  5  ¦  1  ¦  1
+
+#SQL[@62,N84]Result[23, 8, 8]
 select CAST(userID AS CHAR) userid_cast, userID from t3 where CAST(spID AS CHAR)='1';
-userid_cast    userID
-1    1
-1    1
+userid_cast  ¦  userID
+1  ¦  1
+1  ¦  1
+
+#SQL[@63,N203]Result[78, 29, 29]
 select CAST(userID AS DOUBLE) cast_double, CAST(userID AS FLOAT(3)) cast_float , CAST(userID AS REAL) cast_real, CAST(userID AS SIGNED) cast_signed, CAST(userID AS UNSIGNED) cast_unsigned from t3 limit 2;
-cast_double    cast_float    cast_real    cast_signed    cast_unsigned
-1.0    1.0    1.0    1    1
-2.0    2.0    2.0    2    2
+cast_double  ¦  cast_float  ¦  cast_real  ¦  cast_signed  ¦  cast_unsigned
+1  ¦  1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2  ¦  2
+
+#SQL[@64,N79]Result[27, 15, 15, 15]
 select * from t3 where spID>2 AND userID <2 || userID >=2 OR userID < 2 limit 3;
-spid    userid    score
-1    1    1
-2    2    2
-2    1    4
+spid  ¦  userid  ¦  score
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+2  ¦  1  ¦  4
+
+#SQL[@65,N75]Result[27, 16, 17]
 select * from t3 where (spID >2  or spID <= 2) && score <> 1 AND userID/2>2;
-spid    userid    score
-4    6    10
-5    11    99
+spid  ¦  userid  ¦  score
+4  ¦  6  ¦  10
+5  ¦  11  ¦  99
+
+#SQL[@66,N65]Result[27, 15, 15, 15]
 select * from t3 where spID >2  || spID <= 2 && score !=1 limit 3;
-spid    userid    score
-2    2    2
-2    1    4
-3    3    3
+spid  ¦  userid  ¦  score
+2  ¦  2  ¦  2
+2  ¦  1  ¦  4
+3  ¦  3  ¦  3
+
+#SQL[@67,N107]Result[21, 8, 9, 10]
 select userID,MAX(score) max_score from t3 where userID <2 || userID > 3 group by userID order by max_score;
-userID    max_score
-1    5
-6    10
-11    99
+userID  ¦  max_score
+1  ¦  5
+6  ¦  10
+11  ¦  99
+
+#SQL[@68,N33]Result[27, 16, 17]
 select * from t3 where userID/2>2;
-spid    userid    score
-4    6    10
-5    11    99
+spid  ¦  userid  ¦  score
+4  ¦  6  ¦  10
+5  ¦  11  ¦  99
+
+#SQL[@69,N23]Result[]
 drop table if exists t4;
+
+#SQL[@70,N31]Result[]
 create table t4(c1 int, c2 int);
+
+#SQL[@71,N29]Result[]
 insert into t4 values (-3, 2);
+
+#SQL[@72,N28]Result[]
 insert into t4 values (1, 2);
+
+#SQL[@73,N40]Result[11, 10, 9]
 select c1, -c2 from t4 order by -c1 desc;
-c1    -c2
--3    -2
-1    -2
+c1  ¦  -c2
+-3  ¦  -2
+1  ¦  -2
+
+#SQL[@74,N23]Result[]
 drop table if exists t5;
+
+#SQL[@75,N50]Result[]
 create table t5(a int,b varchar(10),c varchar(10));
+
+#SQL[@76,N132]Result[]
 insert into t5 values(1,'ab','cd'),(2,'ba','dc'),(3,'bc','de'),(4,'cb','ed'),(5,'cd','ef'),(6,'dc','fe'),(2,'de','fg'),(1,'ed','gf');
+
+#SQL[@77,N64]Result[15, 17, 17]
 select * from t5 where (b='ba' or b='cb') and (c='dc' or c='ed');
-a    b    c
-2    ba    dc
-4    cb    ed
+a  ¦  b  ¦  c
+2  ¦  ba  ¦  dc
+4  ¦  cb  ¦  ed
+
+#SQL[@78,N27]Result[]
 drop table if exists tbl_01;
+
+#SQL[@79,N70]Result[]
 create table tbl_01 (col1 int, a bigint unsigned, c char(10) not null);
+
+#SQL[@80,N35]Result[]
 insert into tbl_01 values (1,1,"a");
+
+#SQL[@81,N35]Result[]
 insert into tbl_01 values (2,2,"b");
+
+#SQL[@82,N35]Result[]
 insert into tbl_01 values (2,3,"c");
+
+#SQL[@83,N35]Result[]
 insert into tbl_01 values (3,4,"E");
+
+#SQL[@84,N35]Result[]
 insert into tbl_01 values (3,5,"C");
+
+#SQL[@85,N35]Result[]
 insert into tbl_01 values (3,6,"D");
+
+#SQL[@86,N23]Result[]
 drop table if exists t1;
+
+#SQL[@87,N23]Result[]
 drop table if exists t2;
+
+#SQL[@88,N36]Result[]
 create table t1 (id int primary key);
+
+#SQL[@89,N24]Result[]
 create table t2 (id int);
+
+#SQL[@90,N26]Result[]
 insert into t1 values (75);
+
+#SQL[@91,N26]Result[]
 insert into t1 values (79);
+
+#SQL[@92,N26]Result[]
 insert into t1 values (78);
+
+#SQL[@93,N26]Result[]
 insert into t1 values (77);
+
+#SQL[@94,N27]Result[]
 insert into t1 values (104);
+
+#SQL[@95,N27]Result[]
 insert into t1 values (103);
+
+#SQL[@96,N27]Result[]
 insert into t1 values (102);
+
+#SQL[@97,N27]Result[]
 insert into t1 values (101);
+
+#SQL[@98,N27]Result[]
 insert into t1 values (105);
+
+#SQL[@99,N27]Result[]
 insert into t1 values (106);
+
+#SQL[@100,N27]Result[]
 insert into t1 values (107);
+
+#SQL[@101,N39]Result[]
 insert into t2 values (107),(75),(1000);
+
+#SQL[@102,N92]Result[20, 10, 9]
 select t1.id, count(t2.id) from t1,t2 where t2.id = t1.id group by t1.id order by t1.id desc;
-id    count(t2.id)
-107    1
-75    1
+id  ¦  count(t2.id)
+107  ¦  1
+75  ¦  1
+
+#SQL[@103,N13]Result[]
 drop table t1;
+
+#SQL[@104,N56]Result[]
 create table t1 ( a int not null default 1, big bigint );
+
+#SQL[@105,N74]Result[]
 insert into t1 (big) values (-1),(12345678901234567),(9223372036854775807);
+
+#SQL[@106,N16]Result[10, 9, 24, 26]
 select * from t1;
-a    big
-1    -1
-1    12345678901234567
-1    9223372036854775807
+a  ¦  big
+1  ¦  -1
+1  ¦  12345678901234567
+1  ¦  9223372036854775807
+
+#SQL[@107,N43]Result[40, 52]
 select min(big),max(big),max(big)-1 from t1;
-min(big)    max(big)    max(big) - 1
--1    9223372036854775807    9223372036854775806
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  9223372036854775807  ¦  9223372036854775806
+
+#SQL[@108,N13]Result[]
 drop table t1;
+
+#SQL[@109,N64]Result[]
 create table t1 ( a int not null default 1, big bigint unsigned);
+
+#SQL[@110,N92]Result[]
 insert into t1 (big) values (12345678901234567),(9223372036854775807),(18446744073709551615);
+
+#SQL[@111,N16]Result[10, 24, 26, 27]
 select * from t1;
-a    big
-1    12345678901234567
-1    9223372036854775807
-1    18446744073709551615
+a  ¦  big
+1  ¦  12345678901234567
+1  ¦  9223372036854775807
+1  ¦  18446744073709551615
+
+#SQL[@112,N43]Result[40, 69]
 select min(big),max(big),max(big)-1 from t1;
-min(big)    max(big)    max(big) - 1
-12345678901234567    18446744073709551615    18446744073709551614
+min(big)  ¦  max(big)  ¦  max(big) - 1
+12345678901234567  ¦  18446744073709551615  ¦  18446744073709551614
+
+#SQL[@113,N54]Result[40, 69]
 select min(big),max(big),max(big)-1 from t1 group by a;
-min(big)    max(big)    max(big) - 1
-12345678901234567    18446744073709551615    18446744073709551614
+min(big)  ¦  max(big)  ¦  max(big) - 1
+12345678901234567  ¦  18446744073709551615  ¦  18446744073709551614
+
+#SQL[@114,N23]Result[]
 drop table if exists t1;
+
+#SQL[@115,N74]Result[]
 create table t1 (
 value64 bigint unsigned not null,
 value32 int not null
 );
+
+#SQL[@119,N46]Result[]
 insert into t1 values(17156792991891826145, 1);
+
+#SQL[@120,N45]Result[]
 insert into t1 values(9223372036854775807, 2);
+
+#SQL[@121,N16]Result[20, 27, 26]
 select * from t1;
-value64    value32
-17156792991891826145    1
-9223372036854775807    2
+value64  ¦  value32
+17156792991891826145  ¦  1
+9223372036854775807  ¦  2
+
+#SQL[@122,N23]Result[]
 drop table if exists t1;
+
+#SQL[@123,N23]Result[]
 drop table if exists t2;
+
+#SQL[@124,N23]Result[]
 drop table if exists t3;
+
+#SQL[@125,N77]Result[]
 create table t1 (libname1 varchar(21) not null primary key, city varchar(20));
+
+#SQL[@126,N95]Result[]
 create table t2 (isbn2 varchar(21) not null primary key, author varchar(20), title varchar(60));
+
+#SQL[@127,N89]Result[]
 create table t3 (isbn3 varchar(21) not null, libname3 varchar(21) not null, quantity int);
+
+#SQL[@128,N49]Result[]
 insert into t2 values ('001','Daffy','Aducklife');
+
+#SQL[@129,N50]Result[]
 insert into t2 values ('002','Bugs','Arabbitlife');
+
+#SQL[@130,N55]Result[]
 insert into t2 values ('003','Cowboy','Lifeontherange');
+
+#SQL[@131,N61]Result[]
 insert into t2 values ('000','Anonymous','Wannabuythisbook?');
+
+#SQL[@132,N59]Result[]
 insert into t2 values ('004','BestSeller','OneHeckuvabook');
+
+#SQL[@133,N59]Result[]
 insert into t2 values ('005','EveryoneBuys','Thisverybook');
+
+#SQL[@134,N63]Result[]
 insert into t2 values ('006','SanFran','Itisasanfranlifestyle');
+
+#SQL[@135,N66]Result[]
 insert into t2 values ('007','BerkAuthor','Cool.Berkley.the.book');
+
+#SQL[@136,N51]Result[]
 insert into t3 values('000','NewYorkPublicLibra',1);
+
+#SQL[@137,N51]Result[]
 insert into t3 values('001','NewYorkPublicLibra',2);
+
+#SQL[@138,N51]Result[]
 insert into t3 values('002','NewYorkPublicLibra',3);
+
+#SQL[@139,N51]Result[]
 insert into t3 values('003','NewYorkPublicLibra',4);
+
+#SQL[@140,N51]Result[]
 insert into t3 values('004','NewYorkPublicLibra',5);
+
+#SQL[@141,N51]Result[]
 insert into t3 values('005','NewYorkPublicLibra',6);
+
+#SQL[@142,N51]Result[]
 insert into t3 values('006','SanFransiscoPublic',5);
+
+#SQL[@143,N48]Result[]
 insert into t3 values('007','BerkeleyPublic1',3);
+
+#SQL[@144,N48]Result[]
 insert into t3 values('007','BerkeleyPublic2',3);
+
+#SQL[@145,N40]Result[]
 insert into t3 values('001','NYC Lib',8);
+
+#SQL[@146,N54]Result[]
 insert into t1 values ('NewYorkPublicLibra','NewYork');
+
+#SQL[@147,N54]Result[]
 insert into t1 values ('SanFransiscoPublic','SanFran');
+
+#SQL[@148,N52]Result[]
 insert into t1 values ('BerkeleyPublic1','Berkeley');
+
+#SQL[@149,N52]Result[]
 insert into t1 values ('BerkeleyPublic2','Berkeley');
+
+#SQL[@150,N42]Result[]
 insert into t1 values ('NYCLib','NewYork');
+
+#SQL[@151,N124]Result[25, 38, 38, 36, 36]
 select city,libname1,count(libname1) as a from t3 join t1 on libname1=libname3 join t2 on isbn3=isbn2 group by city,libname1;
-city    libname1    a
-NewYork    NewYorkPublicLibra    6
-SanFran    SanFransiscoPublic    1
-Berkeley    BerkeleyPublic1    1
-Berkeley    BerkeleyPublic2    1
+city  ¦  libname1  ¦  a
+NewYork  ¦  NewYorkPublicLibra  ¦  6
+SanFran  ¦  SanFransiscoPublic  ¦  1
+Berkeley  ¦  BerkeleyPublic1  ¦  1
+Berkeley  ¦  BerkeleyPublic2  ¦  1
+
+#SQL[@152,N23]Result[]
 drop table if exists t1;
+
+#SQL[@153,N35]Result[]
 create table t1(a int,b varchar(5));
+
+#SQL[@154,N28]Result[]
 insert into t1 values(1,'a');
+
+#SQL[@155,N32]Result[]
 insert into t1 values(null,null);
+
+#SQL[@156,N31]Result[]
 insert into t1 values(null,'b');
+
+#SQL[@157,N29]Result[]
 insert into t1 values(1,null);
+
+#SQL[@158,N45]Result[13, 11, 8, 11]
 select avg(a),b from t1 group by b order by b;
-avg(a)    b
-1.0    null
-1.0    a
-null    b
+avg(a)  ¦  b
+1  ¦  null
+1  ¦  a
+null  ¦  b
+
+#SQL[@159,N23]Result[]
 drop table if exists t1;
+
+#SQL[@160,N36]Result[]
 CREATE TABLE t1 (a int default NULL);
+
+#SQL[@161,N35]Result[]
 INSERT INTO t1 VALUES (NULL),(NULL);
+
+#SQL[@162,N16]Result[1, 4, 4]
 select * from t1;
 a
 null
 null
+
+#SQL[@163,N23]Result[]
 drop table if exists t1;
+
+#SQL[@164,N23]Result[]
 drop table if exists t2;
+
+#SQL[@165,N30]Result[]
 create table t1 (a int, b int);
+
+#SQL[@166,N30]Result[]
 insert into t1 values(10,null);
+
+#SQL[@167,N30]Result[]
 create table t2 (c int, d int);
+
+#SQL[@168,N30]Result[]
 insert into t2 values(20,null);
+
+#SQL[@169,N23]Result[]
 drop table if exists t1;
+
+#SQL[@170,N90]Result[]
 CREATE TABLE t1 (a int  default null, b varchar(16) default null, c datetime DEFAULT null);
+
+#SQL[@171,N53]Result[]
 INSERT INTO t1(a, c) values (1,"2003-01-14 03:54:55");
+
+#SQL[@172,N53]Result[]
 INSERT INTO t1(a, c) values (1,"2004-01-14 03:54:55");
+
+#SQL[@173,N53]Result[]
 INSERT INTO t1(a, c) values (1,"2005-01-14 03:54:55");
+
+#SQL[@174,N42]Result[]
 INSERT INTO t1(a, b) values (1,"2022year");
+
+#SQL[@175,N61]Result[]
 INSERT INTO t1(b,c) values ("2022year","2003-01-14 03:54:55");
+
+#SQL[@176,N61]Result[]
 INSERT INTO t1(b,c) values ("2021year","2003-01-14 03:54:55");
+
+#SQL[@177,N61]Result[]
 INSERT INTO t1(b,c) values ("2020year","2003-01-14 03:54:55");
+
+#SQL[@178,N51]Result[20, 36, 36, 36, 43, 43, 25, 43]
 select max(a),b,c from t1 group by b,c order by b,c;
-max(a)    b    c
-1    null    2003-01-14 03:54:55
-1    null    2004-01-14 03:54:55
-1    null    2005-01-14 03:54:55
-null    2020year    2003-01-14 03:54:55
-null    2021year    2003-01-14 03:54:55
-1    2022year    null
-null    2022year    2003-01-14 03:54:55
+max(a)  ¦  b  ¦  c
+1  ¦  null  ¦  2003-01-14 03:54:55
+1  ¦  null  ¦  2004-01-14 03:54:55
+1  ¦  null  ¦  2005-01-14 03:54:55
+null  ¦  2020year  ¦  2003-01-14 03:54:55
+null  ¦  2021year  ¦  2003-01-14 03:54:55
+1  ¦  2022year  ¦  null
+null  ¦  2022year  ¦  2003-01-14 03:54:55
+
+#SQL[@179,N23]Result[]
 drop table if exists t1;
+
+#SQL[@180,N22]Result[]
 create table t1(i int);
+
+#SQL[@181,N40]Result[]
 insert into t1 values(1),(2),(3),(4),(5);
+
+#SQL[@182,N27]Result[]
 insert into t1 values(null);
+
+#SQL[@183,N33]Result[8, 1]
 select count(*) from t1 where i=2;
 count(*)
 1
+
+#SQL[@184,N23]Result[]
 drop table if exists t1;
+
+#SQL[@185,N44]Result[]
 CREATE TABLE t1 (c0 varchar(0) DEFAULT NULL);
+
+#SQL[@186,N23]Result[]
 insert into t1 values();
+
+#SQL[@187,N25]Result[]
 insert into t1 values('');
+
+#SQL[@188,N16]Result[2, 4, 0]
 select * from t1;
 c0
 null
 
+
+#SQL[@190,N23]Result[]
 drop table if exists t1;
+
+#SQL[@191,N55]Result[]
 create table if not exists t1(a tinyint auto_increment);
+
+#SQL[@192,N23]Result[]
 drop table if exists t1;
+
+#SQL[@193,N56]Result[]
 create table if not exists t1(a smallint auto_increment);
+
+#SQL[@194,N23]Result[]
 drop table if exists t1;
+
+#SQL[@195,N51]Result[]
 create table if not exists t1(a int auto_increment);
+
+#SQL[@196,N16]Result[]
 select * from t1;
-a
+
+#SQL[@197,N20]Result[71, 65]
 show columns from t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    YES        null    auto_increment    
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦  auto_increment  ¦  
+
+#SQL[@198,N23]Result[]
 drop table if exists t1;
+
+#SQL[@199,N54]Result[]
 create table if not exists t1(a bigint auto_increment);
+
+#SQL[@200,N16]Result[]
 select * from t1;
-a
+
+#SQL[@201,N23]Result[]
 drop table if exists t1;
+
+#SQL[@202,N63]Result[]
 create table if not exists t1(a int auto_increment primary key);
+
+#SQL[@203,N23]Result[]
 drop table if exists t1;
+
+#SQL[@204,N83]Result[4, 10]
 SELECT WORD FROM INFORMATION_SCHEMA.KEYWORDS WHERE RESERVED=1 ORDER BY WORD limit 1;
 WORD
 ACCESSIBLE
-;
+
+#SQL[@205,N23]Result[]
 drop table if exists t1;
+
+#SQL[@206,N42]Result[]
 create table t1 (a int primary key, b int);
+
+#SQL[@207,N174]Result[]
 select * from t1 WHERE (a IN ('1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','26','27','28','29') AND b = 0) ORDER BY `a` ASC;
-a    b
+
+#SQL[@208,N23]Result[]
 drop table if exists t1;
+
+#SQL[@209,N49]Result[]
 create table t1 (a int primary key, b int, c int);
+
+#SQL[@210,N31]Result[]
 insert into t1 values (1, 2, 3);
+
+#SQL[@211,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 1
+
+#SQL[@212,N33]Result[8, 1]
 select count(*) from t1 where b=2;
 count(*)
 1
+
+#SQL[@213,N33]Result[8, 1]
 select count(*) from t1 where a=2;
 count(*)
 0
+
+#SQL[@214,N23]Result[]
 drop table if exists t1;
+
+#SQL[@215,N36]Result[]
 create table t1 (a int(11) unsigned);
+
+#SQL[@216,N30]Result[]
 insert into t1 values (1), (2);
+
+#SQL[@217,N29]Result[1, 1]
 select * from t1 where a != 2;
 a
 1
+
+#SQL[@218,N27]Result[]
 drop database if exists db1;
+
+#SQL[@219,N19]Result[]
 create database db1;
+
+#SQL[@220,N7]Result[]
 use db1;
+
+#SQL[@221,N42]Result[]
 create table t1 (a int primary key, b int);
+
+#SQL[@222,N27]Result[]
 insert into t1 values (1,1);
+
+#SQL[@224,N38]Result[25, 79]
 select mo_ctl('dn', 'flush', 'db1.t1');
 mo_ctl(dn, flush, db1.t1)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@225,N29]Error[40]
 select a from t1 where a = '';
 invalid argument cast to int, bad value 
+
+#SQL[@226,N27]Result[]
 drop database if exists db1;
+
+#SQL[@227,N19]Result[]
 create database db1;
+
+#SQL[@228,N7]Result[]
 use db1;
+
+#SQL[@229,N47]Result[]
 create table t1 (a int,b int, primary key(a,b));
+
+#SQL[@230,N51]Result[]
 insert into t1 values (1,1),(2,2),(3,3),(4,4),(5,5);
+
+#SQL[@231,N39]Result[8, 1]
 select count(*) from t1 where a is null;
 count(*)
 0
+
+#SQL[@232,N38]Result[8, 1]
 select count(*) from t1 where a = null;
 count(*)
 0
+
+#SQL[@234,N38]Result[25, 79]
 select mo_ctl('dn', 'flush', 'db1.t1');
 mo_ctl(dn, flush, db1.t1)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@235,N39]Result[8, 1]
 select count(*) from t1 where a is null;
 count(*)
 0
+
+#SQL[@236,N38]Result[8, 1]
 select count(*) from t1 where a = null;
 count(*)
 0
+
+#SQL[@237,N27]Result[]
 drop database if exists db1;
+
+#SQL[@238,N19]Result[]
 create database db1;
+
+#SQL[@239,N7]Result[]
 use db1;
+
+#SQL[@240,N45]Result[]
 create table t1 (a int,b int, primary key(a));
+
+#SQL[@241,N51]Result[]
 insert into t1 values (1,1),(2,2),(3,3),(4,4),(5,5);
+
+#SQL[@242,N39]Result[8, 1]
 select count(*) from t1 where a is null;
 count(*)
 0
+
+#SQL[@243,N38]Result[8, 1]
 select count(*) from t1 where a = null;
 count(*)
 0
+
+#SQL[@245,N38]Result[25, 79]
 select mo_ctl('dn', 'flush', 'db1.t1');
 mo_ctl(dn, flush, db1.t1)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@246,N39]Result[8, 1]
 select count(*) from t1 where a is null;
 count(*)
 0
+
+#SQL[@247,N38]Result[8, 1]
 select count(*) from t1 where a = null;
 count(*)
 0
+
+#SQL[@248,N12]Result[5, 4]
 select 1 > 0;
 1 > 0
 true
+
+#SQL[@250,N625]Error[50]
 SELECT TABLE_SCHEMA AS TABLE_CAT, NULL AS TABLE_SCHEM, TABLE_NAME, CASE WHEN TABLE_TYPE='BASE TABLE' THEN CASE WHEN TABLE_SCHEMA = 'mysql' OR TABLE_SCHEMA = 'performance_schema' THEN 'SYSTEM TABLE' ELSE 'TABLE' END WHEN TABLE_TYPE='TEMPORARY' THEN 'LOCAL_TEMPORARY' ELSE TABLE_TYPE END AS TABLE_TYPE, TABLE_COMMENT AS REMARKS, NULL AS TYPE_CAT, NULL AS TYPE_SCHEM, NULL AS TYPE_NAME, NULL AS SELF_REFERENCING_COL_NAME, NULL AS REF_GENERATION FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'abc' group by null HAVING TABLE_TYPE IN ('LOCAL TEMPORARY','TABLE','VIEW',null,null) ORDER BY TABLE_TYPE, TABLE_SCHEMA, TABLE_NAME;
 SQL syntax error: non-integer constant in GROUP BY
+
+#SQL[@252,N7]Result[]
 use db1;
+
+#SQL[@253,N24]Result[]
 drop table if exists t11;
+
+#SQL[@254,N48]Result[]
 create table t11 (a int, b int, primary key (a));
+
+#SQL[@255,N63]Result[]
 insert into t11 (select *,* from generate_series(1, 50000, 1)g);
+
+#SQL[@256,N38]Result[8, 1]
 select count(*) from t11 where a=20000;
 count(*)
 1
+
+#SQL[@257,N45]Result[8, 1]
 select count(*) from t11 where a in (1,20000);
 count(*)
 2
+
+#SQL[@259,N23]Result[]
 drop table if exists t1;
+
+#SQL[@260,N41]Result[]
 create table t1(a int primary key, b int);
+
+#SQL[@261,N39]Result[]
 insert into t1 values (1,1),(2,2),(3,3);
+
+#SQL[@263,N41]Result[28, 79]
 select mo_ctl('dn', 'flush', 'select.t1');
 mo_ctl(dn, flush, select.t1)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@264,N39]Result[8, 8, 8, 8]
 select * from t1 where a in (3,3,3,2,1);
-a    b
-1    1
-2    2
-3    3
+a  ¦  b
+1  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@266,N23]Result[]
 drop table if exists t1;
+
+#SQL[@267,N74]Result[]
 create table t1 (a int, b varchar, c int, primary key (c,a), key idx_b(b));
+
+#SQL[@268,N93]Result[]
 insert into t1 select result, result || "_a",result+100000000 from generate_series(1,10000) g;
+
+#SQL[@269,N43]Result[15, 27, 27]
 select * from t1 where b in ("11_a","21_a");
-a    b    c
-11    11_a    100000011
-21    21_a    100000021
+a  ¦  b  ¦  c
+11  ¦  11_a  ¦  100000011
+21  ¦  21_a  ¦  100000021
+
+#SQL[@271,N23]Result[]
 drop table if exists t1;
+
+#SQL[@272,N57]Result[]
 create table t1(a int primary key, b int, c varchar(200));
+
+#SQL[@273,N101]Result[]
 insert into t1 select result, result, "aabbccddeeffgghhii_"||result from generate_series (1, 100000)g;
+
+#SQL[@274,N123]Result[1, 6]
 select a from t1 where c in ("123456789012345678901234567890","123456789012345678901234567890","aabbccddeeffgghhii_100000");
 a
 100000
+
+#SQL[@276,N23]Result[]
 drop table if exists t1;
+
+#SQL[@277,N48]Result[]
 create table t1(a int primary key, b vecf32(10));
+
+#SQL[@278,N118]Result[]
 insert into t1 select result, "[0.11,0.22,0.33,0.44,0.55,0.66,0.77,0.88,0.99,0.101]" from generate_series (1, 100000)g;
+
+#SQL[@279,N139]Result[]
 select a from t1 where b in ("[1.11,1.22,1.33,1.44,1.55,1.66,1.77,1.88,1.99,1.101]","[1.11,1.22,1.33,1.44,1.55,1.66,1.77,1.88,1.99,1.102]");
-a
+
+#SQL[@281,N23]Result[]
 drop table if exists t1;
+
+#SQL[@282,N48]Result[]
 create table t1(a int primary key, b vecf64(10));
+
+#SQL[@283,N118]Result[]
 insert into t1 select result, "[0.11,0.22,0.33,0.44,0.55,0.66,0.77,0.88,0.99,0.101]" from generate_series (1, 100000)g;
+
+#SQL[@284,N139]Result[]
 select a from t1 where b in ("[1.11,1.22,1.33,1.44,1.55,1.66,1.77,1.88,1.99,1.101]","[1.11,1.22,1.33,1.44,1.55,1.66,1.77,1.88,1.99,1.102]");
-a
+
+#SQL[@286,N32]Result[]
 drop table if exists test_bigint;
+
+#SQL[@287,N44]Result[]
 create table test_bigint (a bigint unsigned);
+
+#SQL[@288,N51]Result[]
 insert into test_bigint values (0xFFFFFFFFFFFFFFFD);
+
+#SQL[@289,N51]Result[]
 insert into test_bigint values (0xFFFFFFFFFFFFFFFE);
+
+#SQL[@290,N40]Result[1, 20, 20]
 select * from test_bigint where a -1 > 1;
 a
 18446744073709551613
 18446744073709551614
+
+#SQL[@291,N37]Result[1, 20, 20]
 select * from test_bigint where a > 1;
 a
 18446744073709551613
 18446744073709551614
+

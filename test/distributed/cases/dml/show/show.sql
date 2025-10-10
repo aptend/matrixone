@@ -42,9 +42,9 @@ create database test01;
 use test01;
 show columns from test02.t1;
 create database if not exists db11111111111;
--- @bvt:issue#10164
-show table status from db11111111111;
--- @bvt:issue
+@issue(no=10164) {
+    show table status from db11111111111;
+}
 drop database db11111111111;
 show variables where value = 'MatrixOne';
 

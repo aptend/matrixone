@@ -1,45 +1,49 @@
+#SQL[@1,N139]Result[37, 42]
 select reldatabase,relname,relkind from mo_catalog.mo_tables where relname = 'mo_increment_columns' and account_id = 0 order by reldatabase;
-reldatabase    relname    relkind
-mo_catalog    mo_increment_columns    
+reldatabase  ¦  relname  ¦  relkind
+mo_catalog  ¦  mo_increment_columns  ¦  
+
+#SQL[@2,N196]Result[20, 17, 15, 18, 23, 17, 24, 18, 18, 22, 26, 17, 18, 15, 24, 34, 28, 26, 14, 14, 14, 20, 20, 18, 16, 25, 19, 16, 26, 14, 26, 27, 16, 22, 17, 24, 14, 31, 20, 19, 17]
 select relname,relkind from mo_catalog.mo_tables where reldatabase = 'mo_catalog' and account_id = 0 and relname not like '__mo_index_unique__%' and relname != '__mo_account_lock' order by relname;
-relname    relkind
-mo_account    r
-mo_iscp_log    r
-mo_cache    v
-mo_cdc_task    r
-mo_cdc_watermark    r
-mo_columns    r
-mo_configurations    v
-mo_data_key    r
-mo_database    r
-mo_foreign_keys    r
-mo_increment_columns    
-mo_indexes    r
-mo_locks    v
-mo_merge_settings    r
-mo_mysql_compatibility_mode    r
-mo_partition_metadata    r
-mo_partition_tables    r
-mo_pubs    r
-mo_role    r
-mo_role_grant    r
-mo_role_privs    r
-mo_sessions    v
-mo_shards    r
-mo_shards_metadata    r
-mo_snapshots    r
-mo_stages    r
-mo_stored_procedure    r
-mo_subs    r
-mo_table_partitions    r
-mo_table_stats_alpha    r
-mo_tables    r
-mo_transactions    v
-mo_upgrade    r
-mo_upgrade_tenant    r
-mo_user    r
-mo_user_defined_function    r
-mo_user_grant    r
-mo_variables    v
-mo_version    r
-mo_pitr    r
+relname  ¦  relkind
+mo_account  ¦  r
+mo_cache  ¦  v
+mo_cdc_task  ¦  r
+mo_cdc_watermark  ¦  r
+mo_columns  ¦  r
+mo_configurations  ¦  v
+mo_data_key  ¦  r
+mo_database  ¦  r
+mo_foreign_keys  ¦  r
+mo_increment_columns  ¦  
+mo_indexes  ¦  r
+mo_iscp_log  ¦  r
+mo_locks  ¦  v
+mo_merge_settings  ¦  r
+mo_mysql_compatibility_mode  ¦  r
+mo_partition_metadata  ¦  r
+mo_partition_tables  ¦  r
+mo_pitr  ¦  r
+mo_pubs  ¦  r
+mo_role  ¦  r
+mo_role_grant  ¦  r
+mo_role_privs  ¦  r
+mo_sessions  ¦  v
+mo_shards  ¦  r
+mo_shards_metadata  ¦  r
+mo_snapshots  ¦  r
+mo_stages  ¦  r
+mo_stored_procedure  ¦  r
+mo_subs  ¦  r
+mo_table_partitions  ¦  r
+mo_table_stats_alpha  ¦  r
+mo_tables  ¦  r
+mo_transactions  ¦  v
+mo_upgrade  ¦  r
+mo_upgrade_tenant  ¦  r
+mo_user  ¦  r
+mo_user_defined_function  ¦  r
+mo_user_grant  ¦  r
+mo_variables  ¦  v
+mo_version  ¦  r
+

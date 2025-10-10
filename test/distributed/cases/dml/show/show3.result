@@ -1,7 +1,17 @@
+#SQL[@1,N39]Result[]
 set global enable_privilege_cache = off;
+
+#SQL[@3,N119]Result[]
 create table t1 (a int, b int, c int) COMMENT='before cluster by' PARTITION BY hash(a+b) PARTITIONS 2  CLUSTER BY (a,b);
+
+#SQL[@5,N119]Error[260]
 create table t2 (a int, b int, c int) CLUSTER BY (a,b) PARTITION BY hash(a+b) PARTITIONS 2   COMMENT='after cluster by';
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 64 near " PARTITION BY hash(a+b) PARTITIONS 2   COMMENT='after cluster by';";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 64 near \" PARTITION BY hash(a+b) PARTITIONS 2   COMMENT='after cluster by'\";
+
+#SQL[@7,N119]Error[241]
 create table t3 (a int, b int, c int) PARTITION BY hash(a+b) PARTITIONS 2  COMMENT='before cluster by' CLUSTER BY (a,b);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 82 near "  COMMENT='before cluster by' CLUSTER BY (a,b);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 82 near \"  COMMENT='before cluster by' CLUSTER BY (a,b)\";
+
+#SQL[@8,N38]Result[]
 set global enable_privilege_cache = on;
+

@@ -1,380 +1,272 @@
+#SQL[@1,N281]Result[]
 CREATE TABLE IF NOT EXISTS indup_00(
-`id` INT UNSIGNED,
-`act_name` VARCHAR(20) NOT NULL,
-`spu_id` VARCHAR(30) NOT NULL,
-`uv`  BIGINT NOT NULL,
-`update_time` date default '2020-10-10' COMMENT 'lastest time',
-unique key idx_act_name_spu_id (act_name,spu_id)
+    `id` INT UNSIGNED,
+    `act_name` VARCHAR(20) NOT NULL,
+    `spu_id` VARCHAR(30) NOT NULL,
+    `uv`  BIGINT NOT NULL,
+    `update_time` date default '2020-10-10' COMMENT 'lastest time',
+    unique key idx_act_name_spu_id (act_name,spu_id)
 );
+
+#SQL[@9,N135]Result[]
 insert into indup_00 values (1,'beijing','001',1,'2021-01-03'),(2,'shanghai','002',2,'2022-09-23'),(3,'guangzhou','003',3,'2022-09-23');
+
+#SQL[@10,N22]Result[53, 46, 47, 48]
 select * from indup_00;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-3    guangzhou    003    3    2022-09-23
-2    shanghai    002    2    2022-09-23
+id  ¦  act_name  ¦  spu_id  ¦  uv  ¦  update_time
+1  ¦  beijing  ¦  001  ¦  1  ¦  2021-01-03
+2  ¦  shanghai  ¦  002  ¦  2  ¦  2022-09-23
+3  ¦  guangzhou  ¦  003  ¦  3  ¦  2022-09-23
+
+#SQL[@13,N199]Error[88]
 insert into indup_00 values (4,'shenzheng','004',4,'2021-05-28'),(5,'beijing','010',5,'2022-10-23') on duplicate key update `act_name`=VALUES(`act_name`), `spu_id`=VALUES(`spu_id`), `uv`=VALUES(`uv`);
 internal error: do not support update primary key/unique key for on duplicate key update
-select * from indup_00;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-5    beijing    010    5    2022-10-23
-3    guangzhou    003    3    2022-09-23
-2    shanghai    002    2    2022-09-23
-4    shenzheng    004    4    2021-05-28
-insert into indup_00 values (6,'shanghai','002',21,'1999-09-23'),(7,'guangzhou','003',31,'1999-09-23') on duplicate key update `act_name`=VALUES(`act_name`), `spu_id`=VALUES(`spu_id`), `uv`=VALUES(`uv`);
-select * from indup_00;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-5    beijing    010    5    2022-10-23
-3    guangzhou    003    31    2022-09-23
-2    shanghai    002    21    2022-09-23
-4    shenzheng    004    4    2021-05-28
-insert into indup_00 values (8,'shanghai','002',21,'1999-09-23') on duplicate key update `act_name`=NULL;
-constraint violation: Column 'act_name' cannot be null
-select * from indup_00;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-5    beijing    010    5    2022-10-23
-3    guangzhou    003    31    2022-09-23
-2    shanghai    002    21    2022-09-23
-4    shenzheng    004    4    2021-05-28
-insert into indup_00 values (9,'shanxi','005',4,'2022-10-08'),(10,'shandong','006',6,'2022-11-22') on duplicate key update `act_name`='Hongkong';
-select * from indup_00;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-5    beijing    010    5    2022-10-23
-3    guangzhou    003    31    2022-09-23
-10    shandong    006    6    2022-11-22
-2    shanghai    002    21    2022-09-23
-9    shanxi    005    4    2022-10-08
-4    shenzheng    004    4    2021-05-28
-insert into indup_00 values (10,'xinjiang','008',7,NULL),(11,'hainan','009',8,NULL) on duplicate key update `act_name`='Hongkong';
-select * from indup_00;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-5    beijing    010    5    2022-10-23
-3    guangzhou    003    31    2022-09-23
-11    hainan    009    8    null
-10    shandong    006    6    2022-11-22
-2    shanghai    002    21    2022-09-23
-9    shanxi    005    4    2022-10-08
-4    shenzheng    004    4    2021-05-28
-10    xinjiang    008    7    null
+
+#SQL[@29,N307]Result[]
 CREATE TABLE IF NOT EXISTS indup_01(
-`id` INT UNSIGNED,
-`act_name` VARCHAR(20) NOT NULL,
-`spu_id` VARCHAR(30) NOT NULL,
-`uv`  BIGINT NOT NULL,
-`update_time` date default '2020-10-10' COMMENT 'lastest time',
-PRIMARY KEY ( `id` ),
-unique key idx_act_name_spu_id (act_name,spu_id)
+    `id` INT UNSIGNED,
+    `act_name` VARCHAR(20) NOT NULL,
+    `spu_id` VARCHAR(30) NOT NULL,
+    `uv`  BIGINT NOT NULL,
+    `update_time` date default '2020-10-10' COMMENT 'lastest time',
+    PRIMARY KEY ( `id` ),
+    unique key idx_act_name_spu_id (act_name,spu_id)
 );
+
+#SQL[@38,N135]Result[]
 insert into indup_01 values (1,'beijing','001',1,'2021-01-03'),(2,'shanghai','002',2,'2022-09-23'),(3,'guangzhou','003',3,'2022-09-23');
+
+#SQL[@39,N22]Result[53, 46, 47, 48]
 select * from indup_01;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    2    2022-09-23
-3    guangzhou    003    3    2022-09-23
+id  ¦  act_name  ¦  spu_id  ¦  uv  ¦  update_time
+1  ¦  beijing  ¦  001  ¦  1  ¦  2021-01-03
+2  ¦  shanghai  ¦  002  ¦  2  ¦  2022-09-23
+3  ¦  guangzhou  ¦  003  ¦  3  ¦  2022-09-23
+
+#SQL[@42,N199]Error[88]
 insert into indup_01 values (4,'shenzheng','004',4,'2021-05-28'),(5,'beijing','010',5,'2022-10-23') on duplicate key update `act_name`=VALUES(`act_name`), `spu_id`=VALUES(`spu_id`), `uv`=VALUES(`uv`);
 internal error: do not support update primary key/unique key for on duplicate key update
-select * from indup_01;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    2    2022-09-23
-3    guangzhou    003    3    2022-09-23
-4    shenzheng    004    4    2021-05-28
-5    beijing    010    5    2022-10-23
-insert into indup_01 values (6,'shanghai','002',21,'1999-09-23'),(7,'guangzhou','003',31,'1999-09-23') on duplicate key update `act_name`=VALUES(`act_name`), `spu_id`=VALUES(`spu_id`), `uv`=VALUES(`uv`);
-select * from indup_01;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-4    shenzheng    004    4    2021-05-28
-5    beijing    010    5    2022-10-23
-insert into indup_01 values (8,'shanghai','002',21,'1999-09-23') on duplicate key update `act_name`=NULL;
-constraint violation: Column 'act_name' cannot be null
-select * from indup_01;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-4    shenzheng    004    4    2021-05-28
-5    beijing    010    5    2022-10-23
-insert into indup_01 values (9,'shanxi','005',4,'2022-10-08'),(10,'shandong','006',6,'2022-11-22') on duplicate key update `act_name`='Hongkong';
-select * from indup_01;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-4    shenzheng    004    4    2021-05-28
-5    beijing    010    5    2022-10-23
-9    shanxi    005    4    2022-10-08
-10    shandong    006    6    2022-11-22
-insert into indup_01 values (10,'xinjiang','008',7,NULL),(11,'hainan','009',8,NULL) on duplicate key update `act_name`='Hongkong';
-select * from indup_01;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-4    shenzheng    004    4    2021-05-28
-5    beijing    010    5    2022-10-23
-9    shanxi    005    4    2022-10-08
-10    Hongkong    006    6    2022-11-22
-11    hainan    009    8    null
+
+#SQL[@58,N169]Result[]
 CREATE TABLE IF NOT EXISTS indup_02(
-col1 INT ,
-col2 VARCHAR(20) NOT NULL,
-col3 VARCHAR(30) NOT NULL,
-col4  BIGINT default 30,
-PRIMARY KEY ( col1 )
+    col1 INT ,
+    col2 VARCHAR(20) NOT NULL,
+    col3 VARCHAR(30) NOT NULL,
+    col4  BIGINT default 30,
+    PRIMARY KEY ( col1 )
 );
+
+#SQL[@65,N75]Result[]
 insert into indup_02 values (1,'apple','left',NULL),(2,'bear','right',1000);
+
+#SQL[@66,N22]Result[34, 32, 32]
 select * from indup_02;
-col1    col2    col3    col4
-1    apple    left    null
-2    bear    right    1000
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  apple  ¦  left  ¦  null
+2  ¦  bear  ¦  right  ¦  1000
+
+#SQL[@68,N88]Error[88]
 insert into indup_02 select 1,'banana','lower',NULL on duplicate key update col1=col1*10;
 internal error: do not support update primary key/unique key for on duplicate key update
-select * from indup_02;
-col1    col2    col3    col4
-2    bear    right    1000
-10    apple    left    null
-insert into indup_02(col1,col2,col3) values(2,'wechat','tower'),(3,'paper','up') on duplicate key update col1=col1+20,col3=values(col3);
-select * from indup_02;
-col1    col2    col3    col4
-3    paper    up    30
-10    apple    left    null
-22    bear    tower    1000
-insert into indup_02 values(3,'aaa','bbb',30) on duplicate key update col1=col1+7;
-Duplicate entry '10' for key 'col1'
-select * from indup_02;
-col1    col2    col3    col4
-3    paper    up    30
-10    apple    left    null
-22    bear    tower    1000
-insert into indup_02 values(3,'aaa','bbb',30),(30,'abc','abc',10),(11,'a1','b1',300) on duplicate key update col1=col1*10,col4=0;
-select * from indup_02;
-col1    col2    col3    col4
-10    apple    left    null
-11    a1    b1    300
-22    bear    tower    1000
-300    paper    up    0
-create table indup_tmp(col1 int,col2 varchar(20),col3 varchar(20));
-insert into indup_tmp values (1,'apple','left'),(2,'bear','right'),(3,'paper','up'),(10,'wine','down'),(300,'box','high');
-insert into indup_02(col1,col2,col3) select col1,col2,col3 from  indup_tmp on duplicate key update indup_02.col3=left(indup_02.col3,2),col2='wow';
-select * from indup_02;
-col1    col2    col3    col4
-22    bear    tower    1000
-11    a1    b1    300
-1    apple    left    30
-2    bear    right    30
-3    paper    up    30
-10    wow    le    null
-300    wow    up    0
+
+#SQL[@86,N20]Result[]
 delete from indup_02;
+
+#SQL[@87,N22]Result[]
 select * from indup_02;
-col1    col2    col3    col4
+
+#SQL[@90,N106]Result[]
 insert into indup_02(col1,col2,col3) values(6,'app','uper'),(7,'light','') on duplicate key update col2='';
+
+#SQL[@91,N22]Result[34, 28, 26]
 select * from indup_02;
-col1    col2    col3    col4
-6    app    uper    30
-7    light        30
+col1  ¦  col2  ¦  col3  ¦  col4
+6  ¦  app  ¦  uper  ¦  30
+7  ¦  light  ¦    ¦  30
+
+#SQL[@93,N167]Result[]
 CREATE TABLE IF NOT EXISTS indup_03(
-col1 varchar(25) ,
-col2 VARCHAR(20) NOT NULL,
-col3 VARCHAR(30) ,
-col4  BIGINT default 30,
-PRIMARY KEY (col1)
+    col1 varchar(25) ,
+    col2 VARCHAR(20) NOT NULL,
+    col3 VARCHAR(30) ,
+    col4  BIGINT default 30,
+    PRIMARY KEY (col1)
 );
+
+#SQL[@100,N79]Result[]
 insert into indup_03 values ('1','apple','left',NULL),('2','bear','right',1000);
+
+#SQL[@102,N170]Error[47]
 insert into indup_03(col1,col2,col3) values(3,'paper','up'),('2','bear','right',1000),('1','sofa','high',NULL) on duplicate key update col2=values(col2),col3=values(col3);
 Column count doesn't match value count at row 2
+
+#SQL[@103,N22]Result[34, 32, 32]
 select * from indup_03;
-col1    col2    col3    col4
-1    apple    left    null
-2    bear    right    1000
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  apple  ¦  left  ¦  null
+2  ¦  bear  ¦  right  ¦  1000
+
+#SQL[@105,N116]Error[50]
 insert into indup_03(col1,col2,col3) values(4,NULL,NULL) on duplicate key update col2=values(col2),col3=values(col3);
 constraint violation: Column 'col2' cannot be null
+
+#SQL[@106,N116]Error[50]
 insert into indup_03(col1,col2,col3) values(3,NULL,NULL) on duplicate key update col2=values(col2),col3=values(col3);
 constraint violation: Column 'col2' cannot be null
+
+#SQL[@107,N22]Result[34, 32, 32]
 select * from indup_03;
-col1    col2    col3    col4
-1    apple    left    null
-2    bear    right    1000
+col1  ¦  col2  ¦  col3  ¦  col4
+1  ¦  apple  ¦  left  ¦  null
+2  ¦  bear  ¦  right  ¦  1000
+
+#SQL[@109,N91]Error[88]
 insert into indup_03(col1,col2,col3) values(2,'bear','left') on duplicate key update col1=1;
 internal error: do not support update primary key/unique key for on duplicate key update
-insert into indup_03(col1,col2,col3) values(1,'apple','') on duplicate key update col3='constant';
-select * from indup_03;
-col1    col2    col3    col4
-1    apple    constant    null
-2    bear    right    1000
-insert into indup_03(col1,col2,col3) values(1,'apple','uuuu') on duplicate key update col3=NULL;
-select * from indup_03;
-col1    col2    col3    col4
-1    apple    null    null
-2    bear    right    1000
-insert into indup_03(col1,col2,col3) values(1,'apple','uuuu') on duplicate key update col3='';
-select * from indup_03;
-col1    col2    col3    col4
-1    apple        null
-2    bear    right    1000
-insert into indup_03(col1,col2,col3) values(1,'apple','uuuu') on duplicate key update col1=2+3;
-select * from indup_03;
-col1    col2    col3    col4
-2    bear    right    1000
-5    apple        null
+
+#SQL[@122,N255]Result[]
 CREATE TABLE IF NOT EXISTS indup_04(
-`id` INT,
-`act_name` VARCHAR(20) NOT NULL,
-`spu_id` VARCHAR(30) NOT NULL,
-`uv`  BIGINT NOT NULL,
-`update_time` date default '2020-10-10' COMMENT 'lastest time',
-PRIMARY KEY ( `id`, `act_name`)
+    `id` INT,
+    `act_name` VARCHAR(20) NOT NULL,
+    `spu_id` VARCHAR(30) NOT NULL,
+    `uv`  BIGINT NOT NULL,
+    `update_time` date default '2020-10-10' COMMENT 'lastest time',
+    PRIMARY KEY ( `id`, `act_name`)
 );
+
+#SQL[@130,N135]Result[]
 insert into indup_04 values (1,'beijing','001',1,'2021-01-03'),(2,'shanghai','002',2,'2022-09-23'),(3,'guangzhou','003',3,'2022-09-23');
+
+#SQL[@131,N22]Result[53, 46, 47, 48]
 select * from indup_04;
-id    act_name    spu_id    uv    update_time
-1    beijing    001    1    2021-01-03
-2    shanghai    002    2    2022-09-23
-3    guangzhou    003    3    2022-09-23
+id  ¦  act_name  ¦  spu_id  ¦  uv  ¦  update_time
+1  ¦  beijing  ¦  001  ¦  1  ¦  2021-01-03
+2  ¦  shanghai  ¦  002  ¦  2  ¦  2022-09-23
+3  ¦  guangzhou  ¦  003  ¦  3  ¦  2022-09-23
+
+#SQL[@134,N199]Error[88]
 insert into indup_04 values (4,'shenzheng','004',4,'2021-05-28'),(1,'beijing','010',5,'2022-10-23') on duplicate key update `act_name`=VALUES(`act_name`), `spu_id`=VALUES(`spu_id`), `uv`=VALUES(`uv`);
 internal error: do not support update primary key/unique key for on duplicate key update
-select * from indup_04;
-id    act_name    spu_id    uv    update_time
-2    shanghai    002    2    2022-09-23
-3    guangzhou    003    3    2022-09-23
-4    shenzheng    004    4    2021-05-28
-1    beijing    010    5    2021-01-03
-insert into indup_04 values (2,'shanghai','002',21,'1999-09-23'),(3,'guangzhou','003',31,'1999-09-23') on duplicate key update `act_name`=VALUES(`act_name`), `spu_id`=VALUES(`spu_id`), `uv`=VALUES(`uv`);
-select * from indup_04;
-id    act_name    spu_id    uv    update_time
-4    shenzheng    004    4    2021-05-28
-1    beijing    010    5    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-insert into indup_04 values (2,'shanghai','002',21,'1999-09-23') on duplicate key update `act_name`=NULL;
-constraint violation: Column 'act_name' cannot be null
-select * from indup_04;
-id    act_name    spu_id    uv    update_time
-4    shenzheng    004    4    2021-05-28
-1    beijing    010    5    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-insert into indup_04 values (5,'shanxi','005',4,'2022-10-08'),(6,'shandong','006',6,'2022-11-22') on duplicate key update `act_name`='Hongkong';
-select * from indup_04;
-id    act_name    spu_id    uv    update_time
-4    shenzheng    004    4    2021-05-28
-1    beijing    010    5    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-5    shanxi    005    4    2022-10-08
-6    shandong    006    6    2022-11-22
-insert into indup_04 values (10,'xinjiang','008',7,NULL),(11,'hainan','009',8,NULL) on duplicate key update `act_name`='Hongkong';
-select * from indup_04;
-id    act_name    spu_id    uv    update_time
-4    shenzheng    004    4    2021-05-28
-1    beijing    010    5    2021-01-03
-2    shanghai    002    21    2022-09-23
-3    guangzhou    003    31    2022-09-23
-5    shanxi    005    4    2022-10-08
-6    shandong    006    6    2022-11-22
-10    xinjiang    008    7    null
-11    hainan    009    8    null
+
+#SQL[@151,N74]Result[]
 create table indup_fk1(col1 int primary key,col2 varchar(25),col3 tinyint);
+
+#SQL[@152,N171]Result[]
 create table indup_fk2(col1 int,col2 varchar(25),col3 tinyint primary key,constraint ck foreign key(col1) REFERENCES indup_fk1(col1) on delete RESTRICT on update RESTRICT);
+
+#SQL[@153,N76]Result[]
 insert into indup_fk1 values (2,'yellow',20),(10,'apple',50),(11,'opppo',51);
+
+#SQL[@154,N72]Result[]
 insert into indup_fk2 values(2,'score',1),(2,'student',4),(10,'goods',2);
+
+#SQL[@155,N72]Error[80]
 insert into indup_fk2 values(10,'food',1)on duplicate key update col1=50;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@156,N82]Error[80]
 insert into indup_fk2 values(50,'food',1)on duplicate key update col1=values(col1);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@157,N23]Result[24, 21, 21, 21]
 select * from indup_fk1;
-col1    col2    col3
-2    yellow    20
-10    apple    50
-11    opppo    51
+col1  ¦  col2  ¦  col3
+2  ¦  yellow  ¦  20
+10  ¦  apple  ¦  50
+11  ¦  opppo  ¦  51
+
+#SQL[@158,N23]Result[24, 19, 21, 20]
 select * from indup_fk2;
-col1    col2    col3
-2    score    1
-10    goods    2
-2    student    4
+col1  ¦  col2  ¦  col3
+2  ¦  score  ¦  1
+2  ¦  student  ¦  4
+10  ¦  goods  ¦  2
+
+#SQL[@159,N20]Result[]
 drop table indup_fk2;
+
+#SQL[@160,N20]Result[]
 drop table indup_fk1;
+
+#SQL[@163,N142]Result[]
 CREATE TABLE IF NOT EXISTS indup_05(
-col1 INT ,
-col2 VARCHAR(20) NOT NULL,
-col3 VARCHAR(30) NOT NULL,
-col4 BIGINT default 30
+    col1 INT ,
+    col2 VARCHAR(20) NOT NULL,
+    col3 VARCHAR(30) NOT NULL,
+    col4 BIGINT default 30
 );
+
+#SQL[@169,N151]Result[]
 insert into indup_05 values(22,'11','33',1), (23,'22','55',2),(24,'66','77',1),(25,'99','88',1),(22,'11','33',1) on duplicate key update col1=col1+col2;
+
+#SQL[@170,N80]Result[]
 insert into indup_05 values(22,'78','30',99) on duplicate key update col1=col1/2;
+
+#SQL[@171,N22]Result[34, 25, 25, 25, 25, 25, 26]
 select * from indup_05;
-col1    col2    col3    col4
-22    11    33    1
-23    22    55    2
-24    66    77    1
-25    99    88    1
-22    11    33    1
-22    78    30    99
+col1  ¦  col2  ¦  col3  ¦  col4
+22  ¦  11  ¦  33  ¦  1
+23  ¦  22  ¦  55  ¦  2
+24  ¦  66  ¦  77  ¦  1
+25  ¦  99  ¦  88  ¦  1
+22  ¦  11  ¦  33  ¦  1
+22  ¦  78  ¦  30  ¦  99
+
+#SQL[@174,N52]Result[]
 create table indup_06(col1 int primary key,col2 int);
+
+#SQL[@175,N168]Result[]
 insert into indup_06 values(1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10),(11,11),(12,12),(13,13),(14,14),(15,15),(16,16),(17,17),(18,18),(19,19),(20,20);
+
+#SQL[@176,N223]Error[88]
 insert into indup_06 values(1,10),(2,20),(3,30),(4,40),(5,50),(6,60),(7,70),(8,80),(9,90),(10,100),(11,110),(12,120),(13,130),(14,140),(15,150),(16,160),(17,170),(18,180),(19,190),(20,200)on duplicate key update col1=col1+1;
 internal error: do not support update primary key/unique key for on duplicate key update
-truncate table  indup_06;
-insert into indup_06 values(1,1);
-insert into indup_06 values(1,10),(2,20),(3,30),(4,40),(5,50),(6,60),(7,70),(8,80),(9,90),(10,100),(11,110),(12,120),(13,130),(14,140),(15,150),(16,160),(17,170),(18,180),(19,190),(20,200)on duplicate key update col1=col1+1;
-insert into indup_06 values(1,10),(2,20),(3,30),(4,40),(5,50),(6,60),(7,70),(8,80),(9,90),(10,100),(11,110),(12,120),(13,130),(14,140),(15,150),(16,160),(17,170),(18,180),(19,190),(20,200)on duplicate key update col1=col1+1,col2=col2*10;
-insert into indup_06 values(1,10),(2,20),(3,30),(4,40),(5,50),(6,60),(7,70),(8,80),(9,90),(10,100),(11,110),(12,120),(13,130),(14,140),(15,150),(16,160),(17,170),(18,180),(19,190),(20,200)on duplicate key update col1=col1+1,col2=col2/10;
-constraint violation: Duplicate entry for key 'col1'
+
+#SQL[@186,N153]Result[]
 CREATE TABLE IF NOT EXISTS indup_07(
-col1 INT primary key,
-col2 VARCHAR(20) NOT NULL,
-col3 VARCHAR(30) NOT NULL,
-col4 BIGINT default 30
+    col1 INT primary key,
+    col2 VARCHAR(20) NOT NULL,
+    col3 VARCHAR(30) NOT NULL,
+    col4 BIGINT default 30
 );
+
+#SQL[@192,N151]Error[88]
 insert into indup_07 values(22,'11','33',1), (23,'22','55',2),(24,'66','77',1),(25,'99','88',1),(22,'11','33',1) on duplicate key update col1=col1+col2;
 internal error: do not support update primary key/unique key for on duplicate key update
-select * from indup_07;
-col1    col2    col3    col4
-23    22    55    2
-24    66    77    1
-25    99    88    1
-33    11    33    1
-insert into indup_07 values(24,'1','1',100) on duplicate key update col1=2147483649;
-Data truncation: data out of range: data type int32, value '2147483649'
-prepare stmt1 from "insert into indup_07 values(?, '11', '33', 1)on duplicate key update col1=col1*10";
-set @a_var = 1;
-execute stmt1 using @a_var;
-select * from indup_07;
-col1    col2    col3    col4
-1    11    33    1
-23    22    55    2
-24    66    77    1
-25    99    88    1
-33    11    33    1
-set @a_var = 23;
-execute stmt1 using @a_var;
-select * from indup_07;
-col1    col2    col3    col4
-1    11    33    1
-24    66    77    1
-25    99    88    1
-33    11    33    1
-230    22    55    2
-deallocate prepare stmt1;
+
+#SQL[@211,N29]Result[]
 drop table if exists indup_08;
+
+#SQL[@212,N49]Result[]
 create table indup_08(a varchar, primary key (a));
+
+#SQL[@213,N60]Error[40]
 insert into indup_08 values ('matrixone\''), ('matrixone\'');
 Duplicate entry 'matrixone'' for key 'a'
+
+#SQL[@216,N29]Result[]
 drop table if exists indup_09;
+
+#SQL[@217,N63]Result[]
 create table indup_09(a varchar, b varchar, primary key (a, b));
+
+#SQL[@218,N90]Error[57]
 insert into indup_09 values ('matrixone\'', 'mo-tester\''), ('matrixone\'', 'mo-tester\'');
 Duplicate entry '(matrixone',mo-tester')' for key '(a,b)'
+
+#SQL[@220,N29]Result[]
 drop table if exists indup_10;
+
+#SQL[@221,N44]Result[]
 create table indup_10(a varchar(256), b int);
+
+#SQL[@222,N113]Result[]
 insert into indup_10 (a, b) select  "matrixone " || " some space " || result, 1 from generate_series (1, 500000)g;
+
+#SQL[@223,N19]Result[]
 drop table indup_10;
+
+#SQL[@225,N243]Result[]
 CREATE TABLE `serial_numbers` (
 `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
 `biz_type` BIGINT DEFAULT NULL,
@@ -382,12 +274,21 @@ CREATE TABLE `serial_numbers` (
 `sn` BIGINT DEFAULT NULL,
 PRIMARY KEY (`id`),
 UNIQUE KEY `unq_biz_ns` (`biz_type`,`namespace`));
+
+#SQL[@232,N134]Result[]
 insert into `serial_numbers` (`biz_type`, `namespace`, `sn`) select result,result||"lijofw;ok",result from generate_series(1,100000) g;
+
+#SQL[@233,N128]Result[]
 INSERT INTO `serial_numbers` (`biz_type`, `namespace`, `sn`) VALUES (4, '2024091117', 1) ON DUPLICATE KEY UPDATE `sn` = `sn` + 1;
+
+#SQL[@234,N52]Result[39, 36, 31]
 SELECT * FROM `serial_numbers` WHERE `biz_type` = 4 ;
-id    biz_type    namespace    sn
-100001    4    2024091117    1
-4    4    4lijofw;ok    4
+id  ¦  biz_type  ¦  namespace  ¦  sn
+100001  ¦  4  ¦  2024091117  ¦  1
+4  ¦  4  ¦  4lijofw;ok  ¦  4
+
+#SQL[@235,N82]Result[39, 36]
 SELECT * FROM `serial_numbers` WHERE `biz_type` = 4 and `namespace` = '2024091117';
-id    biz_type    namespace    sn
-100001    4    2024091117    1
+id  ¦  biz_type  ¦  namespace  ¦  sn
+100001  ¦  4  ¦  2024091117  ¦  1
+

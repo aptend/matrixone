@@ -1,34 +1,57 @@
+#SQL[@2,N31]Result[24, 4]
 select enable_fault_injection();
 enable_fault_injection()
 true
+
+#SQL[@3,N63]Result[48, 4]
 select add_fault_point('fj/cn/recv/err', ':::', 'echo', 20, '');
 add_fault_point(fj/cn/recv/err, :::, echo, 20, )
 true
+
+#SQL[@4,N70]Result[55, 4]
 select add_fault_point('fj/cn/recv/subsyserr', ':::', 'echo', 300, '');
 add_fault_point(fj/cn/recv/subsyserr, :::, echo, 300, )
 true
+
+#SQL[@6,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@8,N49]Result[40, 4]
 select remove_fault_point('fj/cn/recv/subsyserr');
 remove_fault_point(fj/cn/recv/subsyserr)
 true
+
+#SQL[@10,N70]Result[55, 4]
 select add_fault_point('fj/cn/recv/rcacheerr', ':::', 'echo', 700, '');
 add_fault_point(fj/cn/recv/rcacheerr, :::, echo, 700, )
 true
+
+#SQL[@12,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@14,N49]Result[40, 4]
 select remove_fault_point('fj/cn/recv/rcacheerr');
 remove_fault_point(fj/cn/recv/rcacheerr)
 true
+
+#SQL[@15,N32]Result[25, 4]
 select disable_fault_injection();
 disable_fault_injection()
 true
+
+#SQL[@17,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@19,N33]Result[]
 create database logtail_reconnect;
+
+#SQL[@20,N14]Result[8, 14, 18, 17, 10, 8, 7, 5, 6, 14]
 show databases;
 Database
 connectlogtail
@@ -40,4 +63,7 @@ mo_task
 mysql
 system
 system_metrics
+
+#SQL[@21,N31]Result[]
 drop database logtail_reconnect;
+

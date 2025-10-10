@@ -141,35 +141,35 @@ select * from t1;
 delete from t1 where a = 1;
 select * from t1;
 
--- @bvt:issue#5790
-drop table if exists t1;
-create table t1(a int, b int, unique key(a));
-insert into t1 values(1, 1);
-insert into t1 values(2, 2);
-insert into t1 values(3, 3);
-insert into t1 values(4, 4);
-select * from t1;
-delete from t1 where a = 1;
-select * from t1;
-insert into t1 values(1, 2);
+@issue(no=5790) {
+    drop table if exists t1;
+    create table t1(a int, b int, unique key(a));
+    insert into t1 values(1, 1);
+    insert into t1 values(2, 2);
+    insert into t1 values(3, 3);
+    insert into t1 values(4, 4);
+    select * from t1;
+    delete from t1 where a = 1;
+    select * from t1;
+    insert into t1 values(1, 2);
 
-drop table if exists t1;
-create table t1(a int, b int, unique key(a, b));
-insert into t1 values(1, 2);
-insert into t1 values(1, 3);
-insert into t1 values(2, 2);
-insert into t1 values(2, 3);
-select * from t1;
-delete from t1 where a = 1;
-select * from t1;
-insert into t1 values(1, 2);
-insert into t1 values(1, null);
-delete from t1 where a = 1;
--- @bvt:issue
+    drop table if exists t1;
+    create table t1(a int, b int, unique key(a, b));
+    insert into t1 values(1, 2);
+    insert into t1 values(1, 3);
+    insert into t1 values(2, 2);
+    insert into t1 values(2, 3);
+    select * from t1;
+    delete from t1 where a = 1;
+    select * from t1;
+    insert into t1 values(1, 2);
+    insert into t1 values(1, null);
+    delete from t1 where a = 1;
+}
 
 drop database if exists db1;
 
-# test cn block delete for single table, one CN
+-- test cn block delete for single table, one CN
 use `delete`;
 create table temp(a int);
 insert into temp select * from generate_series(1,8192) g;
@@ -184,22 +184,22 @@ insert into t select * from t;
 insert into t select * from t;
 insert into t select * from t;
 
--- @bvt:issue#9447
-insert into t select * from t;
-begin;
-insert into t select * from t;
-delete from t where a = 1;
-select count(*) from t;
-rollback;
-begin;
-insert into t select * from t;
-delete from t where a = 1;
-select count(*) from t;
-commit;
-select count(*) from t;
--- @bvt:issue
+@issue(no=9447) {
+    insert into t select * from t;
+    begin;
+    insert into t select * from t;
+    delete from t where a = 1;
+    select count(*) from t;
+    rollback;
+    begin;
+    insert into t select * from t;
+    delete from t where a = 1;
+    select count(*) from t;
+    commit;
+    select count(*) from t;
+}
 
-# test cn block delete for single table, multi CN
+-- test cn block delete for single table, multi CN
 drop table if exists temp;
 drop table if exists t;
 create table temp(a int);

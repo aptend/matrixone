@@ -6,15 +6,15 @@ drop table if exists t;
 create table t (a int);
 insert into t values (1), (2), (3), (4), (5);
 -- @separator:table
--- @bvt:issue#9578
-select mo_ctl('dn','checkpoint','');
--- @bvt:issue
+@issue(no=9578) {
+    select mo_ctl('dn','checkpoint','');
+}
 select * from t;
 delete from t where a in (1, 2, 3);
 -- @separator:table
--- @bvt:issue#9578
-select mo_ctl('dn','globalcheckpoint','');
--- @bvt:issue
+@issue(no=9578) {
+    select mo_ctl('dn','globalcheckpoint','');
+}
 select * from t;
 
 

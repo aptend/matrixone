@@ -27,35 +27,35 @@ select * from insert_ignore_03;
 -- insert ignore not null and default constraint
 create table insert_ignore_04 (product_id INT NOT NULL AUTO_INCREMENT,product_name VARCHAR(255) NOT NULL,quantity_in_stock INT DEFAULT 0,price DECIMAL(10, 2) NOT NULL,PRIMARY KEY (product_id));
 insert ignore into insert_ignore_04(product_name, price) VALUES('Laptop', 1200.00),('Monitor', 150.00),('Keyboard', NULL),('Mouse', 15.00);
--- @bvt:issue#15345
-insert ignore into insert_ignore_04(product_name, quantity_in_stock,price) VALUES(NULL, 5,1200.00),('board',6, NULL),('phone',NULL,1500.00);
-select * from insert_ignore_04;
--- @bvt:issue
+@issue(no=15345) {
+    insert ignore into insert_ignore_04(product_name, quantity_in_stock,price) VALUES(NULL, 5,1200.00),('board',6, NULL),('phone',NULL,1500.00);
+    select * from insert_ignore_04;
+}
 -- insert ignore foreign key constraint
--- @bvt:issue#15345
-create table parent_table(parent_id INT AUTO_INCREMENT PRIMARY KEY,parent_name VARCHAR(255) NOT NULL);
-create table child_table(child_id INT AUTO_INCREMENT PRIMARY KEY,child_name VARCHAR(255) NOT NULL,parent_id INT,FOREIGN KEY (parent_id) REFERENCES parent_table(parent_id)
-);
-insert ignore into parent_table (parent_name) VALUES ('Parent 1'), ('Parent 2'), ('Parent 3');
-insert ignore into child_table (child_name, parent_id) VALUES('Child 1', 1),('Child 2', 2),('Child 3', 4),('Child 4', 1);
-select * from parent_table;
-select * from child_table;
--- @bvt:issue
+@issue(no=15345) {
+    create table parent_table(parent_id INT AUTO_INCREMENT PRIMARY KEY,parent_name VARCHAR(255) NOT NULL);
+    create table child_table(child_id INT AUTO_INCREMENT PRIMARY KEY,child_name VARCHAR(255) NOT NULL,parent_id INT,FOREIGN KEY (parent_id) REFERENCES parent_table(parent_id)
+    );
+    insert ignore into parent_table (parent_name) VALUES ('Parent 1'), ('Parent 2'), ('Parent 3');
+    insert ignore into child_table (child_name, parent_id) VALUES('Child 1', 1),('Child 2', 2),('Child 3', 4),('Child 4', 1);
+    select * from parent_table;
+    select * from child_table;
+}
 -- syntax check
 insert ignore into insert_ignore_02 values(1234.56);
--- @bvt:issue#15345
-insert ignore into insert_ignore_02 values("abc",1234.56);
-insert ignore into insert_ignore_02 select "abc",34.22;
--- @bvt:issue
+@issue(no=15345) {
+    insert ignore into insert_ignore_02 values("abc",1234.56);
+    insert ignore into insert_ignore_02 select "abc",34.22;
+}
 insert ignore into insert_ignore values("abc",1234.56);
 
 -- insert ignore values out of type range
--- @bvt:issue#15345
-create table insert_ignore_05(id TINYINT,created_at DATETIME);
-insert ignore INTO insert_ignore_05 (id, created_at) VALUES(130, '2024-04-03 10:00:00'),(-129, '2024-04-03 11:00:00'),(100, '2024-04-03 12:00:00');
-insert ignore INTO insert_ignore_05 (id, created_at) VALUES(50, '9999-12-31 23:59:59'), (50, '2000-02-29 10:00:00'),(50, '2024-04-03 13:00:00');
-select * from insert_ignore_05;
--- @bvt:issue
+@issue(no=15345) {
+    create table insert_ignore_05(id TINYINT,created_at DATETIME);
+    insert ignore INTO insert_ignore_05 (id, created_at) VALUES(130, '2024-04-03 10:00:00'),(-129, '2024-04-03 11:00:00'),(100, '2024-04-03 12:00:00');
+    insert ignore INTO insert_ignore_05 (id, created_at) VALUES(50, '9999-12-31 23:59:59'), (50, '2000-02-29 10:00:00'),(50, '2024-04-03 13:00:00');
+    select * from insert_ignore_05;
+}
 
 -- insert ignore partition table
 create table insert_ignore_06 (sale_id INT AUTO_INCREMENT,product_id INT,sale_amount DECIMAL(10, 2),sale_date DATE,PRIMARY KEY (sale_id, sale_date))PARTITION BY RANGE (year(sale_date)) (PARTITION p0 VALUES LESS THAN (1991),PARTITION p1 VALUES LESS THAN (1992),PARTITION p2 VALUES LESS THAN (1993),PARTITION p3 VALUES LESS THAN (1994));

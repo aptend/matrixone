@@ -1,12 +1,33 @@
+#SQL[@1,N85]Result[]
 create account if not exists test_cdc_var_acc1 admin_name 'admin' identified by '111';
+
+#SQL[@3,N38]Result[]
 create database if not exists test_cdc;
+
+#SQL[@4,N12]Result[]
 use test_cdc;
+
+#SQL[@5,N68]Result[]
 create pitr if not exists pitr_db for database test_cdc  range 2 'h';
+
+#SQL[@6,N182]Result[]
 create cdc cdc_tpcc 'mysql://test_cdc_var_acc1#admin:111@127.0.0.1:6001' 'matrixone' 'mysql://test_cdc_var_acc1#admin:111@127.0.0.1:6001' 'test_cdc:test_cdc_bak' {'Level'='database'};
+
+#SQL[@7,N22]Result[107, 471]
 show cdc task cdc_tpcc;
-task_id    task_name    source_uri    sink_uri    state    err_msg    checkpoint    timestamp
-null       cdc_tpcc     null          null        null     null       null          null
+task_id  ¦  task_name  ¦  source_uri  ¦  sink_uri  ¦  state  ¦  err_msg  ¦  checkpoint  ¦  timestamp
+0199c83c-07a8-7a87-807f-31751b7716a4  ¦  cdc_tpcc  ¦  7b225f223a22222c2275736572223a22746573745f6364635f7661725f616363312361646d696e222c226970223a223132372e302e302e31222c22706f7274223a363030312c227265736572766564223a22227d  ¦  7b225f223a22222c2275736572223a22746573745f6364635f7661725f616363312361646d696e222c226970223a223132372e302e302e31222c22706f7274223a363030312c227265736572766564223a22227d  ¦  running  ¦    ¦  {
+}  ¦  2025-10-09 17:10:01.611531745 +0800 CST
+
+#SQL[@9,N22]Result[]
 drop cdc task cdc_tpcc;
+
+#SQL[@10,N17]Result[]
 drop pitr pitr_db;
+
+#SQL[@11,N22]Result[]
 drop database test_cdc;
+
+#SQL[@13,N30]Result[]
 drop account test_cdc_var_acc1;
+

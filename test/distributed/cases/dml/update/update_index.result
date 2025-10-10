@@ -1,242 +1,537 @@
+#SQL[@1,N27]Result[]
 drop database if exists db1;
+
+#SQL[@2,N19]Result[]
 create database db1;
+
+#SQL[@3,N7]Result[]
 use db1;
+
+#SQL[@4,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N51]Result[]
 create table t1(a int, b int, c int, unique key(a));
+
+#SQL[@6,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@7,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@8,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@9,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@10,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@11,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@12,N31]Result[]
 update t1 set a = 6 where a = 1;
+
+#SQL[@13,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@14,N35]Result[]
 update t1 set a = 7 where a is null;
+
+#SQL[@15,N30]Error[31]
 insert into t1 values(7, 7, 7);
-Duplicate entry '7' for key '(.*)'
+Duplicate entry '7' for key 'a'
+
+#SQL[@16,N34]Result[]
 update t1 set a = null where a = 7;
+
+#SQL[@17,N30]Result[]
 insert into t1 values(7, 7, 7);
+
+#SQL[@18,N16]Result[15, 15, 15, 15, 15, 15, 15, 18, 15]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-1    1    1
-null    7    7
-7    7    7
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+1  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  7
+
+#SQL[@19,N23]Result[]
 drop table if exists t1;
+
+#SQL[@20,N54]Result[]
 create table t1(a int, b int, c int, unique key(a, b));
+
+#SQL[@21,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@22,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@23,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@24,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@25,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@27,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@28,N31]Result[]
 update t1 set a = 6 where a = 1;
+
+#SQL[@29,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@30,N35]Result[]
 update t1 set a = 7 where a is null;
+
+#SQL[@31,N30]Error[39]
 insert into t1 values(7, 7, 7);
-Duplicate entry ('\(\d\,\d\)'|'\d\w\d{5}\w\d{4}') for key '(.*)'
+Duplicate entry '(7,7)' for key '(a,b)'
+
+#SQL[@32,N34]Result[]
 update t1 set a = null where a = 7;
+
+#SQL[@33,N30]Result[]
 insert into t1 values(7, 7, 7);
+
+#SQL[@34,N33]Result[]
 insert into t1 values(null, 8, 8);
+
+#SQL[@35,N41]Result[]
 update t1 set a = 8, b = null where b = 8;
+
+#SQL[@36,N30]Result[]
 insert into t1 values(8, 8, 8);
+
+#SQL[@37,N16]Result[15, 15, 15, 15, 15, 15, 15, 18, 15, 18, 15]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-1    1    1
-null    7    7
-7    7    7
-8    null    8
-8    8    8
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+1  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  7
+8  ¦  null  ¦  8
+8  ¦  8  ¦  8
+
+#SQL[@39,N23]Result[]
 drop table if exists t1;
+
+#SQL[@40,N23]Result[]
 drop table if exists t2;
+
+#SQL[@41,N54]Result[]
 create table t1(a int, b int, c int, unique key(a, b));
+
+#SQL[@42,N51]Result[]
 create table t2(a int, b int, c int, unique key(a));
+
+#SQL[@43,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@44,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@45,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@46,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@47,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@48,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@49,N30]Result[]
 insert into t2 values(1, 1, 1);
+
+#SQL[@50,N30]Result[]
 insert into t2 values(2, 2, 2);
+
+#SQL[@51,N30]Result[]
 insert into t2 values(3, 3, 3);
+
+#SQL[@52,N30]Result[]
 insert into t2 values(4, 4, 4);
+
+#SQL[@53,N30]Result[]
 insert into t2 values(5, 5, 5);
+
+#SQL[@54,N33]Result[]
 insert into t2 values(null, 7, 7);
+
+#SQL[@55,N67]Result[]
 update t1, t2 set t1.a = 6, t2.a = 6 where t1.a = 1 and t1.a = t2.a;
+
+#SQL[@56,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@57,N30]Result[]
 insert into t2 values(1, 1, 1);
+
+#SQL[@58,N72]Result[]
 update t1, t2 set t1.a = 7, t2.a = 7 where t1.a is null and t2.a is null;
+
+#SQL[@59,N30]Error[39]
 insert into t1 values(7, 7, 7);
-Duplicate entry ('\(\d\,\d\)'|'\d\w\d{5}\w\d{4}') for key '(.*)'
+Duplicate entry '(7,7)' for key '(a,b)'
+
+#SQL[@60,N30]Error[31]
 insert into t2 values(7, 7, 7);
-Duplicate entry '7' for key '(.*)'
+Duplicate entry '7' for key 'a'
+
+#SQL[@61,N73]Result[]
 update t1, t2 set t1.a = null, t2.a = null where t1.a = 7 and t1.a = t2.a;
+
+#SQL[@62,N30]Result[]
 insert into t1 values(7, 7, 7);
+
+#SQL[@63,N33]Result[]
 insert into t1 values(null, 8, 8);
+
+#SQL[@64,N30]Result[]
 insert into t2 values(7, 7, 7);
+
+#SQL[@65,N33]Result[]
 insert into t2 values(null, 8, 8);
+
+#SQL[@66,N93]Result[]
 update t1, t2 set t1.a = 8, t1.b = null, t2.a = 8, t2.b = null where t1.b = 8 and t1.b = t2.b;
+
+#SQL[@67,N30]Result[]
 insert into t1 values(8, 8, 8);
+
+#SQL[@68,N30]Error[31]
 insert into t2 values(8, 8, 8);
-Duplicate entry '8' for key '(.*)'
+Duplicate entry '8' for key 'a'
+
+#SQL[@69,N16]Result[15, 15, 15, 15, 15, 15, 15, 18, 15, 18, 15]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-1    1    1
-null    7    7
-7    7    7
-8    null    8
-8    8    8
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+1  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  7
+8  ¦  null  ¦  8
+8  ¦  8  ¦  8
+
+#SQL[@70,N16]Result[15, 15, 15, 15, 15, 15, 15, 18, 15, 18]
 select * from t2;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-1    1    1
-null    7    7
-7    7    7
-8    null    8
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+1  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  7
+8  ¦  null  ¦  8
+
+#SQL[@71,N23]Result[]
 drop table if exists t1;
+
+#SQL[@72,N67]Result[]
 create table t1(a int, b int, c int, unique key(a), primary key(c));
+
+#SQL[@73,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@74,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@75,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@76,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@77,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@78,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@79,N31]Result[]
 update t1 set a = 6 where a = 1;
+
+#SQL[@80,N35]Result[]
 update t1 set a = 7 where a is null;
+
+#SQL[@81,N30]Error[31]
 insert into t1 values(7, 7, 8);
-Duplicate entry '7' for key '(.*)'
+Duplicate entry '7' for key 'a'
+
+#SQL[@82,N34]Result[]
 update t1 set a = null where a = 7;
+
+#SQL[@83,N30]Result[]
 insert into t1 values(7, 7, 9);
+
+#SQL[@84,N16]Result[15, 15, 15, 15, 15, 15, 18, 15]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-null    7    7
-7    7    9
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  9
+
+#SQL[@85,N23]Result[]
 drop table if exists t1;
+
+#SQL[@86,N73]Result[]
 create table t1(a int, b int, c int, unique key(a, b), primary key(b, c));
+
+#SQL[@87,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@88,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@89,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@90,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@91,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@92,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@93,N31]Result[]
 update t1 set a = 6 where a = 1;
+
+#SQL[@94,N35]Result[]
 update t1 set a = 7 where a is null;
+
+#SQL[@95,N30]Error[39]
 insert into t1 values(7, 7, 8);
-Duplicate entry ('\(\d\,\d\)'|'\d\w\d{5}\w\d{4}') for key '(.*)'
+Duplicate entry '(7,7)' for key '(a,b)'
+
+#SQL[@96,N34]Result[]
 update t1 set a = null where a = 7;
+
+#SQL[@97,N30]Result[]
 insert into t1 values(7, 7, 9);
+
+#SQL[@98,N34]Result[]
 insert into t1 values(null, 8, 10);
+
+#SQL[@99,N41]Error[47]
 update t1 set a = 8, b = null where b = 8;
 constraint violation: Column 'b' cannot be null
+
+#SQL[@100,N31]Result[]
 insert into t1 values(8, 8, 11);
+
+#SQL[@101,N16]Result[15, 15, 15, 15, 15, 15, 18, 15, 19, 16]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-null    7    7
-7    7    9
-null    8    10
-8    8    11
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  9
+null  ¦  8  ¦  10
+8  ¦  8  ¦  11
+
+#SQL[@102,N23]Result[]
 drop table if exists t1;
+
+#SQL[@103,N43]Result[]
 create table t1(a int unique, b int, c int);
+
+#SQL[@104,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@105,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@106,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@107,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@108,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@109,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@110,N31]Result[]
 update t1 set a = 6 where a = 1;
+
+#SQL[@111,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@112,N35]Result[]
 update t1 set a = 7 where a is null;
+
+#SQL[@113,N30]Error[31]
 insert into t1 values(7, 7, 7);
-Duplicate entry '7' for key '(.*)'
+Duplicate entry '7' for key 'a'
+
+#SQL[@114,N34]Result[]
 update t1 set a = null where a = 7;
+
+#SQL[@115,N30]Result[]
 insert into t1 values(7, 7, 7);
+
+#SQL[@116,N16]Result[15, 15, 15, 15, 15, 15, 15, 18, 15]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-1    1    1
-null    7    7
-7    7    7
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+1  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  7
+
+#SQL[@117,N23]Result[]
 drop table if exists t1;
+
+#SQL[@118,N47]Result[]
 create table t1(a int unique key, b int, c int);
+
+#SQL[@119,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@120,N30]Result[]
 insert into t1 values(2, 2, 2);
+
+#SQL[@121,N30]Result[]
 insert into t1 values(3, 3, 3);
+
+#SQL[@122,N30]Result[]
 insert into t1 values(4, 4, 4);
+
+#SQL[@123,N30]Result[]
 insert into t1 values(5, 5, 5);
+
+#SQL[@124,N33]Result[]
 insert into t1 values(null, 7, 7);
+
+#SQL[@125,N31]Result[]
 update t1 set a = 6 where a = 1;
+
+#SQL[@126,N30]Result[]
 insert into t1 values(1, 1, 1);
+
+#SQL[@127,N35]Result[]
 update t1 set a = 7 where a is null;
+
+#SQL[@128,N30]Error[31]
 insert into t1 values(7, 7, 7);
-Duplicate entry '7' for key '(.*)'
+Duplicate entry '7' for key 'a'
+
+#SQL[@129,N34]Result[]
 update t1 set a = null where a = 7;
+
+#SQL[@130,N30]Result[]
 insert into t1 values(7, 7, 7);
+
+#SQL[@131,N16]Result[15, 15, 15, 15, 15, 15, 15, 18, 15]
 select * from t1;
-a    b    c
-2    2    2
-3    3    3
-4    4    4
-5    5    5
-6    1    1
-1    1    1
-null    7    7
-7    7    7
+a  ¦  b  ¦  c
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+5  ¦  5  ¦  5
+6  ¦  1  ¦  1
+1  ¦  1  ¦  1
+null  ¦  7  ¦  7
+7  ¦  7  ¦  7
+
+#SQL[@132,N13]Result[]
 drop table t1;
+
+#SQL[@133,N23]Result[]
 drop table if exists t2;
+
+#SQL[@134,N55]Result[]
 create table t2(a int primary key, b int unique, c int);
+
+#SQL[@135,N30]Result[]
 insert into t2 values(1, 1, 1);
+
+#SQL[@136,N30]Result[]
 insert into t2 values(2, 2, 2);
+
+#SQL[@137,N30]Result[]
 insert into t2 values(3, 3, 3);
+
+#SQL[@138,N30]Result[]
 insert into t2 values(4, 4, 4);
+
+#SQL[@139,N30]Result[]
 insert into t2 values(5, 5, 5);
+
+#SQL[@140,N31]Result[]
 update t2 set a = 6 where b = 5;
+
+#SQL[@141,N16]Result[15, 15, 15, 15, 15, 15]
 select * from t2;
-a    b    c
-1    1    1
-2    2    2
-3    3    3
-4    4    4
-6    5    5
+a  ¦  b  ¦  c
+1  ¦  1  ¦  1
+2  ¦  2  ¦  2
+3  ¦  3  ¦  3
+4  ¦  4  ¦  4
+6  ¦  5  ¦  5
+
+#SQL[@142,N13]Result[]
 drop table t2;
 
+#SQL[@144,N47]Result[]
 create table t3(col1 int primary key, col2 int);
+
+#SQL[@145,N41]Result[]
 create unique index key1 on t3(col2,col1);
+
+#SQL[@146,N30]Result[]
 insert into t3 values(1 , 100);
+
+#SQL[@147,N29]Result[]
 insert into t3 values(2, 200);
+
+#SQL[@148,N30]Result[]
 insert into t3 values(3 , 300);
+
+#SQL[@149,N39]Result[]
 update t3 set col2 = 300 where col1 = 3;
+
+#SQL[@150,N39]Result[]
 update t3 set col2 = 100 where col1 = 1;
+
+#SQL[@151,N39]Result[]
 update t3 set col2 = 200 where col1 = 2;
+

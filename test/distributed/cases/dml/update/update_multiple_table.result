@@ -1,315 +1,467 @@
+#SQL[@7,N197]Result[]
 CREATE TABLE product(
-id VARCHAR(20),
-product_id VARCHAR(20),
-product_name VARCHAR(50),
-price FLOAT
+                        id VARCHAR(20),
+                        product_id VARCHAR(20),
+                        product_name VARCHAR(50),
+                        price FLOAT
 );
+
+#SQL[@14,N171]Result[]
 CREATE TABLE product_price(
-id VARCHAR(20),
-product_id VARCHAR(20),
-price FLOAT
+                              id VARCHAR(20),
+                              product_id VARCHAR(20),
+                              price FLOAT
 );
+
+#SQL[@20,N63]Result[]
 INSERT INTO product() VALUES ('1', '1001', 'Java教程', '100');
+
+#SQL[@21,N63]Result[]
 INSERT INTO product() VALUES ('2', '1002', 'MySQL教程', '80');
+
+#SQL[@22,N65]Result[]
 INSERT INTO product() VALUES ('3', '1003', 'Python教程', '120');
+
+#SQL[@23,N66]Result[]
 INSERT INTO product() VALUES ('4', '1004', 'C语言教程', '150');
+
+#SQL[@24,N54]Result[]
 INSERT INTO product_price() VALUES ('1', '1001', NULL);
+
+#SQL[@25,N54]Result[]
 INSERT INTO product_price() VALUES ('2', '1002', NULL);
+
+#SQL[@26,N54]Result[]
 INSERT INTO product_price() VALUES ('3', '1003', NULL);
+
+#SQL[@28,N102]Result[]
 UPDATE product_price, product SET product.id = product.id + 1, product_price.id = product_price.id + 1;
+
+#SQL[@29,N63]Result[10, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
 SELECT product.id, product_price.id FROM product, product_price;
-id    id
-2    2
-2    3
-2    4
-3    2
-3    3
-3    4
-4    2
-4    3
-4    4
-5    2
-5    3
-5    4
+id  ¦  id
+2  ¦  2
+3  ¦  2
+4  ¦  2
+5  ¦  2
+2  ¦  3
+3  ¦  3
+4  ¦  3
+5  ¦  3
+2  ¦  4
+3  ¦  4
+4  ¦  4
+5  ¦  4
+
+#SQL[@30,N115]Result[]
 UPDATE product, product_price SET product_name = 'PHP', product_price.price = 100 WHERE product.product_id = '1001';
+
+#SQL[@31,N21]Result[47, 36, 38, 39, 29]
 SELECT * FROM product;
-id    product_id    product_name    price
-3    1002    MySQL教程    80.0
-4    1003    Python教程    120.0
-5    1004    C语言教程    150.0
-2    1001    PHP    100.0
+id  ¦  product_id  ¦  product_name  ¦  price
+3  ¦  1002  ¦  MySQL教程  ¦  80
+4  ¦  1003  ¦  Python教程  ¦  120
+5  ¦  1004  ¦  C语言教程  ¦  150
+2  ¦  1001  ¦  PHP  ¦  100
+
+#SQL[@32,N27]Result[29, 20, 20, 20]
 SELECT * FROM product_price;
-id    product_id    price
-2    1001    100.0
-3    1002    100.0
-4    1003    100.0
+id  ¦  product_id  ¦  price
+2  ¦  1001  ¦  100
+3  ¦  1002  ¦  100
+4  ¦  1003  ¦  100
+
+#SQL[@34,N98]Result[]
 UPDATE product p, product_price pp SET pp.price = p.price * 0.8 WHERE p.product_id = pp.product_id;
+
+#SQL[@35,N88]Result[31, 26, 27, 28, 18, 26, 27, 28, 18, 26, 27, 28, 18]
 SELECT product.id, product.product_name, product_price.price FROM product, product_price;
-id    product_name    price
-3    MySQL教程    64.0
-3    MySQL教程    96.0
-3    MySQL教程    80.0
-4    Python教程    64.0
-4    Python教程    96.0
-4    Python教程    80.0
-5    C语言教程    64.0
-5    C语言教程    96.0
-5    C语言教程    80.0
-2    PHP    64.0
-2    PHP    96.0
-2    PHP    80.0
+id  ¦  product_name  ¦  price
+3  ¦  MySQL教程  ¦  64
+4  ¦  Python教程  ¦  64
+5  ¦  C语言教程  ¦  64
+2  ¦  PHP  ¦  64
+3  ¦  MySQL教程  ¦  96
+4  ¦  Python教程  ¦  96
+5  ¦  C语言教程  ¦  96
+2  ¦  PHP  ¦  96
+3  ¦  MySQL教程  ¦  80
+4  ¦  Python教程  ¦  80
+5  ¦  C语言教程  ¦  80
+2  ¦  PHP  ¦  80
+
+#SQL[@37,N105]Result[]
 UPDATE product p INNER JOIN product_price pp ON p.product_id = pp.product_id SET pp.price = p.price * 0.8;
+
+#SQL[@38,N76]Result[23, 19, 20, 21, 11, 19, 20, 21, 11, 19, 20, 21, 11]
 SELECT product.product_name, product_price.price FROM product, product_price;
-product_name    price
-MySQL教程    64.0
-MySQL教程    96.0
-MySQL教程    80.0
-Python教程    64.0
-Python教程    96.0
-Python教程    80.0
-C语言教程    64.0
-C语言教程    96.0
-C语言教程    80.0
-PHP    64.0
-PHP    96.0
-PHP    80.0
+product_name  ¦  price
+MySQL教程  ¦  64
+Python教程  ¦  64
+C语言教程  ¦  64
+PHP  ¦  64
+MySQL教程  ¦  96
+Python教程  ¦  96
+C语言教程  ¦  96
+PHP  ¦  96
+MySQL教程  ¦  80
+Python教程  ¦  80
+C语言教程  ¦  80
+PHP  ¦  80
+
+#SQL[@39,N28]Result[]
 DROP TABLE IF EXISTS product;
+
+#SQL[@40,N34]Result[]
 DROP TABLE IF EXISTS product_price;
+
+#SQL[@42,N177]Result[]
 CREATE TABLE stu(
-id VARCHAR(10),
-name VARCHAR(20),
-class_id VARCHAR(5),
-class_name VARCHAR(10)
+                    id VARCHAR(10),
+                    name VARCHAR(20),
+                    class_id VARCHAR(5),
+                    class_name VARCHAR(10)
 );
+
+#SQL[@48,N142]Result[]
 CREATE TABLE class(
-id VARCHAR(10),
-name VARCHAR(20),
-stu_name VARCHAR(20)
+                      id VARCHAR(10),
+                      name VARCHAR(20),
+                      stu_name VARCHAR(20)
 );
+
+#SQL[@54,N104]Result[]
 INSERT INTO stu VALUES('1', '张三', '1', NULL), ('2', '李四', '1', NULL), ('3', '王五', '2', NULL);
+
+#SQL[@55,N97]Result[]
 INSERT INTO stu VALUES('4', 'Rose', '2', NULL), ('5', 'Bob', '4', NULL), ('6', 'Ruby', '5', NULL);
+
+#SQL[@56,N91]Result[]
 INSERT INTO class VALUES('1', '一班', NULL), ('2', '二班', NULL), ('3', '三班', NULL);
+
+#SQL[@58,N97]Result[]
 UPDATE stu s , class c SET s.class_name = 'test00', c.stu_name = 'test00' WHERE s.class_id = c.id;
+
+#SQL[@59,N75]Result[44, 35, 36, 40, 40, 40, 38, 37, 38, 42, 42, 42, 40, 37, 38, 42, 42, 42, 40]
 SELECT stu.name, stu.class_name, class.name, class.stu_name FROM stu, class;
-name    class_name    name    stu_name
-Bob    null    三班    null
-Bob    null    一班    test00
-Bob    null    二班    test00
-Ruby    null    三班    null
-Ruby    null    一班    test00
-Ruby    null    二班    test00
-张三    test00    三班    null
-张三    test00    一班    test00
-张三    test00    二班    test00
-李四    test00    三班    null
-李四    test00    一班    test00
-李四    test00    二班    test00
-王五    test00    三班    null
-王五    test00    一班    test00
-王五    test00    二班    test00
-Rose    test00    三班    null
-Rose    test00    一班    test00
-Rose    test00    二班    test00
+name  ¦  class_name  ¦  name  ¦  stu_name
+Bob  ¦  null  ¦  三班  ¦  null
+Ruby  ¦  null  ¦  三班  ¦  null
+张三  ¦  test00  ¦  三班  ¦  null
+李四  ¦  test00  ¦  三班  ¦  null
+王五  ¦  test00  ¦  三班  ¦  null
+Rose  ¦  test00  ¦  三班  ¦  null
+Bob  ¦  null  ¦  一班  ¦  test00
+Ruby  ¦  null  ¦  一班  ¦  test00
+张三  ¦  test00  ¦  一班  ¦  test00
+李四  ¦  test00  ¦  一班  ¦  test00
+王五  ¦  test00  ¦  一班  ¦  test00
+Rose  ¦  test00  ¦  一班  ¦  test00
+Bob  ¦  null  ¦  二班  ¦  test00
+Ruby  ¦  null  ¦  二班  ¦  test00
+张三  ¦  test00  ¦  二班  ¦  test00
+李四  ¦  test00  ¦  二班  ¦  test00
+王五  ¦  test00  ¦  二班  ¦  test00
+Rose  ¦  test00  ¦  二班  ¦  test00
+
+#SQL[@60,N103]Result[]
 UPDATE stu s INNER JOIN class c ON s.class_id = c.id SET s.class_name = 'test11', c.stu_name = 'test11';
+
+#SQL[@61,N71]Result[42, 30, 31, 35, 35, 35, 33, 32, 33, 37, 37, 37, 35, 32, 33, 37, 37, 37, 35]
 SELECT stu.id, stu.name, stu.class_name, class.stu_name FROM stu, class;
-id    name    class_name    stu_name
-5    Bob    null    null
-5    Bob    null    test11
-5    Bob    null    test11
-6    Ruby    null    null
-6    Ruby    null    test11
-6    Ruby    null    test11
-1    张三    test11    null
-1    张三    test11    test11
-1    张三    test11    test11
-2    李四    test11    null
-2    李四    test11    test11
-2    李四    test11    test11
-3    王五    test11    null
-3    王五    test11    test11
-3    王五    test11    test11
-4    Rose    test11    null
-4    Rose    test11    test11
-4    Rose    test11    test11
+id  ¦  name  ¦  class_name  ¦  stu_name
+5  ¦  Bob  ¦  null  ¦  null
+6  ¦  Ruby  ¦  null  ¦  null
+1  ¦  张三  ¦  test11  ¦  null
+2  ¦  李四  ¦  test11  ¦  null
+3  ¦  王五  ¦  test11  ¦  null
+4  ¦  Rose  ¦  test11  ¦  null
+5  ¦  Bob  ¦  null  ¦  test11
+6  ¦  Ruby  ¦  null  ¦  test11
+1  ¦  张三  ¦  test11  ¦  test11
+2  ¦  李四  ¦  test11  ¦  test11
+3  ¦  王五  ¦  test11  ¦  test11
+4  ¦  Rose  ¦  test11  ¦  test11
+5  ¦  Bob  ¦  null  ¦  test11
+6  ¦  Ruby  ¦  null  ¦  test11
+1  ¦  张三  ¦  test11  ¦  test11
+2  ¦  李四  ¦  test11  ¦  test11
+3  ¦  王五  ¦  test11  ¦  test11
+4  ¦  Rose  ¦  test11  ¦  test11
+
+#SQL[@64,N102]Result[]
 UPDATE stu s LEFT JOIN class c ON s.class_id = c.id SET s.class_name = 'test22', c.stu_name = 'test22';
+
+#SQL[@65,N102]Result[]
 UPDATE stu s RIGHT JOIN class c ON s.class_id = c.id SET s.class_name = 'test33',c.stu_name = 'test33';
+
+#SQL[@66,N63]Result[34, 27, 28, 30, 30, 30, 28, 27, 28, 30, 30, 30, 28, 27, 28, 30, 30, 30, 28]
 SELECT stu.name, stu.class_name, class.stu_name FROM stu, class;
-name    class_name    stu_name
-Bob    test22    test33
-Bob    test22    test33
-Bob    test22    test33
-Ruby    test22    test33
-Ruby    test22    test33
-Ruby    test22    test33
-张三    test33    test33
-张三    test33    test33
-张三    test33    test33
-李四    test33    test33
-李四    test33    test33
-李四    test33    test33
-王五    test33    test33
-王五    test33    test33
-王五    test33    test33
-Rose    test33    test33
-Rose    test33    test33
-Rose    test33    test33
+name  ¦  class_name  ¦  stu_name
+Bob  ¦  test22  ¦  test33
+Ruby  ¦  test22  ¦  test33
+张三  ¦  test33  ¦  test33
+李四  ¦  test33  ¦  test33
+王五  ¦  test33  ¦  test33
+Rose  ¦  test33  ¦  test33
+Bob  ¦  test22  ¦  test33
+Ruby  ¦  test22  ¦  test33
+张三  ¦  test33  ¦  test33
+李四  ¦  test33  ¦  test33
+王五  ¦  test33  ¦  test33
+Rose  ¦  test33  ¦  test33
+Bob  ¦  test22  ¦  test33
+Ruby  ¦  test22  ¦  test33
+张三  ¦  test33  ¦  test33
+李四  ¦  test33  ¦  test33
+王五  ¦  test33  ¦  test33
+Rose  ¦  test33  ¦  test33
+
+#SQL[@67,N94]Result[]
 UPDATE stu s JOIN class c ON s.class_id = c.id SET s.class_name = c.name , c.stu_name = s.name;
+
+#SQL[@68,N63]Result[34, 27, 28, 30, 30, 30, 28, 27, 28, 30, 30, 30, 28, 27, 28, 30, 30, 30, 28]
 SELECT stu.name, stu.class_name, class.stu_name FROM stu, class;
-name    class_name    stu_name
-Bob    test22    test33
-Bob    test22    张三
-Bob    test22    王五
-Ruby    test22    test33
-Ruby    test22    张三
-Ruby    test22    王五
-张三    一班    test33
-张三    一班    张三
-张三    一班    王五
-李四    一班    test33
-李四    一班    张三
-李四    一班    王五
-王五    二班    test33
-王五    二班    张三
-王五    二班    王五
-Rose    二班    test33
-Rose    二班    张三
-Rose    二班    王五
+name  ¦  class_name  ¦  stu_name
+Bob  ¦  test22  ¦  test33
+Ruby  ¦  test22  ¦  test33
+张三  ¦  一班  ¦  test33
+李四  ¦  一班  ¦  test33
+王五  ¦  二班  ¦  test33
+Rose  ¦  二班  ¦  test33
+Bob  ¦  test22  ¦  张三
+Ruby  ¦  test22  ¦  张三
+张三  ¦  一班  ¦  张三
+李四  ¦  一班  ¦  张三
+王五  ¦  二班  ¦  张三
+Rose  ¦  二班  ¦  张三
+Bob  ¦  test22  ¦  王五
+Ruby  ¦  test22  ¦  王五
+张三  ¦  一班  ¦  王五
+李四  ¦  一班  ¦  王五
+王五  ¦  二班  ¦  王五
+Rose  ¦  二班  ¦  王五
+
+#SQL[@70,N24]Result[]
 DROP TABLE IF EXISTS stu;
+
+#SQL[@71,N26]Result[]
 DROP TABLE IF EXISTS class;
+
+#SQL[@73,N118]Result[]
 CREATE TABLE t1(
-id INT,
-name VARCHAR(20),
-paytime DATETIME
+                   id INT,
+                   name VARCHAR(20),
+                   paytime DATETIME
 );
+
+#SQL[@78,N85]Result[]
 CREATE TABLE t2(
-id INT,
-processtime DATETIME
+                   id INT,
+                   processtime DATETIME
 );
+
+#SQL[@83,N92]Result[]
 INSERT INTO t1() VALUES(1, 'has', '2022-08-17 19:16:18'), (2, 'norm', '2022-04-12 04:32:46');
+
+#SQL[@84,N77]Result[]
 INSERT INTO t2() VALUES(1, '2022-08-17 20:23:06'), (2, '2022-04-18 09:19:15');
+
+#SQL[@85,N16]Result[25, 35, 36]
 SELECT * FROM t1;
-id    name    paytime
-1    has    2022-08-17 19:16:18
-2    norm    2022-04-12 04:32:46
+id  ¦  name  ¦  paytime
+1  ¦  has  ¦  2022-08-17 19:16:18
+2  ¦  norm  ¦  2022-04-12 04:32:46
+
+#SQL[@86,N16]Result[19, 26, 26]
 SELECT * FROM t2;
-id    processtime
-1    2022-08-17 20:23:06
-2    2022-04-18 09:19:15
+id  ¦  processtime
+1  ¦  2022-08-17 20:23:06
+2  ¦  2022-04-18 09:19:15
+
+#SQL[@87,N63]Result[]
 UPDATE t1,t2 SET name = 'tom' WHERE t1.id = '1' AND t2.id = '2';
+
+#SQL[@88,N29]Result[12, 11, 10]
 SELECT t1.id, t1.name FROM t1;
-id    name
-2    norm
-1    tom
+id  ¦  name
+2  ¦  norm
+1  ¦  tom
+
+#SQL[@89,N132]Result[]
 UPDATE t1,t2 SET paytime = '2022-08-16 19:16:18', processtime = '2022-08-16 20:23:06' WHERE t1.id = t2.id AND paytime > '2022-08-15';
+
+#SQL[@91,N150]Result[]
 UPDATE t1,t2
 SET
-paytime = DATE_ADD(paytime, INTERVAL 4 DAY), processtime = DATE_SUB(processtime, INTERVAL 6 DAY)
+    paytime = DATE_ADD(paytime, INTERVAL 4 DAY), processtime = DATE_SUB(processtime, INTERVAL 6 DAY)
 WHERE
-paytime > '2022-08-25';
+    paytime > '2022-08-25';
+
+#SQL[@96,N44]Result[24, 44, 44, 44, 44]
 SELECT t1.paytime, t2.processtime FROM t1,t2;
-paytime    processtime
-2022-04-12 04:32:46    2022-04-18 09:19:15
-2022-04-12 04:32:46    2022-08-16 20:23:06
-2022-08-16 19:16:18    2022-04-18 09:19:15
-2022-08-16 19:16:18    2022-08-16 20:23:06
+paytime  ¦  processtime
+2022-04-12 04:32:46  ¦  2022-04-18 09:19:15
+2022-08-16 19:16:18  ¦  2022-04-18 09:19:15
+2022-04-12 04:32:46  ¦  2022-08-16 20:23:06
+2022-08-16 19:16:18  ¦  2022-08-16 20:23:06
+
+#SQL[@99,N174]Result[]
 UPDATE t1,t2
 SET
-paytime = TO_DATE('2099-01-01 00:00:01', '%Y-%m-%d %H-%i-%s'), processtime = TO_DATE('2088-01-01 :00:00:02', '%Y-%m-%d %H:%i:%s')
+    paytime = TO_DATE('2099-01-01 00:00:01', '%Y-%m-%d %H-%i-%s'), processtime = TO_DATE('2088-01-01 :00:00:02', '%Y-%m-%d %H:%i:%s')
 WHERE
-t1.id = t2.id;
+    t1.id = t2.id;
+
+#SQL[@106,N107]Result[]
 UPDATE t1,t2
 SET
-paytime = DATE('2088-01-01'), processtime = DATE('9999-01-01')
+    paytime = DATE('2088-01-01'), processtime = DATE('9999-01-01')
 WHERE
-t1.id = t2.id;
+    t1.id = t2.id;
+
+#SQL[@111,N52]Result[32, 51, 51, 51, 51]
 SELECT t1.id, t1.paytime, t2.processtime FROM t1, t2;
-id    paytime    processtime
-2    2088-01-01 00:00:00    9999-01-01 00:00:00
-2    2088-01-01 00:00:00    9999-01-01 00:00:00
-1    2088-01-01 00:00:00    9999-01-01 00:00:00
-1    2088-01-01 00:00:00    9999-01-01 00:00:00
+id  ¦  paytime  ¦  processtime
+2  ¦  2088-01-01 00:00:00  ¦  9999-01-01 00:00:00
+1  ¦  2088-01-01 00:00:00  ¦  9999-01-01 00:00:00
+2  ¦  2088-01-01 00:00:00  ¦  9999-01-01 00:00:00
+1  ¦  2088-01-01 00:00:00  ¦  9999-01-01 00:00:00
+
+#SQL[@114,N97]Result[]
 UPDATE t1,t2 SET paytime = (SELECT DATE('3333-06-06')), processtime = (SELECT DATE('8888-09-09'));
+
+#SQL[@115,N37]Result[24, 44, 44, 44, 44]
 SELECT paytime,processtime FROM t1,t2;
-paytime    processtime
-3333-06-06 00:00:00    8888-09-09 00:00:00
-3333-06-06 00:00:00    8888-09-09 00:00:00
-3333-06-06 00:00:00    8888-09-09 00:00:00
-3333-06-06 00:00:00    8888-09-09 00:00:00
+paytime  ¦  processtime
+3333-06-06 00:00:00  ¦  8888-09-09 00:00:00
+3333-06-06 00:00:00  ¦  8888-09-09 00:00:00
+3333-06-06 00:00:00  ¦  8888-09-09 00:00:00
+3333-06-06 00:00:00  ¦  8888-09-09 00:00:00
+
+#SQL[@117,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@118,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@120,N118]Result[]
 CREATE TABLE t1(
-str1 CHAR(20) NOT NULL PRIMARY KEY,
-str2 VARCHAR(20) NOT NULL
+                   str1 CHAR(20) NOT NULL PRIMARY KEY,
+                   str2 VARCHAR(20) NOT NULL
 );
+
+#SQL[@124,N97]Result[]
 CREATE TABLE t2(
-str1 CHAR(20),
-str2 VARCHAR(20) NOT NULL
+                   str1 CHAR(20),
+                   str2 VARCHAR(20) NOT NULL
 );
+
+#SQL[@129,N85]Result[]
 INSERT INTO t1 VALUES('this is a test', 'that is actual'), ('1001', 'game of throne');
+
+#SQL[@130,N75]Result[]
 INSERT INTO t2 VALUES('1001', 'little Iamp'), ('targeran', 'snow and rain');
+
+#SQL[@132,N71]Result[]
 UPDATE t1,t2 SET t1.str1 = '', t2.str2 = 'NULL' WHERE t1.str1 = t2.str1;
+
+#SQL[@133,N34]Result[14, 33, 19, 24, 10]
 SELECT t1.str1, t2.str2 FROM t1,t2;
-str1    str2
-this is a test    snow and rain
-this is a test    NULL
-    snow and rain
-    NULL
+str1  ¦  str2
+this is a test  ¦  snow and rain
+  ¦  snow and rain
+this is a test  ¦  NULL
+  ¦  NULL
+
+#SQL[@134,N79]Result[]
 UPDATE t1,t2 SET t1.str2 = SUBSTRING('jkfldisaojfd',5), t2.str1 = LENGTH('123');
+
+#SQL[@135,N34]Result[14, 15, 15, 15, 15]
 SELECT t1.str2, t2.str1 FROM t1,t2;
-str2    str1
-disaojfd    3
-disaojfd    3
-disaojfd    3
-disaojfd    3
+str2  ¦  str1
+disaojfd  ¦  3
+disaojfd  ¦  3
+disaojfd  ¦  3
+disaojfd  ¦  3
+
+#SQL[@136,N86]Result[]
 UPDATE t1,t2 SET t1.str2 = STARTSWITH(t1.str2,'t'), t2.str2 = STARTSWITH(t2.str2, 's');
+
+#SQL[@137,N34]Result[14, 8, 8, 8, 8]
 SELECT t1.str2, t2.str2 FROM t1,t2;
-str2    str2
-0    1
-0    0
-0    1
-0    0
+str2  ¦  str2
+0  ¦  1
+0  ¦  1
+0  ¦  0
+0  ¦  0
+
+#SQL[@139,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@140,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@142,N109]Result[]
 CREATE TABLE t1(
-n1 INT,
-n2 INT UNSIGNED,
-n3 FLOAT
+                   n1 INT,
+                   n2 INT UNSIGNED,
+                   n3 FLOAT
 );
+
+#SQL[@147,N74]Result[]
 CREATE TABLE t2(
-n1 INT,
-n2 DOUBLE
+                   n1 INT,
+                   n2 DOUBLE
 );
+
+#SQL[@152,N69]Result[]
 INSERT INTO t1 VALUES(1, 2, 3), (5, 6, 7), (10, 11, 12), (12, -0, 19);
+
+#SQL[@153,N46]Result[]
 INSERT INTO t2 VALUES(1, 0), (5, -1), (19, 13);
+
+#SQL[@155,N67]Result[]
 UPDATE t1,t2 SET t1.n2 = EXP(1), t2.n2 = SIN(3) WHERE t1.n1 = t2.n1;
+
+#SQL[@156,N31]Result[10, 10, 9, 9, 9, 26, 25, 25, 25, 26, 25, 25, 25]
 SELECT t1.n2, t2.n2 FROM t1, t2;
-n2    n2
-11    13.0
-11    0.1411200080598672
-11    0.1411200080598672
-0    13.0
-0    0.1411200080598672
-0    0.1411200080598672
-3    13.0
-3    0.1411200080598672
-3    0.1411200080598672
-3    13.0
-3    0.1411200080598672
-3    0.1411200080598672
+n2  ¦  n2
+11  ¦  13
+0  ¦  13
+3  ¦  13
+3  ¦  13
+11  ¦  0.1411200080598672
+0  ¦  0.1411200080598672
+3  ¦  0.1411200080598672
+3  ¦  0.1411200080598672
+11  ¦  0.1411200080598672
+0  ¦  0.1411200080598672
+3  ¦  0.1411200080598672
+3  ¦  0.1411200080598672
+
+#SQL[@157,N85]Result[]
 UPDATE t1,t2 SET t1.n2 = POWER(5, -1), t2.n2 = POWER(0,0) WHERE t1.n3 BETWEEN 0 AND 3;
+
+#SQL[@158,N31]Result[10, 9, 8, 8, 8, 9, 8, 8, 8, 9, 8, 8, 8]
 SELECT t1.n2, t2.n2 FROM t1, t2;
-n2    n2
-11    1.0
-11    1.0
-11    1.0
-0    1.0
-0    1.0
-0    1.0
-3    1.0
-3    1.0
-3    1.0
-0    1.0
-0    1.0
-0    1.0
+n2  ¦  n2
+11  ¦  1
+0  ¦  1
+3  ¦  1
+0  ¦  1
+11  ¦  1
+0  ¦  1
+3  ¦  1
+0  ¦  1
+11  ¦  1
+0  ¦  1
+3  ¦  1
+0  ¦  1
+
+#SQL[@160,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@161,N23]Result[]
 DROP TABLE IF EXISTS t2;
+

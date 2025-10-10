@@ -1,79 +1,197 @@
+#SQL[@1,N28]Result[]
 drop database if exists test;
+
+#SQL[@2,N20]Result[]
 create database test;
+
+#SQL[@3,N8]Result[]
 use test;
+
+#SQL[@4,N38]Result[]
 create table t1(a int not null, b int);
+
+#SQL[@5,N29]Result[]
 create table t2(a int, b int);
+
+#SQL[@6,N29]Result[]
 create table t3(a int, b int);
+
+#SQL[@7,N31]Error[47]
 insert into t1 values (null, 0);
 constraint violation: Column 'a' cannot be null
+
+#SQL[@8,N34]Result[]
 insert into t2 values (null, null);
+
+#SQL[@9,N28]Result[]
 insert into t3 values (0, 0);
+
+#SQL[@10,N31]Result[]
 insert into t1 select * from t3;
+
+#SQL[@11,N16]Result[8, 8]
 select * from t1;
-a    b
-0    0
+a  ¦  b
+0  ¦  0
+
+#SQL[@12,N31]Error[47]
 insert into t1 select * from t2;
 constraint violation: Column 'a' cannot be null
+
+#SQL[@13,N16]Result[8, 8]
 select * from t1;
-a    b
-0    0
+a  ¦  b
+0  ¦  0
+
+#SQL[@14,N23]Result[]
 drop table if exists t1;
+
+#SQL[@15,N23]Result[]
 drop table if exists t2;
+
+#SQL[@16,N23]Result[]
 drop table if exists t3;
+
+#SQL[@17,N37]Result[]
 create table t(a int not null, b int);
+
+#SQL[@18,N27]Result[]
 insert into t values (1, 1);
+
+#SQL[@19,N30]Result[]
 insert into t values (1, null);
+
+#SQL[@20,N30]Result[]
 insert into t values (2, null);
+
+#SQL[@21,N30]Result[]
 insert into t values (3, null);
+
+#SQL[@22,N19]Error[47]
 update t set a=null;
 constraint violation: Column 'a' cannot be null
+
+#SQL[@23,N23]Result[]
 drop table if exists t1;
+
+#SQL[@24,N66]Result[]
 create table t1 (a int primary key, b int, c int, unique key(b,c));
+
+#SQL[@25,N74]Result[]
 INSERT INTO t1 SELECT result,result,null FROM generate_series(1,1000000) g;
+
+#SQL[@26,N13]Result[]
 drop table t1;
+
+#SQL[@27,N42]Result[]
 create table t1 (a int primary key, b int);
+
+#SQL[@28,N31]Result[24, 4]
 select enable_fault_injection();
 enable_fault_injection()
 true
+
+#SQL[@29,N70]Result[55, 4]
 select add_fault_point('inject_send_pipeline', ':::', 'echo', 1, 't1');
-add_fault_point(inject_send_pipeline, :::, echo, 1, t1) 
+add_fault_point(inject_send_pipeline, :::, echo, 1, t1)
 true
+
+#SQL[@30,N69]Result[]
 INSERT INTO t1 SELECT result,result FROM generate_series(1,3000000) g;
+
+#SQL[@31,N32]Result[25, 4]
 select disable_fault_injection();
 disable_fault_injection()
 true
+
+#SQL[@32,N23]Result[]
 drop table if exists t1;
+
+#SQL[@33,N54]Result[]
 create table t1(a int, b int, c int, primary key(a,b));
+
+#SQL[@34,N73]Result[]
 insert into t1 select result,result,result from generate_series(200000) g;
+
+#SQL[@35,N19]Result[]
 update t1 set c =10;
+
+#SQL[@36,N13]Result[]
 drop table t1;
+
+#SQL[@37,N52]Result[]
 create table t1(a int, b int, c int) cluster by(b,c);
+
+#SQL[@38,N71]Result[]
 insert into t1 select result,result,null from generate_series(200000) g;
+
+#SQL[@39,N23]Result[8, 6]
 select count(*) from t1;
 count(*)
 200000
+
+#SQL[@40,N23]Result[]
 drop table if exists t1;
+
+#SQL[@41,N42]Result[]
 create table t1 (a int primary key, b int);
+
+#SQL[@42,N69]Result[]
 INSERT INTO t1 SELECT result,result FROM generate_series(1,2000000) g;
+
+#SQL[@43,N38]Result[]
 update t1 set b = 10 where a < 1000000;
+
+#SQL[@44,N23]Result[]
 drop table if exists t1;
+
+#SQL[@45,N59]Result[]
 create table t1(a bigint primary key, b int, c int, key(b));
+
+#SQL[@46,N74]Result[]
 insert into t1  select result,result,result from generate_series(200000) g;
+
+#SQL[@47,N23]Result[]
 update t1 set b = b + 1;
+
+#SQL[@48,N23]Result[]
 drop table if exists t1;
+
+#SQL[@49,N84]Result[]
 create table t1(a varchar(10), b varchar(10), c varchar(10), primary key(b), key(c));
+
+#SQL[@50,N35]Result[]
 insert into t1 values ('a','b','c');
+
+#SQL[@51,N22]Result[]
 update t1 set c ='ccc';
+
+#SQL[@52,N26]Result[]
 delete from t1 where b='b';
+
+#SQL[@53,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 0
+
+#SQL[@55,N23]Result[]
 drop table if exists t1;
+
+#SQL[@56,N119]Result[]
 create table t1(a uuid, b varchar(255), created_at datetime not null default current_timestamp) cluster by (created_at);
+
+#SQL[@57,N44]Result[]
 insert into t1(a, b) values (uuid(), 'test');
+
+#SQL[@58,N41]Error[22]
 insert into t1(a, b) values ('a', 'test');
 invalid UUID length: 1
+
+#SQL[@59,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 1
+
+#SQL[@60,N28]Result[]
 drop database if exists test;
+

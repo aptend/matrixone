@@ -158,29 +158,28 @@ insert into t1 values(1, 2);
 insert into t1 values(1, 3);
 insert into t1 values(2, 2);
 insert into t1 values(2, 3);
--- @pattern
 update t1 set a = 2 where a = 1;
 
--- @bvt:issue#5790
-drop table if exists t1;
-create table t1(a int, b varchar(20), unique key(a));
-insert into t1 values(1, '1');
-insert into t1 values(2, '2');
-insert into t1 values(3, '3');
-insert into t1 values(4, '4');
-select * from t1;
-update t1 set a = 2 where a = 1;
+@issue(no=5790) {
+    drop table if exists t1;
+    create table t1(a int, b varchar(20), unique key(a));
+    insert into t1 values(1, '1');
+    insert into t1 values(2, '2');
+    insert into t1 values(3, '3');
+    insert into t1 values(4, '4');
+    select * from t1;
+    update t1 set a = 2 where a = 1;
 
-drop table if exists t1;
-create table t1(a int, b varchar(20), unique key(a, b));
-insert into t1 values(1, '2');
-insert into t1 values(1, '3');
-insert into t1 values(2, '2');
-insert into t1 values(2, '3');
-select * from t1;
-update t1 set a = 2 where a = 1;
-update t1 set a = null where a = 1;
--- @bvt:issue
+    drop table if exists t1;
+    create table t1(a int, b varchar(20), unique key(a, b));
+    insert into t1 values(1, '2');
+    insert into t1 values(1, '3');
+    insert into t1 values(2, '2');
+    insert into t1 values(2, '3');
+    select * from t1;
+    update t1 set a = 2 where a = 1;
+    update t1 set a = null where a = 1;
+}
 
 drop table if exists t1;
 create table t1(a int, b int, c datetime on update CURRENT_TIMESTAMP);

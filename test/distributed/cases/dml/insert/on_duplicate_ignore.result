@@ -1,20 +1,36 @@
+#SQL[@1,N62]Result[]
 create table if not exists indup_01 (a int primary key, b int);
+
+#SQL[@3,N33]Result[]
 insert into indup_01 values (1,1);
+
+#SQL[@4,N63]Result[]
 insert into indup_01 values (1,2),(2,2) on duplicate key ignore;
+
+#SQL[@5,N22]Result[8, 8, 8]
 select * from indup_01;
-a    b
-1    1
-2    2
+a  ¦  b
+1  ¦  1
+2  ¦  2
+
+#SQL[@7,N69]Result[]
 insert into indup_01 values (3,1),(3,2),(3,3) on duplicate key ignore;
+
+#SQL[@8,N22]Result[8, 8, 8, 8]
 select * from indup_01;
-a    b
-1    1
-2    2
-3    1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+3  ¦  1
+
+#SQL[@10,N81]Error[47]
 insert into indup_01 values (null,1),(null,2),(null,null) on duplicate key ignore;
 constraint violation: Column 'a' cannot be null
+
+#SQL[@11,N22]Result[8, 8, 8, 8]
 select * from indup_01;
-a    b
-1    1
-2    2
-3    1
+a  ¦  b
+1  ¦  1
+2  ¦  2
+3  ¦  1
+

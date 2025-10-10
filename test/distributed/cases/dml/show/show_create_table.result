@@ -1,6 +1,13 @@
+#SQL[@1,N27]Result[]
 drop database if exists db1;
+
+#SQL[@2,N19]Result[]
 create database db1;
+
+#SQL[@3,N7]Result[]
 use db1;
+
+#SQL[@5,N203]Result[]
 CREATE TABLE t (
 a int NOT NULL PRIMARY KEY,
 b int NOT NULL DEFAULT 10,
@@ -9,51 +16,106 @@ d varchar(20) not null default 'xxx',
 e timestamp DEFAULT NULL,
 f timestamp NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+#SQL[@14,N6]Result[71, 53, 48, 49, 53, 56, 71]
 desc t;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    INT(32)    YES        20        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  20  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+
+#SQL[@15,N19]Result[23, 242]
 show create table t;
-Table    Create Table
-t    CREATE TABLE `t` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` int DEFAULT 20,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t  ¦  CREATE TABLE `t` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` int DEFAULT 20,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@18,N47]Result[]
 INSERT INTO t (a, b, d) VALUES (1, 15, 'Hello');
+
+#SQL[@19,N47]Result[]
 INSERT INTO t (a, b, d) VALUES (2, 25, 'World');
+
+#SQL[@20,N51]Result[]
 INSERT INTO t (a, b, d) VALUES (3, 35, 'Dolor Sit');
+
+#SQL[@22,N62]Result[]
 alter table t add column yy varchar(50) not null default 'foo';
+
+#SQL[@23,N6]Result[71, 53, 48, 49, 53, 56, 71, 54]
 desc t;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    INT(32)    YES        20        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
-yy    VARCHAR(50)    NO        foo
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  20  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+yy  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  foo  ¦    ¦  
+
+#SQL[@24,N19]Result[23, 285]
 show create table t;
-Table    Create Table
-t    CREATE TABLE `t` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` int DEFAULT 20,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  `yy` varchar(50) NOT NULL DEFAULT 'foo',\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t  ¦  CREATE TABLE `t` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` int DEFAULT 20,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  `yy` varchar(50) NOT NULL DEFAULT 'foo',
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@27,N63]Error[48]
 INSERT INTO t (a, b, d, yy) VALUES (4, 45, 'Lorem Ipsum', null);
 constraint violation: Column 'yy' cannot be null
+
+#SQL[@29,N48]Result[]
 alter table t add column zz varchar(50) not null;
+
+#SQL[@30,N6]Result[71, 53, 48, 49, 53, 56, 71, 54, 55]
 desc t;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    INT(32)    YES        20        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
-yy    VARCHAR(50)    NO        foo
-zz    VARCHAR(50)    NO        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  20  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+yy  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  foo  ¦    ¦  
+zz  ¦  VARCHAR(50)  ¦  NO  ¦    ¦  null  ¦    ¦  
+
+#SQL[@31,N19]Result[23, 314]
 show create table t;
-Table    Create Table
-t    CREATE TABLE `t` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` int DEFAULT 20,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  `yy` varchar(50) NOT NULL DEFAULT 'foo',\n  `zz` varchar(50) NOT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t  ¦  CREATE TABLE `t` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` int DEFAULT 20,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  `yy` varchar(50) NOT NULL DEFAULT 'foo',
+  `zz` varchar(50) NOT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@34,N64]Error[52]
 INSERT INTO t (a, b, d, yy) VALUES (5, 55, 'Horem Ypsum', 'zzz');
 invalid input: invalid default value for column 'zz'
+
+#SQL[@37,N204]Result[]
 CREATE TABLE t1 (
 a int NOT NULL PRIMARY KEY,
 b int NOT NULL DEFAULT 10,
@@ -62,34 +124,70 @@ d varchar(20) not null default 'xxx',
 e timestamp DEFAULT NULL,
 f timestamp NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+#SQL[@46,N7]Result[71, 53, 48, 49, 53, 56, 71]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    INT(32)    YES        20        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  20  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+
+#SQL[@47,N20]Result[23, 244]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` int DEFAULT 20,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` int DEFAULT 20,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@50,N48]Result[]
 INSERT INTO t1 (a, b, d) VALUES (1, 15, 'Hello');
+
+#SQL[@51,N48]Result[]
 INSERT INTO t1 (a, b, d) VALUES (2, 25, 'World');
+
+#SQL[@52,N52]Result[]
 INSERT INTO t1 (a, b, d) VALUES (3, 35, 'Dolor Sit');
+
+#SQL[@54,N51]Result[]
 alter table t1 modify c bigint not null default 100;
+
+#SQL[@57,N63]Error[47]
 INSERT INTO t1 (a, b, d, c) VALUES (4, 45, 'Lorem Ipsum', null);
 constraint violation: Column 'c' cannot be null
+
+#SQL[@59,N7]Result[71, 53, 48, 52, 53, 56, 71]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    BIGINT(64)    NO        100        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  BIGINT(64)  ¦  NO  ¦    ¦  100  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+
+#SQL[@60,N20]Result[23, 257]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` bigint NOT NULL DEFAULT 100,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` bigint NOT NULL DEFAULT 100,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@63,N204]Result[]
 CREATE TABLE t2 (
 a int NOT NULL PRIMARY KEY,
 b int NOT NULL DEFAULT 10,
@@ -98,82 +196,169 @@ d varchar(20) not null default 'xxx',
 e timestamp DEFAULT NULL,
 f timestamp NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+#SQL[@72,N7]Result[71, 53, 48, 49, 53, 56, 71]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    INT(32)    YES        20        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  20  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+
+#SQL[@73,N20]Result[23, 244]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` int DEFAULT 20,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` int DEFAULT 20,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@75,N48]Result[]
 INSERT INTO t2 (a, b, d) VALUES (1, 15, 'Hello');
+
+#SQL[@76,N48]Result[]
 INSERT INTO t2 (a, b, d) VALUES (2, 25, 'World');
+
+#SQL[@77,N52]Result[]
 INSERT INTO t2 (a, b, d) VALUES (3, 35, 'Dolor Sit');
+
+#SQL[@79,N42]Result[]
 alter table t2 modify c bigint default 100;
+
+#SQL[@80,N7]Result[71, 53, 48, 53, 53, 56, 71]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    BIGINT(64)    YES        100        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  BIGINT(64)  ¦  YES  ¦    ¦  100  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+
+#SQL[@81,N20]Result[23, 248]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` bigint DEFAULT 100,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` bigint DEFAULT 100,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@83,N63]Result[]
 INSERT INTO t2 (a, b, d, c) VALUES (4, 45, 'Lorem Ipsum', null);
+
+#SQL[@86,N51]Error[47]
 alter table t2 modify c bigint not null default 200;
 constraint violation: Column 'c' cannot be null
+
+#SQL[@87,N7]Result[71, 53, 48, 53, 53, 56, 71]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-a    INT(32)    NO    PRI    null        
-b    INT(32)    NO        10        
-c    BIGINT(64)    YES        100        
-d    VARCHAR(20)    NO        xxx
-e    TIMESTAMP(0)    YES        null        
-f    TIMESTAMP(0)    YES        CURRENT_TIMESTAMP()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+b  ¦  INT(32)  ¦  NO  ¦    ¦  10  ¦    ¦  
+c  ¦  BIGINT(64)  ¦  YES  ¦    ¦  100  ¦    ¦  
+d  ¦  VARCHAR(20)  ¦  NO  ¦    ¦  xxx  ¦    ¦  
+e  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+f  ¦  TIMESTAMP(0)  ¦  YES  ¦    ¦  CURRENT_TIMESTAMP()  ¦    ¦  
+
+#SQL[@88,N20]Result[23, 248]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` int NOT NULL,\n  `b` int NOT NULL DEFAULT 10,\n  `c` bigint DEFAULT 100,\n  `d` varchar(20) NOT NULL DEFAULT 'xxx',\n  `e` timestamp NULL DEFAULT NULL,\n  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` int NOT NULL,
+  `b` int NOT NULL DEFAULT 10,
+  `c` bigint DEFAULT 100,
+  `d` varchar(20) NOT NULL DEFAULT 'xxx',
+  `e` timestamp NULL DEFAULT NULL,
+  `f` timestamp DEFAULT CURRENT_TIMESTAMP(),
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@91,N66]Result[]
 create table t3(id int not null primary key, i int, j int, t text);
+
+#SQL[@92,N7]Result[71, 54, 51, 51, 51]
 desc t3;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null        
-i    INT(32)    YES        null        
-j    INT(32)    YES        null        
-t    TEXT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+i  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+j  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+t  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@93,N20]Result[23, 144]
 show create table t3;
-Table    Create Table
-t3    CREATE TABLE `t3` (\n  `id` int NOT NULL,\n  `i` int DEFAULT NULL,\n  `j` int DEFAULT NULL,\n  `t` text DEFAULT NULL,\n  PRIMARY KEY (`id`)\n)
+Table  ¦  Create Table
+t3  ¦  CREATE TABLE `t3` (
+  `id` int NOT NULL,
+  `i` int DEFAULT NULL,
+  `j` int DEFAULT NULL,
+  `t` text DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+
+#SQL[@96,N65]Result[]
 INSERT INTO t3 (id, i, j, t) VALUES (1, 10, 20, 'Example text 1');
+
+#SQL[@97,N65]Result[]
 INSERT INTO t3 (id, i, j, t) VALUES (2, 30, 40, 'Example text 2');
+
+#SQL[@98,N67]Result[]
 INSERT INTO t3 (id, i, j, t) VALUES (3, NULL, 50, 'Example text 3');
+
+#SQL[@100,N28]Result[23, 37, 37, 39]
 select * from t3 order by id;
-id    i    j    t
-1    10    20    Example text 1
-2    30    40    Example text 2
-3    null    50    Example text 3
+id  ¦  i  ¦  j  ¦  t
+1  ¦  10  ¦  20  ¦  Example text 1
+2  ¦  30  ¦  40  ¦  Example text 2
+3  ¦  null  ¦  50  ¦  Example text 3
+
+#SQL[@102,N63]Result[]
 alter table t3 add column e enum('Y', 'N') not null default 'Y';
+
+#SQL[@103,N7]Result[71, 54, 51, 51, 51, 53]
 desc t3;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null        
-i    INT(32)    YES        null        
-j    INT(32)    YES        null        
-t    TEXT(0)    YES        null        
-e    ENUM('Y','N')    NO        Y
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+i  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+j  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+t  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+e  ¦  ENUM('Y','N')  ¦  NO  ¦    ¦  Y  ¦    ¦  
+
+#SQL[@104,N20]Result[23, 186]
 show create table t3;
-Table    Create Table
-t3    CREATE TABLE `t3` (\n  `id` int NOT NULL,\n  `i` int DEFAULT NULL,\n  `j` int DEFAULT NULL,\n  `t` text DEFAULT NULL,\n  `e` enum('Y','N') NOT NULL DEFAULT 'Y',\n  PRIMARY KEY (`id`)\n)
+Table  ¦  Create Table
+t3  ¦  CREATE TABLE `t3` (
+  `id` int NOT NULL,
+  `i` int DEFAULT NULL,
+  `j` int DEFAULT NULL,
+  `t` text DEFAULT NULL,
+  `e` enum('Y','N') NOT NULL DEFAULT 'Y',
+  PRIMARY KEY (`id`)
+)
+
+#SQL[@107,N76]Error[47]
 INSERT INTO t3 (id, i, j, t, e) VALUES (4, NULL, 50, 'Example text 4', null);
 constraint violation: Column 'e' cannot be null
+
+#SQL[@108,N28]Result[30, 44, 44, 46]
 select * from t3 order by id;
-id    i    j    t    e
-1    10    20    Example text 1    Y
-2    30    40    Example text 2    Y
-3    null    50    Example text 3    Y
+id  ¦  i  ¦  j  ¦  t  ¦  e
+1  ¦  10  ¦  20  ¦  Example text 1  ¦  Y
+2  ¦  30  ¦  40  ¦  Example text 2  ¦  Y
+3  ¦  null  ¦  50  ¦  Example text 3  ¦  Y
+
+#SQL[@111,N164]Result[]
 CREATE TABLE t4 (
 id INT PRIMARY KEY,
 a VARCHAR(30) NULL default 'foo',
@@ -181,34 +366,67 @@ b VARCHAR(30) NOT NULL default 'foo',
 c INT NULL DEFAULT 1000,
 d INT NOT NULL DEFAULT 2000
 );
+
+#SQL[@119,N7]Result[71, 54, 54, 53, 51, 50]
 desc t4;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null        
-a    VARCHAR(30)    YES        foo
-b    VARCHAR(30)    NO        foo
-c    INT(32)    YES        1000        
-d    INT(32)    NO        2000        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+a  ¦  VARCHAR(30)  ¦  YES  ¦    ¦  foo  ¦    ¦  
+b  ¦  VARCHAR(30)  ¦  NO  ¦    ¦  foo  ¦    ¦  
+c  ¦  INT(32)  ¦  YES  ¦    ¦  1000  ¦    ¦  
+d  ¦  INT(32)  ¦  NO  ¦    ¦  2000  ¦    ¦  
+
+#SQL[@120,N20]Result[23, 203]
 show create table t4;
-Table    Create Table
-t4    CREATE TABLE `t4` (\n  `id` int NOT NULL,\n  `a` varchar(30) DEFAULT 'foo',\n  `b` varchar(30) NOT NULL DEFAULT 'foo',\n  `c` int DEFAULT 1000,\n  `d` int NOT NULL DEFAULT 2000,\n  PRIMARY KEY (`id`)\n)
+Table  ¦  Create Table
+t4  ¦  CREATE TABLE `t4` (
+  `id` int NOT NULL,
+  `a` varchar(30) DEFAULT 'foo',
+  `b` varchar(30) NOT NULL DEFAULT 'foo',
+  `c` int DEFAULT 1000,
+  `d` int NOT NULL DEFAULT 2000,
+  PRIMARY KEY (`id`)
+)
+
+#SQL[@122,N126]Result[]
 CREATE TABLE t5 (
 y datetime NOT NULL DEFAULT '2023-06-21 00:00:00' PRIMARY KEY,
 a int DEFAULT NULL,
 b char(10) DEFAULT NULL
 );
+
+#SQL[@128,N7]Result[71, 72, 51, 52]
 desc t5;
-Field    Type    Null    Key    Default    Extra    Comment
-y    DATETIME(0)    NO    PRI    2023-06-21 00:00:00
-a    INT(32)    YES        null        
-b    CHAR(10)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+y  ¦  DATETIME(0)  ¦  NO  ¦  PRI  ¦  2023-06-21 00:00:00  ¦    ¦  
+a  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+b  ¦  CHAR(10)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@129,N20]Result[23, 157]
 show create table t5;
-Table    Create Table
-t5    CREATE TABLE `t5` (\n  `y` datetime NOT NULL DEFAULT '2023-06-21 00:00:00',\n  `a` int DEFAULT NULL,\n  `b` char(10) DEFAULT NULL,\n  PRIMARY KEY (`y`)\n)
+Table  ¦  Create Table
+t5  ¦  CREATE TABLE `t5` (
+  `y` datetime NOT NULL DEFAULT '2023-06-21 00:00:00',
+  `a` int DEFAULT NULL,
+  `b` char(10) DEFAULT NULL,
+  PRIMARY KEY (`y`)
+)
+
+#SQL[@131,N102]Result[]
 create external table extable1(n1 int)infile{"filepath"='$resources/external_table_file/extable.csv'} ;
+
+#SQL[@132,N13]Result[71, 52]
 desc extable1;
-Field    Type    Null    Key    Default    Extra    Comment
-n1    INT(32)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+n1  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@133,N26]Result[23, 142]
 show create table extable1;
-Table    Create Table
-extable1    CREATE EXTERNAL TABLE `extable1` (\n  `n1` int DEFAULT NULL\n) INFILE{'FILEPATH'='','COMPRESSION'='','FORMAT'='csv','JSONDATA'=''}
+Table  ¦  Create Table
+extable1  ¦  CREATE EXTERNAL TABLE `extable1` (
+  `n1` int DEFAULT NULL
+) INFILE{'FILEPATH'='','COMPRESSION'='','FORMAT'='csv','JSONDATA'=''}
+
+#SQL[@135,N27]Result[]
 drop database if exists db1;
+

@@ -38,14 +38,14 @@ show sequences from db;
 show table_number from db;
 show tables from db;
 
--- @ignore:3,5,10,11,12
 show table status from db;
+| @ignore(3,5,10,11,12);
 show table_values from t1 from db;
 
 use db;
 select * from db.t1;
 
--- @ignore:3,5,10,11,12
 show table status from system;
+| @ignore(3,5,10,11,12);
 
 set global enable_privilege_cache = on;

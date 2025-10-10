@@ -1,290 +1,801 @@
+#SQL[@1,N38]Result[]
 drop database if exists insert_auto_pk;
-create database insert_auto_pk; use insert_auto_pk;
+
+#SQL[@2,N30]Result[]
+create database insert_auto_pk;
+
+#SQL[@2,N18]Result[]
+use insert_auto_pk;
+
+#SQL[@20,N23]Result[]
 drop table if exists t0;
+
+#SQL[@21,N60]Result[]
 create table t0(a int auto_increment, b int, primary key(a));
+
+#SQL[@22,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@24,N5]Result[]
 begin;
+
+#SQL[@25,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@26,N28]Result[]
 insert into t0(a) values (3);
+
+#SQL[@28,N24]Result[]
 delete from t0 where a=2;
+
+#SQL[@29,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@31,N6]Result[]
 commit;
+
+#SQL[@34,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@36,N57]Result[]
 select a, count(*) from t0 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@38,N23]Result[]
 drop table if exists t1;
+
+#SQL[@39,N70]Result[]
 create table t1(a int unsigned auto_increment , b int, primary key(a));
+
+#SQL[@40,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@42,N5]Result[]
 begin;
+
+#SQL[@43,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@44,N28]Result[]
 insert into t1(a) values (3);
+
+#SQL[@47,N24]Result[]
 delete from t1 where a=2;
+
+#SQL[@48,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@50,N6]Result[]
 commit;
+
+#SQL[@53,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@54,N57]Result[]
 select a, count(*) from t1 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@58,N23]Result[]
 drop table if exists t2;
+
+#SQL[@59,N63]Result[]
 create table t2(a bigint auto_increment, b int, primary key(a));
+
+#SQL[@60,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@62,N5]Result[]
 begin;
+
+#SQL[@63,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@64,N28]Result[]
 insert into t2(a) values (3);
+
+#SQL[@65,N24]Result[]
 delete from t2 where a=2;
+
+#SQL[@66,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@68,N6]Result[]
 commit;
+
+#SQL[@71,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@72,N57]Result[]
 select a, count(*) from t2 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@74,N23]Result[]
 drop table if exists t3;
+
+#SQL[@75,N73]Result[]
 create table t3(a bigint unsigned auto_increment , b int, primary key(a));
+
+#SQL[@76,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@78,N5]Result[]
 begin;
+
+#SQL[@79,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@80,N28]Result[]
 insert into t3(a) values (3);
+
+#SQL[@83,N24]Result[]
 delete from t3 where a=2;
+
+#SQL[@84,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@86,N6]Result[]
 commit;
+
+#SQL[@89,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@91,N57]Result[]
 select a, count(*) from t3 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@96,N23]Result[]
 drop table if exists t6;
+
+#SQL[@97,N63]Result[]
 create table t6(a int auto_increment, b int, primary key(a, b));
+
+#SQL[@98,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@100,N5]Result[]
 begin;
+
+#SQL[@101,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@102,N34]Result[]
 insert into t6(a, b) values (3, 3);
+
+#SQL[@105,N24]Result[]
 delete from t6 where a=2;
+
+#SQL[@106,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@108,N6]Result[]
 commit;
+
+#SQL[@111,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@113,N60]Result[]
 select a, count(*) from t6 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@115,N23]Result[]
 drop table if exists t7;
+
+#SQL[@116,N73]Result[]
 create table t7(a int unsigned auto_increment , b int, primary key(a, b));
+
+#SQL[@117,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@119,N5]Result[]
 begin;
+
+#SQL[@120,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@121,N34]Result[]
 insert into t7(a, b) values (3, 3);
+
+#SQL[@124,N24]Result[]
 delete from t7 where a=2;
+
+#SQL[@125,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@127,N6]Result[]
 commit;
+
+#SQL[@130,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@134,N60]Result[]
 select a, count(*) from t7 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@138,N23]Result[]
 drop table if exists t8;
+
+#SQL[@139,N66]Result[]
 create table t8(a bigint auto_increment, b int, primary key(a, b));
+
+#SQL[@140,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@142,N5]Result[]
 begin;
+
+#SQL[@143,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@144,N34]Result[]
 insert into t8(a, b) values (3, 3);
+
+#SQL[@147,N24]Result[]
 delete from t8 where a=2;
+
+#SQL[@148,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@150,N6]Result[]
 commit;
+
+#SQL[@153,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@157,N60]Result[]
 select a, count(*) from t8 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@159,N23]Result[]
 drop table if exists t9;
+
+#SQL[@160,N76]Result[]
 create table t9(a bigint unsigned auto_increment , b int, primary key(a, b));
+
+#SQL[@161,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@163,N5]Result[]
 begin;
+
+#SQL[@164,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@165,N34]Result[]
 insert into t9(a, b) values (3, 3);
+
+#SQL[@168,N24]Result[]
 delete from t9 where a=2;
+
+#SQL[@169,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@171,N6]Result[]
 commit;
+
+#SQL[@174,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@176,N60]Result[]
 select a, count(*) from t9 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@185,N23]Result[]
 drop table if exists t0;
+
+#SQL[@186,N60]Result[]
 create table t0(a int auto_increment, b int, primary key(a));
+
+#SQL[@187,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@189,N5]Result[]
 begin;
+
+#SQL[@190,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@191,N28]Result[]
 insert into t0(a) values (3);
+
+#SQL[@194,N24]Result[]
 delete from t0 where a=2;
+
+#SQL[@195,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@197,N6]Result[]
 commit;
+
+#SQL[@200,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@204,N57]Result[]
 select a, count(*) from t0 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@206,N23]Result[]
 drop table if exists t1;
+
+#SQL[@207,N70]Result[]
 create table t1(a int unsigned auto_increment , b int, primary key(a));
+
+#SQL[@208,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@210,N5]Result[]
 begin;
+
+#SQL[@211,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@212,N28]Result[]
 insert into t1(a) values (3);
+
+#SQL[@215,N24]Result[]
 delete from t1 where a=2;
+
+#SQL[@216,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@218,N6]Result[]
 commit;
+
+#SQL[@221,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@223,N57]Result[]
 select a, count(*) from t1 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@227,N23]Result[]
 drop table if exists t2;
+
+#SQL[@228,N63]Result[]
 create table t2(a bigint auto_increment, b int, primary key(a));
+
+#SQL[@229,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@231,N5]Result[]
 begin;
+
+#SQL[@232,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@233,N28]Result[]
 insert into t2(a) values (3);
+
+#SQL[@235,N24]Result[]
 delete from t2 where a=2;
+
+#SQL[@236,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@238,N6]Result[]
 commit;
+
+#SQL[@241,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@243,N57]Result[]
 select a, count(*) from t2 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@245,N23]Result[]
 drop table if exists t3;
+
+#SQL[@246,N73]Result[]
 create table t3(a bigint unsigned auto_increment , b int, primary key(a));
+
+#SQL[@247,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@249,N5]Result[]
 begin;
+
+#SQL[@250,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@251,N28]Result[]
 insert into t3(a) values (3);
+
+#SQL[@254,N24]Result[]
 delete from t3 where a=2;
+
+#SQL[@255,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@257,N6]Result[]
 commit;
+
+#SQL[@260,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@264,N57]Result[]
 select a, count(*) from t3 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@271,N23]Result[]
 drop table if exists t6;
+
+#SQL[@272,N63]Result[]
 create table t6(a int auto_increment, b int, primary key(a, b));
+
+#SQL[@273,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@275,N5]Result[]
 begin;
+
+#SQL[@276,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@277,N34]Result[]
 insert into t6(a, b) values (3, 3);
+
+#SQL[@280,N24]Result[]
 delete from t6 where a=2;
+
+#SQL[@281,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@283,N6]Result[]
 commit;
+
+#SQL[@286,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@288,N60]Result[]
 select a, count(*) from t6 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@290,N23]Result[]
 drop table if exists t7;
+
+#SQL[@291,N73]Result[]
 create table t7(a int unsigned auto_increment , b int, primary key(a, b));
+
+#SQL[@292,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@294,N5]Result[]
 begin;
+
+#SQL[@295,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@296,N34]Result[]
 insert into t7(a, b) values (3, 3);
+
+#SQL[@298,N24]Result[]
 delete from t7 where a=2;
+
+#SQL[@299,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@301,N6]Result[]
 commit;
+
+#SQL[@304,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@305,N60]Result[]
 select a, count(*) from t7 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@309,N23]Result[]
 drop table if exists t8;
+
+#SQL[@310,N66]Result[]
 create table t8(a bigint auto_increment, b int, primary key(a, b));
+
+#SQL[@311,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@313,N5]Result[]
 begin;
+
+#SQL[@314,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@315,N34]Result[]
 insert into t8(a, b) values (3, 3);
+
+#SQL[@317,N24]Result[]
 delete from t8 where a=2;
+
+#SQL[@318,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@320,N6]Result[]
 commit;
+
+#SQL[@323,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@324,N60]Result[]
 select a, count(*) from t8 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@326,N23]Result[]
 drop table if exists t9;
+
+#SQL[@327,N76]Result[]
 create table t9(a bigint unsigned auto_increment , b int, primary key(a, b));
+
+#SQL[@328,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@330,N5]Result[]
 begin;
+
+#SQL[@331,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@332,N34]Result[]
 insert into t9(a, b) values (3, 3);
+
+#SQL[@334,N24]Result[]
 delete from t9 where a=2;
+
+#SQL[@335,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@337,N6]Result[]
 commit;
+
+#SQL[@340,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@341,N60]Result[]
 select a, count(*) from t9 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@348,N23]Result[]
 drop table if exists t0;
+
+#SQL[@349,N60]Result[]
 create table t0(a int auto_increment, b int, primary key(a));
+
+#SQL[@350,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@352,N5]Result[]
 begin;
+
+#SQL[@353,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@354,N28]Result[]
 insert into t0(a) values (3);
+
+#SQL[@356,N24]Result[]
 delete from t0 where a=2;
+
+#SQL[@357,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@359,N6]Result[]
 commit;
+
+#SQL[@362,N33]Result[]
 insert into t0(b) values (1), (2);
+
+#SQL[@363,N57]Result[]
 select a, count(*) from t0 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@365,N23]Result[]
 drop table if exists t1;
+
+#SQL[@366,N70]Result[]
 create table t1(a int unsigned auto_increment , b int, primary key(a));
+
+#SQL[@367,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@369,N5]Result[]
 begin;
+
+#SQL[@370,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@371,N28]Result[]
 insert into t1(a) values (3);
+
+#SQL[@374,N24]Result[]
 delete from t1 where a=2;
+
+#SQL[@375,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@377,N6]Result[]
 commit;
+
+#SQL[@380,N33]Result[]
 insert into t1(b) values (1), (2);
+
+#SQL[@381,N57]Result[]
 select a, count(*) from t1 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@385,N23]Result[]
 drop table if exists t2;
+
+#SQL[@386,N63]Result[]
 create table t2(a bigint auto_increment, b int, primary key(a));
+
+#SQL[@387,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@389,N5]Result[]
 begin;
+
+#SQL[@390,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@391,N28]Result[]
 insert into t2(a) values (3);
+
+#SQL[@393,N24]Result[]
 delete from t2 where a=2;
+
+#SQL[@394,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@396,N6]Result[]
 commit;
+
+#SQL[@399,N33]Result[]
 insert into t2(b) values (1), (2);
+
+#SQL[@401,N57]Result[]
 select a, count(*) from t2 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@403,N23]Result[]
 drop table if exists t3;
+
+#SQL[@404,N73]Result[]
 create table t3(a bigint unsigned auto_increment , b int, primary key(a));
+
+#SQL[@405,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@407,N5]Result[]
 begin;
+
+#SQL[@408,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@409,N28]Result[]
 insert into t3(a) values (3);
+
+#SQL[@411,N24]Result[]
 delete from t3 where a=2;
+
+#SQL[@412,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@414,N6]Result[]
 commit;
+
+#SQL[@417,N33]Result[]
 insert into t3(b) values (1), (2);
+
+#SQL[@419,N57]Result[]
 select a, count(*) from t3 group by a having count(*) > 1;
-a    count(*)
+
+#SQL[@424,N23]Result[]
 drop table if exists t6;
+
+#SQL[@425,N63]Result[]
 create table t6(a int auto_increment, b int, primary key(a, b));
+
+#SQL[@426,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@428,N5]Result[]
 begin;
+
+#SQL[@429,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@430,N34]Result[]
 insert into t6(a, b) values (3, 3);
+
+#SQL[@433,N24]Result[]
 delete from t6 where a=2;
+
+#SQL[@434,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@436,N6]Result[]
 commit;
+
+#SQL[@439,N33]Result[]
 insert into t6(b) values (1), (2);
+
+#SQL[@440,N60]Result[]
 select a, count(*) from t6 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@442,N23]Result[]
 drop table if exists t7;
+
+#SQL[@443,N73]Result[]
 create table t7(a int unsigned auto_increment , b int, primary key(a, b));
+
+#SQL[@444,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@446,N5]Result[]
 begin;
+
+#SQL[@447,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@448,N34]Result[]
 insert into t7(a, b) values (3, 3);
+
+#SQL[@449,N24]Result[]
 delete from t7 where a=2;
+
+#SQL[@450,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@452,N6]Result[]
 commit;
+
+#SQL[@455,N33]Result[]
 insert into t7(b) values (1), (2);
+
+#SQL[@457,N60]Result[]
 select a, count(*) from t7 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@461,N23]Result[]
 drop table if exists t8;
+
+#SQL[@462,N66]Result[]
 create table t8(a bigint auto_increment, b int, primary key(a, b));
+
+#SQL[@463,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@465,N5]Result[]
 begin;
+
+#SQL[@466,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@467,N34]Result[]
 insert into t8(a, b) values (3, 3);
+
+#SQL[@468,N24]Result[]
 delete from t8 where a=2;
+
+#SQL[@469,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@471,N6]Result[]
 commit;
+
+#SQL[@474,N33]Result[]
 insert into t8(b) values (1), (2);
+
+#SQL[@476,N60]Result[]
 select a, count(*) from t8 group by a, b having count(*) > 1;
-a    count(*)
+
+#SQL[@478,N23]Result[]
 drop table if exists t9;
+
+#SQL[@479,N76]Result[]
 create table t9(a bigint unsigned auto_increment , b int, primary key(a, b));
+
+#SQL[@480,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@482,N5]Result[]
 begin;
+
+#SQL[@483,N18]Result[]
 use insert_auto_pk;
+
+#SQL[@484,N34]Result[]
 insert into t9(a, b) values (3, 3);
+
+#SQL[@485,N24]Result[]
 delete from t9 where a=2;
+
+#SQL[@486,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@488,N6]Result[]
 commit;
+
+#SQL[@491,N33]Result[]
 insert into t9(b) values (1), (2);
+
+#SQL[@493,N60]Result[]
 select a, count(*) from t9 group by a, b having count(*) > 1;
-a    count(*)
+

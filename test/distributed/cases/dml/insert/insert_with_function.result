@@ -1,100 +1,196 @@
+#SQL[@6,N59]Result[]
 CREATE TABLE char_test(
-str1 CHAR(50),
-str2 VARCHAR(50)
+	str1 CHAR(50),
+	str2 VARCHAR(50)
 );
+
+#SQL[@10,N58]Result[]
 INSERT INTO char_test(str1, str2) VALUES('ABCED', 'MESSI');
+
+#SQL[@13,N75]Result[]
 INSERT INTO char_test(str1) VALUES(CONCAT_WS(' ', ' I have ', '  a dream'));
+
+#SQL[@14,N74]Result[]
 INSERT INTO char_test(str1) VALUES(CONCAT_WS(',', ',I have ', ',a dream'));
+
+#SQL[@15,N76]Result[]
 INSERT INTO char_test(str1) VALUES(CONCAT_WS('x', ' I have x', 'x a dream'));
+
+#SQL[@16,N82]Result[]
 INSERT INTO char_test(str1) SELECT CONCAT_WS('.', 'MESSI is a ', '. aloha bumda.');
+
+#SQL[@17,N21]Result[]
 DELETE FROM char_test;
+
+#SQL[@20,N63]Result[]
 INSERT INTO char_test(str2) VALUES(FIND_IN_SET('a', 'b,d,c,a'));
+
+#SQL[@21,N71]Result[]
 INSERT INTO char_test(str2) VALUES(FIND_IN_SET('a', 'if i were a boy'));
+
+#SQL[@22,N106]Result[]
 INSERT INTO char_test(str2) VALUES(FIND_IN_SET('A', CONCAT_WS(',', 'The english Union',', have a king.')));
+
+#SQL[@23,N23]Result[14, 11, 11, 11]
 SELECT * FROM char_test;
-str1    str2
-null    4
-null    0
-null    0
+str1  ¦  str2
+null  ¦  4
+null  ¦  0
+null  ¦  0
+
+#SQL[@24,N21]Result[]
 DELETE FROM char_test;
+
+#SQL[@27,N76]Result[]
 INSERT INTO char_test(str2) VALUES(OCT(FIND_IN_SET('a', 'b,c,d,e,f,g,h,a')));
+
+#SQL[@28,N45]Result[]
 INSERT INTO char_test(str2) VALUES(OCT(NULL));
+
+#SQL[@29,N103]Result[]
 INSERT INTO char_test(str2) VALUES(OCT(LENGTH('JFKLD;AJKFLD;AJFKDL;ASJFKDLSA;FJDKSAL;FJDKSAL;FJDKA;')));
+
+#SQL[@30,N23]Result[14, 12, 14, 12]
 SELECT * FROM char_test;
-str1    str2
-null    10
-null    null
-null    64
+str1  ¦  str2
+null  ¦  10
+null  ¦  null
+null  ¦  64
+
+#SQL[@31,N21]Result[]
 DELETE FROM char_test;
+
+#SQL[@34,N46]Error[206]
 INSERT INTO char_test(str1) VALUES(SPACE(100));
 internal error: Can't cast '                                                                                                    ' from VARCHAR type to CHAR type. Src length 100 is larger than Dest length 50
+
+#SQL[@35,N54]Result[]
 INSERT INTO char_test(str1) VALUES('RONALDOSHOOTGOAL');
+
+#SQL[@36,N45]Result[]
 INSERT INTO char_test(str2) VALUES(EMPTY(""));
+
+#SQL[@37,N47]Result[]
 INSERT INTO char_test(str2) VALUES(EMPTY(null));
+
+#SQL[@38,N85]Result[]
 INSERT INTO char_test(str2) VALUES(EMPTY(CONCAT_WS(' ', 'ABCDE','JKFL;JDK','FDAFD')));
+
+#SQL[@39,N53]Result[]
 INSERT INTO char_test(str2) VALUES(EMPTY(SPACE(100)));
+
+#SQL[@40,N58]Result[]
 INSERT INTO char_test(str2) VALUES(EMPTY(OCT(4564123156)));
+
+#SQL[@41,N23]Result[14, 26, 11, 14, 11, 11, 11]
 select * from char_test;
-str1    str2
-RONALDOSHOOTGOAL    null
-null    1
-null    null
-null    0
-null    0
-null    0
+str1  ¦  str2
+RONALDOSHOOTGOAL  ¦  null
+null  ¦  1
+null  ¦  null
+null  ¦  0
+null  ¦  0
+null  ¦  0
+
+#SQL[@44,N30]Result[]
 DROP TABLE IF EXISTS date_test;
+
+#SQL[@45,N75]Result[]
 CREATE TABLE date_test(
-d2 DATE,
-d3 DATETIME,
-d4 TIMESTAMP,
-d5 BIGINT
+	d2 DATE,
+	d3 DATETIME,
+	d4 TIMESTAMP,
+	d5 BIGINT
 );
+
+#SQL[@51,N72]Result[]
 INSERT INTO date_test(d2,d3) VALUES('2022-08-07', '2018-09-13 13:45:13');
+
+#SQL[@52,N72]Result[]
 INSERT INTO date_test(d2,d3) VALUES('2015-11-07', '2013-09-14 13:45:13');
+
+#SQL[@53,N72]Result[]
 INSERT INTO date_test(d2,d3) VALUES('2013-08-07', '2006-05-23 13:23:13');
+
+#SQL[@54,N72]Result[]
 INSERT INTO date_test(d2,d3) VALUES('2011-08-07', '2018-07-08 23:59:59');
+
+#SQL[@55,N61]Result[]
 INSERT INTO date_test(d5) SELECT UNIX_TIMESTAMP("2021-02-29");
+
+#SQL[@56,N71]Result[]
 INSERT INTO date_test(d3) VALUES(DATE_ADD('2008-13-26 23:59:59', NULL));
+
+#SQL[@57,N23]Result[26, 55, 55, 55, 55, 34, 34]
 SELECT * FROM date_test;
-d2    d3    d4    d5
-2022-08-07    2018-09-13 13:45:13    null    null
-2015-11-07    2013-09-14 13:45:13    null    null
-2013-08-07    2006-05-23 13:23:13    null    null
-2011-08-07    2018-07-08 23:59:59    null    null
-null    null    null    null
-null    null    null    null
+d2  ¦  d3  ¦  d4  ¦  d5
+2022-08-07  ¦  2018-09-13 13:45:13  ¦  null  ¦  null
+2015-11-07  ¦  2013-09-14 13:45:13  ¦  null  ¦  null
+2013-08-07  ¦  2006-05-23 13:23:13  ¦  null  ¦  null
+2011-08-07  ¦  2018-07-08 23:59:59  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@58,N21]Result[]
 DELETE FROM date_test;
+
+#SQL[@62,N222]Result[]
 CREATE TABLE math_test(
-tiny TINYINT,
-small SMALLINT,
-int_test INT,
-big BIGINT,
-tiny_un TINYINT UNSIGNED,
-small_un SMALLINT UNSIGNED,
-int_un INT UNSIGNED,
-big_un BIGINT UNSIGNED,
-float_32 FLOAT,
-float_64 DOUBLE
+	tiny TINYINT,
+	small SMALLINT,
+	int_test INT,
+	big BIGINT,
+	tiny_un TINYINT UNSIGNED,
+	small_un SMALLINT UNSIGNED,
+	int_un INT UNSIGNED,
+	big_un BIGINT UNSIGNED,
+	float_32 FLOAT,
+	float_64 DOUBLE
 );
+
+#SQL[@75,N81]Result[]
 INSERT INTO math_test(tiny,small,int_test,big) VALUES(32, 2432, 54354, 543324324);
+
+#SQL[@76,N79]Result[]
 INSERT INTO math_test(tiny_un, small_un, int_un) VALUES(127, 32768, 2147483648);
+
+#SQL[@77,N23]Result[117, 98, 100]
 SELECT * FROM math_test;
-tiny    small    int_test    big    tiny_un    small_un    int_un    big_un    float_32    float_64
-32    2432    54354    543324324    null    null    null    null    null    null
-null    null    null    null    127    32768    2147483648    null    null    null
+tiny  ¦  small  ¦  int_test  ¦  big  ¦  tiny_un  ¦  small_un  ¦  int_un  ¦  big_un  ¦  float_32  ¦  float_64
+32  ¦  2432  ¦  54354  ¦  543324324  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null  ¦  127  ¦  32768  ¦  2147483648  ¦  null  ¦  null  ¦  null
+
+#SQL[@84,N26]Result[]
 DROP TABLE IF EXISTS test1;
+
+#SQL[@85,N77]Result[]
 CREATE TABLE test1(
-num1 FLOAT(6,2),
-num2 DOUBLE(6,2),
-num3 DECIMAL(6,2)
+	num1 FLOAT(6,2),
+	num2 DOUBLE(6,2),
+	num3 DECIMAL(6,2)
 );
+
+#SQL[@90,N65]Result[]
 INSERT INTO test1(num1, num2, num3) VALUES(12.21, 43.43, 999.899);
+
+#SQL[@91,N48]Result[]
 INSERT INTO test1 VALUES(3.1415, 3.1415, 3.1415);
+
+#SQL[@92,N19]Result[24, 28, 24]
 SELECT * FROM test1;
-num1    num2    num3
-12.21    43.43    999.90
-3.14    3.14    3.14
+num1  ¦  num2  ¦  num3
+12.21  ¦  43.43  ¦  999.90
+3.14  ¦  3.14  ¦  3.14
+
+#SQL[@94,N20]Result[]
 DROP TABLE char_test;
+
+#SQL[@95,N20]Result[]
 DROP TABLE date_test;
+
+#SQL[@96,N20]Result[]
 DROP TABLE math_test;
+
+#SQL[@97,N16]Result[]
 DROP TABLE test1;
+

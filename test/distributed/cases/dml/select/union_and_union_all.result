@@ -1,34 +1,63 @@
+#SQL[@4,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N40]Result[]
 create table t1(
 a int,
 b varchar(100)
 );
+
+#SQL[@10,N33]Result[]
 insert into t1 values(30, 'cccc');
+
+#SQL[@11,N33]Result[]
 insert into t1 values(20, 'bbbb');
+
+#SQL[@12,N33]Result[]
 insert into t1 values(10, 'aaaa');
+
+#SQL[@13,N24]Result[]
 insert into t1 values ();
+
+#SQL[@14,N16]Result[8, 12, 12, 12, 14]
 select * from t1;
-a    b
-30    cccc
-20    bbbb
-10    aaaa
-null    null
+a  ¦  b
+30  ¦  cccc
+20  ¦  bbbb
+10  ¦  aaaa
+null  ¦  null
+
+#SQL[@17,N23]Result[]
 drop table if exists t2;
+
+#SQL[@18,N59]Result[]
 create table t2(
 col1 date,
 col2 datetime,
 col3 timestamp
 );
+
+#SQL[@24,N24]Result[]
 insert into t2 values ();
+
+#SQL[@25,N63]Result[]
 insert into t2 values('2022-01-01', '2022-01-01', '2022-01-01');
+
+#SQL[@26,N88]Result[]
 insert into t2 values('2022-01-01', '2022-01-01 00:00:00', '2022-01-01 00:00:00.000000');
+
+#SQL[@27,N95]Result[]
 insert into t2 values('2022-01-01', '2022-01-01 00:00:00.000000', '2022-01-01 23:59:59.999999');
+
+#SQL[@28,N16]Result[24, 24, 60, 60, 60]
 select * from t2;
-col1    col2    col3
-null    null    null
-2022-01-01    2022-01-01 00:00:00    2022-01-01 00:00:00
-2022-01-01    2022-01-01 00:00:00    2022-01-01 00:00:00
-2022-01-01    2022-01-01 00:00:00    2022-01-02 00:00:00
+col1  ¦  col2  ¦  col3
+null  ¦  null  ¦  null
+2022-01-01  ¦  2022-01-01 00:00:00  ¦  2022-01-01 00:00:00
+2022-01-01  ¦  2022-01-01 00:00:00  ¦  2022-01-01 00:00:00
+2022-01-01  ¦  2022-01-01 00:00:00  ¦  2022-01-02 00:00:00
+
+#SQL[@32,N59]Result[1, 4, 4, 2, 2, 10, 10, 10, 2]
 (select a from t1 union all select col1 from t2) order by a;
 a
 null
@@ -39,50 +68,64 @@ null
 2022-01-01
 2022-01-01
 30
+
+#SQL[@34,N62]Error[41]
 (select a from t1 union all select col1 from t2) order by col1;
 invalid input: column col1 does not exist
+
+#SQL[@36,N46]Result[1, 4, 10, 10, 10, 2, 2, 2, 4]
 select a from t1 union all select col1 from t2;
 a
+null
+2022-01-01
+2022-01-01
+2022-01-01
 30
 20
 10
 null
-null
-2022-01-01
-2022-01-01
-2022-01-01
+
+#SQL[@38,N59]Result[1, 4, 10, 10, 10, 4, 2, 2, 2]
 (select a from t1 order by a) union all select col1 from t2;
 a
-30
-20
+null
+2022-01-01
+2022-01-01
+2022-01-01
+null
 10
-null
-null
-2022-01-01
-2022-01-01
-2022-01-01
+20
+30
+
+#SQL[@39,N64]Result[1, 4, 10, 10, 10, 2, 2, 2, 4]
 (select a from t1) union all (select col1 from t2 order by col1);
 a
+null
+2022-01-01
+2022-01-01
+2022-01-01
 30
 20
 10
 null
-null
-2022-01-01
-2022-01-01
-2022-01-01
+
+#SQL[@40,N75]Result[1, 4, 2, 2, 2, 4, 10, 10, 10]
 (select a from t1 order by a) union all (select col1 from t2 order by col1);
 a
-30
-20
+null
 10
+20
+30
 null
-null
 2022-01-01
 2022-01-01
 2022-01-01
+
+#SQL[@42,N62]Error[41]
 (select a from t1 union all select col1 from t2) order by col1;
 invalid input: column col1 does not exist
+
+#SQL[@46,N55]Result[1, 4, 2, 2, 19, 2]
 (select a from t1 union select col2 from t2) order by a;
 a
 null
@@ -90,57 +133,95 @@ null
 20
 2022-01-01 00:00:00
 30
+
+#SQL[@48,N58]Error[41]
 (select a from t1 union select col2 from t2) order by col2;
 invalid input: column col2 does not exist
+
+#SQL[@50,N42]Result[1, 4, 19, 2, 2, 2]
 select a from t1 union select col2 from t2;
 a
+null
+2022-01-01 00:00:00
 30
 20
 10
-null
-2022-01-01 00:00:00
+
+#SQL[@52,N55]Result[1, 4, 2, 2, 2, 19]
 (select a from t1 order by a) union select col2 from t2;
 a
-30
-20
-10
 null
+10
+20
+30
 2022-01-01 00:00:00
+
+#SQL[@53,N60]Result[1, 4, 19, 2, 2, 2]
 (select a from t1) union (select col2 from t2 order by col2);
 a
+null
+2022-01-01 00:00:00
 30
 20
 10
-null
-2022-01-01 00:00:00
+
+#SQL[@54,N71]Result[1, 4, 19, 2, 2, 2]
 (select a from t1 order by a) union (select col2 from t2 order by col2);
 a
-30
-20
-10
 null
 2022-01-01 00:00:00
+10
+20
+30
+
+#SQL[@56,N58]Error[41]
 (select a from t1 union select col2 from t2) order by col2;
 invalid input: column col2 does not exist
+
+#SQL[@58,N13]Result[]
 drop table t1;
+
+#SQL[@59,N13]Result[]
 drop table t2;
+
+#SQL[@63,N23]Result[]
 drop table if exists t3;
+
+#SQL[@64,N28]Result[]
 create table t3(
 a tinyint
 );
+
+#SQL[@68,N42]Result[]
 insert into t3 values (20),(10),(30),(-10);
+
+#SQL[@70,N23]Result[]
 drop table if exists t4;
+
+#SQL[@71,N79]Result[]
 create table t4(
 col1 smallint,
 col2 smallint unsigned,
 col3 float,
 col4 bool
 );
+
+#SQL[@78,N43]Result[]
 insert into t4 values(100, 65535, 127.0, 1);
+
+#SQL[@79,N37]Result[]
 insert into t4 values(300, 0, 1.0, 0);
+
+#SQL[@80,N39]Result[]
 insert into t4 values(500, 100, 0.0, 0);
+
+#SQL[@81,N40]Result[]
 insert into t4 values(200, 35, 127.0, 1);
+
+#SQL[@82,N41]Result[]
 insert into t4 values(200, 35, 127.44, 1);
+
+#SQL[@84,N42]Result[1, 2, 2, 2, 3, 3, 3, 3, 3]
 select a from t3 union select col1 from t4;
 a
 20
@@ -151,16 +232,20 @@ a
 300
 500
 200
+
+#SQL[@86,N60]Result[1, 1, 2, 3, 5, 2, 2, 2, 3]
 (select a from t3) union (select col2 from t4 order by col2);
 a
+0
+35
+100
+65535
 20
 10
 30
 -10
-65535
-0
-100
-35
+
+#SQL[@88,N42]Result[1, 2, 2, 2, 3, 5, 1, 3, 2]
 select a from t3 union select col2 from t4;
 a
 20
@@ -171,42 +256,78 @@ a
 0
 100
 35
+
+#SQL[@90,N42]Result[1, 3, 1, 1, 6, 2, 2, 2, 3]
 select a from t3 union select col3 from t4;
 a
-20.0
-10.0
-30.0
--10.0
-127.0
-1.0
-0.0
+127
+1
+0
 127.44
+20
+10
+30
+-10
+
+#SQL[@92,N42]Result[1, 4, 5]
 select a from t3 union select col4 from t4;
 a
 true
 false
+
+#SQL[@94,N13]Result[]
 drop table t3;
+
+#SQL[@95,N13]Result[]
 drop table t4;
+
+#SQL[@98,N23]Result[]
 drop table if exists t5;
+
+#SQL[@99,N32]Result[]
 create table t5(
 a int,
 b text
 );
+
+#SQL[@104,N32]Result[]
 insert into t5 values (12, 'aa');
+
+#SQL[@105,N32]Result[]
 insert into t5 values (20, 'bb');
+
+#SQL[@106,N32]Result[]
 insert into t5 values (18, 'aa');
+
+#SQL[@107,N32]Result[]
 insert into t5 values (15, 'bb');
+
+#SQL[@109,N23]Result[]
 drop table if exists t6;
+
+#SQL[@110,N48]Result[]
 create table t6 (
 col1 varchar(100),
 col2 text
 );
+
+#SQL[@115,N34]Result[]
 insert into t6 values ('aa', '11');
+
+#SQL[@116,N34]Result[]
 insert into t6 values ('bb', '22');
+
+#SQL[@117,N34]Result[]
 insert into t6 values ('cc', '33');
+
+#SQL[@118,N34]Result[]
 insert into t6 values ('dd', '44');
+
+#SQL[@120,N42]Error[42]
 select a from t5 union select col1 from t6;
 invalid argument cast to int, bad value aa
+
+#SQL[@121,N42]Result[1, 2, 2, 2, 2, 2, 2, 2, 2]
 select a from t5 union select col2 from t6;
 a
 12
@@ -217,12 +338,16 @@ a
 22
 33
 44
+
+#SQL[@122,N42]Result[1, 2, 2, 2, 2]
 select b from t5 union select col1 from t6;
 b
 aa
 bb
 cc
 dd
+
+#SQL[@123,N42]Result[1, 2, 2, 2, 2, 2, 2]
 select b from t5 union select col2 from t6;
 b
 aa
@@ -231,385 +356,598 @@ bb
 22
 33
 44
+
+#SQL[@126,N13]Result[]
 drop table t5;
+
+#SQL[@127,N13]Result[]
 drop table t6;
+
+#SQL[@130,N23]Result[]
 drop table if exists t7;
+
+#SQL[@131,N56]Result[]
 CREATE TABLE t7 (
 a int not null,
 b char (10) not null
 );
+
+#SQL[@136,N52]Result[]
 insert into t7 values(1,'a'),(2,'b'),(3,'c'),(3,'c');
+
+#SQL[@138,N47]Result[8, 8, 8]
 select * from t7 union select * from t7 limit 2;
-a    b
-1    a
-2    b
+a  ¦  b
+1  ¦  a
+2  ¦  b
+
+#SQL[@140,N57]Result[8, 8, 8, 8]
 select * from (select * from t7 union select * from t7) a;
-a    b
-1    a
-2    b
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+
+#SQL[@142,N61]Result[8, 8, 8, 8, 8, 8, 8, 8, 8]
 select * from (select * from t7 union all select * from t7) a;
-a    b
-1    a
-2    b
-3    c
-3    c
-1    a
-2    b
-3    c
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+
+#SQL[@144,N69]Result[8, 8, 8]
 select * from (select * from t7 union all select * from t7 limit 2) a;
-a    b
-1    a
-2    b
+a  ¦  b
+1  ¦  a
+2  ¦  b
+
+#SQL[@145,N65]Result[8, 8, 8]
 select * from (select * from t7 union select * from t7 limit 2) a;
-a    b
-1    a
-2    b
+a  ¦  b
+1  ¦  a
+2  ¦  b
+
+#SQL[@147,N69]Result[8, 8, 8, 8]
 select * from (select * from t7 union select * from t7 where a > 1) a;
-a    b
-1    a
-2    b
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+
+#SQL[@148,N73]Result[8, 8, 8, 8, 8, 8, 8, 8]
 select * from (select * from t7 union all select * from t7 where a > 1) a;
-a    b
-1    a
-2    b
-3    c
-3    c
-2    b
-3    c
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+2  ¦  b
+3  ¦  c
+3  ¦  c
+
+#SQL[@150,N69]Result[8, 8, 8, 8]
 select * from (select * from t7 union select * from t7 where a < 1) a;
-a    b
-1    a
-2    b
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+
+#SQL[@151,N73]Result[8, 8, 8, 8, 8]
 select * from (select * from t7 union all select * from t7 where a < 1) a;
-a    b
-1    a
-2    b
-3    c
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+
+#SQL[@153,N81]Result[8, 8, 8]
 select * from (select * from t7 where a > 1 union select * from t7 where a < 1) a;
-a    b
-2    b
-3    c
+a  ¦  b
+2  ¦  b
+3  ¦  c
+
+#SQL[@154,N85]Result[8, 8, 8, 8]
 select * from (select * from t7 where a > 1 union all select * from t7 where a < 1) a;
-a    b
-2    b
-3    c
-3    c
+a  ¦  b
+2  ¦  b
+3  ¦  c
+3  ¦  c
+
+#SQL[@156,N82]Result[8, 8, 8, 8]
 select * from (select * from t7 where a >=1 union select * from t7 where a <= 1) a;
-a    b
-1    a
-2    b
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+
+#SQL[@157,N86]Result[8, 8, 8, 8, 8, 8]
 select * from (select * from t7 where a >=1 union all select * from t7 where a <= 1) a;
-a    b
-1    a
-2    b
-3    c
-3    c
-1    a
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+1  ¦  a
+
+#SQL[@159,N94]Result[8, 8, 8, 8]
 select * from (select * from t7 where a between 1 and 3 union select * from t7 where a <= 1) a;
-a    b
-1    a
-2    b
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+
+#SQL[@160,N98]Result[8, 8, 8, 8, 8, 8]
 select * from (select * from t7 where a between 1 and 3 union all select * from t7 where a <= 1) a;
-a    b
-1    a
-2    b
-3    c
-3    c
-1    a
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+1  ¦  a
+
+#SQL[@162,N109]Result[8, 8, 8, 8, 8]
 select * from (select * from t7 where a between 1 and 3 union all select * from t7 where a between 3 and 1) a;
-a    b
-1    a
-2    b
-3    c
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+
+#SQL[@163,N109]Result[8, 8, 8, 8, 8]
 select * from (select * from t7 where a between 1 and 3 union all select * from t7 where a between 3 and 1) a;
-a    b
-1    a
-2    b
-3    c
-3    c
+a  ¦  b
+1  ¦  a
+2  ¦  b
+3  ¦  c
+3  ¦  c
+
+#SQL[@165,N13]Result[]
 drop table t7;
+
+#SQL[@169,N22]Result[]
 create table t8(a int);
+
+#SQL[@170,N22]Result[]
 create table t9(a int);
+
+#SQL[@171,N23]Result[]
 create table t10(a int);
+
+#SQL[@172,N28]Result[]
 insert into t8 values(1),(1);
+
+#SQL[@173,N28]Result[]
 insert into t9 values(2),(2);
+
+#SQL[@174,N29]Result[]
 insert into t10 values(3),(3);
+
+#SQL[@176,N76]Result[1, 1, 1, 1, 1]
 select * from t8 union distinct select * from t9 union all select * from t10;
 a
-1
+3
+3
 2
-3
-3
+1
+
+#SQL[@178,N81]Result[1, 1, 1, 1]
 select * from t8 union distinct select * from t9 union distinct select * from t10;
 a
+3
 1
 2
-3
+
+#SQL[@180,N94]Result[1, 1, 1, 1, 1]
 select * from (select * from t8 union distinct select * from t9 union all select * from t10) X;
 a
-1
+3
+3
 2
-3
-3
+1
+
+#SQL[@182,N67]Result[1, 1]
 select * from t8 union select * from t9 intersect select * from t10;
 a
 1
+
+#SQL[@183,N63]Result[1, 1, 1]
 select * from t8 union select * from t9 minus select * from t10;
 a
-1
 2
+1
+
+#SQL[@184,N69]Result[]
 (select * from t8 union select * from t9) intersect select * from t10;
-a
+
+#SQL[@185,N65]Result[1, 1, 1]
 (select * from t8 union select * from t9) minus select * from t10;
 a
-1
 2
+1
+
+#SQL[@186,N13]Result[]
 drop table t8;
+
+#SQL[@187,N13]Result[]
 drop table t9;
+
+#SQL[@188,N14]Result[]
 drop table t10;
+
+#SQL[@192,N83]Result[15, 5, 15]
 SELECT 'case+union+test' UNION
 SELECT CASE '1' WHEN '2' THEN 'BUG' ELSE 'nobug' END;
 case+union+test
-case+union+test
 nobug
+case+union+test
+
+#SQL[@195,N82]Result[14, 3, 14]
 select 'case+union+tet' union
 SELECT CASE '1' WHEN '1' THEN 'BUG' ELSE 'nobug' END;
 case+union+tet
-case+union+tet
 BUG
+case+union+tet
+
+#SQL[@198,N33]Error[41]
 SELECT 1, 2 UNION SELECT 'a', 'b';
 invalid argument cast to int, bad value a
+
+#SQL[@202,N39]Result[1, 3, 1]
 select 'a' union select concat('a', -4);
 a
-a
 a-4
+a
+
+#SQL[@203,N41]Result[1, 5, 1]
 select 'a' union select concat('a', -4.5);
 a
-a
 a-4.5
+a
+
+#SQL[@204,N45]Result[1, 1, 3]
 select 'a' union select concat('a', -(4 + 1));
 a
 a
 a-5
+
+#SQL[@205,N42]Result[1, 3, 1]
 select 'a' union select concat('a', 4 - 5);
 a
-a
 a-1
+a
+
+#SQL[@206,N41]Result[1, 3, 1]
 select 'a' union select concat('a', -'3');
 a
-a
 a-3
+a
+
+#SQL[@207,N51]Result[1, 4, 1]
 select 'a' union select concat('a', -concat('3',4));
 a
-a
 a-34
+a
+
+#SQL[@208,N39]Result[1, 2, 1]
 select 'a' union select concat('a', -0);
 a
-a
 a0
+a
+
+#SQL[@209,N41]Result[1, 1, 4]
 select 'a' union select concat('a', -0.0);
 a
 a
 a0.0
+
+#SQL[@210,N44]Result[1, 7, 1]
 select 'a' union select concat('a', -0.0000);
 a
-a
 a0.0000
+a
+
+#SQL[@212,N135]Result[84, 2, 2]
 select concat((select x from (select 'a' as x) as t1 ),
 (select y from (select 'b' as y) as t2 )) from (select 1 union select 2 )
 as t3;
-concat((select x from (select 'a' as x) as t1 ), (select y from (select 'b' as y) as t2 ))
+concat((select x from (select a as x) as t1), (select y from (select b as y) as t2))
 ab
 ab
+
+#SQL[@216,N24]Result[]
 drop table if exists t11;
+
+#SQL[@217,N31]Result[]
 create table t11(f1 varchar(6));
+
+#SQL[@218,N33]Result[]
 insert into t11 values ("123456");
+
+#SQL[@219,N59]Result[1, 1, 7]
 select concat(f1, 2) a from t11 union select 'x' a from t11;
 a
-1234562
 x
+1234562
+
+#SQL[@220,N14]Result[]
 drop table t11;
+
+#SQL[@224,N24]Result[]
 drop table if exists t12;
+
+#SQL[@225,N78]Result[]
 create table t12 (EVENT_ID int auto_increment primary key,  LOCATION char(20));
+
+#SQL[@226,N67]Result[]
 insert into t12 values (NULL,"Mic-4"),(NULL,"Mic-5"),(NULL,"Mic-6");
+
+#SQL[@227,N94]Result[8, 5, 5]
+SELECT LOCATION FROM t12 WHERE EVENT_ID=2 UNION ALL  SELECT LOCATION FROM t12 WHERE EVENT_ID=3;
+LOCATION
+Mic-6
+Mic-5
+
+#SQL[@228,N94]Result[8, 5, 5]
 SELECT LOCATION FROM t12 WHERE EVENT_ID=2 UNION ALL  SELECT LOCATION FROM t12 WHERE EVENT_ID=3;
 LOCATION
 Mic-5
 Mic-6
+
+#SQL[@229,N94]Result[8, 5, 5]
 SELECT LOCATION FROM t12 WHERE EVENT_ID=2 UNION ALL  SELECT LOCATION FROM t12 WHERE EVENT_ID=3;
 LOCATION
-Mic-5
 Mic-6
-SELECT LOCATION FROM t12 WHERE EVENT_ID=2 UNION ALL  SELECT LOCATION FROM t12 WHERE EVENT_ID=3;
-LOCATION
 Mic-5
-Mic-6
+
+#SQL[@230,N14]Result[]
 drop table t12;
+
+#SQL[@234,N24]Result[]
 drop table if exists t13;
+
+#SQL[@235,N36]Result[]
 create table t13 (a int primary key);
+
+#SQL[@236,N26]Result[]
 insert into t13 values (1);
+
+#SQL[@237,N58]Result[]
 select * from t13 where 3 in (select (1+1) union select 1);
-a
+
+#SQL[@238,N58]Result[1, 1]
 select * from t13 where 3 in (select (1+2) union select 1);
 a
 1
+
+#SQL[@239,N82]Result[]
 prepare st_18492 from 'select * from t13 where 3 in (select (1+1) union select 1)';
+
+#SQL[@240,N16]Result[]
 execute st_18492;
-a
+
+#SQL[@242,N82]Result[]
 prepare st_18493 from 'select * from t13 where 3 in (select (2+1) union select 1)';
+
+#SQL[@243,N16]Result[1, 1]
 execute st_18493;
 a
 1
+
+#SQL[@245,N27]Result[]
 deallocate prepare st_18492;
+
+#SQL[@246,N27]Result[]
 deallocate prepare st_18493;
+
+#SQL[@247,N14]Result[]
 drop table t13;
+
+#SQL[@249,N108]Error[78]
 select cast(a as DECIMAL(3,2))
-from (select 11.1234 as a
-UNION select 11.1234
-UNION select 11.1234
-) t;
+ from (select 11.1234 as a
+  UNION select 11.1234
+  UNION select 11.1234
+ ) t;
 invalid input: 11.1234 beyond the range, can't be converted to Decimal64(3,2).
+
+#SQL[@255,N24]Result[]
 drop table if exists t14;
+
+#SQL[@256,N208]Result[]
 CREATE TABLE t14 (
-`pseudo` char(35) NOT NULL default '',
-`pseudo1` char(35) NOT NULL default '',
-`same` tinyint(1) unsigned NOT NULL default '1',
-PRIMARY KEY  (`pseudo1`),
-KEY `pseudo` (`pseudo`)
+  `pseudo` char(35) NOT NULL default '',
+  `pseudo1` char(35) NOT NULL default '',
+  `same` tinyint(1) unsigned NOT NULL default '1',
+  PRIMARY KEY  (`pseudo1`),
+  KEY `pseudo` (`pseudo`)
 );
+
+#SQL[@264,N111]Result[]
 INSERT INTO t14 (pseudo,pseudo1,same) VALUES
 ('joce', 'testtt', 1),('joce', 'tsestset', 1),('dekad', 'joce', 1);
+
+#SQL[@267,N92]Result[6, 4, 5]
 SELECT pseudo FROM t14 WHERE pseudo1='joce' UNION SELECT pseudo FROM t14 WHERE pseudo='joce';
 pseudo
-dekad
 joce
+dekad
+
+#SQL[@268,N94]Result[7, 6, 8, 4]
 SELECT pseudo1 FROM t14 WHERE pseudo1='joce' UNION SELECT pseudo1 FROM t14 WHERE pseudo='joce';
 pseudo1
-joce
 testtt
 tsestset
+joce
+
+#SQL[@269,N116]Result[29, 25, 23, 22]
 SELECT * FROM t14 WHERE pseudo1='joce' UNION SELECT * FROM t14 WHERE pseudo='joce' order by pseudo desc,pseudo1 desc;
-pseudo    pseudo1    same
-joce    tsestset    1
-joce    testtt    1
-dekad    joce    1
+pseudo  ¦  pseudo1  ¦  same
+joce  ¦  tsestset  ¦  1
+joce  ¦  testtt  ¦  1
+dekad  ¦  joce  ¦  1
+
+#SQL[@270,N93]Result[7, 5, 6, 8]
 SELECT pseudo1 FROM t14 WHERE pseudo='joce' UNION SELECT pseudo FROM t14 WHERE pseudo1='joce';
 pseudo1
+dekad
 testtt
 tsestset
-dekad
+
+#SQL[@271,N97]Result[7, 6, 8, 5]
 SELECT pseudo1 FROM t14 WHERE pseudo='joce' UNION ALL SELECT pseudo FROM t14 WHERE pseudo1='joce';
 pseudo1
 testtt
 tsestset
 dekad
+
+#SQL[@273,N14]Result[]
 drop table t14;
+
+#SQL[@277,N24]Result[]
 drop table if exists t15;
+
+#SQL[@279,N51]Result[]
 CREATE TABLE t15 (
 id int(3) unsigned default '0'
 );
+
+#SQL[@283,N32]Result[]
 INSERT INTO t15 (id) VALUES("1");
+
+#SQL[@285,N24]Result[]
 drop table if exists t16;
+
+#SQL[@286,N145]Result[]
 CREATE TABLE t16 (
 id int(3) unsigned default '0',
 id_master int(5) default '0',
 text15 varchar(5) default NULL,
 text16 varchar(5) default NULL
 );
+
+#SQL[@293,N80]Result[]
 INSERT INTO t16 (id, id_master, text15, text16) VALUES("1", "1", "foo1", "bar1");
+
+#SQL[@294,N80]Result[]
 INSERT INTO t16 (id, id_master, text15, text16) VALUES("2", "1", "foo2", "bar2");
+
+#SQL[@295,N78]Result[]
 INSERT INTO t16 (id, id_master, text15, text16) VALUES("3", "1", NULL, "bar3");
+
+#SQL[@296,N80]Result[]
 INSERT INTO t16 (id, id_master, text15, text16) VALUES("4", "1", "foo4", "bar4");
+
+#SQL[@298,N161]Result[41, 29, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, NULL AS text15, 'ABCDE' AS text16
 UNION
 SELECT id_master, t16.id, text15, text16 FROM t15 LEFT JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    null    ABCDE
-1    4    foo4    bar4
-1    3    null    bar3
-1    2    foo2    bar2
-1    1    foo1    bar1
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  null  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@302,N165]Result[41, 29, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, NULL AS text15, 'ABCDE' AS text16
 UNION ALL
 SELECT id_master, t16.id, text15, text16 FROM t15 LEFT JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    null    ABCDE
-1    4    foo4    bar4
-1    3    null    bar3
-1    2    foo2    bar2
-1    1    foo1    bar1
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  null  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@307,N164]Result[41, 30, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, 'ABCDE' AS text15, 'ABCDE' AS text16
 UNION
 SELECT id_master, t16.id, text15, text16 FROM t15 LEFT JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    ABCDE    ABCDE
-1    4    foo4    bar4
-1    3    null    bar3
-1    2    foo2    bar2
-1    1    foo1    bar1
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  ABCDE  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@311,N166]Result[41, 30, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, 'ABCDE' AS text15, 'ABCDE' AS text16
 UNION
 SELECT id_master, t16.id, text15, text16 FROM t15 right join  t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    ABCDE    ABCDE
-1    1    foo1    bar1
-1    2    foo2    bar2
-1    3    null    bar3
-1    4    foo4    bar4
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  ABCDE  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@315,N159]Result[41, 30, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, 'ABCDE' AS text15, 'ABCDE' AS text16
 UNION
 SELECT id_master, t16.id, text15, text16 FROM t15 JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    ABCDE    ABCDE
-1    1    foo1    bar1
-1    2    foo2    bar2
-1    3    null    bar3
-1    4    foo4    bar4
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  ABCDE  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@319,N168]Result[41, 30, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, 'ABCDE' AS text15, 'ABCDE' AS text16
 UNION ALL
 SELECT id_master, t16.id, text15, text16 FROM t15 LEFT JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    ABCDE    ABCDE
-1    4    foo4    bar4
-1    3    null    bar3
-1    2    foo2    bar2
-1    1    foo1    bar1
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  ABCDE  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@323,N169]Result[41, 30, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, 'ABCDE' AS text15, 'ABCDE' AS text16
 UNION ALL
 SELECT id_master, t16.id, text15, text16 FROM t15 right JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    ABCDE    ABCDE
-1    1    foo1    bar1
-1    2    foo2    bar2
-1    3    null    bar3
-1    4    foo4    bar4
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  ABCDE  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@327,N164]Result[41, 30, 28, 28, 28, 28]
 SELECT 1 AS id_master, 1 AS id, 'ABCDE' AS text15, 'ABCDE' AS text16
 UNION ALL
 SELECT id_master, t16.id, text15, text16 FROM t15  JOIN t16 ON t15.id = t16.id_master;
-id_master    id    text15    text16
-1    1    ABCDE    ABCDE
-1    1    foo1    bar1
-1    2    foo2    bar2
-1    3    null    bar3
-1    4    foo4    bar4
+id_master  ¦  id  ¦  text15  ¦  text16
+1  ¦  1  ¦  ABCDE  ¦  ABCDE
+1  ¦  1  ¦  foo1  ¦  bar1
+1  ¦  2  ¦  foo2  ¦  bar2
+1  ¦  3  ¦  null  ¦  bar3
+1  ¦  4  ¦  foo4  ¦  bar4
+
+#SQL[@331,N14]Result[]
 drop table t15;
+
+#SQL[@332,N14]Result[]
 drop table t16;
+
+#SQL[@335,N24]Result[]
 drop table if exists t17;
+
+#SQL[@336,N169]Result[]
 create table t17 (
 RID int(11) not null default '0',
 IID int(11) not null default '0',
 nada varchar(50)  not null,
 NAME varchar(50) not null,
 PHONE varchar(50) not null);
+
+#SQL[@343,N329]Result[]
 insert into t17 ( RID,IID,nada,NAME,PHONE) values
 (1, 1, 'main', 'a', '111'),
 (2, 1, 'main', 'b', '222'),
@@ -621,32 +959,41 @@ insert into t17 ( RID,IID,nada,NAME,PHONE) values
 (8, 2, 'main', 'e', '555'),
 (9, 2, 'main', 'f', '666'),
 (10, 2, 'main', 'g', '777');
+
+#SQL[@355,N323]Result[36, 30, 30, 26, 30, 30]
 select A.NAME, A.PHONE, B.NAME, B.PHONE from t17 A
 left join t17 B on A.NAME = B.NAME and B.IID = 2 where A.IID = 1 and (A.PHONE <> B.PHONE or B.NAME is null)
 union
 select A.NAME, A.PHONE, B.NAME, B.PHONE from t17 B left join t17 A on B.NAME = A.NAME and A.IID = 1
 where B.IID = 2 and (A.PHONE <> B.PHONE or A.NAME is null);
-NAME    PHONE    NAME    PHONE
-a    111    null    null
-b    222    null    null
-d    444    d    454
-null    null    f    666
-null    null    g    777
+NAME  ¦  PHONE  ¦  NAME  ¦  PHONE
+a  ¦  111  ¦  null  ¦  null
+b  ¦  222  ¦  null  ¦  null
+d  ¦  444  ¦  d  ¦  454
+null  ¦  null  ¦  f  ¦  666
+null  ¦  null  ¦  g  ¦  777
+
+#SQL[@361,N327]Result[36, 26, 30, 30, 30, 30, 26]
 select A.NAME, A.PHONE, B.NAME, B.PHONE from t17 A
 left join t17 B on A.NAME = B.NAME and B.IID = 2 where A.IID = 1 and (A.PHONE <> B.PHONE or B.NAME is null)
 union all
 select A.NAME, A.PHONE, B.NAME, B.PHONE from t17 B left join t17 A on B.NAME = A.NAME and A.IID = 1
 where B.IID = 2 and (A.PHONE <> B.PHONE or A.NAME is null);
-NAME    PHONE    NAME    PHONE
-a    111    null    null
-b    222    null    null
-d    444    d    454
-d    444    d    454
-null    null    f    666
-null    null    g    777
+NAME  ¦  PHONE  ¦  NAME  ¦  PHONE
+d  ¦  444  ¦  d  ¦  454
+null  ¦  null  ¦  f  ¦  666
+null  ¦  null  ¦  g  ¦  777
+a  ¦  111  ¦  null  ¦  null
+b  ¦  222  ¦  null  ¦  null
+d  ¦  444  ¦  d  ¦  454
+
+#SQL[@367,N14]Result[]
 drop table t17;
+
+#SQL[@368,N149]Result[15, 10, 10, 10]
 select * from (select 'tb1' as name, 1 as count union all select 'tb3' as name, 3 as count union all select 'tb2' as name, 2 as count) order by count;
-name    count
-tb1    1
-tb2    2
-tb3    3
+name  ¦  count
+tb1  ¦  1
+tb2  ¦  2
+tb3  ¦  3
+

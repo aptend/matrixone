@@ -1,12 +1,22 @@
+#SQL[@1,N27]Result[]
 drop database if exists db1;
+
+#SQL[@3,N19]Result[]
 create database db1;
+
+#SQL[@4,N7]Result[]
 use db1;
+
+#SQL[@5,N22]Result[]
 drop table if exists t;
+
+#SQL[@6,N22]Result[]
 create table t (a int);
+
+#SQL[@7,N44]Result[]
 insert into t values (1), (2), (3), (4), (5);
-select mo_ctl('dn','checkpoint','');
-mo_ctl(dn, checkpoint, )
-{\n  "method": "Checkpoint",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+
+#SQL[@12,N15]Result[1, 1, 1, 1, 1, 1]
 select * from t;
 a
 1
@@ -14,21 +24,42 @@ a
 3
 4
 5
+
+#SQL[@13,N34]Result[]
 delete from t where a in (1, 2, 3);
-select mo_ctl('dn','globalcheckpoint','');
-mo_ctl(dn, GlobalCheckpoint, )
-{\n  "method": "GlobalCheckpoint",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+
+#SQL[@18,N15]Result[1, 1, 1]
 select * from t;
 a
 4
 5
+
+#SQL[@21,N22]Result[]
 drop table if exists t;
+
+#SQL[@22,N22]Result[]
 create table t (a int);
+
+#SQL[@23,N44]Result[]
 insert into t values (1), (2), (3), (4), (5);
+
+#SQL[@25,N35]Result[24, 84]
 select mo_ctl('dn','checkpoint','');
 mo_ctl(dn, checkpoint, )
-{\n  "method": "Checkpoint",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Checkpoint",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@26,N42]Result[]
 create snapshot snapshot01 for account sys;
+
+#SQL[@27,N15]Result[1, 1, 1, 1, 1, 1]
 select * from t;
 a
 1
@@ -36,18 +67,38 @@ a
 3
 4
 5
+
+#SQL[@28,N25]Result[]
 delete from t where a = 2;
+
+#SQL[@29,N24]Result[]
 insert into t values (6);
+
+#SQL[@30,N25]Result[]
 delete from t where a = 3;
+
+#SQL[@32,N35]Result[24, 84]
 select mo_ctl('dn','checkpoint','');
 mo_ctl(dn, checkpoint, )
-{\n  "method": "Checkpoint",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Checkpoint",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@33,N15]Result[1, 1, 1, 1, 1]
 select * from t;
 a
 1
 4
 5
 6
+
+#SQL[@34,N41]Result[1, 1, 1, 1, 1, 1]
 select * from t {snapshot = 'snapshot01'};
 a
 1
@@ -55,15 +106,43 @@ a
 3
 4
 5
+
+#SQL[@36,N22]Result[]
 drop table if exists t;
+
+#SQL[@37,N22]Result[]
 create table t (a int);
+
+#SQL[@38,N44]Result[]
 insert into t values (1), (2), (3), (4), (5);
+
+#SQL[@40,N41]Result[30, 90]
 select mo_ctl('dn','globalcheckpoint','');
-mo_ctl(dn, GlobalCheckpoint, )
-{\n  "method": "GlobalCheckpoint",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+mo_ctl(dn, globalcheckpoint, )
+{
+  "method": "GlobalCheckpoint",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@42,N35]Result[24, 84]
 select mo_ctl('dn','checkpoint','');
 mo_ctl(dn, checkpoint, )
-{\n  "method": "Checkpoint",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Checkpoint",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@43,N15]Result[1, 1, 1, 1, 1, 1]
 select * from t;
 a
 1
@@ -71,6 +150,8 @@ a
 3
 4
 5
+
+#SQL[@44,N41]Result[1, 1, 1, 1, 1, 1]
 select * from t {snapshot = 'snapshot01'};
 a
 1
@@ -78,11 +159,36 @@ a
 3
 4
 5
+
+#SQL[@45,N24]Result[]
 drop snapshot snapshot01;
+
+#SQL[@48,N43]Result[32, 85]
 select mo_ctl('dn','DiskCleaner','stop_gc');
-mo_ctl('dn','DiskCleaner','stop_gc')
-{\n  "method": "DiskCleaner",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+mo_ctl(dn, DiskCleaner, stop_gc)
+{
+  "method": "DiskCleaner",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@50,N44]Result[33, 85]
 select mo_ctl('dn','DiskCleaner','start_gc');
 mo_ctl(dn, DiskCleaner, start_gc)
-{\n  "method": "DiskCleaner",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "DiskCleaner",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@51,N27]Result[]
 drop database if exists db1;
+

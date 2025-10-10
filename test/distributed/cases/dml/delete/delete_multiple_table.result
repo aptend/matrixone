@@ -1,179 +1,313 @@
+#SQL[@7,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@8,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@9,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@10,N23]Result[]
 DROP TABLE IF EXISTS t4;
+
+#SQL[@12,N101]Result[]
 CREATE TABLE t1(
-id VARCHAR(10) PRIMARY KEY,
-name VARCHAR(20)
+                   id VARCHAR(10) PRIMARY KEY,
+                   name VARCHAR(20)
 );
+
+#SQL[@16,N87]Result[]
 CREATE TABLE t2(
-id VARCHAR(10),
-sex VARCHAR(4)
+                   id VARCHAR(10),
+                   sex VARCHAR(4)
 );
+
+#SQL[@20,N84]Result[]
 CREATE TABLE t3(
-name VARCHAR(20),
-score INT
+                   name VARCHAR(20),
+                   score INT
 );
+
+#SQL[@24,N90]Result[]
 CREATE TABLE t4(
-id VARCHAR(10),
-class VARCHAR(10)
+                   id VARCHAR(10),
+                   class VARCHAR(10)
 );
+
+#SQL[@29,N71]Result[]
 INSERT INTO t1 VALUES('1','pet'), ('2','cat'), ('3','dog'), ('4','pig');
+
+#SQL[@30,N64]Result[]
 INSERT INTO t2 VALUES('1','M'), ('2','F'), ('4','F'), ('6',NULL);
+
+#SQL[@31,N73]Result[]
 INSERT INTO t3 VALUES('pet',101), ('dog',202), ('pig',303), ('dokey',505);
+
+#SQL[@32,N67]Result[]
 INSERT INTO t4 VALUES('2','c2'), ('4','c4'), ('6','c5'), ('7','c1');
+
+#SQL[@33,N16]Result[12, 10, 10, 10, 10]
 SELECT * FROM t1;
-id    name
-1    pet
-2    cat
-3    dog
-4    pig
+id  ¦  name
+1  ¦  pet
+2  ¦  cat
+3  ¦  dog
+4  ¦  pig
+
+#SQL[@34,N67]Result[]
 DELETE t1 FROM t1 LEFT JOIN t2 ON t1.id = t2.id WHERE t2.id IS NULL;
+
+#SQL[@35,N16]Result[12, 10, 10, 10]
 SELECT * FROM t1;
-id    name
-1    pet
-2    cat
-4    pig
+id  ¦  name
+1  ¦  pet
+2  ¦  cat
+4  ¦  pig
+
+#SQL[@36,N16]Result[11, 8, 8, 8, 11]
 SELECT * FROM t2;
-id    sex
-1    M
-2    F
-4    F
-6    null
+id  ¦  sex
+1  ¦  M
+2  ¦  F
+4  ¦  F
+6  ¦  null
+
+#SQL[@37,N69]Result[]
 DELETE t2 FROM t2 LEFT JOIN t1 ON t2.id = t1.id WHERE t2.sex = 'NULL';
+
+#SQL[@38,N16]Result[11, 8, 8, 8, 11]
 SELECT * FROM t2;
-id    sex
-1    M
-2    F
-4    F
-6    null
+id  ¦  sex
+1  ¦  M
+2  ¦  F
+4  ¦  F
+6  ¦  null
+
+#SQL[@39,N65]Result[]
 DELETE t2 FROM t2 LEFT JOIN t1 ON t2.id = t1.id WHERE t2.sex = '';
+
+#SQL[@40,N16]Result[11, 8, 8, 8, 11]
 SELECT * FROM t2;
-id    sex
-1    M
-2    F
-4    F
-6    null
+id  ¦  sex
+1  ¦  M
+2  ¦  F
+4  ¦  F
+6  ¦  null
+
+#SQL[@41,N16]Result[13, 9, 9, 9, 9]
 SELECT * FROM t4;
-id    class
-2    c2
-4    c4
-6    c5
-7    c1
+id  ¦  class
+2  ¦  c2
+4  ¦  c4
+6  ¦  c5
+7  ¦  c1
+
+#SQL[@42,N76]Result[]
 DELETE t4 FROM t4 INNER JOIN t1 ON t4.id = t1.id WHERE t4.id BETWEEN 1 AND 3;
+
+#SQL[@43,N16]Result[13, 9, 9, 9]
 SELECT * FROM t4;
-id    class
-4    c4
-6    c5
-7    c1
+id  ¦  class
+4  ¦  c4
+6  ¦  c5
+7  ¦  c1
+
+#SQL[@44,N16]Result[15, 12, 12, 12, 14]
 SELECT * FROM t3;
-name    score
-pet    101
-dog    202
-pig    303
-dokey    505
+name  ¦  score
+pet  ¦  101
+dog  ¦  202
+pig  ¦  303
+dokey  ¦  505
+
+#SQL[@45,N73]Result[]
 DELETE t3 FROM t3 RIGHT JOIN t1 ON t1.name = t3.name WHERE t3.score < 202;
+
+#SQL[@46,N16]Result[15, 12, 12, 14]
 SELECT * FROM t3;
-name    score
-dog    202
-pig    303
-dokey    505
+name  ¦  score
+dog  ¦  202
+pig  ¦  303
+dokey  ¦  505
+
+#SQL[@47,N67]Result[]
 DELETE t1,t2 FROM t1 LEFT JOIN t2 ON t1.id = t2.id WHERE t1.id = 25;
+
+#SQL[@48,N58]Result[]
 DELETE t1,t2 FROM t1,t2 WHERE t1.id = t2.id AND t1.id = 25;
+
+#SQL[@49,N55]Result[]
 DELETE t1 FROM t1,t2 WHERE t1.id = t2.id AND t1.id = 25;
+
+#SQL[@50,N55]Result[]
 DELETE t2 FROM t1,t2 WHERE t1.id = t2.id AND t1.id = 25;
+
+#SQL[@51,N79]Result[]
 DELETE t2 FROM t1,t2,t3 WHERE t1.id = t2.id OR t1.name = t3.name AND t1.id = 25;
+
+#SQL[@52,N79]Result[]
 DELETE t2 FROM t1,t2,t3,t4 WHERE t1.id = t2.id AND t1.id = t4.id AND t1.id = 25;
+
+#SQL[@53,N16]Result[11, 11]
 SELECT * FROM t2;
-id    sex
-6    null
+id  ¦  sex
+6  ¦  null
+
+#SQL[@56,N73]Result[]
 DELETE FROM t1 USING t1 LEFT JOIN t2 ON t1.id = t2.id WHERE t2.id IS NULL;
+
+#SQL[@57,N16]Result[]
 SELECT * FROM t1;
-id    name
+
+#SQL[@58,N73]Error[55]
 DELETE FROM t3 USING t1 LEFT JOIN t2 ON t1.id = t2.id WHERE t2.id IS NULL;
 invalid input: missing FROM-clause entry for table 't3'
+
+#SQL[@61,N104]Error[46]
 DELETE t1,t2 FROM table_name AS t1 LEFT JOIN table2_name AS t2 ON t1.id = t2.id WHERE table_name.id = 25;
 no such table delete_multiple_table.table_name
+
+#SQL[@63,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@64,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@65,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@66,N23]Result[]
 DROP TABLE IF EXISTS t4;
+
+#SQL[@68,N97]Result[]
 CREATE TABLE t1(
-t1_id INT NOT NULL PRIMARY KEY,
-t1_o INT
+                   t1_id INT NOT NULL PRIMARY KEY,
+                   t1_o INT
 );
+
+#SQL[@72,N127]Result[]
 CREATE TABLE t2(
-t2_id INT NOT NULL PRIMARY KEY,
-t1_id INT,
-t2_o INT
+                   t2_id INT NOT NULL PRIMARY KEY,
+                   t1_id INT,
+                   t2_o INT
 );
+
+#SQL[@77,N127]Result[]
 CREATE TABLE t3(
-t3_id INT NOT NULL PRIMARY KEY,
-t2_id INT,
-t3_o INT
+                   t3_id INT NOT NULL PRIMARY KEY,
+                   t2_id INT,
+                   t3_o INT
 );
+
+#SQL[@83,N46]Result[]
 INSERT INTO t1 VALUES(111,2), (222,3), (333,4);
+
+#SQL[@84,N59]Result[]
 INSERT INTO t2 VALUES(444,111,23), (555,222,34), (666,7,45);
+
+#SQL[@85,N60]Result[]
 INSERT INTO t3 VALUES(777,444,86), (888,666,56), (999,46,31);
+
+#SQL[@86,N16]Result[26, 20, 20, 19]
 SELECT * FROM t3;
-t3_id    t2_id    t3_o
-777    444    86
-888    666    56
-999    46    31
+t3_id  ¦  t2_id  ¦  t3_o
+777  ¦  444  ¦  86
+888  ¦  666  ¦  56
+999  ¦  46  ¦  31
+
+#SQL[@87,N112]Result[]
 DELETE t3 FROM t1 INNER JOIN t2 ON t1.t1_id = t2.t1_id INNER JOIN t3 ON t2.t2_id = t3.t3_id WHERE t1.t1_id = 222;
+
+#SQL[@88,N16]Result[26, 20, 20, 19]
 SELECT * FROM t3;
-t3_id    t2_id    t3_o
-777    444    86
-888    666    56
-999    46    31
+t3_id  ¦  t2_id  ¦  t3_o
+777  ¦  444  ¦  86
+888  ¦  666  ¦  56
+999  ¦  46  ¦  31
+
+#SQL[@89,N118]Result[]
 DELETE t1,t2,t3 FROM t1 INNER JOIN t2 ON t1.t1_id = t2.t1_id INNER JOIN t3 ON t2.t2_id = t3.t2_id WHERE t1.t1_id = 111;
+
+#SQL[@90,N16]Result[15, 10, 10]
 SELECT * FROM t1;
-t1_id    t1_o
-222    3
-333    4
+t1_id  ¦  t1_o
+222  ¦  3
+333  ¦  4
+
+#SQL[@91,N16]Result[26, 20, 18]
 SELECT * FROM t2;
-t2_id    t1_id    t2_o
-555    222    34
-666    7    45
+t2_id  ¦  t1_id  ¦  t2_o
+555  ¦  222  ¦  34
+666  ¦  7  ¦  45
+
+#SQL[@92,N16]Result[26, 20, 19]
 SELECT * FROM t3;
-t3_id    t2_id    t3_o
-888    666    56
-999    46    31
+t3_id  ¦  t2_id  ¦  t3_o
+888  ¦  666  ¦  56
+999  ¦  46  ¦  31
+
+#SQL[@94,N117]Result[]
 DELETE t1,t2,t3 FROM t1 LEFT JOIN t2 ON t1.t1_id = t2.t1_id RIGHT JOIN t3 ON t3.t2_id = t2.t2_id WHERE t2.t2_id = 555;
+
+#SQL[@96,N118]Result[]
 DELETE t1,t2,t3 FROM t1 RIGHT JOIN t2 ON t1.t1_id = t2.t1_id RIGHT JOIN t3 ON t3.t2_id = t2.t2_id WHERE t2.t2_id = 555;
-DELETE t1,t2,t3 FROM t1 RIGHT JOIN t2 ON t1.t1_id = t2.t1_id LEFT JOIN t3 ON t3.t2_id = t2.t2_id WHERE t2.t2_id = 555;
-[unknown result because it is related to issue#5219]
-DELETE t1,t2,t3 FROM t1 LEFT JOIN t2 ON t1.t1_id = t2.t1_id LEFT JOIN t3 ON t3.t2_id = t2.t2_id WHERE t2.t2_id = 555;
-[unknown result because it is related to issue#5219]
+
+#SQL[@103,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@104,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@105,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@107,N122]Result[]
 CREATE TABLE t1(
-a INT NOT NULL PRIMARY KEY,
-b DATE,
-c DATETIME
+                   a INT NOT NULL PRIMARY KEY,
+                   b DATE,
+                   c DATETIME
 );
+
+#SQL[@112,N90]Result[]
 CREATE TABLE t2(
-a INT NOT NULL PRIMARY KEY,
-b INT
+                   a INT NOT NULL PRIMARY KEY,
+                   b INT
 );
+
+#SQL[@116,N100]Result[]
 CREATE TABLE t3(
-a VARCHAR(10) NOT NULL PRIMARY KEY,
-b FLOAT
+                   a VARCHAR(10) NOT NULL PRIMARY KEY,
+                   b FLOAT
 );
+
+#SQL[@120,N98]Result[]
 CREATE TABLE t4(
-a CHAR(10) NOT NULL PRIMARY KEY,
-b DOUBLE
+                   a CHAR(10) NOT NULL PRIMARY KEY,
+                   b DOUBLE
 );
+
+#SQL[@124,N98]Result[]
 CREATE TABLE t5(
-a DOUBLE NOT NULL PRIMARY KEY,
-b SMALLINT
+                   a DOUBLE NOT NULL PRIMARY KEY,
+                   b SMALLINT
 );
+
+#SQL[@129,N139]Result[]
 INSERT INTO t1 VALUES (1,'2020-06-01','2023-04-05 13:16:46'), (2,'2019-04-19','2021-08-04 16:18:32'),(4,'2028-04-19','2021-08-04 16:18:32');
+
+#SQL[@130,N47]Result[]
 INSERT INTO t2 VALUES (1,897),(3,7984),(4,4894);
+
+#SQL[@131,N52]Result[]
 INSERT INTO t3 VALUES (3,0.001),(4,9.666),(5,46.321);
+
+#SQL[@132,N50]Result[]
 INSERT INTO t4 VALUES (3,123.11),(4,6464),(9,3641);
+
+#SQL[@133,N40]Result[]
 INSERT INTO t5 VALUES (4,153),(313,1561);
+
+#SQL[@135,N160]Result[]
 DELETE t1,t2,t3,t4,t5
 FROM t1
 INNER JOIN t2 ON t1.a = t2.a
@@ -181,40 +315,79 @@ INNER JOIN t3 ON t2.a = t3.a
 INNER JOIN t4 ON t3.a = t4.a
 INNER JOIN t5 ON t4.a = t5.a
 WHERE t1.a = 1;
+
+#SQL[@143,N54]Result[]
 DELETE t1,t2 FROM t1,t2 WHERE t1.a = t2.a AND t1.a = 1;
+
+#SQL[@144,N16]Result[15, 42, 42]
 SELECT * FROM t1;
-a    b    c
-2    2019-04-19    2021-08-04 16:18:32
-4    2028-04-19    2021-08-04 16:18:32
+a  ¦  b  ¦  c
+2  ¦  2019-04-19  ¦  2021-08-04 16:18:32
+4  ¦  2028-04-19  ¦  2021-08-04 16:18:32
+
+#SQL[@145,N16]Result[8, 11, 11]
 SELECT * FROM t2;
-a    b
-3    7984
-4    4894
+a  ¦  b
+3  ¦  7984
+4  ¦  4894
+
+#SQL[@147,N54]Result[]
 DELETE t1,t5 FROM t1,t5 WHERE t1.a = t5.a AND t1.a = 4;
+
+#SQL[@148,N16]Result[15, 42]
 SELECT * FROM t1;
-a    b    c
-2    2019-04-19    2021-08-04 16:18:32
+a  ¦  b  ¦  c
+2  ¦  2019-04-19  ¦  2021-08-04 16:18:32
+
+#SQL[@149,N16]Result[8, 13]
 SELECT * FROM t5;
-a    b
-313.0    1561
+a  ¦  b
+313  ¦  1561
+
+#SQL[@151,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@152,N23]Result[]
 DROP TABLE IF EXISTS t2;
+
+#SQL[@153,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@154,N23]Result[]
 DROP TABLE IF EXISTS t4;
+
+#SQL[@155,N23]Result[]
 DROP TABLE IF EXISTS t5;
+
+#SQL[@156,N52]Result[]
 CREATE TABLE temp(
-id INT NOT NULL PRIMARY KEY
+    id INT NOT NULL PRIMARY KEY
 );
+
+#SQL[@159,N102]Result[]
 CREATE TABLE t1(
-id INT NOT NULL PRIMARY KEY,
-name VARCHAR(20)
+                   id INT NOT NULL PRIMARY KEY,
+                   name VARCHAR(20)
 );
+
+#SQL[@163,N63]Result[]
 INSERT INTO temp VALUES(1),(2),(3),(4),(5),(6),(7),(8),(9),(10);
+
+#SQL[@164,N54]Result[]
 INSERT INTO t1 VALUES(1,'likk'),(2,'fire'),(3,'wikky');
+
+#SQL[@166,N84]Result[]
 DELETE t1 FROM t1,(SELECT * FROM temp LIMIT 5) AS t WHERE t1.id = t.id AND t1.id > 2;
+
+#SQL[@167,N16]Result[12, 11, 11]
 SELECT * FROM t1;
-id    name
-1    likk
-2    fire
+id  ¦  name
+1  ¦  likk
+2  ¦  fire
+
+#SQL[@169,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@170,N25]Result[]
 DROP TABLE IF EXISTS temp;
+

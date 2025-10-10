@@ -1,10 +1,20 @@
+#SQL[@1,N33]Result[]
 drop database if exists test_show;
+
+#SQL[@2,N25]Result[]
 create database test_show;
+
+#SQL[@4,N81]Result[]
 CREATE TABLE `t1` (
-`abc` varchar(255) NOT NULL,
-KEY `uidx` (`abc`)
+      `abc` varchar(255) NOT NULL,
+      KEY `uidx` (`abc`)
 );
+
+#SQL[@8,N20]Result[233, 117]
 SHOW INDEX FROM `t1`;
-Table    Non_unique    Key_name    Seq_in_index    Column_name    Collation    Cardinality    Sub_part    Packed    Null    Index_type    Comment    Index_comment    Index_params    Visible    Expression
-t1    1    uidx    1    abc    A    0    NULL    NULL                        YES    abc
+Table  ¦  Non_unique  ¦  Key_name  ¦  Seq_in_index  ¦  Column_name  ¦  Collation  ¦  Cardinality  ¦  Sub_part  ¦  Packed  ¦  Null  ¦  Index_type  ¦  Comment  ¦  Index_comment  ¦  Index_params  ¦  Visible  ¦  Expression
+t1  ¦  1  ¦  uidx  ¦  1  ¦  abc  ¦  A  ¦  0  ¦  NULL  ¦  NULL  ¦    ¦    ¦    ¦    ¦    ¦  YES  ¦  abc
+
+#SQL[@10,N33]Result[]
 drop database if exists test_show;
+

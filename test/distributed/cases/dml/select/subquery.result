@@ -1,98 +1,157 @@
+#SQL[@4,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N153]Result[]
 create table t1 (id int,ti tinyint unsigned,si smallint,bi bigint unsigned,fl float,dl double,de decimal,ch char(20),vch varchar(20),dd date,dt datetime);
+
+#SQL[@6,N107]Result[]
 insert into t1 values(1,1,4,3,1113.32,111332,1113.32,'hello','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@7,N106]Result[]
 insert into t1 values(2,2,5,2,2252.05,225205,2252.05,'bye','sub query','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@8,N104]Result[]
 insert into t1 values(3,6,6,3,3663.21,366321,3663.21,'hi','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@9,N117]Result[]
 insert into t1 values(4,7,1,5,4715.22,471522,4715.22,'good morning','my subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@10,N107]Result[]
 insert into t1 values(5,1,2,6,51.26,5126,51.26,'byebye',' is subquery?','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@11,N113]Result[]
 insert into t1 values(6,3,2,1,632.1,6321,632.11,'good night','maybe subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@12,N105]Result[]
 insert into t1 values(7,4,4,3,7443.11,744311,7443.11,'yes','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@13,N119]Result[]
 insert into t1 values(8,7,5,8,8758.00,875800,8758.11,'nice to meet','just subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@14,N112]Result[]
 insert into t1 values(9,8,4,9,9849.312,9849312,9849.312,'see you','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@16,N23]Result[]
 drop table if exists t2;
+
+#SQL[@17,N153]Result[]
 create table t2 (id int,ti tinyint unsigned,si smallint,bi bigint unsigned,fl float,dl double,de decimal,ch char(20),vch varchar(20),dd date,dt datetime);
+
+#SQL[@18,N107]Result[]
 insert into t2 values(1,1,4,3,1113.32,111332,1113.32,'hello','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@19,N106]Result[]
 insert into t2 values(2,2,5,2,2252.05,225205,2252.05,'bye','sub query','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@20,N104]Result[]
 insert into t2 values(3,6,6,3,3663.21,366321,3663.21,'hi','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@21,N117]Result[]
 insert into t2 values(4,7,1,5,4715.22,471522,4715.22,'good morning','my subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@22,N107]Result[]
 insert into t2 values(5,1,2,6,51.26,5126,51.26,'byebye',' is subquery?','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@23,N113]Result[]
 insert into t2 values(6,3,2,1,632.1,6321,632.11,'good night','maybe subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@24,N105]Result[]
 insert into t2 values(7,4,4,3,7443.11,744311,7443.11,'yes','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@25,N119]Result[]
 insert into t2 values(8,7,5,8,8758.00,875800,8758.11,'nice to meet','just subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@26,N112]Result[]
 insert into t2 values(9,8,4,9,9849.312,9849312,9849.312,'see you','subquery','2022-04-28','2022-04-28 22:40:11');
+
+#SQL[@31,N49]Result[83, 123, 129, 121, 132, 127]
 select * from (select * from t1) sub where id > 4;
-id	ti	si	bi	fl	dl	de	ch	vch	dd	dt
-5	1	2	6	51.26	5126.0	51	byebye	 is subquery?	2022-04-28	2022-04-28 22:40:11
-6	3	2	1	632.1	6321.0	632	good night	maybe subquery	2022-04-28	2022-04-28 22:40:11
-7	4	4	3	7443.11	744311.0	7443	yes	subquery	2022-04-28	2022-04-28 22:40:11
-8	7	5	8	8758.0	875800.0	8758	nice to meet	just subquery	2022-04-28	2022-04-28 22:40:11
-9	8	4	9	9849.31	9849312.0	9849	see you	subquery	2022-04-28	2022-04-28 22:40:11
+id  ¦  ti  ¦  si  ¦  bi  ¦  fl  ¦  dl  ¦  de  ¦  ch  ¦  vch  ¦  dd  ¦  dt
+5  ¦  1  ¦  2  ¦  6  ¦  51.26  ¦  5126  ¦  51  ¦  byebye  ¦   is subquery?  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+6  ¦  3  ¦  2  ¦  1  ¦  632.1  ¦  6321  ¦  632  ¦  good night  ¦  maybe subquery  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+7  ¦  4  ¦  4  ¦  3  ¦  7443.11  ¦  744311  ¦  7443  ¦  yes  ¦  subquery  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+8  ¦  7  ¦  5  ¦  8  ¦  8758  ¦  875800  ¦  8758  ¦  nice to meet  ¦  just subquery  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+9  ¦  8  ¦  4  ¦  9  ¦  9849.312  ¦  9849312  ¦  9849  ¦  see you  ¦  subquery  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+
+#SQL[@32,N64]Result[8, 14, 14, 14, 14, 12, 12, 14, 11, 15]
 select ti as t,fl as f from (select * from t1) sub where dl <> 4;
-t	f
-1	1113.32
-2	2252.05
-6	3663.21
-7	4715.22
-1	51.26
-3	632.1
-4	7443.11
-7	8758.0
-8	9849.31
+t  ¦  f
+1  ¦  1113.32
+2  ¦  2252.05
+6  ¦  3663.21
+7  ¦  4715.22
+1  ¦  51.26
+3  ¦  632.1
+4  ¦  7443.11
+7  ¦  8758
+8  ¦  9849.312
+
+#SQL[@33,N64]Result[8, 14, 14, 14, 14, 12, 12, 14, 11, 15]
 select * from (select ti as t,fl as f from t1 where dl <> 4) sub;
-t	f
-1	1113.32
-2	2252.05
-6	3663.21
-7	4715.22
-1	51.26
-3	632.1
-4	7443.11
-7	8758.0
-8	9849.31
+t  ¦  f
+1  ¦  1113.32
+2  ¦  2252.05
+6  ¦  3663.21
+7  ¦  4715.22
+1  ¦  51.26
+3  ¦  632.1
+4  ¦  7443.11
+7  ¦  8758
+8  ¦  9849.312
+
+#SQL[@35,N57]Result[15, 8, 8, 8, 8, 8, 8, 8, 8, 8]
 select id,min(ti) from (select * from t1) sub group by id;
-id	min(ti)
-1	1
-2	2
-3	6
-4	7
-5	1
-6	3
-7	4
-8	7
-9	8
+id  ¦  min(ti)
+1  ¦  1
+2  ¦  2
+3  ¦  6
+4  ¦  7
+5  ¦  1
+6  ¦  3
+7  ¦  4
+8  ¦  7
+9  ¦  8
+
+#SQL[@36,N76]Result[15, 8, 8, 8, 8, 8, 8, 8, 8, 8]
 select * from (select id,min(ti) from (select * from t1) t1 group by id) sub;
-id	min(ti)
-1	1
-2	2
-3	6
-4	7
-5	1
-6	3
-7	4
-8	7
-9	8
+id  ¦  min(ti)
+1  ¦  1
+2  ¦  2
+3  ¦  6
+4  ¦  7
+5  ¦  1
+6  ¦  3
+7  ¦  4
+8  ¦  7
+9  ¦  8
+
+#SQL[@42,N74]Result[15, 8, 8, 8, 8, 8, 8, 8, 8, 8]
 select id,min(ti) from (select * from t1) sub group by id order by id desc;
-id	min(ti)
-9	8
-8	7
-7	4
-6	3
-5	1
-4	7
-3	6
-2	2
-1	1
+id  ¦  min(ti)
+9  ¦  8
+8  ¦  7
+7  ¦  4
+6  ¦  3
+5  ¦  1
+4  ¦  7
+3  ¦  6
+2  ¦  2
+1  ¦  1
+
+#SQL[@43,N57]Result[15, 8, 8, 8, 8, 8, 8, 8, 8, 8]
 select id,sum(ti) from (select * from t1) sub group by id;
-id	sum(ti)
-1	1
-2	2
-3	6
-4	7
-5	1
-6	3
-7	4
-8	7
-9	8
+id  ¦  sum(ti)
+1  ¦  1
+2  ¦  2
+3  ¦  6
+4  ¦  7
+5  ¦  1
+6  ¦  3
+7  ¦  4
+8  ¦  7
+9  ¦  8
+
+#SQL[@45,N47]Result[2, 1, 1, 1, 1, 1, 1, 1]
 select distinct(ti) from (select * from t1) sub;
 ti
 1
@@ -102,178 +161,342 @@ ti
 3
 4
 8
+
+#SQL[@46,N59]Result[2, 1, 1, 1, 1]
 select distinct(ti) from (select * from t1) sub where id <6;
 ti
 1
 2
 6
 7
+
+#SQL[@51,N57]Result[8, 1]
 select count(*) from (select * from t1) sub where id > 4 ;
 count(*)
 5
+
+#SQL[@52,N57]Result[83, 122, 120, 133]
 select * from (select * from t1) sub where id > 1 limit 3;
-id	ti	si	bi	fl	dl	de	ch	vch	dd	dt
-2	2	5	2	2252.05	225205.0	2252	bye	sub query	2022-04-28	2022-04-28 22:40:11
-3	6	6	3	3663.21	366321.0	3663	hi	subquery	2022-04-28	2022-04-28 22:40:11
-4	7	1	5	4715.22	471522.0	4715	good morning	my subquery	2022-04-28	2022-04-28 22:40:11
+id  ¦  ti  ¦  si  ¦  bi  ¦  fl  ¦  dl  ¦  de  ¦  ch  ¦  vch  ¦  dd  ¦  dt
+2  ¦  2  ¦  5  ¦  2  ¦  2252.05  ¦  225205  ¦  2252  ¦  bye  ¦  sub query  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+3  ¦  6  ¦  6  ¦  3  ¦  3663.21  ¦  366321  ¦  3663  ¦  hi  ¦  subquery  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+4  ¦  7  ¦  1  ¦  5  ¦  4715.22  ¦  471522  ¦  4715  ¦  good morning  ¦  my subquery  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+
+#SQL[@53,N81]Result[33, 31]
 select max(ti),min(si),avg(fl) from (select * from t1) sub where id < 4 || id > 5;
-max(ti)	min(si)	avg(fl)
-8	2	4815.871616908482
+max(ti)  ¦  min(si)  ¦  avg(fl)
+8  ¦  2  ¦  4815.871616908482
+
+#SQL[@54,N86]Result[42, 32]
 select max(ti)+10,min(si)-1,avg(fl) from (select * from t1) sub where id < 4 || id > 5;
-max(ti)+10	min(si)-1	avg(fl)
-18	1	4815.871616908482
+max(ti) + 10  ¦  min(si) - 1  ¦  avg(fl)
+18  ¦  1  ¦  4815.871616908482
+
+#SQL[@56,N64]Error[43]
 select substr from (select * from t1) sub where id < 4 || id > 5;
 invalid input: column substr does not exist
+
+#SQL[@58,N59]Result[11, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select ti,-si from (select * from t1) sub order by -si desc;
-ti	-si
-7	-1
-1	-2
-3	-2
-1	-4
-4	-4
-8	-4
-2	-5
-7	-5
-6	-6
+ti  ¦  -si
+7  ¦  -1
+1  ¦  -2
+3  ¦  -2
+1  ¦  -4
+4  ¦  -4
+8  ¦  -4
+2  ¦  -5
+7  ¦  -5
+6  ¦  -6
+
+#SQL[@60,N95]Result[83, 122]
 select * from (select * from t1) sub where (ti=2 or si=3) and  (ch = 'bye' or vch = 'subquery');
-id	ti	si	bi	fl	dl	de	ch	vch	dd	dt
-2	2	5	2	2252.05	225205.0	2252	bye	sub query	2022-04-28	2022-04-28 22:40:11
+id  ¦  ti  ¦  si  ¦  bi  ¦  fl  ¦  dl  ¦  de  ¦  ch  ¦  vch  ¦  dd  ¦  dt
+2  ¦  2  ¦  5  ¦  2  ¦  2252.05  ¦  225205  ¦  2252  ¦  bye  ¦  sub query  ¦  2022-04-28  ¦  2022-04-28 22:40:11
+
+#SQL[@62,N166]Result[26, 24, 25, 25, 25]
 select * from (select * from (select * from (select id,ti,si,de from (select * from t1 ) sub3 where fl <> 4.5 ) sub2 where ti > 1) sub1 where id >2 ) sub where id > 4;
-id	ti	si	de
-6	3	2	632
-7	4	4	7443
-8	7	5	8758
-9	8	4	9849
+id  ¦  ti  ¦  si  ¦  de
+6  ¦  3  ¦  2  ¦  632
+7  ¦  4  ¦  4  ¦  7443
+8  ¦  7  ¦  5  ¦  8758
+9  ¦  8  ¦  4  ¦  9849
+
+#SQL[@64,N52]Result[]
 select * from (select * from t1 where id > 100) sub ;
-id	ti	si	bi	fl	dl	de	ch	vch	dd	dt
+
+#SQL[@70,N23]Result[]
 drop table if exists t1;
+
+#SQL[@71,N23]Result[]
 drop table if exists t2;
+
+#SQL[@72,N23]Result[]
 drop table if exists t3;
+
+#SQL[@73,N77]Result[]
 create table t1 (libname1 varchar(21) not null primary key, city varchar(20));
+
+#SQL[@74,N95]Result[]
 create table t2 (isbn2 varchar(21) not null primary key, author varchar(20), title varchar(60));
+
+#SQL[@75,N89]Result[]
 create table t3 (isbn3 varchar(21) not null, libname3 varchar(21) not null, quantity int);
+
+#SQL[@76,N49]Result[]
 insert into t2 values ('001','Daffy','Aducklife');
+
+#SQL[@77,N50]Result[]
 insert into t2 values ('002','Bugs','Arabbitlife');
+
+#SQL[@78,N55]Result[]
 insert into t2 values ('003','Cowboy','Lifeontherange');
+
+#SQL[@79,N61]Result[]
 insert into t2 values ('000','Anonymous','Wannabuythisbook?');
+
+#SQL[@80,N59]Result[]
 insert into t2 values ('004','BestSeller','OneHeckuvabook');
+
+#SQL[@81,N59]Result[]
 insert into t2 values ('005','EveryoneBuys','Thisverybook');
+
+#SQL[@82,N63]Result[]
 insert into t2 values ('006','SanFran','Itisasanfranlifestyle');
+
+#SQL[@83,N66]Result[]
 insert into t2 values ('007','BerkAuthor','Cool.Berkley.the.book');
+
+#SQL[@84,N51]Result[]
 insert into t3 values('000','NewYorkPublicLibra',1);
+
+#SQL[@85,N51]Result[]
 insert into t3 values('001','NewYorkPublicLibra',2);
+
+#SQL[@86,N51]Result[]
 insert into t3 values('002','NewYorkPublicLibra',3);
+
+#SQL[@87,N51]Result[]
 insert into t3 values('003','NewYorkPublicLibra',4);
+
+#SQL[@88,N51]Result[]
 insert into t3 values('004','NewYorkPublicLibra',5);
+
+#SQL[@89,N51]Result[]
 insert into t3 values('005','NewYorkPublicLibra',6);
+
+#SQL[@90,N51]Result[]
 insert into t3 values('006','SanFransiscoPublic',5);
+
+#SQL[@91,N48]Result[]
 insert into t3 values('007','BerkeleyPublic1',3);
+
+#SQL[@92,N48]Result[]
 insert into t3 values('007','BerkeleyPublic2',3);
+
+#SQL[@93,N40]Result[]
 insert into t3 values('001','NYC Lib',8);
+
+#SQL[@94,N54]Result[]
 insert into t1 values ('NewYorkPublicLibra','NewYork');
+
+#SQL[@95,N54]Result[]
 insert into t1 values ('SanFransiscoPublic','SanFran');
+
+#SQL[@96,N52]Result[]
 insert into t1 values ('BerkeleyPublic1','Berkeley');
+
+#SQL[@97,N52]Result[]
 insert into t1 values ('BerkeleyPublic2','Berkeley');
+
+#SQL[@98,N42]Result[]
 insert into t1 values ('NYCLib','NewYork');
+
+#SQL[@102,N145]Result[25, 38, 38, 36, 36]
 select * from (select city,libname1,count(libname1) as a from t3 join t1 on libname1=libname3 join t2 on isbn3=isbn2 group by city,libname1) sub ;
-city	libname1	a
-NewYork	NewYorkPublicLibra	6
-SanFran	SanFransiscoPublic	1
-Berkeley	BerkeleyPublic1	1
-Berkeley	BerkeleyPublic2	1
+city  ¦  libname1  ¦  a
+NewYork  ¦  NewYorkPublicLibra  ¦  6
+SanFran  ¦  SanFransiscoPublic  ¦  1
+Berkeley  ¦  BerkeleyPublic1  ¦  1
+Berkeley  ¦  BerkeleyPublic2  ¦  1
+
+#SQL[@104,N23]Result[]
 drop table if exists t1;
+
+#SQL[@105,N23]Result[]
 drop table if exists t2;
+
+#SQL[@106,N23]Result[]
 drop table if exists t3;
+
+#SQL[@107,N31]Result[]
 create table t1(c1 int, c2 int);
+
+#SQL[@108,N26]Result[]
 insert into t1 values(1,1);
+
+#SQL[@109,N26]Result[]
 insert into t1 values(1,2);
+
+#SQL[@110,N26]Result[]
 insert into t1 values(1,3);
+
+#SQL[@111,N26]Result[]
 insert into t1 values(1,4);
+
+#SQL[@112,N26]Result[]
 insert into t1 values(1,5);
+
+#SQL[@113,N26]Result[]
 insert into t1 values(1,6);
+
+#SQL[@114,N31]Result[]
 create table t2(c3 int, c4 int);
+
+#SQL[@115,N26]Result[]
 insert into t2 values(1,1);
+
+#SQL[@116,N26]Result[]
 insert into t2 values(1,2);
+
+#SQL[@117,N26]Result[]
 insert into t2 values(1,3);
+
+#SQL[@118,N26]Result[]
 insert into t2 values(1,4);
+
+#SQL[@119,N26]Result[]
 insert into t2 values(1,5);
+
+#SQL[@120,N26]Result[]
 insert into t2 values(1,6);
+
+#SQL[@121,N31]Result[]
 create table t3(c5 int, c6 int);
+
+#SQL[@122,N26]Result[]
 insert into t3 values(1,1);
+
+#SQL[@123,N26]Result[]
 insert into t3 values(1,2);
+
+#SQL[@124,N26]Result[]
 insert into t3 values(1,3);
+
+#SQL[@125,N26]Result[]
 insert into t3 values(1,4);
+
+#SQL[@126,N26]Result[]
 insert into t3 values(1,5);
+
+#SQL[@127,N26]Result[]
 insert into t3 values(1,6);
+
+#SQL[@128,N85]Error[115]
 select * from t1  where(select count(*) from t2  where t1.c1=t2.c3 and t1.c2<t2.c4)=1;
 aggregation with non equal predicate in SCALAR subquery  will be supported in future version is not yet implemented
+
+#SQL[@129,N86]Error[115]
 select * from t1  where(select count(*) from t2  where t1.c1=t2.c3 and t1.c2<t2.c4)<10;
 aggregation with non equal predicate in SCALAR subquery  will be supported in future version is not yet implemented
+
+#SQL[@130,N87]Error[63]
 select * from t1  where(select avg(t1.c1) from t2  where t1.c1=t2.c3 and t1.c2<t2.c4)=1;
 correlated columns in aggregate function is not yet implemented
+
+#SQL[@131,N87]Error[115]
 select * from t1  where(select avg(t2.c3) from t2  where t1.c1=t2.c3 and t1.c2<t2.c4)=1;
 aggregation with non equal predicate in SCALAR subquery  will be supported in future version is not yet implemented
+
+#SQL[@132,N87]Error[115]
 select * from t1  where(select avg(t2.c4) from t2  where t1.c1=t2.c3 and t1.c2<t2.c4)=1;
 aggregation with non equal predicate in SCALAR subquery  will be supported in future version is not yet implemented
+
+#SQL[@133,N87]Error[115]
 select * from t1  where(select max(t2.c3) from t2  where t1.c1=t2.c3 and t1.c2<t2.c4)=1;
 aggregation with non equal predicate in SCALAR subquery  will be supported in future version is not yet implemented
+
+#SQL[@134,N89]Result[10, 8, 8, 8, 8, 8, 8]
 select * from t1  where(select count(t2.c3) from t2  where t1.c1=t2.c3 and t1.c2=t2.c4)=1;
-c1    c2
-1    1
-1    2
-1    3
-1    4
-1    5
-1    6
+c1  ¦  c2
+1  ¦  1
+1  ¦  2
+1  ¦  3
+1  ¦  4
+1  ¦  5
+1  ¦  6
+
+#SQL[@135,N86]Result[]
 select * from t1  where(select count(t2.c3) from t2  where t1.c1=t2.c3 and t2.c4<10)=1;
-c1    c2
+
+#SQL[@136,N153]Result[]
 select * from t1  where t1.c1 in (select c6 from t3 where t1.c1=t3.c5 and t1.c2<t3.c6 and (select count(*) from t2  where t3.c5=t2.c3 and t3.c6=t2.c4)=1);
-c1    c2
+
+#SQL[@137,N157]Result[10, 8, 8, 8, 8, 8, 8]
 select * from t1  where t1.c1 not in (select c6 from t3 where t1.c1=t3.c5 and t1.c2<t3.c6 and (select count(*) from t2  where t3.c5=t2.c3 and t3.c6=t2.c4)=1);
-c1    c2
-1    1
-1    2
-1    3
-1    4
-1    5
-1    6
+c1  ¦  c2
+1  ¦  1
+1  ¦  2
+1  ¦  3
+1  ¦  4
+1  ¦  5
+1  ¦  6
+
+#SQL[@138,N87]Result[10, 8, 8]
 select * from t1  where(select count(*) from t2  where t1.c1=t2.c3 and t1.c2=t2.c4+2)=0;
-c1    c2
-1    1
-1    2
+c1  ¦  c2
+1  ¦  1
+1  ¦  2
+
+#SQL[@139,N85]Result[10, 8, 8, 8, 8, 8, 8]
 select * from t1  where(select count(*) from t2  where t1.c1=t2.c3 and t1.c2=t2.c4)<5;
-c1    c2
-1    1
-1    2
-1    3
-1    4
-1    5
-1    6
+c1  ¦  c2
+1  ¦  1
+1  ¦  2
+1  ¦  3
+1  ¦  4
+1  ¦  5
+1  ¦  6
+
+#SQL[@140,N157]Result[10, 8, 8, 8, 8, 8, 8]
 select * from t1  where t1.c1 not in (select c6 from t3 where t1.c1=t3.c5 and t1.c2<t3.c6 and (select count(*) from t2  where t3.c5=t2.c3 and t3.c6=t2.c4)=1);
-c1    c2
-1    1
-1    2
-1    3
-1    4
-1    5
-1    6
+c1  ¦  c2
+1  ¦  1
+1  ¦  2
+1  ¦  3
+1  ¦  4
+1  ¦  5
+1  ¦  6
+
+#SQL[@141,N130]Result[10, 8, 8]
 select * from t1  where t1.c2  not in (select c6 from t3 where  t1.c2=t3.c6 and (select count(*) from t2  where t3.c6=t2.c4+2 )=1);
-c1    c2
-1    1
-1    2
+c1  ¦  c2
+1  ¦  1
+1  ¦  2
+
+#SQL[@142,N136]Result[10, 8, 8, 8, 8]
 select * from t1  where t1.c2  not in (select c6 from t3 where  t1.c2=t3.c6 and (select count(*) from t2  where t3.c6=t2.c4+2 )=t1.c2-2);
-c1    c2
-1    1
-1    4
-1    5
-1    6
+c1  ¦  c2
+1  ¦  1
+1  ¦  4
+1  ¦  5
+1  ¦  6
+
+#SQL[@143,N134]Result[10, 8, 8, 8, 8, 8]
 select * from t1  where t1.c2  not in (select c5 from t3 where  t1.c2<t3.c6 and (select count(*) from t2  where t3.c6=t2.c4+2 )=t1.c2);
-c1    c2
-1    2
-1    3
-1    4
-1    5
-1    6
+c1  ¦  c2
+1  ¦  2
+1  ¦  3
+1  ¦  4
+1  ¦  5
+1  ¦  6
+
+#SQL[@144,N23]Result[]
 drop table if exists t1;
+
+#SQL[@145,N23]Result[]
 drop table if exists t2;
+
+#SQL[@146,N23]Result[]
 drop table if exists t3;
+

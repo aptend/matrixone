@@ -1,29 +1,67 @@
+#SQL[@1,N28]Result[]
 drop database if exists test;
+
+#SQL[@2,N20]Result[]
 create database test;
+
+#SQL[@3,N8]Result[]
 use test;
+
+#SQL[@5,N39]Result[]
 create table t(a int, b int, c varchar);
+
+#SQL[@6,N5]Result[]
 begin;
+
+#SQL[@7,N81]Result[]
 insert into t select *,*,"abcdefghijklmnopqrst" from generate_series(1, 8192000)g;
+
+#SQL[@8,N44]Result[]
 delete from t where a mod 999 = 0 limit 1000;
+
+#SQL[@9,N29]Result[15, 7]
 select count(*) + 1000 from t;
 count(*) + 1000
 8192000
+
+#SQL[@10,N8]Result[]
 rollback;
+
+#SQL[@12,N31]Result[24, 4]
 select enable_fault_injection();
 enable_fault_injection()
 true
+
+#SQL[@13,N67]Result[56, 4]
 select add_fault_point('fj/log/workspace',':::','echo',40,'test.t');
 add_fault_point(fj/log/workspace, :::, echo, 40, test.t)
 true
+
+#SQL[@14,N5]Result[]
 begin;
+
+#SQL[@15,N81]Result[]
 insert into t select *,*,"abcdefghijklmnopqrst" from generate_series(1, 8192000)g;
+
+#SQL[@16,N44]Result[]
 delete from t where a mod 999 = 0 limit 1000;
+
+#SQL[@17,N29]Result[15, 7]
 select count(*) + 1000 from t;
 count(*) + 1000
 8192000
+
+#SQL[@18,N8]Result[]
 rollback;
+
+#SQL[@19,N32]Result[25, 4]
 select disable_fault_injection();
 disable_fault_injection()
 true
+
+#SQL[@21,N22]Result[]
 drop table if exists t;
+
+#SQL[@22,N28]Result[]
 drop database if exists test;
+

@@ -1,51 +1,141 @@
+#SQL[@1,N28]Result[]
 drop database if exists test;
+
+#SQL[@2,N20]Result[]
 create database test;
+
+#SQL[@3,N8]Result[]
 use test;
+
+#SQL[@5,N35]Result[]
 create table hhh(a int primary key);
+
+#SQL[@6,N56]Result[]
 insert into hhh select * from generate_series(1, 81920)g;
+
+#SQL[@8,N5]Result[]
 begin;
+
+#SQL[@9,N40]Result[]
 update hhh set a = a + 81920 where a = 1;
+
+#SQL[@10,N40]Result[]
 update hhh set a = a + 81920 where a = 2;
+
+#SQL[@11,N40]Result[]
 update hhh set a = a + 81920 where a = 3;
+
+#SQL[@12,N40]Result[]
 update hhh set a = a + 81920 where a = 4;
+
+#SQL[@13,N40]Result[]
 update hhh set a = a + 81920 where a = 5;
+
+#SQL[@14,N40]Result[]
 update hhh set a = a + 81920 where a = 6;
+
+#SQL[@15,N40]Result[]
 update hhh set a = a + 81920 where a = 7;
+
+#SQL[@16,N40]Result[]
 update hhh set a = a + 81920 where a = 8;
+
+#SQL[@17,N40]Result[]
 update hhh set a = a + 81920 where a = 9;
+
+#SQL[@18,N41]Result[]
 update hhh set a = a + 81920 where a = 10;
+
+#SQL[@19,N41]Result[]
 update hhh set a = a + 81920 where a = 11;
+
+#SQL[@20,N41]Result[]
 update hhh set a = a + 81920 where a = 12;
+
+#SQL[@21,N41]Result[]
 update hhh set a = a + 81920 where a = 13;
+
+#SQL[@22,N41]Result[]
 update hhh set a = a + 81920 where a = 14;
+
+#SQL[@23,N41]Result[]
 update hhh set a = a + 81920 where a = 15;
+
+#SQL[@24,N41]Result[]
 update hhh set a = a + 81920 where a = 16;
+
+#SQL[@25,N41]Result[]
 update hhh set a = a + 81920 where a = 17;
+
+#SQL[@26,N41]Result[]
 update hhh set a = a + 81920 where a = 18;
+
+#SQL[@27,N41]Result[]
 update hhh set a = a + 81920 where a = 19;
+
+#SQL[@28,N41]Result[]
 update hhh set a = a + 81920 where a = 10;
+
+#SQL[@29,N41]Result[]
 update hhh set a = a + 81920 where a = 20;
+
+#SQL[@30,N41]Result[]
 update hhh set a = a + 81920 where a = 21;
+
+#SQL[@31,N41]Result[]
 update hhh set a = a + 81920 where a = 22;
+
+#SQL[@32,N41]Result[]
 update hhh set a = a + 81920 where a = 23;
+
+#SQL[@33,N41]Result[]
 update hhh set a = a + 81920 where a = 24;
+
+#SQL[@34,N41]Result[]
 update hhh set a = a + 81920 where a = 25;
+
+#SQL[@35,N41]Result[]
 update hhh set a = a + 81920 where a = 26;
+
+#SQL[@36,N41]Result[]
 update hhh set a = a + 81920 where a = 27;
+
+#SQL[@37,N41]Result[]
 update hhh set a = a + 81920 where a = 28;
+
+#SQL[@38,N41]Result[]
 update hhh set a = a + 81920 where a = 29;
+
+#SQL[@39,N41]Result[]
 update hhh set a = a + 81920 where a = 30;
+
+#SQL[@40,N41]Result[]
 update hhh set a = a + 81920 where a = 31;
+
+#SQL[@41,N41]Result[]
 update hhh set a = a + 81920 where a = 32;
+
+#SQL[@42,N6]Result[]
 commit;
+
+#SQL[@44,N24]Result[8, 5]
 select count(*) from hhh;
 count(*)
 81920
+
+#SQL[@45,N22]Result[6, 2]
 select min(a) from hhh;
 min(a)
 33
+
+#SQL[@46,N37]Result[27, 4]
 select max(a)=min(a)+81920-1 from hhh;
-max(a)=min(a)+81920-1
+max(a) = min(a) + 81920 - 1
 true
+
+#SQL[@47,N24]Result[]
 drop table if exists hhh;
+
+#SQL[@48,N28]Result[]
 drop database if exists test;
+

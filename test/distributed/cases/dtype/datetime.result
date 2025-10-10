@@ -1,359 +1,647 @@
+#SQL[@7,N49]Result[37, 19]
 select cast('2000-01-01 00:00:00' as datetime(0));
 cast(2000-01-01 00:00:00 as datetime)
 2000-01-01 00:00:00
+
+#SQL[@8,N54]Result[42, 19]
 select cast('2000-01-01 00:00:00.0011' as datetime(0));
 cast(2000-01-01 00:00:00.0011 as datetime)
 2000-01-01 00:00:00
+
+#SQL[@9,N54]Result[42, 19]
 select cast('2000-01-01 00:00:00.9011' as datetime(0));
 cast(2000-01-01 00:00:00.9011 as datetime)
 2000-01-01 00:00:01
+
+#SQL[@10,N59]Result[53, 26]
 select cast('2000-01-01 00:00:00.001100999' as datetime(6));
 cast(2000-01-01 00:00:00.001100999 as datetime(6, 6))
-2000-01-01 00:00:00.001101000
+2000-01-01 00:00:00.001101
+
+#SQL[@11,N56]Result[50, 25]
 select cast('2000-01-01 00:00:00.001109' as datetime(5));
 cast(2000-01-01 00:00:00.001109 as datetime(5, 5))
-2000-01-01 00:00:00.001110000
+2000-01-01 00:00:00.00111
+
+#SQL[@12,N56]Result[44, 19]
 select cast('2000-01-01 00:00:00.501109' as datetime(0));
 cast(2000-01-01 00:00:00.501109 as datetime)
 2000-01-01 00:00:01
+
+#SQL[@13,N55]Result[43, 19]
 select cast('2000-01-01 00:00:00.49999' as datetime(0));
 cast(2000-01-01 00:00:00.49999 as datetime)
 2000-01-01 00:00:00
+
+#SQL[@14,N40]Result[28, 19]
 select cast('2000-01-01' as datetime(0));
 cast(2000-01-01 as datetime)
 2000-01-01 00:00:00
+
+#SQL[@15,N49]Error[57]
 select cast('2022-01-01 25:00:00' as datetime(0));
 invalid input: invalid datetime value 2022-01-01 25:00:00
+
+#SQL[@16,N42]Result[32, 9]
 select cast('2000-01-01' as datetime(0))+1;
 cast(2000-01-01 as datetime) + 1
 946684801
+
+#SQL[@17,N42]Result[32, 9]
 select cast('2000-01-01' as datetime(0))*1;
 cast(2000-01-01 as datetime) * 1
 946684800
+
+#SQL[@18,N44]Result[34, 12]
 select cast('2000-01-01' as datetime(0))*1.1;
 cast(2000-01-01 as datetime) * 1.1
 1041353280.0
+
+#SQL[@19,N79]Result[14, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 1 SECOND) '1 second later';
 1 second later
-2022-03-01 00:00:00.999900000
+2022-03-01 00:00:00.999900
+
+#SQL[@20,N79]Result[14, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 1 MINUTE) '1 minute later';
 1 minute later
-2022-03-01 00:00:59.999900000
+2022-03-01 00:00:59.999900
+
+#SQL[@21,N75]Result[12, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 1 HOUR) '1 hour later';
 1 hour later
-2022-03-01 00:59:59.999900000
+2022-03-01 00:59:59.999900
+
+#SQL[@22,N73]Result[11, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 1 DAY) '1 day later';
 1 day later
-2022-03-01 23:59:59.999900000
+2022-03-01 23:59:59.999900
+
+#SQL[@23,N75]Result[12, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 1 WEEK) '1 week later';
 1 week later
-2022-03-07 23:59:59.999900000
+2022-03-07 23:59:59.999900
+
+#SQL[@24,N80]Result[15, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 13 MONTH) '1 month earlier';
 1 month earlier
-2023-03-28 23:59:59.999900000
+2023-03-28 23:59:59.999900
+
+#SQL[@25,N77]Result[14, 26]
 SELECT DATE_ADD('2022-02-28 23:59:59.9999', INTERVAL 1 YEAR) '1 year earlier';
 1 year earlier
-2023-02-28 23:59:59.999900000
+2023-02-28 23:59:59.999900
+
+#SQL[@26,N54]Result[42, 19]
 select cast(cast('2000-12-31' as date) as datetime(0));
 cast(cast(2000-12-31 as date) as datetime)
 2000-12-31 00:00:00
+
+#SQL[@27,N54]Result[42, 10]
 select cast(cast('2000-12-31' as datetime(0)) as date);
 cast(cast(2000-12-31 as datetime) as date)
 2000-12-31
+
+#SQL[@30,N23]Result[]
 drop table if exists t1;
+
+#SQL[@31,N56]Result[]
 create table t1 (a datetime(0) not null, primary key(a));
+
+#SQL[@32,N113]Result[]
 insert into t1 values ('20200101000000'), ('2022-01-02'), ('2022-01-02 00:00:01'), ('2022-01-02 00:00:01.512345');
+
+#SQL[@33,N31]Result[1, 19, 19, 19, 19]
 select * from t1 order by a asc;
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:00
 2022-01-02 00:00:01
 2022-01-02 00:00:02
+
+#SQL[@34,N52]Result[1, 19]
 select * from t1 where a='2022-01-02' order by 1 asc;
 a
 2022-01-02 00:00:00
+
+#SQL[@35,N33]Result[1, 19, 19, 19, 19]
 select * from t1 where a>20220102;
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:00
 2022-01-02 00:00:01
 2022-01-02 00:00:02
+
+#SQL[@36,N38]Result[1, 19, 19, 19]
 select * from t1 where a!='2022-01-02';
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:01
 2022-01-02 00:00:02
+
+#SQL[@37,N63]Result[]
 update t1 set a=DATE_ADD(a ,INTERVAL 1 WEEK) where a>'20220102';
+
+#SQL[@38,N16]Result[1, 19, 19, 19, 19]
 select * from t1;
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:00
 2022-01-09 00:00:01
 2022-01-09 00:00:02
+
+#SQL[@39,N13]Result[]
 drop table t1;
+
+#SQL[@42,N72]Result[]
 create table t1 ( a int not null default 1, big datetime(4) primary key);
+
+#SQL[@43,N110]Result[]
 insert into t1 (big) values ('20220103'),('2022-01-01'),('2022-01-01 00:00:01'),('2022-01-02 00:00:00.000050');
+
+#SQL[@44,N16]Result[10, 31, 31, 31, 31]
 select * from t1;
-a    big
-1    2022-01-03 00:00:00
-1    2022-01-01 00:00:00
-1    2022-01-01 00:00:01
-1    2022-01-02 00:00:00.000100000
+a  ¦  big
+1  ¦  2022-01-03 00:00:00.0000
+1  ¦  2022-01-01 00:00:00.0000
+1  ¦  2022-01-01 00:00:01.0000
+1  ¦  2022-01-02 00:00:00.0001
+
+#SQL[@45,N39]Result[10, 31, 31, 31]
 select * from t1 order by big limit 1,3;
-a    big
-1    2022-01-01 00:00:01
-1    2022-01-02 00:00:00.000100000
-1    2022-01-03 00:00:00
+a  ¦  big
+1  ¦  2022-01-01 00:00:01.0000
+1  ¦  2022-01-02 00:00:00.0001
+1  ¦  2022-01-03 00:00:00.0000
+
+#SQL[@46,N46]Result[10, 31, 31, 31]
 select * from t1 order by big limit 3 offset 1;
-a    big
-1    2022-01-01 00:00:01
-1    2022-01-02 00:00:00.000100000
-1    2022-01-03 00:00:00
+a  ¦  big
+1  ¦  2022-01-01 00:00:01.0000
+1  ¦  2022-01-02 00:00:00.0001
+1  ¦  2022-01-03 00:00:00.0000
+
+#SQL[@47,N54]Result[40, 75]
 select min(big),max(big),max(big)-1 from t1 group by a;
-min(big)    max(big)    max(big) - 1
-2022-01-01 00:00:00    2022-01-03 00:00:00    1641167999.0000
+min(big)  ¦  max(big)  ¦  max(big) - 1
+2022-01-01 00:00:00.0000  ¦  2022-01-03 00:00:00.0000  ¦  1641167999.0000
+
+#SQL[@48,N73]Result[]
 select big,count(big) from t1 group by big having count(big)>1 order by 2;
-big    count(big)
+
+#SQL[@49,N13]Result[]
 drop table t1;
+
+#SQL[@51,N103]Result[]
 create table t1 (id datetime(6) not null default "2022-01-31 00:00:00.0000006", a int, primary key (a));
+
+#SQL[@52,N27]Result[]
 insert into t1(a) values(1);
+
+#SQL[@54,N16]Result[9, 33]
 select * from t1;
-id    a
-2022-01-31 00:00:00.000001000    1
+id  ¦  a
+2022-01-31 00:00:00.000001  ¦  1
+
+#SQL[@58,N23]Result[]
 drop table if exists t1;
+
+#SQL[@59,N23]Result[]
 drop table if exists t2;
+
+#SQL[@60,N93]Result[]
 create table t1 (
 dt  datetime(6) not null,
 value32  integer not null,
 primary key(value32)
 );
+
+#SQL[@65,N93]Result[]
 create table t2 (
 dt  datetime(3) not null,
 value32  integer not null,
 primary key(value32)
 );
+
+#SQL[@70,N54]Result[]
 insert into t1 values('2022-01-01 00:00:00.000050', 1);
+
+#SQL[@71,N54]Result[]
 insert into t1 values('2022-01-01 00:00:00.000500', 2);
+
+#SQL[@72,N54]Result[]
 insert into t1 values('2022-01-01 00:00:00.005000', 3);
+
+#SQL[@73,N51]Result[]
 insert into t2 values('2022-01-01 00:00:00.005', 4);
+
+#SQL[@74,N51]Result[]
 insert into t2 values('2022-01-01 00:00:00.001', 5);
+
+#SQL[@75,N16]Result[15, 33, 33, 33]
 select * from t1;
-dt	value32
-2022-01-01 00:00:00.000050000	1
-2022-01-01 00:00:00.000500000	2
-2022-01-01 00:00:00.005000000	3
+dt  ¦  value32
+2022-01-01 00:00:00.000050  ¦  1
+2022-01-01 00:00:00.000500  ¦  2
+2022-01-01 00:00:00.005000  ¦  3
+
+#SQL[@76,N16]Result[15, 30, 30]
 select * from t2;
-dt	value32
-2022-01-01 00:00:00.001000000	5
-2022-01-01 00:00:00.005000000	4
+dt  ¦  value32
+2022-01-01 00:00:00.005  ¦  4
+2022-01-01 00:00:00.001  ¦  5
+
+#SQL[@77,N66]Result[36, 69]
 select * from t1 join t2 on t1.dt=t2.dt order by 1 desc, t2.dt asc;
-dt	value32	dt	value32
-2022-01-01 00:00:00.005000000	3	2022-01-01 00:00:00.005000000	4
+dt  ¦  value32  ¦  dt  ¦  value32
+2022-01-01 00:00:00.005000  ¦  3  ¦  2022-01-01 00:00:00.005  ¦  4
+
+#SQL[@78,N68]Result[36, 69]
 select * from t1 join t2 on t1.dt=t2.dt where t1.value32<>t2.value32;
-dt	value32	dt	value32
-2022-01-01 00:00:00.005000000	3	2022-01-01 00:00:00.005000000	4
+dt  ¦  value32  ¦  dt  ¦  value32
+2022-01-01 00:00:00.005000  ¦  3  ¦  2022-01-01 00:00:00.005  ¦  4
+
+#SQL[@81,N23]Result[]
 drop table if exists t1;
+
+#SQL[@82,N23]Result[]
 drop table if exists t2;
+
+#SQL[@83,N39]Result[]
 CREATE TABLE t_datetime(id datetime(6));
+
+#SQL[@84,N85]Result[]
 INSERT INTO t_datetime VALUES ('2020-01-01 23:59:59.999999'), ('2022-01-02 00:00:00');
+
+#SQL[@85,N41]Result[22, 36, 36]
 SELECT id, id >= 20200102 FROM t_datetime;
-id    id >= 20200102
-2020-01-01 23:59:59.999999000    true
-2022-01-02 00:00:00    true
+id  ¦  id >= 20200102
+2020-01-01 23:59:59.999999  ¦  true
+2022-01-02 00:00:00.000000  ¦  true
+
+#SQL[@86,N41]Result[22, 37, 37]
 SELECT id, id = 202020101 FROM t_datetime;
-id    id = 202020101
-2020-01-01 23:59:59.999999000    false
-2022-01-02 00:00:00    false
+id  ¦  id = 202020101
+2020-01-01 23:59:59.999999  ¦  false
+2022-01-02 00:00:00.000000  ¦  false
+
+#SQL[@87,N44]Result[]
 SELECT * from t_datetime WHERE id = 20200102;
-id
+
+#SQL[@88,N47]Error[56]
 SELECT * from t_datetime WHERE id = 2.0200102e7;
 invalid argument operator =, bad value [DATETIME DOUBLE]
+
+#SQL[@89,N46]Result[]
 SELECT * from t_datetime WHERE id = '20200102';
-id
+
+#SQL[@90,N64]Result[2, 26]
 SELECT * from t_datetime WHERE id IN ('2020-01-01','2022-01-02');
 id
-2022-01-02 00:00:00
+2022-01-02 00:00:00.000000
+
+#SQL[@91,N63]Error[56]
 SELECT * from t_datetime WHERE id IN (2.0200101e7,2.0200102e7 );
 invalid argument operator =, bad value [DATETIME DOUBLE]
+
+#SQL[@92,N59]Result[]
 SELECT * from t_datetime WHERE id IN ('20220101', 20220102);
-id
+
+#SQL[@93,N66]Error[49]
 SELECT * from t_datetime WHERE id IN ('2.0200101e7','2.0200102e7');
 invalid input: invalid datetime value 2.0200101e7
+
+#SQL[@94,N63]Result[]
 SELECT * from t_datetime WHERE id BETWEEN 20191231 AND 20200101;
-id
+
+#SQL[@95,N69]Error[57]
 SELECT * from t_datetime WHERE id BETWEEN 2.0200101e7 and 2.0200102e7;
 invalid argument operator >=, bad value [DATETIME DOUBLE]
+
+#SQL[@96,N71]Result[2, 26]
 SELECT * from t_datetime WHERE id BETWEEN '2020-01-01' AND '2020-01-02';
 id
-2020-01-01 23:59:59.999999000
+2020-01-01 23:59:59.999999
+
+#SQL[@97,N96]Result[2, 26]
 SELECT * from t_datetime WHERE id BETWEEN '2022-01-01 00:00:00' AND '2022-01-02 00:00:00.000000';
 id
-2022-01-02 00:00:00
+2022-01-02 00:00:00.000000
+
+#SQL[@99,N23]Result[]
 drop table if exists t1;
+
+#SQL[@100,N31]Result[]
 CREATE TABLE t1 (a datetime(6));
+
+#SQL[@101,N50]Result[]
 INSERT INTO t1 VALUES ('2022-03-01 00:00:01.0001');
+
+#SQL[@102,N76]Result[1, 26]
 SELECT * FROM t1 WHERE coalesce(a) not BETWEEN '2022-02-28' and '2022-03-01';
 a
-2022-03-01 00:00:01.000100000
+2022-03-01 00:00:01.000100
+
+#SQL[@103,N44]Result[1, 26]
 SELECT * FROM t1 WHERE coalesce(a)!=20220301;
 a
-2022-03-01 00:00:01.000100000
+2022-03-01 00:00:01.000100
+
+#SQL[@104,N79]Result[]
 SELECT * FROM t1 WHERE coalesce(a) in ('2022-03-01','2022-03-01 00:00:00.0001');
-a
+
+#SQL[@105,N13]Result[]
 drop table t1;
+
+#SQL[@107,N60]Error[59]
 SELECT CAST(20220101 AS datetime(0)) BETWEEN 20220101 AND -1;
 invalid argument operator cast, bad value [BIGINT DATETIME]
+
+#SQL[@108,N59]Error[59]
 SELECT CAST(00000501 AS datetime(0)) NOT BETWEEN 100 AND -1;
 invalid argument operator cast, bad value [BIGINT DATETIME]
+
+#SQL[@109,N46]Error[59]
 SELECT CAST(0 AS datetime(0)) BETWEEN 0 AND -1;
 invalid argument operator cast, bad value [BIGINT DATETIME]
+
+#SQL[@110,N73]Error[59]
 SELECT CAST(1000101 as datetime(0)) BETWEEN '1000-01-01' and '1000-01-02';
 invalid argument operator cast, bad value [BIGINT DATETIME]
+
+#SQL[@113,N23]Result[]
 drop table if exists t1;
+
+#SQL[@114,N23]Result[]
 drop table if exists t2;
+
+#SQL[@115,N23]Result[]
 drop table if exists t3;
+
+#SQL[@116,N24]Result[]
 drop table if exists t21;
+
+#SQL[@117,N24]Result[]
 drop table if exists t12;
+
+#SQL[@118,N50]Result[]
 CREATE TABLE t1 (a datetime(0), b int primary key);
+
+#SQL[@119,N73]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',1),('2022-01-01 00:00:00',2);
+
+#SQL[@120,N66]Result[]
 update t1 set a='2022-01-02' where a='2022-01-01 00:00:00' limit 1;
+
+#SQL[@121,N16]Result[8, 26, 26]
 select * from t1;
-a    b
-2022-01-01 00:00:00    2
-2022-01-02 00:00:00    1
+a  ¦  b
+2022-01-01 00:00:00  ¦  2
+2022-01-02 00:00:00  ¦  1
+
+#SQL[@122,N47]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',3);
+
+#SQL[@123,N58]Result[]
 update t1 set a='2022-01-02' where a='2022-01-01 00:00:00';
+
+#SQL[@124,N16]Result[8, 26, 26, 26]
 select * from t1;
-a    b
-2022-01-02 00:00:00    1
-2022-01-02 00:00:00    2
-2022-01-02 00:00:00    3
+a  ¦  b
+2022-01-02 00:00:00  ¦  1
+2022-01-02 00:00:00  ¦  2
+2022-01-02 00:00:00  ¦  3
+
+#SQL[@126,N13]Result[]
 drop table t1;
+
+#SQL[@127,N99]Result[]
 create table t1 (
 a datetime(0) primary key,
 b datetime(4) not null default '2000-01-01 00:00:00'
 );
+
+#SQL[@131,N128]Result[]
 insert into t1 (a) values ('2022-01-02'),('2022-01-04'),('2022-01-06'),('2022-01-08'),('2022-01-10 01:01:01.000'),('2022-01-12');
+
+#SQL[@132,N21]Error[62]
 update t1 set a=a+101;
 invalid argument operator cast, bad value [DECIMAL64 DATETIME]
+
+#SQL[@133,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@134,N72]Result[]
 update t1 set a='2022-01-27 12:12:12.0001' where a='2022-01-08 00:01:01';
+
+#SQL[@135,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@136,N31]Error[62]
 update t1 set a=a-1 where 1 > 2;
 invalid argument operator cast, bad value [DECIMAL64 DATETIME]
+
+#SQL[@137,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@138,N31]Error[62]
 update t1 set a=a-1 where 3 > 2;
 invalid argument operator cast, bad value [DECIMAL64 DATETIME]
+
+#SQL[@139,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@141,N13]Result[]
 drop table t1;
+
+#SQL[@142,N55]Result[]
 create table t1 (a datetime(0) primary key, b char(32));
+
+#SQL[@143,N65]Result[]
 insert into t1 values ('20220101','apple'),('2022-01-02','apple');
+
+#SQL[@144,N16]Result[8, 30, 30]
 select * from t1;
-a    b
-2022-01-01 00:00:00    apple
-2022-01-02 00:00:00    apple
+a  ¦  b
+2022-01-01 00:00:00  ¦  apple
+2022-01-02 00:00:00  ¦  apple
+
+#SQL[@147,N23]Result[]
 drop table if exists t1;
+
+#SQL[@148,N23]Result[]
 drop table if exists t2;
+
+#SQL[@149,N23]Result[]
 drop table if exists t3;
+
+#SQL[@150,N24]Result[]
 drop table if exists t11;
+
+#SQL[@151,N24]Result[]
 drop table if exists t12;
+
+#SQL[@152,N50]Result[]
 CREATE TABLE t1 (a datetime(0), b int primary key);
+
+#SQL[@153,N73]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',1),('2022-01-01 00:00:00',2);
+
+#SQL[@154,N52]Result[]
 delete from t1 where a='2022-01-01 00:00:00' limit 1;
+
+#SQL[@155,N16]Result[8, 26]
 select * from t1;
-a    b
-2022-01-01 00:00:00    2
+a  ¦  b
+2022-01-01 00:00:00  ¦  2
+
+#SQL[@156,N47]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',3);
+
+#SQL[@157,N35]Result[]
 delete from t1 where a='2022-01-01';
+
+#SQL[@158,N16]Result[]
 select * from t1;
-a    b
+
+#SQL[@160,N13]Result[]
 drop table t1;
+
+#SQL[@161,N98]Result[]
 create table t1 (
 a datetime(0) primary key,
 b datetime(4) not null default '2000-01-01 00:00:00');
+
+#SQL[@164,N128]Result[]
 insert into t1 (a) values ('2022-01-02'),('2022-01-04'),('2022-01-06'),('2022-01-08'),('2022-01-10 01:01:01.000'),('2022-01-12');
+
+#SQL[@165,N33]Result[]
 delete from t1 where a=20220101+3;
+
+#SQL[@166,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@167,N27]Result[]
 delete from t1 where  3 < 2;
+
+#SQL[@168,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@169,N27]Result[]
 delete from t1 where  1 < 2;
+
+#SQL[@170,N18]Result[]
 select a,b from t1;
-a    b
+
+#SQL[@172,N13]Result[]
 drop table t1;
+
+#SQL[@173,N55]Result[]
 create table t1 (a datetime(0) primary key, b char(32));
+
+#SQL[@174,N74]Result[]
 insert into t1 values ('20220101','apple'),('2022-01-02 00:00:00','apple');
+
+#SQL[@175,N16]Result[8, 30, 30]
 select * from t1;
-a    b
-2022-01-01 00:00:00    apple
-2022-01-02 00:00:00    apple
+a  ¦  b
+2022-01-01 00:00:00  ¦  apple
+2022-01-02 00:00:00  ¦  apple
+
+#SQL[@177,N13]Result[]
 drop table t1;
+
+#SQL[@178,N27]Result[]
 create table t1(a datetime);
+
+#SQL[@179,N51]Error[64]
 insert into t1 values("9999-12-31 23:59:59.999999");
 invalid input: invalid datetime value 9999-12-31 23:59:59.999999
+
+#SQL[@181,N23]Result[]
 set time_zone = '+8:00';
+
+#SQL[@182,N23]Result[]
 drop table if exists t1;
+
+#SQL[@183,N30]Result[]
 create table t1(t datetime(6));
+
+#SQL[@184,N82]Result[]
 insert into t1 values('2020-01-01 23:59:59.999999'),('2021-02-03 04:05:06.070809');
+
+#SQL[@185,N20]Result[5, 17, 17]
 select t + 1 from t1;
 t + 1
 1577923200.999999
 1612325107.070809
+
+#SQL[@186,N20]Result[5, 17, 17]
 select t - 1 from t1;
 t - 1
 1577923198.999999
 1612325105.070809
+
+#SQL[@187,N21]Result[6, 18, 18]
 select t * 10 from t1;
 t * 10
 15779231999.999990
 16123251060.708090
+
+#SQL[@188,N21]Result[6, 22, 22]
 select t / 10 from t1;
 t / 10
 157792319.999999900000
 161232510.607080900000
+
+#SQL[@189,N20]Result[5, 8, 8]
 select t % 5 from t1;
 t % 5
 4.999999
 1.070809
+
+#SQL[@192,N24]Result[]
 SET TIME_ZONE = "SYSTEM";
+

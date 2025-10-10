@@ -1,290 +1,536 @@
+#SQL[@7,N23]Result[]
 drop table if exists t1;
+
+#SQL[@8,N57]Result[]
 create table t1 (a timestamp(0) not null, primary key(a));
+
+#SQL[@9,N113]Result[]
 insert into t1 values ('20200101000000'), ('2022-01-02'), ('2022-01-02 00:00:01'), ('2022-01-02 00:00:01.512345');
+
+#SQL[@10,N16]Result[1, 19, 19, 19, 19]
 select * from t1;
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:00
 2022-01-02 00:00:01
 2022-01-02 00:00:02
+
+#SQL[@11,N37]Result[1, 19]
 select * from t1 where a='2022-01-02';
 a
 2022-01-02 00:00:00
+
+#SQL[@12,N38]Result[1, 19, 19, 19]
 select * from t1 where a!='2022-01-02';
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:01
 2022-01-02 00:00:02
+
+#SQL[@13,N63]Result[]
 update t1 set a=DATE_ADD(a ,INTERVAL 1 WEEK) where a>'20220102';
+
+#SQL[@14,N16]Result[1, 19, 19, 19, 19]
 select * from t1;
 a
 2020-01-01 00:00:00
 2022-01-02 00:00:00
 2022-01-09 00:00:01
 2022-01-09 00:00:02
+
+#SQL[@15,N13]Result[]
 drop table t1;
+
+#SQL[@16,N73]Result[]
 create table t1 ( a int not null default 1, big timestamp(4) primary key);
+
+#SQL[@18,N110]Result[]
 insert into t1 (big) values ('20220103'),('2022-01-01'),('2022-01-01 00:00:01'),('2022-01-02 00:00:00.000050');
+
+#SQL[@20,N16]Result[10, 31, 31, 31, 31]
 select * from t1;
-a    big
-1    2022-01-03 00:00:00
-1    2022-01-01 00:00:00
-1    2022-01-01 00:00:01
-1    2022-01-02 00:00:00.000100000
+a  ¦  big
+1  ¦  2022-01-03 00:00:00.0000
+1  ¦  2022-01-01 00:00:00.0000
+1  ¦  2022-01-01 00:00:01.0000
+1  ¦  2022-01-02 00:00:00.0001
+
+#SQL[@21,N39]Result[10, 31, 31, 31]
 select * from t1 order by big limit 1,3;
-a    big
-1    2022-01-01 00:00:01
-1    2022-01-02 00:00:00.000100000
-1    2022-01-03 00:00:00
+a  ¦  big
+1  ¦  2022-01-01 00:00:01.0000
+1  ¦  2022-01-02 00:00:00.0001
+1  ¦  2022-01-03 00:00:00.0000
+
+#SQL[@22,N46]Result[10, 31, 31, 31]
 select * from t1 order by big limit 3 offset 1;
-a    big
-1    2022-01-01 00:00:01
-1    2022-01-02 00:00:00.000100000
-1    2022-01-03 00:00:00
+a  ¦  big
+1  ¦  2022-01-01 00:00:01.0000
+1  ¦  2022-01-02 00:00:00.0001
+1  ¦  2022-01-03 00:00:00.0000
+
+#SQL[@24,N73]Result[]
 select big,count(big) from t1 group by big having count(big)>1 order by 2;
-big    count(big)
+
+#SQL[@25,N13]Result[]
 drop table t1;
+
+#SQL[@26,N104]Result[]
 create table t1 (id timestamp(6) not null default "2022-01-31 00:00:00.0000006", a int, primary key (a));
+
+#SQL[@27,N27]Result[]
 insert into t1(a) values(1);
+
+#SQL[@28,N16]Result[9, 33]
 select * from t1;
-id    a
-2022-01-31 00:00:00.000001000    1
+id  ¦  a
+2022-01-31 00:00:00.000001  ¦  1
+
+#SQL[@31,N23]Result[]
 drop table if exists t1;
+
+#SQL[@32,N23]Result[]
 drop table if exists t2;
+
+#SQL[@33,N94]Result[]
 create table t1 (
 dt  timestamp(6) not null,
 value32  integer not null,
 primary key(value32)
 );
+
+#SQL[@38,N94]Result[]
 create table t2 (
 dt  timestamp(3) not null,
 value32  integer not null,
 primary key(value32)
 );
+
+#SQL[@43,N54]Result[]
 insert into t1 values('2022-01-01 00:00:00.000050', 1);
+
+#SQL[@44,N54]Result[]
 insert into t1 values('2022-01-01 00:00:00.000500', 2);
+
+#SQL[@45,N54]Result[]
 insert into t1 values('2022-01-01 00:00:00.005000', 3);
+
+#SQL[@46,N51]Result[]
 insert into t2 values('2022-01-01 00:00:00.005', 4);
+
+#SQL[@47,N51]Result[]
 insert into t2 values('2022-01-01 00:00:00.001', 5);
+
+#SQL[@48,N16]Result[15, 33, 33, 33]
 select * from t1;
-dt    value32
-2022-01-01 00:00:00.000050000    1
-2022-01-01 00:00:00.000500000    2
-2022-01-01 00:00:00.005000000    3
+dt  ¦  value32
+2022-01-01 00:00:00.000050  ¦  1
+2022-01-01 00:00:00.000500  ¦  2
+2022-01-01 00:00:00.005000  ¦  3
+
+#SQL[@49,N16]Result[15, 30, 30]
 select * from t2;
-dt    value32
-2022-01-01 00:00:00.005000000    4
-2022-01-01 00:00:00.001000000    5
+dt  ¦  value32
+2022-01-01 00:00:00.005  ¦  4
+2022-01-01 00:00:00.001  ¦  5
+
+#SQL[@50,N66]Result[36, 69]
 select * from t1 join t2 on t1.dt=t2.dt order by 1 desc, t2.dt asc;
-dt    value32    dt    value32
-2022-01-01 00:00:00.005000000    3    2022-01-01 00:00:00.005000000    4
+dt  ¦  value32  ¦  dt  ¦  value32
+2022-01-01 00:00:00.005000  ¦  3  ¦  2022-01-01 00:00:00.005  ¦  4
+
+#SQL[@51,N68]Result[36, 69]
 select * from t1 join t2 on t1.dt=t2.dt where t1.value32<>t2.value32;
-dt    value32    dt    value32
-2022-01-01 00:00:00.005000000    3    2022-01-01 00:00:00.005000000    4
+dt  ¦  value32  ¦  dt  ¦  value32
+2022-01-01 00:00:00.005000  ¦  3  ¦  2022-01-01 00:00:00.005  ¦  4
+
+#SQL[@54,N23]Result[]
 drop table if exists t1;
+
+#SQL[@55,N23]Result[]
 drop table if exists t2;
+
+#SQL[@56,N41]Result[]
 CREATE TABLE t_timestamp(id timestamp(6));
+
+#SQL[@57,N86]Result[]
 INSERT INTO t_timestamp VALUES ('2020-01-01 23:59:59.999999'), ('2022-01-02 00:00:00');
+
+#SQL[@58,N42]Result[22, 37, 37]
 SELECT id, id = 202020101 FROM t_timestamp;
-id    id = 202020101
-2020-01-01 23:59:59.999999000    false
-2022-01-02 00:00:00    false
+id  ¦  id = 202020101
+2020-01-01 23:59:59.999999  ¦  false
+2022-01-02 00:00:00.000000  ¦  false
+
+#SQL[@59,N41]Result[21, 37, 37]
 SELECT id, 20200101 = id FROM t_timestamp;
-id    20200101 = id
-2020-01-01 23:59:59.999999000    false
-2022-01-02 00:00:00    false
+id  ¦  20200101 = id
+2020-01-01 23:59:59.999999  ¦  false
+2022-01-02 00:00:00.000000  ¦  false
+
+#SQL[@60,N45]Result[]
 SELECT * from t_timestamp WHERE id = 20200102;
-id
+
+#SQL[@61,N48]Error[57]
 SELECT * from t_timestamp WHERE id = 2.0200102e7;
 invalid argument operator =, bad value [TIMESTAMP DOUBLE]
+
+#SQL[@62,N47]Result[]
 SELECT * from t_timestamp WHERE id = '20200102';
-id
+
+#SQL[@63,N65]Result[2, 26]
 SELECT * from t_timestamp WHERE id IN ('2020-01-01','2022-01-02');
 id
-2022-01-02 00:00:00
+2022-01-02 00:00:00.000000
+
+#SQL[@64,N64]Error[57]
 SELECT * from t_timestamp WHERE id IN (2.0200101e7,2.0200102e7 );
 invalid argument operator =, bad value [TIMESTAMP DOUBLE]
+
+#SQL[@65,N67]Error[58]
 SELECT * from t_timestamp WHERE id NOT IN (2.0200101e7,2.0200102e7);
 invalid argument operator !=, bad value [TIMESTAMP DOUBLE]
+
+#SQL[@66,N70]Error[58]
 SELECT * from t_timestamp WHERE id BETWEEN 2.0200101e7 and 2.0200102e7;
 invalid argument operator >=, bad value [TIMESTAMP DOUBLE]
+
+#SQL[@67,N72]Result[2, 26]
 SELECT * from t_timestamp WHERE id BETWEEN '2020-01-01' AND '2020-01-02';
 id
-2020-01-01 23:59:59.999999000
+2020-01-01 23:59:59.999999
+
+#SQL[@68,N97]Result[2, 26]
 SELECT * from t_timestamp WHERE id BETWEEN '2022-01-01 00:00:00' AND '2022-01-02 00:00:00.000000';
 id
-2022-01-02 00:00:00
+2022-01-02 00:00:00.000000
+
+#SQL[@69,N23]Result[]
 drop table if exists t1;
+
+#SQL[@70,N32]Result[]
 CREATE TABLE t1 (a timestamp(6));
+
+#SQL[@71,N50]Result[]
 INSERT INTO t1 VALUES ('2022-03-01 00:00:01.0001');
+
+#SQL[@72,N76]Result[1, 26]
 SELECT * FROM t1 WHERE coalesce(a) not BETWEEN '2022-02-28' and '2022-03-01';
 a
-2022-03-01 00:00:01.000100000
+2022-03-01 00:00:01.000100
+
+#SQL[@73,N44]Result[1, 26]
 SELECT * FROM t1 WHERE coalesce(a)!=20220301;
 a
-2022-03-01 00:00:01.000100000
+2022-03-01 00:00:01.000100
+
+#SQL[@74,N79]Result[]
 SELECT * FROM t1 WHERE coalesce(a) in ('2022-03-01','2022-03-01 00:00:00.0001');
-a
+
+#SQL[@75,N13]Result[]
 drop table t1;
+
+#SQL[@78,N23]Result[]
 drop table if exists t1;
+
+#SQL[@79,N23]Result[]
 drop table if exists t2;
+
+#SQL[@80,N23]Result[]
 drop table if exists t3;
+
+#SQL[@81,N24]Result[]
 drop table if exists t21;
+
+#SQL[@82,N24]Result[]
 drop table if exists t12;
+
+#SQL[@83,N48]Result[]
 CREATE TABLE t1 (a timestamp, b int primary key);
+
+#SQL[@84,N73]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',1),('2022-01-01 00:00:00',2);
+
+#SQL[@85,N66]Result[]
 update t1 set a='2022-01-02' where a='2022-01-01 00:00:00' limit 1;
+
+#SQL[@86,N16]Result[8, 26, 26]
 select * from t1;
-a    b
-2022-01-01 00:00:00    2
-2022-01-02 00:00:00    1
+a  ¦  b
+2022-01-01 00:00:00  ¦  2
+2022-01-02 00:00:00  ¦  1
+
+#SQL[@87,N47]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',3);
+
+#SQL[@88,N58]Result[]
 update t1 set a='2022-01-02' where a='2022-01-01 00:00:00';
+
+#SQL[@89,N16]Result[8, 26, 26, 26]
 select * from t1;
-a    b
-2022-01-02 00:00:00    1
-2022-01-02 00:00:00    2
-2022-01-02 00:00:00    3
+a  ¦  b
+2022-01-02 00:00:00  ¦  1
+2022-01-02 00:00:00  ¦  2
+2022-01-02 00:00:00  ¦  3
+
+#SQL[@91,N13]Result[]
 drop table t1;
+
+#SQL[@92,N98]Result[]
 create table t1 (
 a timestamp primary key,
 b timestamp(4) not null default '2000-01-01 00:00:00'
 );
+
+#SQL[@96,N128]Result[]
 insert into t1 (a) values ('2022-01-02'),('2022-01-04'),('2022-01-06'),('2022-01-08'),('2022-01-10 01:01:01.000'),('2022-01-12');
+
+#SQL[@97,N21]Result[]
 update t1 set a=a+101;
+
+#SQL[@98,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:01:41    2000-01-01 00:00:00
-2022-01-04 00:01:41    2000-01-01 00:00:00
-2022-01-06 00:01:41    2000-01-01 00:00:00
-2022-01-08 00:01:41    2000-01-01 00:00:00
-2022-01-10 01:02:42    2000-01-01 00:00:00
-2022-01-12 00:01:41    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:02:42  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:01:41  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@99,N72]Result[]
 update t1 set a='2022-01-27 12:12:12.0001' where a='2022-01-08 00:01:01';
+
+#SQL[@100,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:01:41    2000-01-01 00:00:00
-2022-01-04 00:01:41    2000-01-01 00:00:00
-2022-01-06 00:01:41    2000-01-01 00:00:00
-2022-01-08 00:01:41    2000-01-01 00:00:00
-2022-01-10 01:02:42    2000-01-01 00:00:00
-2022-01-12 00:01:41    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:02:42  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:01:41  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@102,N31]Result[]
 update t1 set a=a-1 where 1 > 2;
+
+#SQL[@103,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:01:41    2000-01-01 00:00:00
-2022-01-04 00:01:41    2000-01-01 00:00:00
-2022-01-06 00:01:41    2000-01-01 00:00:00
-2022-01-08 00:01:41    2000-01-01 00:00:00
-2022-01-10 01:02:42    2000-01-01 00:00:00
-2022-01-12 00:01:41    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:01:41  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:02:42  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:01:41  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@104,N31]Result[]
 update t1 set a=a-1 where 3 > 2;
+
+#SQL[@105,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:01:40    2000-01-01 00:00:00
-2022-01-04 00:01:40    2000-01-01 00:00:00
-2022-01-06 00:01:40    2000-01-01 00:00:00
-2022-01-08 00:01:40    2000-01-01 00:00:00
-2022-01-10 01:02:41    2000-01-01 00:00:00
-2022-01-12 00:01:40    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:01:40  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:01:40  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:01:40  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:01:40  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:02:41  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:01:40  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@106,N13]Result[]
 drop table t1;
+
+#SQL[@107,N53]Result[]
 create table t1 (a timestamp primary key, b char(32));
+
+#SQL[@108,N65]Result[]
 insert into t1 values ('20220101','apple'),('2022-01-02','apple');
+
+#SQL[@109,N16]Result[8, 30, 30]
 select * from t1;
-a    b
-2022-01-01 00:00:00    apple
-2022-01-02 00:00:00    apple
+a  ¦  b
+2022-01-01 00:00:00  ¦  apple
+2022-01-02 00:00:00  ¦  apple
+
+#SQL[@112,N23]Result[]
 drop table if exists t1;
+
+#SQL[@113,N23]Result[]
 drop table if exists t2;
+
+#SQL[@114,N23]Result[]
 drop table if exists t3;
+
+#SQL[@115,N24]Result[]
 drop table if exists t11;
+
+#SQL[@116,N24]Result[]
 drop table if exists t12;
+
+#SQL[@117,N48]Result[]
 CREATE TABLE t1 (a timestamp, b int primary key);
+
+#SQL[@118,N73]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',1),('2022-01-01 00:00:00',2);
+
+#SQL[@119,N52]Result[]
 delete from t1 where a='2022-01-01 00:00:00' limit 1;
+
+#SQL[@120,N16]Result[8, 26]
 select * from t1;
-a    b
-2022-01-01 00:00:00    2
+a  ¦  b
+2022-01-01 00:00:00  ¦  2
+
+#SQL[@121,N47]Result[]
 INSERT INTO t1 VALUES ('2022-01-01 00:00:00',3);
+
+#SQL[@122,N35]Result[]
 delete from t1 where a='2022-01-01';
+
+#SQL[@123,N16]Result[]
 select * from t1;
-a    b
+
+#SQL[@125,N13]Result[]
 drop table t1;
+
+#SQL[@126,N97]Result[]
 create table t1 (
 a timestamp primary key,
 b timestamp(4) not null default '2000-01-01 00:00:00');
+
+#SQL[@129,N128]Result[]
 insert into t1 (a) values ('2022-01-02'),('2022-01-04'),('2022-01-06'),('2022-01-08'),('2022-01-10 01:01:01.000'),('2022-01-12');
+
+#SQL[@130,N33]Result[]
 delete from t1 where a=20220101+3;
+
+#SQL[@131,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@132,N27]Result[]
 delete from t1 where  3 < 2;
+
+#SQL[@133,N18]Result[8, 49, 49, 49, 49, 49, 49]
 select a,b from t1;
-a    b
-2022-01-02 00:00:00    2000-01-01 00:00:00
-2022-01-04 00:00:00    2000-01-01 00:00:00
-2022-01-06 00:00:00    2000-01-01 00:00:00
-2022-01-08 00:00:00    2000-01-01 00:00:00
-2022-01-10 01:01:01    2000-01-01 00:00:00
-2022-01-12 00:00:00    2000-01-01 00:00:00
+a  ¦  b
+2022-01-02 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-04 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-06 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-08 00:00:00  ¦  2000-01-01 00:00:00.0000
+2022-01-10 01:01:01  ¦  2000-01-01 00:00:00.0000
+2022-01-12 00:00:00  ¦  2000-01-01 00:00:00.0000
+
+#SQL[@134,N27]Result[]
 delete from t1 where  1 < 2;
+
+#SQL[@135,N18]Result[]
 select a,b from t1;
-a    b
+
+#SQL[@136,N13]Result[]
 drop table t1;
+
+#SQL[@137,N53]Result[]
 create table t1 (a timestamp primary key, b char(32));
+
+#SQL[@138,N74]Result[]
 insert into t1 values ('20220101','apple'),('2022-01-02 00:00:00','apple');
+
+#SQL[@139,N16]Result[8, 30, 30]
 select * from t1;
-a    b
-2022-01-01 00:00:00    apple
-2022-01-02 00:00:00    apple
+a  ¦  b
+2022-01-01 00:00:00  ¦  apple
+2022-01-02 00:00:00  ¦  apple
+
+#SQL[@142,N23]Result[]
 set time_zone = '+8:00';
+
+#SQL[@143,N23]Result[]
 drop table if exists t1;
+
+#SQL[@144,N31]Result[]
 create table t1(t timestamp(6));
+
+#SQL[@145,N82]Result[]
 insert into t1 values('2020-01-01 23:59:59.999999'),('2021-02-03 04:05:06.070809');
+
+#SQL[@146,N20]Result[5, 17, 17]
 select t + 1 from t1;
 t + 1
 1577894400.999999
 1612296307.070809
+
+#SQL[@147,N20]Result[5, 17, 17]
 select t - 1 from t1;
 t - 1
 1577894398.999999
 1612296305.070809
+
+#SQL[@148,N21]Result[6, 18, 18]
 select t * 10 from t1;
 t * 10
 15778943999.999990
 16122963060.708090
+
+#SQL[@149,N21]Result[6, 22, 22]
 select t / 10 from t1;
 t / 10
 157789439.999999900000
 161229630.607080900000
+
+#SQL[@150,N20]Result[5, 8, 8]
 select t % 5 from t1;
 t % 5
 4.999999
 1.070809
+
+#SQL[@152,N23]Result[]
 drop table if exists t1;
+
+#SQL[@153,N31]Result[]
 create table t1(t timestamp(6));
+
+#SQL[@154,N51]Result[]
 insert into t1 values('2020-01-01 23:59:59.999999');
+
+#SQL[@155,N51]Result[]
 insert into t1 values('2021-02-03 04:05:06.070809');
+
+#SQL[@156,N49]Result[]
 insert into t1 values({ts '2024-01-01 23:59:59'});
+
+#SQL[@157,N49]Result[]
 insert into t1 values({ts '2024-02-03 04:05:06'});
+
+#SQL[@158,N16]Result[1, 26, 26, 26, 26]
 select * from t1;
 t
-2020-01-01 23:59:59.999999000
-2021-02-03 04:05:06.070809000
-2024-01-01 23:59:59
-2024-02-03 04:05:06
+2020-01-01 23:59:59.999999
+2021-02-03 04:05:06.070809
+2024-01-01 23:59:59.000000
+2024-02-03 04:05:06.000000
+
+#SQL[@160,N33]Result[]
 insert into t1 values({ts now()});
+
+#SQL[@161,N16]Result[1, 26, 26, 26, 26, 26]
 select * from t1;
 t
-2020-01-01 23:59:59.999999000
-2021-02-03 04:05:06.070809000
-2024-01-01 23:59:59
-2024-02-03 04:05:06
-2024-11-04 15:17:34.860245000
+2020-01-01 23:59:59.999999
+2021-02-03 04:05:06.070809
+2024-01-01 23:59:59.000000
+2024-02-03 04:05:06.000000
+2025-10-10 11:42:14.923976
+
+#SQL[@164,N24]Result[]
 SET TIME_ZONE = "SYSTEM";
+
+#SQL[@165,N13]Result[]
 drop table t1;
+

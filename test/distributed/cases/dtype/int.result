@@ -1,273 +1,479 @@
+#SQL[@1,N57]Result[]
 create table t1 (a int unsigned not null, primary key(a));
+
+#SQL[@2,N76]Result[]
 insert into t1 values (4294967295), (0xFFFFFFFE), (4294967293), (4294967291);
+
+#SQL[@3,N31]Result[1, 10, 10, 10, 10]
 select * from t1 order by a asc;
 a
 4294967291
 4294967293
 4294967294
 4294967295
+
+#SQL[@4,N51]Result[1, 10]
 select * from t1 where a=4294967295 order by 1 desc;
 a
 4294967295
+
+#SQL[@5,N33]Result[]
 delete from t1 where a=4294967295;
+
+#SQL[@6,N16]Result[1, 10, 10, 10]
 select * from t1;
 a
-4294967291
-4294967293
 4294967294
+4294967293
+4294967291
+
+#SQL[@7,N13]Result[]
 drop table t1;
+
+#SQL[@8,N66]Result[]
 create table t1 ( a int not null default 1, int32 int primary key);
+
+#SQL[@9,N60]Result[]
 insert into t1 (int32) values (-1),(1234567890),(2147483647);
+
+#SQL[@10,N43]Result[12, 9, 17, 17]
 select * from t1 order by a desc, int32 asc;
-a	int32
-1	-1
-1	1234567890
-1	2147483647
+a  ¦  int32
+1  ¦  -1
+1  ¦  1234567890
+1  ¦  2147483647
+
+#SQL[@11,N49]Result[46, 34]
 select min(int32),max(int32),max(int32)-1 from t1;
-min(int32)	max(int32)	max(int32)-1
--1	2147483647	2147483646
+min(int32)  ¦  max(int32)  ¦  max(int32) - 1
+-1  ¦  2147483647  ¦  2147483646
+
+#SQL[@12,N60]Result[46, 34]
 select min(int32),max(int32),max(int32)-1 from t1 group by a;
-min(int32)	max(int32)	max(int32)-1
--1	2147483647	2147483646
+min(int32)  ¦  max(int32)  ¦  max(int32) - 1
+-1  ¦  2147483647  ¦  2147483646
+
+#SQL[@13,N13]Result[]
 drop table t1;
+
+#SQL[@14,N75]Result[]
 create table t1 ( a int not null default 1, int32 int unsigned primary key);
+
+#SQL[@15,N88]Result[]
 insert into t1 (int32) values (0),(4294967295), (0xFFFFFFFE), (4294967293), (4294967291);
+
+#SQL[@16,N39]Result[12, 8, 17, 17, 17, 17]
 select * from t1 order by a desc, 2 asc;
-a	int32
-1	0
-1	4294967291
-1	4294967293
-1	4294967294
-1	4294967295
+a  ¦  int32
+1  ¦  0
+1  ¦  4294967291
+1  ¦  4294967293
+1  ¦  4294967294
+1  ¦  4294967295
+
+#SQL[@17,N41]Result[12, 17, 17, 17]
 select * from t1 order by int32 limit 1,3;
-a	int32
-1	4294967291
-1	4294967293
-1	4294967294
+a  ¦  int32
+1  ¦  4294967291
+1  ¦  4294967293
+1  ¦  4294967294
+
+#SQL[@18,N48]Result[12, 17, 17, 17]
 select * from t1 order by int32 limit 3 offset 1;
-a	int32
-1	4294967291
-1	4294967293
-1	4294967294
+a  ¦  int32
+1  ¦  4294967291
+1  ¦  4294967293
+1  ¦  4294967294
+
+#SQL[@19,N49]Result[46, 33]
 select min(int32),max(int32),max(int32)-1 from t1;
-min(int32)	max(int32)	max(int32)-1
-0	4294967295	4294967294
+min(int32)  ¦  max(int32)  ¦  max(int32) - 1
+0  ¦  4294967295  ¦  4294967294
+
+#SQL[@20,N60]Result[46, 33]
 select min(int32),max(int32),max(int32)-1 from t1 group by a;
-min(int32)	max(int32)	max(int32)-1
-0	4294967295	4294967294
+min(int32)  ¦  max(int32)  ¦  max(int32) - 1
+0  ¦  4294967295  ¦  4294967294
+
+#SQL[@21,N13]Result[]
 drop table t1;
+
+#SQL[@22,N43]Result[]
 create table t1 (id int primary key, a int);
+
+#SQL[@23,N27]Result[]
 insert into t1 values (1,1);
+
+#SQL[@24,N29]Result[9, 8]
 select * from t1 order by 1+2;
-id	a
-1	1
+id  ¦  a
+1  ¦  1
+
+#SQL[@25,N33]Result[9, 8]
 select * from t1 limit 9999999999;
-id	a
-1	1
+id  ¦  a
+1  ¦  1
+
+#SQL[@26,N23]Result[]
 drop table if exists t1;
+
+#SQL[@27,N23]Result[]
 drop table if exists t2;
+
+#SQL[@28,N110]Result[]
 create table t1 (
 valueu32  int unsigned  not null,
 value32  integer          not null,
 primary key(value32)
 );
+
+#SQL[@33,N110]Result[]
 create table t2 (
 valueu32  int unsigned  not null,
 value32  integer          not null,
 primary key(value32)
 );
+
+#SQL[@38,N36]Result[]
 insert into t1 values(4294967295, 1);
+
+#SQL[@39,N37]Result[]
 insert into t1 values( 2147483647, 2);
+
+#SQL[@40,N36]Result[]
 insert into t2 values(4294967295, 3);
+
+#SQL[@41,N37]Result[]
 insert into t2 values( 2147483647, 4);
+
+#SQL[@42,N36]Result[]
 insert into t1 values(5,-2147483648);
+
+#SQL[@43,N36]Result[]
 insert into t2 values(5,-2147483648);
+
+#SQL[@44,N16]Result[21, 17, 17, 18]
 select * from t1;
-valueu32	value32
-5	-2147483648
-4294967295	1
-2147483647	2
+valueu32  ¦  value32
+4294967295  ¦  1
+2147483647  ¦  2
+5  ¦  -2147483648
+
+#SQL[@45,N31]Result[21, 18, 17, 17]
 select * from t2 order by 2 asc;
-valueu32	value32
-5	-2147483648
-4294967295	3
-2147483647	4
+valueu32  ¦  value32
+5  ¦  -2147483648
+4294967295  ¦  3
+2147483647  ¦  4
+
+#SQL[@46,N83]Result[48, 42, 40, 40]
 select * from t1 join t2 on t1.valueu32=t2.valueu32 order by 1 asc, t2.value32 desc;
-valueu32	value32	valueu32	value32
-5	-2147483648	5	-2147483648
-2147483647	2	2147483647	4
-4294967295	1	4294967295	3
+valueu32  ¦  value32  ¦  valueu32  ¦  value32
+5  ¦  -2147483648  ¦  5  ¦  -2147483648
+2147483647  ¦  2  ¦  2147483647  ¦  4
+4294967295  ¦  1  ¦  4294967295  ¦  3
+
+#SQL[@47,N101]Result[48, 40]
 select * from t1 join t2 on t1.valueu32=t2.valueu32 where t1.valueu32=4294967295 order by abs(3) desc;
-valueu32	value32	valueu32	value32
-4294967295	1	4294967295	3
+valueu32  ¦  value32  ¦  valueu32  ¦  value32
+4294967295  ¦  1  ¦  4294967295  ¦  3
+
+#SQL[@48,N65]Result[48, 42]
 select * from t1 join t2 on t1.value32=t2.value32 order by 2 desc;
-valueu32	value32	valueu32	value32
-5	-2147483648	5	-2147483648
+valueu32  ¦  value32  ¦  valueu32  ¦  value32
+5  ¦  -2147483648  ¦  5  ¦  -2147483648
+
+#SQL[@49,N23]Result[]
 drop table if exists t1;
+
+#SQL[@50,N23]Result[]
 drop table if exists t2;
+
+#SQL[@51,N37]Result[]
 create table t1 (sint32 int not null);
+
+#SQL[@52,N35]Result[]
 insert into t1 values (-2147483648);
+
+#SQL[@53,N32]Result[6, 11]
 select * from t1 order by 1 desc;
 sint32
 -2147483648
+
+#SQL[@54,N13]Result[]
 drop table t1;
+
+#SQL[@55,N38]Result[]
 create table t1 (int_col int unsigned);
+
+#SQL[@56,N34]Result[]
 insert into t1 values (4294960000);
+
+#SQL[@57,N41]Result[7, 10]
 select * from t1 where int_col=4294960000;
 int_col
 4294960000
-select * from t1 where int_col='4294960000';
-int_col
-4294960000
+
+#SQL[@61,N13]Result[]
 drop table t1;
+
+#SQL[@62,N52]Result[6, 1]
 select cast(4294960000 as unsigned) mod 50 as result;
 result
 0
+
+#SQL[@63,N33]Result[26, 10]
 select cast(2147399999 as signed);
 cast(2147399999 as signed)
 2147399999
+
+#SQL[@64,N34]Result[27, 11]
 select cast(-2147399999 as signed);
 cast(-2147399999 as signed)
 -2147399999
+
+#SQL[@65,N71]Result[]
 CREATE TABLE t1 (id INT PRIMARY KEY,
 a INT(10) UNSIGNED,
 b VARCHAR(10));
+
+#SQL[@68,N136]Result[]
 INSERT INTO t1 (id,a) VALUES
 (1,0),
 (2,CAST(0x7FFFFFFF AS UNSIGNED)),
 (3,CAST(0x80000000 AS UNSIGNED)),
 (4,CAST(0xFFFFFFFF AS UNSIGNED));
+
+#SQL[@73,N19]Result[]
 UPDATE t1 SET b = a;
-select * from t1 where ((a = 4294967295) and (b = '4294967295')) order by 1 desc, 2 asc;
-id	a	b
-4	4294967295	4294967295
+
+#SQL[@77,N26]Result[]
 CREATE TABLE t_int(id INT);
+
+#SQL[@78,N33]Result[]
 INSERT INTO t_int VALUES (1), (2);
+
+#SQL[@79,N31]Result[17, 12, 11]
 SELECT id, id >= 1.1 FROM t_int;
-id	id >= 1.1
-1	false	
-2	true	
+id  ¦  id >= 1.1
+1  ¦  false
+2  ¦  true
+
+#SQL[@80,N31]Result[17, 12, 11]
 SELECT id, 1.1 <= id FROM t_int;
-id	1.1 <= id
-1	false	
-2	true	
+id  ¦  1.1 <= id
+1  ¦  false
+2  ¦  true
+
+#SQL[@81,N30]Result[16, 12, 12]
 SELECT id, id = 1.1 FROM t_int;
-id	id = 1.1
-1	false	
-2	false	
+id  ¦  id = 1.1
+1  ¦  false
+2  ¦  false
+
+#SQL[@82,N30]Result[16, 12, 12]
 SELECT id, 1.1 = id FROM t_int;
-id	1.1 = id
-1	false	
-2	false	
+id  ¦  1.1 = id
+1  ¦  false
+2  ¦  false
+
+#SQL[@83,N34]Result[]
 SELECT * from t_int WHERE id = 1.1;
-id
+
+#SQL[@84,N36]Result[]
 SELECT * from t_int WHERE id = 1.1e0;
-id
+
+#SQL[@85,N36]Error[43]
 SELECT * from t_int WHERE id = '1.1';
 invalid argument cast to int, bad value 1.1
+
+#SQL[@86,N38]Error[45]
 SELECT * from t_int WHERE id = '1.1e0';
 invalid argument cast to int, bad value 1.1e0
+
+#SQL[@87,N42]Result[]
 SELECT * from t_int WHERE id IN (1.1, 2.2);
-id
+
+#SQL[@88,N46]Result[]
 SELECT * from t_int WHERE id IN (1.1e0, 2.2e0);
-id
+
+#SQL[@89,N46]Error[43]
 SELECT * from t_int WHERE id IN ('1.1', '2.2');
 invalid argument cast to int, bad value 1.1
+
+#SQL[@90,N50]Error[45]
 SELECT * from t_int WHERE id IN ('1.1e0', '2.2e0');
 invalid argument cast to int, bad value 1.1e0
+
+#SQL[@91,N48]Result[]
 SELECT * from t_int WHERE id BETWEEN 1.1 AND 1.9;
-id
+
+#SQL[@92,N52]Result[]
 SELECT * from t_int WHERE id BETWEEN 1.1e0 AND 1.9e0;
-id
+
+#SQL[@93,N52]Error[43]
 SELECT * from t_int WHERE id BETWEEN '1.1' AND '1.9';
 invalid argument cast to int, bad value 1.1
+
+#SQL[@94,N56]Error[45]
 SELECT * from t_int WHERE id BETWEEN '1.1e0' AND '1.9e0';
 invalid argument cast to int, bad value 1.1e0
+
+#SQL[@96,N13]Result[]
 drop table t1;
+
+#SQL[@97,N23]Result[]
 CREATE TABLE t1 (a INT);
+
+#SQL[@98,N25]Result[]
 INSERT INTO t1 VALUES (1);
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-a
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-a
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
-a
+
+#SQL[@104,N42]Result[]
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
-a
+
+#SQL[@105,N28]Result[]
 SELECT * FROM t1 WHERE a=0.9;
-a
+
+#SQL[@106,N48]Result[]
 SELECT * FROM t1 WHERE a IN (0.8,0.9) order by 1;
-a
+
+#SQL[@107,N13]Result[]
 drop table t1;
+
+#SQL[@108,N39]Result[]
 create table t (id int unsigned, b int);
+
+#SQL[@109,N34]Result[]
 insert into t values(2147483647,1);
+
+#SQL[@110,N34]Result[]
 insert into t values(4294967295,2);
+
+#SQL[@111,N34]Result[]
 insert into t values(2147483643,3);
+
+#SQL[@112,N74]Result[8, 1]
 select count(*) from t
 where id>=2147483647 and id <=4294967295 order by 1;
 count(*)
 2
+
+#SQL[@114,N65]Result[8, 1]
 select count(*) from t
 where id between 2147483647 and 4294967295;
 count(*)
 2
+
+#SQL[@116,N12]Result[]
 drop table t;
+
+#SQL[@117,N44]Result[35, 4]
 SELECT (4294967294 BETWEEN 0 AND 4294967295);
-(4294967294 BETWEEN 0 AND 4294967295)
+4294967294 between 0 and 4294967295
 true
+
+#SQL[@118,N24]Result[16, 4]
 SELECT  -2147483600 <= 0;
 -2147483600 <= 0
 true
+
+#SQL[@119,N22]Result[15, 4]
 SELECT 0 <= 2147483647;
 0 <= 2147483647
 true
+
+#SQL[@120,N45]Result[38, 5]
 SELECT CAST(100 AS UNSIGNED) BETWEEN 1 AND -1;
-CAST(100 AS UNSIGNED) BETWEEN 1 AND -1
+cast(100 as unsigned) between 1 and -1
 false
+
+#SQL[@121,N49]Result[42, 4]
 SELECT CAST(100 AS UNSIGNED) NOT BETWEEN 1 AND -1;
-CAST(100 AS UNSIGNED) NOT BETWEEN 1 AND -1
+cast(100 as unsigned) not between 1 and -1
 true
+
+#SQL[@122,N43]Result[36, 5]
 SELECT CAST(0 AS UNSIGNED) BETWEEN 0 AND -1;
-CAST(0 AS UNSIGNED) BETWEEN 0 AND -1
+cast(0 as unsigned) between 0 and -1
 false
+
+#SQL[@123,N47]Result[40, 4]
 SELECT CAST(0 AS UNSIGNED) NOT BETWEEN 0 AND -1;
-CAST(0 AS UNSIGNED) NOT BETWEEN 0 AND -1
+cast(0 as unsigned) not between 0 and -1
 true
+
+#SQL[@124,N55]Result[44, 4]
 SELECT ( 4294967296 BETWEEN 4294967296 AND 4294967296 );
-( 4294967296 BETWEEN 4294967296 AND 4294967296 )
+4294967296 between 4294967296 and 4294967296
 true
+
+#SQL[@125,N46]Result[35, 5]
 SELECT ( 2147483647 BETWEEN 4294967296 AND 1 );
-( 2147483647 BETWEEN 4294967296 AND 1 )
+2147483647 between 4294967296 and 1
 false
+
+#SQL[@126,N38]Result[27, 5]
 SELECT ( -1 BETWEEN 4294967296 AND 1 );
-( -1 BETWEEN 4294967296 AND 1 )
+-1 between 4294967296 and 1
 false
+
+#SQL[@127,N37]Result[26, 5]
 SELECT ( 0 BETWEEN 4294967296 AND 1 );
-( 0 BETWEEN 4294967296 AND 1 )
+0 between 4294967296 and 1
 false
+
+#SQL[@128,N37]Result[26, 5]
 SELECT ( 1 BETWEEN 4294967296 AND 1 );
-( 1 BETWEEN 4294967296 AND 1 )
+1 between 4294967296 and 1
 false
+
+#SQL[@129,N23]Result[]
 drop table if exists t1;
+
+#SQL[@130,N23]Result[]
 drop table if exists t2;
+
+#SQL[@131,N23]Result[]
 drop table if exists t3;
+
+#SQL[@132,N24]Result[]
 drop table if exists t11;
+
+#SQL[@133,N24]Result[]
 drop table if exists t12;
+
+#SQL[@134,N48]Result[]
 CREATE TABLE t1 (a int(3), b int(5) primary key);
+
+#SQL[@135,N33]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2);
+
+#SQL[@136,N35]Result[]
 update t1 set a=2 where a=1 limit 1;
+
+#SQL[@137,N16]Result[8, 8, 8]
 select * from t1;
-a	b
-2	1
-1	2
+a  ¦  b
+1  ¦  2
+2  ¦  1
+
+#SQL[@138,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@139,N27]Result[]
 update t1 set a=2 where a=1;
+
+#SQL[@140,N16]Result[8, 8, 8, 8]
 select * from t1;
-a	b
-2	1
-2	2
-2	3
+a  ¦  b
+2  ¦  1
+2  ¦  2
+2  ¦  3
+
+#SQL[@141,N13]Result[]
 drop table t1;
+
+#SQL[@142,N284]Result[]
 create table t1 (
 a int not null,
 b int not null default 0,
@@ -280,98 +486,151 @@ h int not null default 0,
 i int not null default 0,
 j int not null default 0,
 primary key (a));
+
+#SQL[@154,N91]Result[]
 insert into t1 (a) values (2),(4),(6),(8),(10),(12),(14),(16),(18),(20),(22),(24),(26),(23);
+
+#SQL[@155,N21]Result[]
 update t1 set a=a+101;
+
+#SQL[@156,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+a  ¦  b
+103  ¦  0
+105  ¦  0
+107  ¦  0
+109  ¦  0
+111  ¦  0
+113  ¦  0
+115  ¦  0
+117  ¦  0
+119  ¦  0
+121  ¦  0
+123  ¦  0
+125  ¦  0
+127  ¦  0
+124  ¦  0
+
+#SQL[@157,N30]Result[]
 update t1 set a=127 where a=25;
+
+#SQL[@158,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+a  ¦  b
+103  ¦  0
+105  ¦  0
+107  ¦  0
+109  ¦  0
+111  ¦  0
+113  ¦  0
+115  ¦  0
+117  ¦  0
+119  ¦  0
+121  ¦  0
+123  ¦  0
+125  ¦  0
+127  ¦  0
+124  ¦  0
+
+#SQL[@159,N31]Result[]
 update t1 set a=a-1 where 1 > 2;
+
+#SQL[@160,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+a  ¦  b
+103  ¦  0
+105  ¦  0
+107  ¦  0
+109  ¦  0
+111  ¦  0
+113  ¦  0
+115  ¦  0
+117  ¦  0
+119  ¦  0
+121  ¦  0
+123  ¦  0
+125  ¦  0
+127  ¦  0
+124  ¦  0
+
+#SQL[@161,N31]Result[]
 update t1 set a=a-1 where 3 > 2;
+
+#SQL[@162,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-102	0
-104	0
-106	0
-108	0
-110	0
-112	0
-114	0
-116	0
-118	0
-120	0
-122	0
-123	0
-124	0
-126	0
+a  ¦  b
+102  ¦  0
+104  ¦  0
+106  ¦  0
+108  ¦  0
+110  ¦  0
+112  ¦  0
+114  ¦  0
+116  ¦  0
+118  ¦  0
+120  ¦  0
+122  ¦  0
+124  ¦  0
+126  ¦  0
+123  ¦  0
+
+#SQL[@163,N13]Result[]
 drop table t1;
+
+#SQL[@164,N47]Result[]
 create table t1 (a int primary key, b char(32));
+
+#SQL[@165,N46]Result[]
 insert into t1 values (1,'apple'), (2,'apple');
+
+#SQL[@166,N16]Result[8, 12, 12]
 select * from t1;
-a	b
-1	apple
-2	apple
+a  ¦  b
+1  ¦  apple
+2  ¦  apple
+
+#SQL[@167,N23]Result[]
 drop table if exists t1;
+
+#SQL[@168,N23]Result[]
 drop table if exists t2;
+
+#SQL[@169,N23]Result[]
 drop table if exists t3;
+
+#SQL[@170,N24]Result[]
 drop table if exists t11;
+
+#SQL[@171,N24]Result[]
 drop table if exists t12;
+
+#SQL[@172,N48]Result[]
 CREATE TABLE t1 (a int(3), b int(5) primary key);
+
+#SQL[@173,N33]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2);
+
+#SQL[@174,N32]Result[]
 delete from t1 where a=1 limit 1;
+
+#SQL[@175,N16]Result[8, 8]
 select * from t1;
-a	b
-1	2
+a  ¦  b
+1  ¦  2
+
+#SQL[@176,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@177,N24]Result[]
 delete from t1 where a=1;
+
+#SQL[@178,N16]Result[]
 select * from t1;
-a	b
+
+#SQL[@179,N13]Result[]
 drop table t1;
+
+#SQL[@180,N284]Result[]
 create table t1 (
 a int not null,
 b int not null default 0,
@@ -384,147 +643,299 @@ h int not null default 0,
 i int not null default 0,
 j int not null default 0,
 primary key (a));
+
+#SQL[@192,N91]Result[]
 insert into t1 (a) values (2),(4),(6),(8),(10),(12),(14),(16),(18),(20),(22),(24),(26),(23);
+
+#SQL[@193,N26]Result[]
 delete from t1 where a=2+2;
+
+#SQL[@194,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-23	0
-24	0
-26	0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+24  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@195,N26]Result[]
 delete from t1 where  a=24;
+
+#SQL[@196,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-23	0
-26	0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@197,N27]Result[]
 delete from t1 where  3 < 2;
+
+#SQL[@198,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-23	0
-26	0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@199,N27]Result[]
 delete from t1 where  1 < 2;
+
+#SQL[@200,N18]Result[]
 select a,b from t1;
-a	b
+
+#SQL[@201,N13]Result[]
 drop table t1;
+
+#SQL[@202,N47]Result[]
 create table t1 (a int primary key, b char(32));
+
+#SQL[@203,N46]Result[]
 insert into t1 values (1,'apple'), (2,'apple');
+
+#SQL[@204,N16]Result[8, 12, 12]
 select * from t1;
-a	b
-1	apple
-2	apple
+a  ¦  b
+1  ¦  apple
+2  ¦  apple
+
+#SQL[@206,N13]Result[]
 drop table t1;
+
+#SQL[@207,N22]Result[]
 create table t1(a int);
+
+#SQL[@208,N48]Result[]
 insert into t1 values(-2147483648), (2147483647);
+
+#SQL[@209,N16]Result[1, 11, 10]
 select * from t1;
 a
 -2147483648
 2147483647
+
+#SQL[@210,N34]Error[55]
 insert into t1 values(-2147483649);
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@211,N33]Error[54]
 insert into t1 values(2147483648);
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@213,N31]Result[]
 create table t2(a int unsigned);
+
+#SQL[@214,N33]Result[]
 insert into t2 values(2147483647);
+
+#SQL[@215,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@216,N33]Result[]
 insert into t2 values(2147483648);
+
+#SQL[@217,N31]Error[54]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@219,N13]Result[]
 drop table t2;
+
+#SQL[@220,N34]Result[]
 create table t2(a bigint unsigned);
+
+#SQL[@221,N33]Result[]
 insert into t2 values(2147483647);
+
+#SQL[@222,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@223,N33]Result[]
 insert into t2 values(2147483648);
+
+#SQL[@224,N31]Error[54]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@226,N13]Result[]
 drop table t2;
+
+#SQL[@227,N25]Result[]
 create table t2(a bigint);
+
+#SQL[@228,N48]Result[]
 insert into t2 values(-2147483648), (2147483647);
+
+#SQL[@229,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@230,N34]Result[]
 insert into t2 values(-2147483649);
+
+#SQL[@231,N31]Error[55]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@232,N14]Result[]
 delete from t2;
+
+#SQL[@233,N33]Result[]
 insert into t2 values(2147483648);
+
+#SQL[@234,N31]Error[54]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@236,N13]Result[]
 drop table t2;
+
+#SQL[@237,N33]Result[]
 create table t2(a decimal(17, 0));
+
+#SQL[@238,N48]Result[]
 insert into t2 values(-2147483648), (2147483647);
+
+#SQL[@239,N16]Result[1, 11, 10]
 select * from t2;
 a
 -2147483648
 2147483647
+
+#SQL[@240,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@241,N34]Result[]
 insert into t2 values(-2147483649);
+
+#SQL[@242,N31]Error[55]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@243,N14]Result[]
 delete from t2;
+
+#SQL[@244,N33]Result[]
 insert into t2 values(2147483648);
+
+#SQL[@245,N31]Error[54]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@246,N13]Result[]
 drop table t1;
+
+#SQL[@247,N13]Result[]
 drop table t2;
+
+#SQL[@249,N31]Result[]
 create table t1(a int unsigned);
+
+#SQL[@250,N38]Result[]
 insert into t1 values(0), (4294967295);
+
+#SQL[@251,N16]Result[1, 1, 10]
 select * from t1;
 a
 0
 4294967295
+
+#SQL[@252,N25]Error[47]
 insert into t1 values(-1);
-Data truncation: data out of range: data type uint32, value '-1'
+data out of range: data type uint32, value '-1'
+
+#SQL[@253,N33]Error[55]
 insert into t1 values(4294967296);
-Data truncation: data out of range: data type uint32, value '4294967296'
+data out of range: data type uint32, value '4294967296'
+
+#SQL[@255,N26]Result[]
 create table t2(a tinyint);
+
+#SQL[@256,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@257,N31]Error[45]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint, value '-1'
+data out of range: data type uint, value '-1'
+
+#SQL[@259,N13]Result[]
 drop table t2;
+
+#SQL[@260,N27]Result[]
 create table t2(a smallint);
+
+#SQL[@261,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@262,N31]Error[45]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint, value '-1'
+data out of range: data type uint, value '-1'
+
+#SQL[@264,N13]Result[]
 drop table t2;
+
+#SQL[@265,N22]Result[]
 create table t2(a int);
+
+#SQL[@266,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@267,N31]Error[45]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint, value '-1'
+data out of range: data type uint, value '-1'
+
+#SQL[@269,N13]Result[]
 drop table t2;
+
+#SQL[@270,N25]Result[]
 create table t2(a bigint);
+
+#SQL[@271,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@272,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint32, value '-1'
+data out of range: data type uint32, value '-1'
+
+#SQL[@273,N14]Result[]
 delete from t2;
+
+#SQL[@274,N33]Result[]
 insert into t2 values(4294967296);
+
+#SQL[@275,N31]Error[55]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint32, value '4294967296'
+data out of range: data type uint32, value '4294967296'
+
+#SQL[@277,N13]Result[]
 drop table t1;
+
+#SQL[@278,N13]Result[]
 drop table t2;
+

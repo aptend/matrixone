@@ -1,66 +1,109 @@
+#SQL[@1,N49]Result[]
 create table typec(a int,b enum('4','3','2','1'));
+
+#SQL[@2,N29]Result[]
 insert into typec values(1,1);
+
+#SQL[@3,N31]Result[]
 insert into typec values(2,'1');
+
+#SQL[@4,N19]Result[8, 8, 8]
 select * from typec;
-a    b
-1    1
-2    4
+a  ¦  b
+1  ¦  1
+2  ¦  4
+
+#SQL[@5,N16]Result[]
 drop table typec;
+
+#SQL[@7,N138]Result[]
 CREATE TABLE orders (
-id INT PRIMARY KEY,
-order_number VARCHAR(20),
-status ENUM('Pending', 'Processing', 'Completed', 'Cancelled')
+  id INT PRIMARY KEY,
+  order_number VARCHAR(20),
+  status ENUM('Pending', 'Processing', 'Completed', 'Cancelled')
 );
+
+#SQL[@12,N82]Result[]
 insert into orders values(1,'111',1),(2,'222',2),(3,'333',3),(4,'444','Cancelled');
+
+#SQL[@13,N20]Result[32, 23, 26, 25, 25]
 select * from orders;
-id    order_number    status
-1    111    Pending
-2    222    Processing
-3    333    Completed
-4    444    Cancelled
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+2  ¦  222  ¦  Processing
+3  ¦  333  ¦  Completed
+4  ¦  444  ¦  Cancelled
+
+#SQL[@14,N54]Result[]
 update orders set status= 1 where status= 'Processing';
+
+#SQL[@15,N20]Result[32, 23, 25, 25, 23]
 select * from orders;
-id    order_number    status
-1    111    Pending
-3    333    Completed
-4    444    Cancelled
-2    222    Pending
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+3  ¦  333  ¦  Completed
+4  ¦  444  ¦  Cancelled
+2  ¦  222  ¦  Pending
+
+#SQL[@16,N44]Result[]
 delete from orders where status= 'Completed';
+
+#SQL[@17,N20]Result[32, 23, 25, 23]
 select * from orders;
-id    order_number    status
-1    111    Pending
-4    444    Cancelled
-2    222    Pending
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+4  ¦  444  ¦  Cancelled
+2  ¦  222  ¦  Pending
+
+#SQL[@18,N62]Result[]
 update orders set status='Pending' where status = 'Processing';
+
+#SQL[@19,N20]Result[32, 23, 25, 23]
 select * from orders;
-id    order_number    status
-1    111    Pending
-4    444    Cancelled
-2    222    Pending
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+4  ¦  444  ¦  Cancelled
+2  ¦  222  ¦  Pending
+
+#SQL[@20,N45]Result[32, 25]
 select * from orders where status='Cancelled';
-id    order_number    status
-4    444    Cancelled
+id  ¦  order_number  ¦  status
+4  ¦  444  ¦  Cancelled
+
+#SQL[@21,N60]Result[32, 23, 25, 23]
 select * from orders where status in ('Pending','Cancelled');
-id    order_number    status
-1    111    Pending
-4    444    Cancelled
-2    222    Pending
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+4  ¦  444  ¦  Cancelled
+2  ¦  222  ¦  Pending
+
+#SQL[@22,N39]Result[]
 insert into orders values(3,'333',null);
+
+#SQL[@23,N51]Result[]
 insert into orders(id,order_number) values(5,'555');
+
+#SQL[@24,N20]Result[32, 23, 25, 23, 20, 20]
 select * from orders;
-id    order_number    status
-1    111    Pending
-4    444    Cancelled
-2    222    Pending
-3    333    null
-5    555    null
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+4  ¦  444  ¦  Cancelled
+2  ¦  222  ¦  Pending
+3  ¦  333  ¦  null
+5  ¦  555  ¦  null
+
+#SQL[@25,N40]Error[110]
 insert into orders values(6,'666','New');
 internal error: convert to MySQL enum failed: item New is not in enum [Pending Processing Completed Cancelled]
+
+#SQL[@26,N50]Result[20, 14, 16, 11]
 select count(*),status from orders group by status;
-count(*)    status
-2    Pending
-1    Cancelled
-2    null
+count(*)  ¦  status
+2  ¦  Pending
+1  ¦  Cancelled
+2  ¦  null
+
+#SQL[@27,N40]Result[23, 3, 3, 3, 4, 4]
 select substring(status,2,3) from orders;
 substring(status, 2, 3)
 end
@@ -68,6 +111,8 @@ anc
 end
 null
 null
+
+#SQL[@28,N33]Result[14, 1, 1, 1, 4, 4]
 select length(status) from orders;
 length(status)
 7
@@ -75,46 +120,104 @@ length(status)
 7
 null
 null
+
+#SQL[@29,N17]Result[]
 drop table orders;
+
+#SQL[@32,N38]Result[]
 create table t4 (a enum('abc', 'def'));
+
+#SQL[@33,N25]Error[84]
 insert into t4 values (0);
 internal error: convert to MySQL enum failed: number 0 overflow enum boundary [1, 2]
+
+#SQL[@34,N25]Result[]
 insert into t4 values (1);
+
+#SQL[@35,N25]Result[]
 insert into t4 values (2);
+
+#SQL[@36,N16]Result[1, 3, 3]
 select * from t4;
 a
 abc
 def
+
+#SQL[@37,N13]Result[]
 drop table t4;
+
+#SQL[@39,N38]Result[]
 create table t4 (a enum('abc', 'def'));
+
+#SQL[@40,N26]Result[]
 create table t5 (col1 int);
+
+#SQL[@41,N31]Result[]
 create table t6 (col1 char(10));
+
+#SQL[@42,N24]Result[]
 insert into t5 values(1);
+
+#SQL[@43,N24]Result[]
 insert into t5 values(2);
+
+#SQL[@44,N31]Result[]
 insert into t4 select * from t5;
+
+#SQL[@45,N16]Result[1, 3, 3]
 select * from t4;
 a
 abc
 def
+
+#SQL[@46,N14]Result[]
 delete from t4;
+
+#SQL[@47,N29]Result[]
 insert into t6 values ('abc');
+
+#SQL[@48,N29]Result[]
 insert into t6 values ('def');
+
+#SQL[@49,N31]Result[]
 insert into t4 select * from t6;
+
+#SQL[@50,N16]Result[1, 3, 3]
 select * from t4;
 a
 abc
 def
+
+#SQL[@51,N14]Result[]
 delete from t4;
+
+#SQL[@52,N24]Result[]
 insert into t5 values(3);
+
+#SQL[@53,N31]Error[84]
 insert into t4 select * from t5;
 internal error: convert to MySQL enum failed: number 3 overflow enum boundary [1, 2]
+
+#SQL[@54,N28]Result[]
 insert into t6 values('pkg');
+
+#SQL[@55,N31]Error[79]
 insert into t4 select * from t6;
 internal error: convert to MySQL enum failed: item pkg is not in enum [abc def]
+
+#SQL[@56,N13]Result[]
 drop table t4;
+
+#SQL[@57,N13]Result[]
 drop table t5;
+
+#SQL[@58,N13]Result[]
 drop table t6;
+
+#SQL[@60,N28]Result[]
 drop table if exists table01;
+
+#SQL[@61,N260]Result[]
 create table table01 (
 id int auto_increment primary key,
 col1 varchar(255) not null ,
@@ -129,66 +232,129 @@ col9 blob,
 col10 char,
 unique index(col8, col10)
 );
+
+#SQL[@75,N341]Result[]
 insert into table01 (col1, col2, col3, col4, col5, col6, col7, col8, col9, col10) values
 ('Value2', 456, 78.90, '2023-10-24', false, 'banana', 'Another text', '2022-01-01 01:01:01.000', 'More binary data', 'D'),
 ('Value3', 789, 12.34, '2023-10-25', true, 'orange', 'Yet another text', '1979-01-01 01:01:01.123', 'Even more binary data', 'E');
+
+#SQL[@78,N45]Result[]
 create table table02 as select * from table01;
+
+#SQL[@79,N152]Result[]
 insert into table02 values (12, 'Value1', 123, 45.67, '2023-10-23', TRUE, 'apple', 'This is a text', '2019-01-01 01:01:01.000', 'Some binary data', 'C');
+
+#SQL[@80,N21]Result[103, 144, 152, 145]
 select * from table02;
-id    col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-1    Value2    456    78.90    2023-10-24    false    banana    Another text    2022-01-01 01:01:01    More binary data    D
-2    Value3    789    12.34    2023-10-25    true    orange    Yet another text    1979-01-01 01:01:01    Even more binary data    E
-12    Value1    123    45.67    2023-10-23    true    apple    This is a text    2019-01-01 01:01:01    Some binary data    C
+id  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+1  ¦  Value2  ¦  456  ¦  78.90  ¦  2023-10-24  ¦  false  ¦  banana  ¦  Another text  ¦  2022-01-01 01:01:01  ¦  More binary data  ¦  D
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  2023-10-25  ¦  true  ¦  orange  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+12  ¦  Value1  ¦  123  ¦  45.67  ¦  2023-10-23  ¦  true  ¦  apple  ¦  This is a text  ¦  2019-01-01 01:01:01  ¦  Some binary data  ¦  C
+
+#SQL[@81,N53]Result[]
 update table02 set col1 = 'newvalue' where col2 = 456;
+
+#SQL[@82,N21]Result[103, 152, 145, 146]
 select * from table02;
-id    col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-2    Value3    789    12.34    2023-10-25    true    orange    Yet another text    1979-01-01 01:01:01    Even more binary data    E
-12    Value1    123    45.67    2023-10-23    true    apple    This is a text    2019-01-01 01:01:01    Some binary data    C
-1    newvalue    456    78.90    2023-10-24    false    banana    Another text    2022-01-01 01:01:01    More binary data    D
+id  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  2023-10-25  ¦  true  ¦  orange  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+12  ¦  Value1  ¦  123  ¦  45.67  ¦  2023-10-23  ¦  true  ¦  apple  ¦  This is a text  ¦  2019-01-01 01:01:01  ¦  Some binary data  ¦  C
+1  ¦  newvalue  ¦  456  ¦  78.90  ¦  2023-10-24  ¦  false  ¦  banana  ¦  Another text  ¦  2022-01-01 01:01:01  ¦  More binary data  ¦  D
+
+#SQL[@83,N50]Result[]
 update table02 set col6 = 'apple' where col2 = 789;
+
+#SQL[@84,N21]Result[103, 145, 146, 151]
 select * from table02;
-id    col1    col2    col3    col4    col5    col6    col7    col8    col9    col10
-12    Value1    123    45.67    2023-10-23    true    apple    This is a text    2019-01-01 01:01:01    Some binary data    C
-1    newvalue    456    78.90    2023-10-24    false    banana    Another text    2022-01-01 01:01:01    More binary data    D
-2    Value3    789    12.34    2023-10-25    true    apple    Yet another text    1979-01-01 01:01:01    Even more binary data    E
+id  ¦  col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10
+12  ¦  Value1  ¦  123  ¦  45.67  ¦  2023-10-23  ¦  true  ¦  apple  ¦  This is a text  ¦  2019-01-01 01:01:01  ¦  Some binary data  ¦  C
+1  ¦  newvalue  ¦  456  ¦  78.90  ¦  2023-10-24  ¦  false  ¦  banana  ¦  Another text  ¦  2022-01-01 01:01:01  ¦  More binary data  ¦  D
+2  ¦  Value3  ¦  789  ¦  12.34  ¦  2023-10-25  ¦  true  ¦  apple  ¦  Yet another text  ¦  1979-01-01 01:01:01  ¦  Even more binary data  ¦  E
+
+#SQL[@85,N18]Result[]
 drop table table01;
+
+#SQL[@86,N18]Result[]
 drop table table02;
+
+#SQL[@87,N28]Result[]
 drop table if exists table01;
+
+#SQL[@88,N76]Result[]
 create table table03(type enum('1','2','3','4','5') not null comment 'type');
+
+#SQL[@89,N25]Result[23, 98]
 show create table table03;
-Table    Create Table
-table03    CREATE TABLE `table03` (\n  `type` enum('1','2','3','4','5') NOT NULL COMMENT 'type'\n)
+Table  ¦  Create Table
+table03  ¦  CREATE TABLE `table03` (
+  `type` enum('1','2','3','4','5') NOT NULL COMMENT 'type'
+)
+
+#SQL[@90,N12]Result[71, 75]
 desc table03;
-Field    Type    Null    Key    Default    Extra    Comment
-type    ENUM('1','2','3','4','5')    NO        null        type
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+type  ¦  ENUM('1','2','3','4','5')  ¦  NO  ¦    ¦  null  ¦    ¦  type
+
+#SQL[@91,N18]Result[]
 drop table table03;
+
+#SQL[@93,N24]Result[]
 create table t3 (id int);
+
+#SQL[@94,N25]Result[]
 insert into t3 values (1);
+
+#SQL[@95,N49]Result[]
 alter table t3 add column name enum ('A','B','C');
+
+#SQL[@96,N16]Result[12, 11]
 select * from t3;
-id    name
-1    null
+id  ¦  name
+1  ¦  null
+
+#SQL[@97,N29]Result[]
 insert into t3 values (2,'B');
+
+#SQL[@98,N29]Error[75]
 insert into t3 values (3,'D');
 internal error: convert to MySQL enum failed: item D is not in enum [A B C]
+
+#SQL[@99,N16]Result[12, 11, 8]
 select * from t3;
-id    name
-1    null
-2    B
+id  ¦  name
+1  ¦  null
+2  ¦  B
+
+#SQL[@100,N13]Result[]
 drop table t3;
+
+#SQL[@102,N33]Result[]
 create table t1(name varchar(25));
+
+#SQL[@103,N39]Result[]
 insert into t1 values ('A'),('B'),('C');
+
+#SQL[@104,N16]Result[4, 1, 1, 1]
 select * from t1;
 name
 A
 B
 C
+
+#SQL[@105,N47]Error[73]
 alter table t1 modify column name enum('A','B');
 internal error: convert to MySQL enum failed: item C is not in enum [A B]
+
+#SQL[@106,N51]Result[]
 alter table t1 modify column name enum('A','B','C');
+
+#SQL[@107,N16]Result[4, 1, 1, 1]
 select * from t1;
 name
 A
 B
 C
+
+#SQL[@108,N13]Result[]
 drop table t1;
+

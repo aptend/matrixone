@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for double datatype
 -- @label:bvt
@@ -119,9 +119,9 @@ SELECT * from t_double WHERE id BETWEEN '1.1e0' AND '1.9e0';
 drop table t1;
 CREATE TABLE t1 (a double(5,4));
 INSERT INTO t1 VALUES (1),(0.8999),(0.800000);
--- @bvt:issue#3185
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
--- @bvt:issue
+@issue(no=3185) {
+    SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
+}
 SELECT * FROM t1 WHERE a=0.9;
 SELECT * FROM t1 WHERE a in (0.8,0.9);
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
@@ -132,7 +132,7 @@ insert into t1 values(5.31110909092103910293012,2);
 insert into t1 values(177.1715012301203103111,3);
 select count(*) from t1
 where id>=5.3111 and id <=177.171 order by 1;
-select count(*) from t1 
+select count(*) from t1
 where id between 5.3111 and 177.171;
 drop table t1;
 

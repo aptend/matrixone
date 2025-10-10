@@ -29,10 +29,10 @@ select * from time_02;
 insert into time_02 values("200:50:10");
 select '-838:59:59.0000' from time_01 limit 1;
 select '838:59:59.0000';
--- @bvt:issue#6168
-select t1-t2,t1+t2 from time_01;
-select t1+2,t1*2,t1/2,t1%2 from time_01;
--- @bvt:issue
+@issue(no=6168) {
+    select t1-t2,t1+t2 from time_01;
+    select t1+2,t1*2,t1/2,t1%2 from time_01;
+}
 select * from time_01 where t2 is not null;
 select * from time_01 where t2 is null;
 select t1 from time_01 where t2>"23";
@@ -50,13 +50,11 @@ drop table time_02;
 create table time_02 (t1 int,t2 time primary key,t3 varchar(25))partition by hash(t2)partitions 4;
 create table time_03 (t1 int,t2 time primary key,t3 varchar(25));
 insert into time_03 values (30,"101412","yellow");
--- @pattern
 insert into time_03 values (40,"101412","apple");
 select * from time_03;
 drop table time_03;
 create table time_03 (t1 int,t2 time,t3 varchar(25),t4 time default '110034',primary key(t1,t2));
 insert into time_03(t1,t2,t3) values (30,"24:59:09.932823","yellow");
- -- @pattern
 insert into time_03(t1,t2,t3) values (30,"24:59:09.932823","oooppppp");
 insert into time_03(t1,t2,t3) values (31,"24:59:09.932823","postttttt");
 insert into time_03(t1,t2,t3) values (32,NULL,"vinda");
@@ -113,12 +111,12 @@ select * from mysql_ts_test;
 insert into mysql_ts_test values (1, '2024-03-13', '11:30:00', '2024-03-13 11:30:00');
 insert into mysql_ts_test values (2, DATE '2024-03-14', TIME '2024', TIMESTAMP '2024-03-14 11:30:00');
 insert into mysql_ts_test values (3, {d '2024-03-15'}, {t '11:30:30'}, {ts '2024-03-15 11:30:00'});
--- @ignore:3
 select * from mysql_ts_test;
+| @ignore(3);
 insert into mysql_ts_test values (4, {d '2024-03-16'}, {t '23:59:59'}, {ts now()});
 insert into mysql_ts_test values (4, {d '2024-03-16'}, {t '23:59:59'}, {ts current_timestamp});
--- @ignore:3
 select * from mysql_ts_test;
+| @ignore(3);
 drop table mysql_ts_test;
 
 drop table if exists stockpriceus2_5min_copy1;

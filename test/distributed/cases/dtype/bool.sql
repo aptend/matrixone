@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for boolean datatype
 -- @label:bvt

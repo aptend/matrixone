@@ -1,94 +1,187 @@
+#SQL[@7,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@8,N30]Result[]
 create table t1 (a json,b int);
+
+#SQL[@9,N55]Result[]
 insert into t1 values ('{"t1":"a"}',1),('{"t1":"b"}',2);
+
+#SQL[@10,N16]Result[8, 18, 18]
 select * from t1;
-a	b
-{"t1": "a"}	1
-{"t1": "b"}	2
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+
+#SQL[@11,N26]Result[8, 18]
 select * from t1 where b=1;
-a	b
-{"t1": "a"}	1
+a  ¦  b
+{"t1": "a"}  ¦  1
+
+#SQL[@12,N26]Result[8, 18]
 select * from t1 where b=2;
-a	b
-{"t1": "b"}	2
+a  ¦  b
+{"t1": "b"}  ¦  2
+
+#SQL[@13,N37]Error[38]
 insert into t1 values ('{"t1":"c"',3);
-invalid input: json text {"t1":"c"
+invalid input: json text {\"t1\":\"c\"
+
+#SQL[@14,N23]Result[8, 1]
 select count(a) from t1;
 count(a)
 2
+
+#SQL[@18,N40]Result[]
 update t1 set a='{"t1":"qaq"}' where b=1;
+
+#SQL[@19,N24]Result[]
 delete from t1 where b=2;
+
+#SQL[@20,N16]Result[8, 20]
 select * from t1;
-a	b
-{"t1": "qaq"}	1
+a  ¦  b
+{"t1": "qaq"}  ¦  1
+
+#SQL[@21,N24]Result[]
 delete from t1 where b=1;
+
+#SQL[@22,N16]Result[]
 select * from t1;
-a	b
+
+#SQL[@25,N23]Result[]
 drop table if exists t2;
+
+#SQL[@26,N30]Result[]
 create table t2 (a json,b int);
+
+#SQL[@27,N14]Result[]
 delete from t1;
+
+#SQL[@28,N55]Result[]
 insert into t1 values ('{"t1":"a"}',1),('{"t1":"b"}',2);
+
+#SQL[@29,N98]Error[32]
 select * from t1 into outfile '$resources/json/export_1.csv' fields enclosed by '"' force_quote(a);
+file export_1.csv already exists
+
+#SQL[@30,N101]Result[]
 load data infile '$resources/json/export_1.csv' into table t1 fields terminated by ',' ignore 1 lines;
+
+#SQL[@31,N101]Result[]
 load data infile '$resources/json/export_1.csv' into table t2 fields terminated by ',' ignore 1 lines;
+
+#SQL[@32,N16]Result[8, 18, 18, 18, 18]
 select * from t1;
-a	b
-{"t1": "a"}	1
-{"t1": "b"}	2
-{"t1": "a"}	1
-{"t1": "b"}	2
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+
+#SQL[@33,N16]Result[8, 18, 18]
 select * from t2;
-a	b
-{"t1": "a"}	1
-{"t1": "b"}	2
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+
+#SQL[@34,N86]Error[32]
 select * from t1 into outfile '$resources/json/export_2.csv' fields terminated by '\t';
+file export_2.csv already exists
+
+#SQL[@35,N103]Result[]
 load data  infile '$resources/json/export_2.csv' into table t1 fields terminated by '\t' ignore 1 lines;
+
+#SQL[@36,N103]Result[]
 load data  infile '$resources/json/export_2.csv' into table t2 fields terminated by '\t' ignore 1 lines;
+
+#SQL[@37,N16]Result[8, 18, 18, 18, 18, 18, 18, 18, 18]
 select * from t1;
-a	b
-{"t1": "a"}	1
-{"t1": "b"}	2
-{"t1": "a"}	1
-{"t1": "b"}	2
-{"t1": "a"}	1
-{"t1": "b"}	2
-{"t1": "a"}	1
-{"t1": "b"}	2
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+
+#SQL[@38,N16]Result[8, 18, 18, 18, 18, 18, 18]
 select * from t2;
-a	b
-{"t1": "a"}	1
-{"t1": "b"}	2
-{"t1": "a"}	1
-{"t1": "b"}	2
-{"t1": "a"}	1
-{"t1": "b"}	2
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+
+#SQL[@41,N14]Result[]
 delete from t1;
+
+#SQL[@42,N86]Result[]
 load data  infile '$resources/json/data_1.csv' into table t1 fields terminated by '\t';
+
+#SQL[@43,N16]Result[8, 92, 55]
 select * from t1;
-a	b
-{"a": 1, "b": [{"c": 2, "d": 3}, false, 4], "e": {"f": true, "g": [null, true, 1.1]}}	1
-[1, true, false, null, "aaa", 1.1, {"t": false}]	2
+a  ¦  b
+{"a": 1, "b": [{"c": 2, "d": 3}, false, 4], "e": {"f": true, "g": [null, true, 1.1]}}  ¦  1
+[1, true, false, null, "aaa", 1.1, {"t": false}]  ¦  2
+
+#SQL[@44,N85]Result[]
 load data  infile '$resources/json/data_2.csv' into table t1 fields terminated by ',';
+
+#SQL[@45,N16]Result[8, 92, 55, 59]
 select * from t1;
-a	b
-{"a": 1, "b": [{"c": 2, "d": 3}, false, 4], "e": {"f": true, "g": [null, true, 1.1]}}	1
-[1, true, false, null, "aaa", 1.1, {"t": false}]	2
-{"a": 1, "b": [1, 2, {"c": 1.5}, null, true, false]}	1
+a  ¦  b
+{"a": 1, "b": [{"c": 2, "d": 3}, false, 4], "e": {"f": true, "g": [null, true, 1.1]}}  ¦  1
+[1, true, false, null, "aaa", 1.1, {"t": false}]  ¦  2
+{"a": 1, "b": [1, 2, {"c": 1.5}, null, true, false]}  ¦  1
+
+#SQL[@46,N23]Result[]
 drop table if exists t3;
+
+#SQL[@47,N31]Result[]
 create table t3 (a json,b json);
+
+#SQL[@48,N85]Result[]
 load data  infile '$resources/json/data_3.csv' into table t3 fields terminated by ',';
+
+#SQL[@49,N16]Result[8, 66]
 select * from t3;
-a	b
-{"a": 1, "b": [1, 2, {"c": 1.5}, null, true, false]}	{"b": 1}
+a  ¦  b
+{"a": 1, "b": [1, 2, {"c": 1.5}, null, true, false]}  ¦  {"b": 1}
+
+#SQL[@52,N23]Result[]
 drop table if exists t4;
+
+#SQL[@53,N29]Result[]
 create table t4 (a json null);
+
+#SQL[@54,N23]Result[]
 drop table if exists t5;
+
+#SQL[@55,N33]Result[]
 create table t5 (a json not null);
+
+#SQL[@56,N23]Result[]
 drop table if exists t6;
+
+#SQL[@57,N36]Error[55]
 create table t6 (a json primary key);
 not supported: JSON column 'a' cannot be in primary key
+
+#SQL[@58,N23]Result[]
 drop table if exists t7;
+
+#SQL[@59,N45]Error[56]
 create table t7 (a json default '{"t1":"a"}');
 not supported: JSON column 'a' cannot have default value
+
+#SQL[@60,N23]Result[]
 drop table if exists t8;
+
+#SQL[@61,N37]Result[]
 create table t8 (a json default null);
+

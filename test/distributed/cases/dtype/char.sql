@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for char datatype
 -- @label:bvt
@@ -6,9 +6,9 @@
 #Test cases of  query without tables
 select 'test',"test";
 select 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
--- @bvt:issue#3247
-SELECT CONCAT_WS(2,' test');
--- @bvt:issue
+@issue(no=3247) {
+    SELECT CONCAT_WS(2,' test');
+}
 SELECT 38.8, CAST(38.8 AS CHAR);
 SELECT '9223372036854775807' = 9223372036854775807;
 SELECT '9223372036854775807' = "9223372036854775807";
@@ -18,9 +18,9 @@ SELECT CAST(150 AS CHAR);
 SELECT CAST(5-10 AS CHAR);
 SELECT CONCAT_WS('My', 'S', 'QL');
 SELECT CONCAT_WS('My', NULL, 'QL');
--- @bvt:issue#3247
-SELECT CONCAT_WS(14,'.3');
--- @bvt:issue
+@issue(no=3247) {
+    SELECT CONCAT_WS(14,'.3');
+}
 -- SELECT (CAST(0x7FFFFFFFFFFFFFFF AS char));
 
 #Test cases of query with single table and operators
@@ -69,7 +69,7 @@ CREATE TABLE employees (
   jobTitle char(50) NOT NULL,
   PRIMARY KEY (employeeNumber)
   );
-insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values 
+insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values
 (1002,'Murphy','Diane','x5800','dmurphy@classicmodelcars.com','1',NULL,'President'),
 (1056,'Patterson','Mary','x4611','mpatterso@classicmodelcars.com','1',1002,'VP Sales'),
 (1076,'Firrelli','Jeff','x9273','jfirrelli@classicmodelcars.com','1',1002,'VP Marketing'),
@@ -86,7 +86,7 @@ insert  into employees(employeeNumber,lastName,firstName,extension,email,officeC
 (1370,'Hernandez','Gerard','x2028','ghernande@classicmodelcars.com','4',1102,'Sales Rep'),
 (1401,'Castillo','Pamela','x2759','pcastillo@classicmodelcars.com','4',1102,'Sales Rep'),
 (1501,'Bott','Larry','x2311','lbott@classicmodelcars.com','7',1102,'Sales Rep'),
-(1504,'Jones','Barry','x102','bjones@classicmodelcars.com','7',1102,'Sales Rep'),                                                                                                        
+(1504,'Jones','Barry','x102','bjones@classicmodelcars.com','7',1102,'Sales Rep'),
 (1611,'Fixter','Andy','x101','afixter@classicmodelcars.com','6',1088,'Sales Rep');
 select officeCode,count(officeCode) from employees group by officeCode having count(officeCode)>2 order by 1 asc,2 desc;
 select lastName,firstName from employees where cast(officeCode as unsigned)>5 limit 2 offset 1;
@@ -147,18 +147,18 @@ i char(10) not null default '0',
 j char(10) not null default '0',
 primary key (a));
 insert into t1 (a) values ('2'),('4'),('6'),('8'),('10'),('12'),('14'),('16'),('18'),('20'),('22'),('24'),('26'),('23');
--- @bvt:issue#3245
-update t1 set a=a+'101';
-select a,b from t1;
--- @bvt:issue
+@issue(no=3245) {
+    update t1 set a=a+'101';
+    select a,b from t1;
+}
 update t1 set a='127' where a='25';
 select a,b from t1;
--- @bvt:issue#3245
-update t1 set a=a+'a' where 1 > 2;
-select a,b from t1;
-update t1 set a=a+a where 3 > 2;
-select a,b from t1;
--- @bvt:issue
+@issue(no=3245) {
+    update t1 set a=a+'a' where 1 > 2;
+    select a,b from t1;
+    update t1 set a=a+a where 3 > 2;
+    select a,b from t1;
+}
 drop table t1;
 create table t1 (a char(10) primary key, b char(32));
 insert into t1 values ('abc','apple'), ('ab','apple');

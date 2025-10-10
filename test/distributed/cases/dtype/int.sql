@@ -55,9 +55,9 @@ drop table t1;
 create table t1 (int_col int unsigned);
 insert into t1 values (4294960000);
 select * from t1 where int_col=4294960000;
--- @bvt:issue#3276
-select * from t1 where int_col='4294960000';
--- @bvt:issue
+@issue(no=3276) {
+    select * from t1 where int_col='4294960000';
+}
 drop table t1;
 select cast(4294960000 as unsigned) mod 50 as result;
 select cast(2147399999 as signed);
@@ -71,9 +71,9 @@ INSERT INTO t1 (id,a) VALUES
 (3,CAST(0x80000000 AS UNSIGNED)),
 (4,CAST(0xFFFFFFFF AS UNSIGNED));
 UPDATE t1 SET b = a;
--- @bvt:issue#3276
-select * from t1 where ((a = 4294967295) and (b = '4294967295')) order by 1 desc, 2 asc;
--- @bvt:issue
+@issue(no=3276) {
+    select * from t1 where ((a = 4294967295) and (b = '4294967295')) order by 1 desc, 2 asc;
+}
 CREATE TABLE t_int(id INT);
 INSERT INTO t_int VALUES (1), (2);
 SELECT id, id >= 1.1 FROM t_int;
@@ -96,11 +96,11 @@ SELECT * from t_int WHERE id BETWEEN '1.1e0' AND '1.9e0';
 drop table t1;
 CREATE TABLE t1 (a INT);
 INSERT INTO t1 VALUES (1);
--- @bvt:issue#3185
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
--- @bvt:issue
+@issue(no=3185) {
+    SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
+    SELECT * FROM t1 WHERE coalesce(a)=0.9;
+    SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
+}
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
 SELECT * FROM t1 WHERE a=0.9;
 SELECT * FROM t1 WHERE a IN (0.8,0.9) order by 1;

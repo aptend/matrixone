@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for varchar datatype
 -- @label:bvt
@@ -58,7 +58,7 @@ CREATE TABLE employees (
   jobTitle varchar(50) NOT NULL,
   PRIMARY KEY (employeeNumber)
   );
-insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values 
+insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values
 (1002,'Murphy','Diane','x5800','dmurphy@classicmodelcars.com','1',NULL,'President'),
 (1056,'Patterson','Mary','x4611','mpatterso@classicmodelcars.com','1',1002,'VP Sales'),
 (1076,'Firrelli','Jeff','x9273','jfirrelli@classicmodelcars.com','1',1002,'VP Marketing'),
@@ -75,7 +75,7 @@ insert  into employees(employeeNumber,lastName,firstName,extension,email,officeC
 (1370,'Hernandez','Gerard','x2028','ghernande@classicmodelcars.com','4',1102,'Sales Rep'),
 (1401,'Castillo','Pamela','x2759','pcastillo@classicmodelcars.com','4',1102,'Sales Rep'),
 (1501,'Bott','Larry','x2311','lbott@classicmodelcars.com','7',1102,'Sales Rep'),
-(1504,'Jones','Barry','x102','bjones@classicmodelcars.com','7',1102,'Sales Rep'),                                                                                                        
+(1504,'Jones','Barry','x102','bjones@classicmodelcars.com','7',1102,'Sales Rep'),
 (1611,'Fixter','Andy','x101','afixter@classicmodelcars.com','6',1088,'Sales Rep');
 select officeCode,count(officeCode) from employees group by officeCode having count(officeCode)>2;
 select lastName,firstName from employees where cast(officeCode as unsigned)>5 limit 2 offset 1;
@@ -85,7 +85,7 @@ select lastName,firstName from employees where lastName>=firstName;
 select lastName,firstName from employees where lastName between firstName and JobTitle;
 select * from employees where officeCode in ('2','3','4') order by 1 asc,3 desc limit 1,2;
 select * from employees where officeCode not in ('5','7','1');
-select avg(officeCode) from employees where jobTitle like 'Sales%' group by jobTitle; 
+select avg(officeCode) from employees where jobTitle like 'Sales%' group by jobTitle;
 select officeCode,sum(cast(officeCode as unsigned)) from employees group by officeCode;
 select employeeNumber,officeCode,reportsTo from employees where employeeNumber>1400 and reportsTo is not null order by officeCode+1,employeeNumber;
 
@@ -148,7 +148,7 @@ create table t1 (a varchar(10) primary key, b varchar(32));
 insert into t1 values ('abc','apple'), ('ab','apple');
 select * from t1;
 
-#Test cases of delete with single table 
+#Test cases of delete with single table
 drop table if exists t1;
 drop table if exists t2;
 drop table if exists t3;

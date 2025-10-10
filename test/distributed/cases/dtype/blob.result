@@ -1,21 +1,46 @@
+#SQL[@2,N23]Result[]
 drop table if exists t1;
+
+#SQL[@3,N24]Result[]
 create table t1 (a blob);
+
+#SQL[@4,N31]Result[]
 insert into t1 values('abcdef');
+
+#SQL[@5,N31]Result[]
 insert into t1 values('_bcdef');
+
+#SQL[@6,N31]Result[]
 insert into t1 values('a_cdef');
+
+#SQL[@7,N31]Result[]
 insert into t1 values('ab_def');
+
+#SQL[@8,N31]Result[]
 insert into t1 values('abc_ef');
+
+#SQL[@9,N31]Result[]
 insert into t1 values('abcd_f');
+
+#SQL[@10,N31]Result[]
 insert into t1 values('abcde_');
+
+#SQL[@11,N54]Result[1, 6]
 select * from t1 where a like 'ab\_def' order by 1 asc;
 a
 ab_def
+
+#SQL[@12,N54]Result[1, 6]
 select * from t1 where a not like 'a%' order by a desc;
 a
 _bcdef
+
+#SQL[@13,N55]Result[1, 6]
 select * from t1 where a like "\__cdef" order by 1 desc;
 a
 _bcdef
+
+#SQL[@14,N41]Result[1, 6, 6, 6, 6, 6, 6]
 select * from t1 where a not like "%d_\_";
 a
 abcdef
@@ -24,80 +49,135 @@ a_cdef
 ab_def
 abc_ef
 abcd_f
+
+#SQL[@15,N23]Result[]
 drop table if exists t1;
+
+#SQL[@18,N30]Result[]
 create table t1 (i int,a blob);
+
+#SQL[@19,N33]Result[]
 insert into t1 values(1,'123456');
+
+#SQL[@20,N33]Result[]
 insert into t1 values(2,'234567');
+
+#SQL[@21,N33]Result[]
 insert into t1 values(3,'345678');
+
+#SQL[@22,N16]Result[8, 13, 13, 13]
 SELECT * FROM t1;
-i    a
-1    123456
-2    234567
-3    345678
+i  ¦  a
+1  ¦  123456
+2  ¦  234567
+3  ¦  345678
+
+#SQL[@23,N28]Result[1, 6, 6]
 select a from t1 where i > 1;
 a
 234567
 345678
+
+#SQL[@24,N33]Result[]
 insert into t1 values(2,'123456');
+
+#SQL[@25,N33]Result[]
 insert into t1 values(6,'234567');
+
+#SQL[@26,N33]Result[]
 insert into t1 values(7,'123456');
+
+#SQL[@27,N34]Result[13, 14, 13, 13]
 select sum(i),a from t1 group by a;
-sum(i)    a
-10    123456
-8    234567
-3    345678
+sum(i)  ¦  a
+10  ¦  123456
+8  ¦  234567
+3  ¦  345678
+
+#SQL[@30,N30]Result[]
 create table t2 (j int,b blob);
+
+#SQL[@31,N34]Result[]
 insert into t2 values(10,'123456');
+
+#SQL[@32,N34]Result[]
 insert into t2 values(11,'000001');
+
+#SQL[@33,N34]Result[]
 insert into t2 values(12,'000000');
+
+#SQL[@34,N58]Result[8, 13, 13, 13]
 select i,a from t1 inner join t2 on t1.a = t2.b order by i;
-i    a
-1    123456
-2    123456
-7    123456
+i  ¦  a
+1  ¦  123456
+2  ¦  123456
+7  ¦  123456
+
+#SQL[@35,N58]Result[8, 14, 14, 13, 13, 13]
 select i,a from t1 right join t2 on t1.a = t2.b order by i;
-i    a
-null    null
-null    null
-1    123456
-2    123456
-7    123456
+i  ¦  a
+null  ¦  null
+null  ¦  null
+1  ¦  123456
+2  ¦  123456
+7  ¦  123456
+
+#SQL[@36,N57]Result[8, 13, 13, 13, 13, 13, 13]
 select i,a from t1 left join t2 on t1.a = t2.b order by i;
-i    a
-1    123456
-2    234567
-2    123456
-3    345678
-6    234567
-7    123456
+i  ¦  a
+1  ¦  123456
+2  ¦  234567
+2  ¦  123456
+3  ¦  345678
+6  ¦  234567
+7  ¦  123456
+
+#SQL[@39,N51]Result[74, 12]
 SELECT load_file('$resources/file_test/normal.txt');
-load_file(/home/yjw/blob/matrixone/test/resources/file_test/normal.txt)
+load_file(/root/matrixone/test/distributed/resources/file_test/normal.txt)
 Hello world!
+
+#SQL[@40,N70]Result[]
 insert into t2 values(66,load_file("$resources/file_test/normal.txt"));
+
+#SQL[@41,N16]Result[8, 14, 14, 14, 20]
 select * from t2;
-j    b
-10    123456
-11    000001
-12    000000
-66    Hello world!
+j  ¦  b
+10  ¦  123456
+11  ¦  000001
+12  ¦  000000
+66  ¦  Hello world!
+
+#SQL[@44,N24]Result[9, 1, 1, 1, 1, 1, 1]
 SELECT LENGTH(a) FROM t1;
-length(a)
+LENGTH(a)
 6
 6
 6
 6
 6
 6
+
+#SQL[@45,N59]Result[82, 2]
 SELECT LENGTH(load_file("$resources/file_test/normal.txt"));
-length(load_file(/home/yjw/blob/matrixone/test/resources/file_test/normal.txt))
+LENGTH(load_file(/root/matrixone/test/distributed/resources/file_test/normal.txt))
 12
+
+#SQL[@46,N58]Result[81, 4]
 SELECT LENGTH(load_file("$resources/file_test/empty.txt"));
-length(load_file(/home/yjw/blob/matrixone/test/resources/file_test/empty.txt))
+LENGTH(load_file(/root/matrixone/test/distributed/resources/file_test/empty.txt))
 null
+
+#SQL[@47,N53]Result[33, 11, 11, 11]
 SELECT SUBSTRING(a,1,4), LENGTH(a) FROM t1 GROUP BY a;
-substring(a, 1, 4)    length(a)
-1234    6
-2345    6
-3456    6
+SUBSTRING(a, 1, 4)  ¦  LENGTH(a)
+1234  ¦  6
+2345  ¦  6
+3456  ¦  6
+
+#SQL[@48,N13]Result[]
 drop table t1;
+
+#SQL[@49,N13]Result[]
 drop table t2;
+

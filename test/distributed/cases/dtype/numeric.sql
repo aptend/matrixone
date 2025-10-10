@@ -15,29 +15,29 @@ select floor(cast(2231231.501231 as numeric));
 #Test cases of query with single table
 drop table if exists t1;
 create table t1 (a numeric(29,0) not null, primary key(a));
--- @bvt:issue#3364
-insert into t1 values (18446744073709551615), (0xFFFFFFFFFFFFFE), (18446744073709551613.0000000), (18446744073709551612.0000000001);
-select * from t1 order by 1 asc;
-select * from t1 where a=18446744073709551615 order by a desc;
-delete from t1 where a=18446744073709551615.000000000;
-select * from t1;
--- @bvt:issue
+@issue(no=3364) {
+    insert into t1 values (18446744073709551615), (0xFFFFFFFFFFFFFE), (18446744073709551613.0000000), (18446744073709551612.0000000001);
+    select * from t1 order by 1 asc;
+    select * from t1 where a=18446744073709551615 order by a desc;
+    delete from t1 where a=18446744073709551615.000000000;
+    select * from t1;
+}
 drop table t1;
 create table t1 ( a int not null default 1, big numeric(29,11) );
 insert into t1 (big) values (-1),(12.34567891234567),(92.23372036854775807);
 select * from t1 order by a desc, big asc;
 select min(big),max(big),max(big)-1 from t1;
 select min(big),avg(big),max(big)-1 from t1 group by a order by 1+2;
--- @bvt:issue#3364
-drop table t1;
-create table t1 ( a int not null default 1, big numeric(20,4) primary key);
-insert into t1 (big) values (0),(18446744073), (0xFFFFFE), (184467.13), (184462);
-select * from t1 order by 1,2 desc;
-select * from t1 order by big limit 1,2;
-select * from t1 order by big limit 2 offset 1;
-select min(big),max(big),max(big)-1 from t1;
-select min(big),count(big),max(big)-1 from t1 group by a;
--- @bvt:issue
+@issue(no=3364) {
+    drop table t1;
+    create table t1 ( a int not null default 1, big numeric(20,4) primary key);
+    insert into t1 (big) values (0),(18446744073), (0xFFFFFE), (184467.13), (184462);
+    select * from t1 order by 1,2 desc;
+    select * from t1 order by big limit 1,2;
+    select * from t1 order by big limit 2 offset 1;
+    select min(big),max(big),max(big)-1 from t1;
+    select min(big),count(big),max(big)-1 from t1 group by a;
+}
 
 #Test cases of query with multi tables
 drop table if exists t1;
@@ -69,16 +69,16 @@ select * from t1;
 drop table t1;
 create table t1 (numeric_col numeric(29,0));
 insert into t1 values (-17666000000000000000);
--- @bvt:issue#3364
-select * from t1 where numeric_col=-17666000000000000000 order by 1 asc;
--- @bvt:issue
+@issue(no=3364) {
+    select * from t1 where numeric_col=-17666000000000000000 order by 1 asc;
+}
 select * from t1 where numeric_col='-17666000000000000000' order by numeric_col desc;
 drop table t1;
 
 #Test cases of cast
--- @bvt:issue#4241
-select cast(10000002383263201056 as numeric) mod 50 as result;
--- @bvt:issue
+@issue(no=4241) {
+    select cast(10000002383263201056 as numeric) mod 50 as result;
+}
 select cast(cast(19999999999999999999 as numeric) as unsigned);
 CREATE TABLE t1 (id INT PRIMARY KEY,
 a numeric(20),
@@ -89,10 +89,10 @@ INSERT INTO t1 (id,a) VALUES
 (3,CAST(0x8000000000000000 AS UNSIGNED)),
 (4,CAST(0xFFFFFFFFFFFFFFFF AS UNSIGNED));
 UPDATE t1 SET b = a;
--- @bvt:issue#4383
-select distinct * from t1 where ((a = '2147483647') and (b = '2147483647'));
-select a,count(a) from t1 group by a having count(a)>=2;
--- @bvt:issue
+@issue(no=4383) {
+    select distinct * from t1 where ((a = '2147483647') and (b = '2147483647'));
+    select a,count(a) from t1 group by a having count(a)>=2;
+}
 
 #Test cases of operators
 CREATE TABLE t_numeric(id numeric(10,5));
@@ -117,26 +117,26 @@ SELECT * from t_numeric WHERE id BETWEEN '1.1e0' AND '1.9e0';
 drop table t1;
 CREATE TABLE t1 (a numeric(2,1));
 INSERT INTO t1 VALUES (1),(0.8999),(0.9);
--- @bvt:issue#3185
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
--- @bvt:issue
--- @bvt:issue#3280
-SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
-SELECT * FROM t1 WHERE a=0.9;
-SELECT * FROM t1 WHERE a IN (0.8,0.9);
-drop table t1;
-create table t (id numeric(23,3) unsigned, b int);
-insert into t values(889475494977969.3574,1);
-insert into t values(889475494977969.3579,2);
-insert into t values(889475494977969.357,3);
-select count(*) from t
-where id>=88947549497796.3574 and id <=889475494977969.358;
-select count(*) from t
-where id between 88947549497796.3574 and 889475494977969.358;
-drop table t;
--- @bvt:issue
+@issue(no=3185) {
+    SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
+    SELECT * FROM t1 WHERE coalesce(a)=0.9;
+    SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
+}
+@issue(no=3280) {
+    SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
+    SELECT * FROM t1 WHERE a=0.9;
+    SELECT * FROM t1 WHERE a IN (0.8,0.9);
+    drop table t1;
+    create table t (id numeric(23,3) unsigned, b int);
+    insert into t values(889475494977969.3574,1);
+    insert into t values(889475494977969.3579,2);
+    insert into t values(889475494977969.357,3);
+    select count(*) from t
+    where id>=88947549497796.3574 and id <=889475494977969.358;
+    select count(*) from t
+    where id between 88947549497796.3574 and 889475494977969.358;
+    drop table t;
+}
 SELECT CAST(1.00 AS numeric) BETWEEN 1 AND -1;
 SELECT CAST(1.00 AS numeric) NOT BETWEEN 1 AND -1;
 SELECT CAST(-0 AS numeric) BETWEEN 0 AND -1;
@@ -150,13 +150,13 @@ drop table if exists t11;
 drop table if exists t12;
 CREATE TABLE t1 (a numeric(3,2), b numeric(5,2) primary key);
 INSERT INTO t1 VALUES (1.00,1.0000),(1.00,2.0000);
--- @bvt:issue#3280
-update t1 set a=2.00 where a=1 limit 1;
-select * from t1;
-INSERT INTO t1 VALUES (1,3);
-update t1 set a=2 where a=1.00;
-select * from t1;
--- @bvt:issue
+@issue(no=3280) {
+    update t1 set a=2.00 where a=1 limit 1;
+    select * from t1;
+    INSERT INTO t1 VALUES (1,3);
+    update t1 set a=2 where a=1.00;
+    select * from t1;
+}
 drop table t1;
 create table t1 (
 a numeric(10,5) not null,
@@ -211,16 +211,16 @@ i numeric(10,5) not null default 12345.67890,
 j numeric(10,5) not null default 12345.67890,
 primary key (a));
 insert into t1 (a) values (2.1111),(4),(00006.12311),(8.41231),(24.0000);
--- @bvt:issue#3280
-delete from t1 where a=2+2.0000;
-select a,b from t1 order by 1;
-delete from t1 where  a=24.0000;
-select a,b from t1 order by 1;
-delete from t1 where  3 < 2;
-select a,b from t1 order by 1;
-delete from t1 where  1 < 2;
-select a,b from t1 order by 1;
--- @bvt:issue
+@issue(no=3280) {
+    delete from t1 where a=2+2.0000;
+    select a,b from t1 order by 1;
+    delete from t1 where  a=24.0000;
+    select a,b from t1 order by 1;
+    delete from t1 where  3 < 2;
+    select a,b from t1 order by 1;
+    delete from t1 where  1 < 2;
+    select a,b from t1 order by 1;
+}
 drop table t1;
 create table t1 (a numeric(10,5) primary key, b char(32));
 insert into t1 values (1.000000,'apple'), (2.00,'apple');
@@ -425,9 +425,9 @@ SELECT a + 1 FROM numeric08;
 -- Abnormal:value overflow
 SELECT a * 2 FROM numeric08;
 
--- @bvt:issue#8513
-SELECT a / 3 FROM numeric08;
--- @bvt:issue
+@issue(no=8513) {
+    SELECT a / 3 FROM numeric08;
+}
 DROP TABLE numeric08;
 
 -- default numeric,D and M is not specified, default M is 38, default D is 0
@@ -589,7 +589,6 @@ INSERT INTO numeric15 VALUES(NULL,327.328932,-38922.2123);
 SELECT * FROM numeric15;
 
 -- unique index cannot have duplicate value insertion
- -- @pattern
 INSERT INTO numeric15 VALUES(271.212121,387213.0,3289);
 DROP TABLE numeric15;
 
@@ -636,17 +635,17 @@ SELECT CAST(col4 AS numeric(20,3)) FROM numeric18;
 SELECT 0.32846287164921643232142372817438921749321 * col1 FROM numeric18;
 SELECT -0.487794599999999999999999999999999945451154 * col2 FROM numeric18;
 
--- @bvt:issue#8516
-SELECT col1 * col2 FROM numeric18;
-SELECT col3 * col2 FROM numeric18;
-SELECT col2 * col4 FROM numeric18;
--- @bvt:issue
+@issue(no=8516) {
+    SELECT col1 * col2 FROM numeric18;
+    SELECT col3 * col2 FROM numeric18;
+    SELECT col2 * col4 FROM numeric18;
+}
 
--- @bvt:issue#8513
-SELECT col1 / col2 FROM numeric18;
-SELECT 12345678965412365478965444565896532145 / col1 FROM numeric18;
-SELECT col2/522222222225456987.23212654569987523654 FROM numeric18;
--- @bvt:issue
+@issue(no=8513) {
+    SELECT col1 / col2 FROM numeric18;
+    SELECT 12345678965412365478965444565896532145 / col1 FROM numeric18;
+    SELECT col2/522222222225456987.23212654569987523654 FROM numeric18;
+}
 
 DROP TABLE IF EXISTS numeric19;
 CREATE TABLE numeric19 (col1 numeric(38,0),col2 numeric(19,0));

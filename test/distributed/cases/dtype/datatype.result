@@ -1,96 +1,196 @@
+#SQL[@6,N29]Result[]
 drop table if exists numtable;
+
+#SQL[@7,N49]Result[]
 create table numtable(id int,fl float, dl double);
+
+#SQL[@8,N44]Result[]
 insert into numtable values(1,123456,123456);
+
+#SQL[@9,N46]Result[]
 insert into numtable values(2,123.456,123.456);
+
+#SQL[@10,N48]Result[]
 insert into numtable values(3,1.234567,1.234567);
+
+#SQL[@11,N54]Result[]
 insert into numtable values(4,1.234567891,1.234567891);
+
+#SQL[@12,N74]Result[]
 insert into numtable values(5,1.2345678912345678912,1.2345678912345678912);
+
+#SQL[@13,N41]Result[18, 25, 27, 29, 33, 39]
 select id,fl,dl from numtable order by id;
-id	fl	dl
-1	123456.0	123456.0
-2	123.456	123.456
-3	1.2346	1.2346
-4	1.2346	1.2346
-5	1.2346	1.2346
+id  ¦  fl  ¦  dl
+1  ¦  123456  ¦  123456
+2  ¦  123.456  ¦  123.456
+3  ¦  1.234567  ¦  1.234567
+4  ¦  1.2345679  ¦  1.234567891
+5  ¦  1.2345679  ¦  1.234567891234568
+
+#SQL[@14,N29]Result[]
 drop table if exists numtable;
+
+#SQL[@15,N43]Result[]
 create table numtable(id int,fl float(5,3));
+
+#SQL[@16,N33]Result[]
 insert into numtable values(2,99);
+
+#SQL[@17,N37]Result[]
 insert into numtable values(3,99.123);
+
+#SQL[@18,N38]Result[]
 insert into numtable values(4,99.1236);
+
+#SQL[@19,N26]Result[10, 9, 13, 13]
 select id,fl from numtable;
-id	fl
-2	99.0
-3	99.123
-4	99.1236
+id  ¦  fl
+2  ¦  99
+3  ¦  99.123
+4  ¦  99.124
+
+#SQL[@20,N29]Result[]
 drop table if exists numtable;
+
+#SQL[@21,N42]Result[]
 create table numtable(id int,fl float(23));
+
+#SQL[@22,N61]Result[]
 insert into numtable values(1,1.2345678901234567890123456789);
+
+#SQL[@23,N26]Result[10, 16]
 select id,fl from numtable;
-id	fl
-1	1.2346
+id  ¦  fl
+1  ¦  1.2345679
+
+#SQL[@24,N29]Result[]
 drop table if exists numtable;
+
+#SQL[@25,N39]Result[]
 create table numtable(id int,dl double);
+
+#SQL[@26,N61]Result[]
 insert into numtable values(1,1.2345678901234567890123456789);
+
+#SQL[@27,N26]Result[10, 25]
 select id,dl from numtable;
-id	dl
-1	1.2346
+id  ¦  dl
+1  ¦  1.2345678901234567
+
+#SQL[@28,N29]Result[]
 drop table if exists numtable;
+
+#SQL[@29,N97]Result[]
 create table numtable(a tinyint unsigned, b smallint unsigned, c int unsigned, d bigint unsigned);
+
+#SQL[@30,N70]Result[]
 insert into numtable values(255,65535,4294967295,18446744073709551615);
+
+#SQL[@31,N28]Result[22, 56]
 select a,b,c,d from numtable;
-a	b	c	d
-255	65535	4294967295	18446744073709551615
+a  ¦  b  ¦  c  ¦  d
+255  ¦  65535  ¦  4294967295  ¦  18446744073709551615
+
+#SQL[@32,N29]Result[]
 drop table if exists numtable;
+
+#SQL[@33,N89]Result[]
 create table numtable(a tinyint signed, b smallint signed, c int signed, d bigint signed);
+
+#SQL[@34,N69]Result[]
 insert into numtable values(127,32767,2147483647,9223372036854775807);
+
+#SQL[@35,N73]Result[]
 insert into numtable values(-128,-32768,-2147483648,-9223372036854775808);
+
+#SQL[@36,N28]Result[22, 55, 59]
 select a,b,c,d from numtable;
-a	b	c	d
-127	32767	2147483647	9223372036854775807
--128	-32768	-2147483648	-9223372036854775808
+a  ¦  b  ¦  c  ¦  d
+127  ¦  32767  ¦  2147483647  ¦  9223372036854775807
+-128  ¦  -32768  ¦  -2147483648  ¦  -9223372036854775808
+
+#SQL[@37,N26]Result[]
 drop table if exists names;
+
+#SQL[@38,N51]Result[]
 create table names(name varchar(255),age char(255));
+
+#SQL[@39,N49]Result[]
 insert into names(name, age) values('Abby', '24');
+
+#SQL[@40,N48]Result[]
 insert into names(name, age) values("Bob", '25');
+
+#SQL[@41,N50]Result[]
 insert into names(name, age) values('Carol', "23");
+
+#SQL[@42,N49]Result[]
 insert into names(name, age) values("Dora", "29");
+
+#SQL[@43,N26]Result[13, 12, 11, 13, 12]
 select name,age from names;
-name	age
-Abby	24
-Bob	25
-Carol	23
-Dora	29
+name  ¦  age
+Abby  ¦  24
+Bob  ¦  25
+Carol  ¦  23
+Dora  ¦  29
+
+#SQL[@44,N23]Result[]
 drop table if exists t4;
+
+#SQL[@45,N42]Result[]
 create table t4(a int, b date, c datetime);
+
+#SQL[@46,N60]Result[]
 insert into t4 values(1, '2021-12-13','2021-12-13 13:00:00');
+
+#SQL[@47,N47]Result[]
 insert into t4 values(2, '20211214','20211213');
+
+#SQL[@48,N50]Result[]
 insert into t4 values(3,'2021-12-14','2021-12-14');
+
+#SQL[@49,N50]Result[]
 insert into t4 values(4,'2021-12-15','2021-12-14');
+
+#SQL[@50,N35]Result[15, 42, 42, 42]
 select * from t4 where b>'20211213';
-a	b	c
-2	2021-12-14	2021-12-13 00:00:00
-3	2021-12-14	2021-12-14 00:00:00
-4	2021-12-15	2021-12-14 00:00:00
+a  ¦  b  ¦  c
+2  ¦  2021-12-14  ¦  2021-12-13 00:00:00
+3  ¦  2021-12-14  ¦  2021-12-14 00:00:00
+4  ¦  2021-12-15  ¦  2021-12-14 00:00:00
+
+#SQL[@51,N35]Result[15, 42, 42, 42]
 select * from t4 where c>'20211213';
-a	b	c
-1	2021-12-13	2021-12-13 13:00:00
-3	2021-12-14	2021-12-14 00:00:00
-4	2021-12-15	2021-12-14 00:00:00
+a  ¦  b  ¦  c
+1  ¦  2021-12-13  ¦  2021-12-13 13:00:00
+3  ¦  2021-12-14  ¦  2021-12-14 00:00:00
+4  ¦  2021-12-15  ¦  2021-12-14 00:00:00
+
+#SQL[@52,N37]Result[15, 42, 42, 42]
 select * from t4 where b>'2021-12-13';
-a	b	c
-2	2021-12-14	2021-12-13 00:00:00
-3	2021-12-14	2021-12-14 00:00:00
-4	2021-12-15	2021-12-14 00:00:00
+a  ¦  b  ¦  c
+2  ¦  2021-12-14  ¦  2021-12-13 00:00:00
+3  ¦  2021-12-14  ¦  2021-12-14 00:00:00
+4  ¦  2021-12-15  ¦  2021-12-14 00:00:00
+
+#SQL[@53,N37]Result[15, 42, 42, 42]
 select * from t4 where c>'2021-12-13';
-a	b	c
-1	2021-12-13	2021-12-13 13:00:00
-3	2021-12-14	2021-12-14 00:00:00
-4	2021-12-15	2021-12-14 00:00:00
+a  ¦  b  ¦  c
+1  ¦  2021-12-13  ¦  2021-12-13 13:00:00
+3  ¦  2021-12-14  ¦  2021-12-14 00:00:00
+4  ¦  2021-12-15  ¦  2021-12-14 00:00:00
+
+#SQL[@54,N62]Result[15, 42, 42, 42]
 select * from t4 where b between '2021-12-13' and '2021-12-14';
-a	b	c
-1	2021-12-13	2021-12-13 13:00:00
-2	2021-12-14	2021-12-13 00:00:00
-3	2021-12-14	2021-12-14 00:00:00
+a  ¦  b  ¦  c
+1  ¦  2021-12-13  ¦  2021-12-13 13:00:00
+2  ¦  2021-12-14  ¦  2021-12-13 00:00:00
+3  ¦  2021-12-14  ¦  2021-12-14 00:00:00
+
+#SQL[@55,N66]Result[15, 42]
 select * from t4 where b not between '2021-12-13' and '2021-12-14';
-a	b	c
-4	2021-12-15	2021-12-14 00:00:00
+a  ¦  b  ¦  c
+4  ¦  2021-12-15  ¦  2021-12-14 00:00:00
+

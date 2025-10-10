@@ -1,262 +1,337 @@
+#SQL[@7,N47]Result[50, 50]
 select 0.00,1.11,1234567890.1234567890123456789;
-0.00    1.11    1234567890.1234567890123456789
-0.00    1.11    1234567890.1234567890123456789
+0.00  ¦  1.11  ¦  1234567890.1234567890123456789
+0.00  ¦  1.11  ¦  1234567890.1234567890123456789
+
+#SQL[@8,N26]Result[21, 9]
 select 1123.2333+1233.3331;
 1123.2333 + 1233.3331
 2356.5664
+
+#SQL[@9,N46]Result[45, 7]
 select cast(9223372.036854775808 as decimal)+1;
 cast(9223372.036854775808 as decimal(38)) + 1
 9223373
+
+#SQL[@11,N50]Result[47, 7]
 select round(cast(2320310.66666612312 as decimal));
 round(cast(2320310.66666612312 as decimal(38)))
-2320311.0
+2320311
+
+#SQL[@12,N45]Result[42, 7]
 select floor(cast(2231231.501231 as decimal));
 floor(cast(2231231.501231 as decimal(38)))
 2231232
+
+#SQL[@16,N23]Result[]
 drop table if exists t1;
+
+#SQL[@17,N58]Result[]
 create table t1 (a decimal(29,0) not null, primary key(a));
-insert into t1 values (18446744073709551615), (0xFFFFFFFFFFFFFE), (18446744073709551613.0000000), (18446744073709551612.0000000001);
-[unknown result because it is related to issue#3364]
-select * from t1 order by 1 asc;
-[unknown result because it is related to issue#3364]
-select * from t1 where a=18446744073709551615 order by a desc;
-[unknown result because it is related to issue#3364]
-delete from t1 where a=18446744073709551615.000000000;
-[unknown result because it is related to issue#3364]
-select * from t1;
-[unknown result because it is related to issue#3364]
+
+#SQL[@25,N13]Result[]
 drop table t1;
+
+#SQL[@26,N64]Result[]
 create table t1 ( a int not null default 1, big decimal(29,11) );
+
+#SQL[@27,N75]Result[]
 insert into t1 (big) values (-1),(12.34567891234567),(92.23372036854775807);
+
+#SQL[@28,N41]Result[10, 21, 21, 21]
 select * from t1 order by a desc, big asc;
-a    big
-1    -1.00000000000
-1    12.34567891235
-1    92.23372036855
+a  ¦  big
+1  ¦  -1.00000000000
+1  ¦  12.34567891235
+1  ¦  92.23372036855
+
+#SQL[@29,N43]Result[40, 54]
 select min(big),max(big),max(big)-1 from t1;
-min(big)    max(big)    max(big) - 1
--1.00000000000    92.23372036855    91.23372036855
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1.00000000000  ¦  92.23372036855  ¦  91.23372036855
+
+#SQL[@30,N67]Result[40, 55]
 select min(big),avg(big),max(big)-1 from t1 group by a order by 1+2;
-min(big)    avg(big)    max(big) - 1
--1.00000000000    34.526466426967    91.23372036855
-drop table t1;
-[unknown result because it is related to issue#3364]
-create table t1 ( a int not null default 1, big decimal(20,4) primary key);
-[unknown result because it is related to issue#3364]
-insert into t1 (big) values (0),(18446744073), (0xFFFFFE), (184467.13), (184462);
-[unknown result because it is related to issue#3364]
-select * from t1 order by 1,2 desc;
-[unknown result because it is related to issue#3364]
-select * from t1 order by big limit 1,2;
-[unknown result because it is related to issue#3364]
-select * from t1 order by big limit 2 offset 1;
-[unknown result because it is related to issue#3364]
-select min(big),max(big),max(big)-1 from t1;
-[unknown result because it is related to issue#3364]
-select min(big),count(big),max(big)-1 from t1 group by a;
-[unknown result because it is related to issue#3364]
+min(big)  ¦  avg(big)  ¦  max(big) - 1
+-1.00000000000  ¦  34.526466426967  ¦  91.23372036855
+
+#SQL[@43,N23]Result[]
 drop table if exists t1;
+
+#SQL[@44,N23]Result[]
 drop table if exists t2;
+
+#SQL[@45,N109]Result[]
 create table t1 (
 decimald  decimal(6,5) not null,
 value32  integer          not null,
 primary key(value32)
 );
+
+#SQL[@50,N110]Result[]
 create table t2 (
 decimald  decimal(5,4)  not null,
 value32  integer          not null,
 primary key(value32)
 );
+
+#SQL[@55,N38]Result[]
 insert into t1 values(0.1715600000, 1);
+
+#SQL[@56,N32]Result[]
 insert into t1 values(9.2234, 2);
+
+#SQL[@57,N35]Result[]
 insert into t2 values(1.7156e-1, 3);
+
+#SQL[@58,N56]Result[]
 insert into t2 values(9.2233720368547758070000000000, 4);
+
+#SQL[@59,N16]Result[21, 14, 14]
 select * from t1;
-decimald    value32
-0.17156    1
-9.22340    2
+decimald  ¦  value32
+0.17156  ¦  1
+9.22340  ¦  2
+
+#SQL[@60,N16]Result[21, 13, 13]
 select * from t2;
-decimald    value32
-0.1716    3
-9.2234    4
+decimald  ¦  value32
+0.1716  ¦  3
+9.2234  ¦  4
+
+#SQL[@61,N74]Result[48, 33]
 select * from t1 join t2 on t1.decimald=t2.decimald order by 1 asc, 2 desc;
-decimald    value32    decimald    value32
-9.22340    2    9.2234    4
+decimald  ¦  value32  ¦  decimald  ¦  value32
+9.22340  ¦  2  ¦  9.2234  ¦  4
+
+#SQL[@62,N72]Result[48, 33]
 select * from t1 join t2 on t1.decimald=t2.decimald where t1.decimald!=0;
-decimald    value32    decimald    value32
-9.22340    2    9.2234    4
+decimald  ¦  value32  ¦  decimald  ¦  value32
+9.22340  ¦  2  ¦  9.2234  ¦  4
+
+#SQL[@63,N69]Result[48, 33]
 select * from t1 join t2 on t1.decimald=t2.decimald order by 1,2 desc;
-decimald    value32    decimald    value32
-9.22340    2    9.2234    4
+decimald  ¦  value32  ¦  decimald  ¦  value32
+9.22340  ¦  2  ¦  9.2234  ¦  4
+
+#SQL[@64,N23]Result[]
 drop table if exists t1;
+
+#SQL[@65,N23]Result[]
 drop table if exists t2;
+
+#SQL[@66,N51]Result[]
 create table t1 (decimal20 decimal(20,18) not null);
+
+#SQL[@67,N41]Result[]
 insert into t1 values (1.4e-19),(1.4e-18);
+
+#SQL[@68,N16]Result[9, 20, 20]
 select * from t1;
 decimal20
-0E-18
-1E-18
+0.000000000000000000
+0.000000000000000001
+
+#SQL[@69,N13]Result[]
 drop table t1;
+
+#SQL[@70,N43]Result[]
 create table t1 (decimal_col decimal(29,0));
+
+#SQL[@71,N45]Result[]
 insert into t1 values (-17666000000000000000);
-select * from t1 where decimal_col=-17666000000000000000 order by 1 asc;
-[unknown result because it is related to issue#3364]
+
+#SQL[@75,N84]Result[11, 21]
 select * from t1 where decimal_col='-17666000000000000000' order by decimal_col desc;
 decimal_col
 -17666000000000000000
+
+#SQL[@76,N13]Result[]
 drop table t1;
-select cast(10000002383263201056 as decimal) mod 50 as result;
-[unknown result because it is related to issue#4241]
+
+#SQL[@82,N62]Error[65]
 select cast(cast(19999999999999999999 as decimal) as unsigned);
-Data truncation: data out of range: data type uint64, value '19999999999999999999'
+data out of range: data type uint64, value '19999999999999999999'
+
+#SQL[@83,N66]Result[]
 CREATE TABLE t1 (id INT PRIMARY KEY,
 a decimal(20),
 b VARCHAR(20));
+
+#SQL[@86,N160]Result[]
 INSERT INTO t1 (id,a) VALUES
 (1,0),
 (2,CAST(0x7FFFFFFFFFFFFFFF AS UNSIGNED)),
 (3,CAST(0x8000000000000000 AS UNSIGNED)),
 (4,CAST(0xFFFFFFFFFFFFFFFF AS UNSIGNED));
+
+#SQL[@91,N19]Result[]
 UPDATE t1 SET b = a;
-select distinct * from t1 where ((a = '2147483647') and (b = '2147483647'));
-[unknown result because it is related to issue#4383]
-select a,count(a) from t1 group by a having count(a)>=2;
-[unknown result because it is related to issue#4383]
+
+#SQL[@98,N40]Result[]
 CREATE TABLE t_decimal(id decimal(10,5));
+
+#SQL[@99,N67]Result[]
 INSERT INTO t_decimal VALUES (1), (2),(1.099999999),(2.20000000001);
+
+#SQL[@100,N23]Result[2, 7, 7, 7, 7]
 select * from t_decimal;
 id
 1.00000
 2.00000
 1.10000
 2.20000
+
+#SQL[@101,N35]Result[17, 18, 17, 17, 17]
 SELECT id, id >= 1.1 FROM t_decimal;
-id    id >= 1.1
-1.00000    false
-2.00000    true
-1.10000    true
-2.20000    true
+id  ¦  id >= 1.1
+1.00000  ¦  false
+2.00000  ¦  true
+1.10000  ¦  true
+2.20000  ¦  true
+
+#SQL[@102,N35]Result[17, 18, 17, 17, 17]
 SELECT id, 1.1 <= id FROM t_decimal;
-id    1.1 <= id
-1.00000    false
-2.00000    true
-1.10000    true
-2.20000    true
+id  ¦  1.1 <= id
+1.00000  ¦  false
+2.00000  ¦  true
+1.10000  ¦  true
+2.20000  ¦  true
+
+#SQL[@103,N34]Result[16, 18, 18, 17, 18]
 SELECT id, id = 1.1 FROM t_decimal;
-id    id = 1.1
-1.00000    false
-2.00000    false
-1.10000    true
-2.20000    false
+id  ¦  id = 1.1
+1.00000  ¦  false
+2.00000  ¦  false
+1.10000  ¦  true
+2.20000  ¦  false
+
+#SQL[@104,N34]Result[16, 18, 18, 17, 18]
 SELECT id, 1.1 = id FROM t_decimal;
-id    1.1 = id
-1.00000    false
-2.00000    false
-1.10000    true
-2.20000    false
+id  ¦  1.1 = id
+1.00000  ¦  false
+2.00000  ¦  false
+1.10000  ¦  true
+2.20000  ¦  false
+
+#SQL[@105,N38]Result[2, 7]
 SELECT * from t_decimal WHERE id = 1.1;
 id
 1.10000
+
+#SQL[@106,N40]Result[2, 7]
 SELECT * from t_decimal WHERE id = 1.1e0;
 id
 1.10000
+
+#SQL[@107,N40]Result[2, 7]
 SELECT * from t_decimal WHERE id = '1.1';
 id
 1.10000
+
+#SQL[@108,N42]Result[2, 7]
 SELECT * from t_decimal WHERE id = '1.1e0';
 id
 1.10000
+
+#SQL[@109,N46]Result[2, 7, 7]
 SELECT * from t_decimal WHERE id IN (1.1, 2.2);
 id
 1.10000
 2.20000
+
+#SQL[@110,N50]Result[2, 7, 7]
 SELECT * from t_decimal WHERE id IN (1.1e0, 2.2e0);
 id
 1.10000
 2.20000
+
+#SQL[@111,N50]Result[2, 7, 7]
 SELECT * from t_decimal WHERE id IN ('1.1', '2.2');
 id
 1.10000
 2.20000
+
+#SQL[@112,N54]Result[2, 7, 7]
 SELECT * from t_decimal WHERE id IN ('1.1e0', '2.2e0');
 id
 1.10000
 2.20000
+
+#SQL[@113,N52]Result[2, 7]
 SELECT * from t_decimal WHERE id BETWEEN 1.1 AND 1.9;
 id
 1.10000
+
+#SQL[@114,N56]Result[2, 7]
 SELECT * from t_decimal WHERE id BETWEEN 1.1e0 AND 1.9e0;
 id
 1.10000
+
+#SQL[@115,N56]Result[2, 7]
 SELECT * from t_decimal WHERE id BETWEEN '1.1' AND '1.9';
 id
 1.10000
+
+#SQL[@116,N60]Result[2, 7]
 SELECT * from t_decimal WHERE id BETWEEN '1.1e0' AND '1.9e0';
 id
 1.10000
+
+#SQL[@117,N13]Result[]
 drop table t1;
+
+#SQL[@118,N32]Result[]
 CREATE TABLE t1 (a decimal(2,1));
+
+#SQL[@119,N40]Result[]
 INSERT INTO t1 VALUES (1),(0.8999),(0.9);
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-[unknown result because it is related to issue#3185]
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-[unknown result because it is related to issue#3185]
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
-[unknown result because it is related to issue#3185]
-SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
-[unknown result because it is related to issue#3280]
-SELECT * FROM t1 WHERE a=0.9;
-[unknown result because it is related to issue#3280]
-SELECT * FROM t1 WHERE a IN (0.8,0.9);
-[unknown result because it is related to issue#3280]
-drop table t1;
-[unknown result because it is related to issue#3280]
-create table t (id decimal(23,3) unsigned, b int);
-[unknown result because it is related to issue#3280]
-insert into t values(889475494977969.3574,1);
-[unknown result because it is related to issue#3280]
-insert into t values(889475494977969.3579,2);
-[unknown result because it is related to issue#3280]
-insert into t values(889475494977969.357,3);
-[unknown result because it is related to issue#3280]
-select count(*) from t
-where id>=88947549497796.3574 and id <=889475494977969.358;
-[unknown result because it is related to issue#3280]
-select count(*) from t
-where id between 88947549497796.3574 and 889475494977969.358;
-[unknown result because it is related to issue#3280]
-drop table t;
-[unknown result because it is related to issue#3280]
+
+#SQL[@140,N45]Result[42, 5]
 SELECT CAST(1.00 AS decimal) BETWEEN 1 AND -1;
 cast(1.00 as decimal(38)) between 1 and -1
 false
+
+#SQL[@141,N49]Result[46, 4]
 SELECT CAST(1.00 AS decimal) NOT BETWEEN 1 AND -1;
 cast(1.00 as decimal(38)) not between 1 and -1
 true
+
+#SQL[@142,N43]Result[40, 5]
 SELECT CAST(-0 AS decimal) BETWEEN 0 AND -1;
 cast(-0 as decimal(38)) between 0 and -1
 false
+
+#SQL[@143,N46]Result[43, 4]
 SELECT CAST(0 AS decimal) NOT BETWEEN 0 AND -1;
 cast(0 as decimal(38)) not between 0 and -1
 true
+
+#SQL[@146,N23]Result[]
 drop table if exists t1;
+
+#SQL[@147,N23]Result[]
 drop table if exists t2;
+
+#SQL[@148,N23]Result[]
 drop table if exists t3;
+
+#SQL[@149,N24]Result[]
 drop table if exists t11;
+
+#SQL[@150,N24]Result[]
 drop table if exists t12;
+
+#SQL[@151,N60]Result[]
 CREATE TABLE t1 (a decimal(3,2), b decimal(5,2) primary key);
+
+#SQL[@152,N49]Result[]
 INSERT INTO t1 VALUES (1.00,1.0000),(1.00,2.0000);
-update t1 set a=2.00 where a=1 limit 1;
-[unknown result because it is related to issue#3280]
-select * from t1;
-[unknown result because it is related to issue#3280]
-INSERT INTO t1 VALUES (1,3);
-[unknown result because it is related to issue#3280]
-update t1 set a=2 where a=1.00;
-[unknown result because it is related to issue#3280]
-select * from t1;
-[unknown result because it is related to issue#3280]
+
+#SQL[@160,N13]Result[]
 drop table t1;
+
+#SQL[@161,N458]Result[]
 create table t1 (
 a decimal(10,5) not null,
 b int not null default 12346,
@@ -269,98 +344,151 @@ h decimal(10,5) not null default 12345.67890,
 i decimal(10,5) not null default 12345.67890,
 j decimal(10,5) not null default 12345.67890,
 primary key (a));
+
+#SQL[@173,N91]Result[]
 insert into t1 (a) values (2),(4),(6),(8),(10),(12),(14),(16),(18),(20),(22),(24),(26),(23);
+
+#SQL[@174,N21]Result[]
 update t1 set a=a+101;
+
+#SQL[@175,N29]Result[8, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
 select a,b from t1 order by 1;
-a    b
-103.00000    12346
-105.00000    12346
-107.00000    12346
-109.00000    12346
-111.00000    12346
-113.00000    12346
-115.00000    12346
-117.00000    12346
-119.00000    12346
-121.00000    12346
-123.00000    12346
-124.00000    12346
-125.00000    12346
-127.00000    12346
+a  ¦  b
+103.00000  ¦  12346
+105.00000  ¦  12346
+107.00000  ¦  12346
+109.00000  ¦  12346
+111.00000  ¦  12346
+113.00000  ¦  12346
+115.00000  ¦  12346
+117.00000  ¦  12346
+119.00000  ¦  12346
+121.00000  ¦  12346
+123.00000  ¦  12346
+124.00000  ¦  12346
+125.00000  ¦  12346
+127.00000  ¦  12346
+
+#SQL[@176,N30]Result[]
 update t1 set a=27 where a=125;
+
+#SQL[@177,N29]Result[8, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
 select a,b from t1 order by 1;
-a    b
-27.00000    12346
-103.00000    12346
-105.00000    12346
-107.00000    12346
-109.00000    12346
-111.00000    12346
-113.00000    12346
-115.00000    12346
-117.00000    12346
-119.00000    12346
-121.00000    12346
-123.00000    12346
-124.00000    12346
-127.00000    12346
+a  ¦  b
+27.00000  ¦  12346
+103.00000  ¦  12346
+105.00000  ¦  12346
+107.00000  ¦  12346
+109.00000  ¦  12346
+111.00000  ¦  12346
+113.00000  ¦  12346
+115.00000  ¦  12346
+117.00000  ¦  12346
+119.00000  ¦  12346
+121.00000  ¦  12346
+123.00000  ¦  12346
+124.00000  ¦  12346
+127.00000  ¦  12346
+
+#SQL[@178,N31]Result[]
 update t1 set a=a-1 where 1 > 2;
+
+#SQL[@179,N29]Result[8, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
 select a,b from t1 order by 1;
-a    b
-27.00000    12346
-103.00000    12346
-105.00000    12346
-107.00000    12346
-109.00000    12346
-111.00000    12346
-113.00000    12346
-115.00000    12346
-117.00000    12346
-119.00000    12346
-121.00000    12346
-123.00000    12346
-124.00000    12346
-127.00000    12346
+a  ¦  b
+27.00000  ¦  12346
+103.00000  ¦  12346
+105.00000  ¦  12346
+107.00000  ¦  12346
+109.00000  ¦  12346
+111.00000  ¦  12346
+113.00000  ¦  12346
+115.00000  ¦  12346
+117.00000  ¦  12346
+119.00000  ¦  12346
+121.00000  ¦  12346
+123.00000  ¦  12346
+124.00000  ¦  12346
+127.00000  ¦  12346
+
+#SQL[@180,N31]Result[]
 update t1 set a=a-1 where 3 > 2;
+
+#SQL[@181,N29]Result[8, 19, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20]
 select a,b from t1 order by 1;
-a    b
-26.00000    12346
-102.00000    12346
-104.00000    12346
-106.00000    12346
-108.00000    12346
-110.00000    12346
-112.00000    12346
-114.00000    12346
-116.00000    12346
-118.00000    12346
-120.00000    12346
-122.00000    12346
-123.00000    12346
-126.00000    12346
+a  ¦  b
+26.00000  ¦  12346
+102.00000  ¦  12346
+104.00000  ¦  12346
+106.00000  ¦  12346
+108.00000  ¦  12346
+110.00000  ¦  12346
+112.00000  ¦  12346
+114.00000  ¦  12346
+116.00000  ¦  12346
+118.00000  ¦  12346
+120.00000  ¦  12346
+122.00000  ¦  12346
+123.00000  ¦  12346
+126.00000  ¦  12346
+
+#SQL[@182,N13]Result[]
 drop table t1;
+
+#SQL[@183,N57]Result[]
 create table t1 (a decimal(10,5) primary key, b char(32));
+
+#SQL[@184,N56]Result[]
 insert into t1 values (1.000000,'apple'), (2.00,'apple');
+
+#SQL[@185,N16]Result[8, 18, 18]
 select * from t1;
-a    b
-1.00000    apple
-2.00000    apple
+a  ¦  b
+1.00000  ¦  apple
+2.00000  ¦  apple
+
+#SQL[@188,N23]Result[]
 drop table if exists t1;
+
+#SQL[@189,N23]Result[]
 drop table if exists t2;
+
+#SQL[@190,N23]Result[]
 drop table if exists t3;
+
+#SQL[@191,N24]Result[]
 drop table if exists t11;
+
+#SQL[@192,N24]Result[]
 drop table if exists t12;
+
+#SQL[@193,N60]Result[]
 CREATE TABLE t1 (a decimal(3,2), b decimal(5,4) primary key);
+
+#SQL[@194,N33]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2);
+
+#SQL[@195,N32]Result[]
 delete from t1 where a=1 limit 1;
+
+#SQL[@196,N16]Result[8, 16]
 select * from t1;
-a    b
-1.00    2.0000
+a  ¦  b
+1.00  ¦  2.0000
+
+#SQL[@197,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@198,N24]Result[]
 delete from t1 where a=1;
+
+#SQL[@199,N16]Result[]
 select * from t1;
-a    b
+
+#SQL[@200,N13]Result[]
 drop table t1;
+
+#SQL[@201,N458]Result[]
 create table t1 (
 a decimal(10,5) not null,
 b int not null default 12346,
@@ -373,43 +501,55 @@ h decimal(10,5) not null default 12345.67890,
 i decimal(10,5) not null default 12345.67890,
 j decimal(10,5) not null default 12345.67890,
 primary key (a));
+
+#SQL[@213,N72]Result[]
 insert into t1 (a) values (2.1111),(4),(00006.12311),(8.41231),(24.0000);
-delete from t1 where a=2+2.0000;
-[unknown result because it is related to issue#3280]
-select a,b from t1 order by 1;
-[unknown result because it is related to issue#3280]
-delete from t1 where  a=24.0000;
-[unknown result because it is related to issue#3280]
-select a,b from t1 order by 1;
-[unknown result because it is related to issue#3280]
-delete from t1 where  3 < 2;
-[unknown result because it is related to issue#3280]
-select a,b from t1 order by 1;
-[unknown result because it is related to issue#3280]
-delete from t1 where  1 < 2;
-[unknown result because it is related to issue#3280]
-select a,b from t1 order by 1;
-[unknown result because it is related to issue#3280]
+
+#SQL[@224,N13]Result[]
 drop table t1;
+
+#SQL[@225,N57]Result[]
 create table t1 (a decimal(10,5) primary key, b char(32));
+
+#SQL[@226,N56]Result[]
 insert into t1 values (1.000000,'apple'), (2.00,'apple');
+
+#SQL[@227,N16]Result[8, 18, 18]
 select * from t1;
-a    b
-1.00000    apple
-2.00000    apple
+a  ¦  b
+1.00000  ¦  apple
+2.00000  ¦  apple
+
+#SQL[@229,N13]Result[]
 drop table t1;
+
+#SQL[@230,N31]Result[]
 create table t1(a decimal(5,2));
+
+#SQL[@231,N49]Result[]
 insert into t1 values(0), (2.1), (2.994), (2.995);
+
+#SQL[@232,N16]Result[1, 4, 4, 4, 4]
 select * from t1;
 a
 0.00
 2.10
 2.99
 3.00
+
+#SQL[@233,N29]Result[]
 insert into t1 values(999.99);
+
+#SQL[@234,N30]Result[]
 insert into t1 values(-999.99);
+
+#SQL[@235,N30]Result[]
 insert into t1 values(999.994);
+
+#SQL[@236,N31]Result[]
 insert into t1 values(-999.994);
+
+#SQL[@237,N16]Result[1, 4, 4, 4, 4, 6, 7, 6, 7]
 select * from t1;
 a
 0.00
@@ -420,23 +560,45 @@ a
 -999.99
 999.99
 -999.99
+
+#SQL[@238,N30]Error[78]
 insert into t1 values(999.995);
 invalid input: 999.995 beyond the range, can't be converted to Decimal64(5,2).
+
+#SQL[@239,N31]Error[78]
 insert into t1 values(-999.995);
 invalid input: 999.995 beyond the range, can't be converted to Decimal64(5,2).
+
+#SQL[@241,N13]Result[]
 drop table t1;
+
+#SQL[@242,N32]Result[]
 create table t1(a decimal(17,2));
+
+#SQL[@243,N49]Result[]
 insert into t1 values(0), (2.1), (2.994), (2.995);
+
+#SQL[@244,N16]Result[1, 4, 4, 4, 4]
 select * from t1;
 a
 0.00
 2.10
 2.99
 3.00
+
+#SQL[@245,N41]Result[]
 insert into t1 values(999999999999999.99);
+
+#SQL[@246,N42]Result[]
 insert into t1 values(-999999999999999.99);
+
+#SQL[@247,N42]Result[]
 insert into t1 values(999999999999999.994);
+
+#SQL[@248,N43]Result[]
 insert into t1 values(-999999999999999.994);
+
+#SQL[@249,N16]Result[1, 4, 4, 4, 4, 18, 19, 18, 19]
 select * from t1;
 a
 0.00
@@ -447,13 +609,25 @@ a
 -999999999999999.99
 999999999999999.99
 -999999999999999.99
+
+#SQL[@250,N42]Error[92]
 insert into t1 values(999999999999999.995);
 invalid input: 999999999999999.995 beyond the range, can't be converted to Decimal128(17,2).
+
+#SQL[@251,N43]Error[92]
 insert into t1 values(-999999999999999.995);
 invalid input: 999999999999999.995 beyond the range, can't be converted to Decimal128(17,2).
+
+#SQL[@253,N13]Result[]
 drop table t1;
+
+#SQL[@254,N31]Result[]
 create table t1(a decimal(5,5));
+
+#SQL[@255,N81]Result[]
 insert into t1 values(0), (0.9), (0.99), (0.999), (0.9999), (0.99999), (0.999994);
+
+#SQL[@256,N16]Result[1, 7, 7, 7, 7, 7, 7, 7]
 select * from t1;
 a
 0.00000
@@ -463,7 +637,11 @@ a
 0.99990
 0.99999
 0.99999
+
+#SQL[@257,N82]Result[]
 insert into t1 values(-0.9), (-0.99), (-0.999), (-0.9999), (-0.99999), (-0.999994);
+
+#SQL[@258,N16]Result[1, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8]
 select * from t1;
 a
 0.00000
@@ -479,108 +657,222 @@ a
 -0.99990
 -0.99999
 -0.99999
+
+#SQL[@259,N31]Error[79]
 insert into t1 values(0.999995);
 invalid input: 0.999995 beyond the range, can't be converted to Decimal64(5,5).
+
+#SQL[@260,N32]Error[79]
 insert into t1 values(-0.999995);
 invalid input: 0.999995 beyond the range, can't be converted to Decimal64(5,5).
+
+#SQL[@262,N13]Result[]
 drop table t1;
+
+#SQL[@263,N33]Result[]
 create table t1(a decimal(17,17));
+
+#SQL[@264,N120]Result[]
 insert into t1 values(0), (0.99999999999999999), (0.999999999999999994), (-0.99999999999999999), (-0.999999999999999994);
+
+#SQL[@265,N16]Result[1, 19, 19, 19, 20, 20]
 select * from t1;
 a
-0E-17
+0.00000000000000000
 0.99999999999999999
 0.99999999999999999
 -0.99999999999999999
 -0.99999999999999999
+
+#SQL[@266,N43]Error[94]
 insert into t1 values(0.999999999999999995);
 invalid input: 0.999999999999999995 beyond the range, can't be converted to Decimal128(17,17).
+
+#SQL[@267,N44]Error[94]
 insert into t1 values(-0.999999999999999995);
 invalid input: 0.999999999999999995 beyond the range, can't be converted to Decimal128(17,17).
+
+#SQL[@269,N23]Result[]
 drop table if exists t1;
+
+#SQL[@270,N51]Result[]
 create table t1 (a decimal(12,2), b decimal(12, 2));
+
+#SQL[@271,N44]Result[]
 insert into t1 values (301934.27, 301934.27);
+
+#SQL[@272,N25]Result[10, 9]
 select a + 4589.6 from t1;
 a + 4589.6
 306523.87
+
+#SQL[@273,N26]Result[11, 9]
 select a + 4589.60 from t1;
 a + 4589.60
 306523.87
+
+#SQL[@274,N25]Result[10, 9]
 select 4589.6 + a from t1;
 4589.6 + a
 306523.87
+
+#SQL[@275,N26]Result[11, 9]
 select 4589.60 + a from t1;
 4589.60 + a
 306523.87
+
+#SQL[@276,N13]Result[]
 drop table t1;
+
+#SQL[@278,N23]Result[]
 drop table if exists t1;
+
+#SQL[@279,N51]Result[]
 create table t1 (a decimal(12,2), b decimal(12, 2));
+
+#SQL[@280,N44]Result[]
 insert into t1 values (301934.27, 301934.27);
+
+#SQL[@281,N25]Result[10, 9]
 select a - 4589.6 from t1;
 a - 4589.6
 297344.67
+
+#SQL[@282,N26]Result[11, 9]
 select a - 4589.60 from t1;
 a - 4589.60
 297344.67
+
+#SQL[@283,N25]Result[10, 10]
 select 4589.6 - a from t1;
 4589.6 - a
 -297344.67
+
+#SQL[@284,N26]Result[11, 10]
 select 4589.60 - a from t1;
 4589.60 - a
 -297344.67
+
+#SQL[@285,N13]Result[]
 drop table t1;
+
+#SQL[@287,N23]Result[]
 drop table if exists t1;
+
+#SQL[@288,N33]Result[]
 create table t1 (a decimal(12,2));
+
+#SQL[@289,N33]Result[]
 insert into t1 values (301934.27);
+
+#SQL[@290,N25]Result[10, 14]
 select a * 4589.6 from t1;
 a * 4589.6
 1385757525.592
+
+#SQL[@291,N26]Result[11, 15]
 select a * 4589.60 from t1;
 a * 4589.60
 1385757525.5920
+
+#SQL[@292,N26]Result[11, 15]
 select a * 54545.5 from t1;
 a * 54545.5
 16469155724.285
+
+#SQL[@293,N27]Result[12, 16]
 select a * 54545.50 from t1;
 a * 54545.50
 16469155724.2850
+
+#SQL[@294,N26]Result[11, 15]
 select a * 54545.8 from t1;
 a * 54545.8
 16469246304.566
+
+#SQL[@295,N27]Result[12, 16]
 select a * 54545.80 from t1;
 a * 54545.80
 16469246304.5660
+
+#SQL[@296,N13]Result[]
 drop table t1;
+
+#SQL[@298,N23]Result[]
 drop table if exists t1;
+
+#SQL[@299,N51]Result[]
 create table t1 (a decimal(12,2), b decimal(12, 2));
+
+#SQL[@300,N44]Result[]
 insert into t1 values (301934.27, 301934.27);
+
+#SQL[@301,N25]Result[10, 11]
 select a / 4589.6 from t1;
 a / 4589.6
 65.78661975
+
+#SQL[@302,N26]Result[11, 11]
 select a / 4589.60 from t1;
 a / 4589.60
 65.78661975
+
+#SQL[@303,N25]Result[10, 9]
 select 4589.6 / a from t1;
 4589.6 / a
 0.0152007
+
+#SQL[@304,N26]Result[11, 10]
 select 4589.60 / a from t1;
 4589.60 / a
 0.01520066
+
+#SQL[@305,N13]Result[]
 drop table t1;
+
+#SQL[@308,N30]Result[]
 DROP TABLE IF EXISTS decimal01;
+
+#SQL[@309,N39]Result[]
 CREATE TABLE decimal01(a decimal(10,6));
+
+#SQL[@310,N39]Result[]
 INSERT INTO decimal01 VALUES(123.37284);
+
+#SQL[@311,N36]Result[]
 INSERT INTO decimal01 VALUES(3782.3);
+
+#SQL[@312,N35]Result[]
 INSERT INTO decimal01 VALUES(328.0);
+
+#SQL[@313,N41]Result[]
 INSERT INTO decimal01 VALUES(-373.909890);
+
+#SQL[@314,N34]Result[]
 INSERT INTO decimal01 VALUES(-1.1);
+
+#SQL[@315,N31]Result[]
 INSERT INTO decimal01 VALUES(0);
+
+#SQL[@316,N54]Result[]
 INSERT INTO decimal01 VALUES(3246.3674578902132322913);
+
+#SQL[@320,N46]Result[]
 INSERT INTO decimal01 VALUES(0.37281738921302);
+
+#SQL[@321,N49]Result[]
 INSERT INTO decimal01 VALUES(12.4738244432449324);
+
+#SQL[@322,N50]Result[]
 INSERT INTO decimal01 VALUES(-3278.38928432434932);
+
+#SQL[@325,N60]Result[]
 INSERT INTO decimal01 VALUES(-1.434324654846543221327891321);
+
+#SQL[@326,N54]Result[]
 INSERT INTO decimal01 VALUES(372.37287392839232943043);
+
+#SQL[@329,N23]Result[1, 10, 11, 10, 11, 9, 8, 11, 8, 9, 12, 9, 10]
 SELECT * FROM decimal01;
 a
 123.372840
@@ -595,10 +887,20 @@ a
 -3278.389284
 -1.434325
 372.372874
+
+#SQL[@332,N59]Result[]
 UPDATE decimal01 set a = 0.999999999999 WHERE a = 12.473824;
+
+#SQL[@333,N54]Result[]
 UPDATE decimal01 set a = -0.00000000000 WHERE a = -1.1;
+
+#SQL[@336,N44]Result[]
 DELETE FROM decimal01 WHERE a = -3278.389284;
+
+#SQL[@337,N40]Result[]
 DELETE FROM decimal01 WHERE a = 0.372817;
+
+#SQL[@340,N33]Result[11, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
 SELECT a + 7382121 FROM decimal01;
 a + 7382121
 7382244.372840
@@ -611,6 +913,8 @@ a + 7382121
 7382493.372874
 7382122.000000
 7382121.000000
+
+#SQL[@341,N33]Result[11, 10, 11, 10, 11, 9, 11, 9, 10, 8, 9]
 SELECT a - 0.27832 FROM decimal01;
 a - 0.27832
 123.094520
@@ -623,163 +927,271 @@ a - 0.27832
 372.094554
 0.721680
 -0.278320
+
+#SQL[@342,N27]Result[5, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
 SELECT a * 0 FROM decimal01;
 a * 0
-0E-12
-0E-12
-0E-12
-0E-12
-0E-12
-0E-12
-0E-12
-0E-12
-0E-12
-0E-12
+0.000000
+0.000000
+0.000000
+0.000000
+0.000000
+0.000000
+0.000000
+0.000000
+0.000000
+0.000000
+
+#SQL[@343,N27]Result[5, 15, 16, 15, 16, 14, 16, 15, 15, 14, 14]
 SELECT a / 6 FROM decimal01;
 a / 6
 20.562140000000
 630.383333333333
 54.666666666667
 -62.318315000000
-0E-12
+0.000000000000
 541.061243000000
 -0.239054166667
 62.062145666667
 0.166666666667
-0E-12
+0.000000000000
+
+#SQL[@344,N27]Result[5, 18, 21, 19, 19, 14, 21, 14, 19, 14, 14]
 SELECT a * a FROM decimal01;
 a * a
 15220.857649665600
 14305793.290000000000
 107584.000000000000
 139808.605839812100
-0E-12
+0.000000000000
 10538901.672361381764
 2.057288205625
 138661.557291019876
 1.000000000000
-0E-12
+0.000000000000
+
+#SQL[@347,N34]Result[]
 INSERT INTO decimal01 VALUES(NULL);
+
+#SQL[@350,N43]Error[85]
 INSERT INTO decimal01 VALUES(3271838219.12);
 invalid input: 3271838219.12 beyond the range, can't be converted to Decimal64(10,6).
+
+#SQL[@351,N49]Error[90]
 INSERT INTO decimal01 VALUEs(-278732.48392480932);
 invalid input: 278732.48392480932 beyond the range, can't be converted to Decimal64(10,6).
+
+#SQL[@352,N20]Result[]
 DROP TABLE decimal01;
+
+#SQL[@355,N30]Result[]
 DROP TABLE IF EXISTS decimal02;
+
+#SQL[@356,N40]Error[258]
 CREATE TABLE decimal02(a DECIMAL(10,11));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. For float(M,D), double(M,D) or decimal(M,D), M must be >= D (column 'a')) at line 1 column 39 near "));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. For float(M,D), double(M,D) or decimal(M,D), M must be >= D (column 'a')) at line 1 column 39 near \"))\";
+
+#SQL[@357,N20]Error[31]
 DROP TABLE decimal02;
 no such table decimal.decimal02
+
+#SQL[@360,N30]Result[]
 DROP TABLE IF EXISTS decimal03;
+
+#SQL[@361,N41]Error[203]
 CREATE TABLE decimal03(a DECIMAL(1.1,11));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 36 near "1.1,11));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 36 near \"1.1,11))\";
+
+#SQL[@362,N20]Error[31]
 DROP TABLE decimal03;
 no such table decimal.decimal03
+
+#SQL[@365,N30]Result[]
 DROP TABLE IF EXISTS decimal04;
+
+#SQL[@366,N40]Error[199]
 CREATE TABLE decimal04(a DECIMAL(11,-1));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 37 near "-1));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 37 near \"-1))\";
+
+#SQL[@367,N20]Error[31]
 DROP TABLE decimal04;
 no such table decimal.decimal04
+
+#SQL[@370,N30]Result[]
 DROP TABLE IF EXISTS decimal05;
+
+#SQL[@371,N40]Error[199]
 CREATE TABLE decimal05(a DECIMAL(20,-1));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 37 near "-1));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 37 near \"-1))\";
+
+#SQL[@372,N40]Error[202]
 CREATE TABLE decimal05(b DECIMAL(-2,23));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 34 near "-2,23));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 34 near \"-2,23))\";
+
+#SQL[@373,N20]Error[31]
 DROP TABLE decimal05;
 no such table decimal.decimal05
+
+#SQL[@376,N30]Result[]
 DROP TABLE IF EXISTS decimal06;
+
+#SQL[@377,N40]Error[225]
 CREATE TABLE decimal06(a DECIMAL(39,10));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. For decimal(M), M must between 0 and 38. at line 1 column 39 near "));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. For decimal(M), M must between 0 and 38. at line 1 column 39 near \"))\";
+
+#SQL[@378,N40]Error[225]
 CREATE TABLE decimal06(b DECIMAL(40,39));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. For decimal(M), M must between 0 and 38. at line 1 column 39 near "));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. For decimal(M), M must between 0 and 38. at line 1 column 39 near \"))\";
+
+#SQL[@379,N20]Error[31]
 DROP TABLE decimal06;
 no such table decimal.decimal06
+
+#SQL[@382,N30]Result[]
 DROP TABLE IF EXISTS decimal07;
+
+#SQL[@383,N56]Result[]
 CREATE TABLE decimal07(a int PRIMARY KEY, b DECIMAL(38));
+
+#SQL[@384,N45]Result[]
 INSERT INTO decimal07 VALUES(1, 3728193.3902);
+
+#SQL[@385,N44]Result[]
 INSERT INTO decimal07 VALUES(2, 0.327813092);
+
+#SQL[@386,N43]Result[]
 INSERT INTO decimal07 VALUES(3, -3728.4324);
+
+#SQL[@387,N71]Result[]
 INSERT INTO decimal07 VALUES(4, 12345678909876543212345678909876543243);
+
+#SQL[@390,N23]Result[8, 14, 8, 12, 45]
 SELECT * FROM decimal07;
-a    b
-1    3728193
-2    0
-3    -3728
-4    12345678909876543212345678909876543243
+a  ¦  b
+1  ¦  3728193
+2  ¦  0
+3  ¦  -3728
+4  ¦  12345678909876543212345678909876543243
+
+#SQL[@393,N30]Result[12, 14, 8, 13, 45]
 SELECT a, a * b FROM decimal07;
-a    a * b
-1    3728193
-2    0
-3    -11184
-4    49382715639506172849382715639506172972
+a  ¦  a * b
+1  ¦  3728193
+2  ¦  0
+3  ¦  -11184
+4  ¦  49382715639506172849382715639506172972
+
+#SQL[@394,N30]Result[12, 14, 8, 12, 45]
 SELECT a, a + b FROM decimal07;
-a    a + b
-1    3728194
-2    2
-3    -3725
-4    12345678909876543212345678909876543247
+a  ¦  a + b
+1  ¦  3728194
+2  ¦  2
+3  ¦  -3725
+4  ¦  12345678909876543212345678909876543247
+
+#SQL[@395,N34]Result[16, 15, 8, 11, 46]
 SELECT a, a - b - b FROM decimal07;
-a    a - b - b
-1    -7456385
-2    2
-3    7459
-4    -24691357819753086424691357819753086482
+a  ¦  a - b - b
+1  ¦  -7456385
+2  ¦  2
+3  ¦  7459
+4  ¦  -24691357819753086424691357819753086482
+
+#SQL[@396,N32]Error[57]
 SELECT a, b DIV a FROM decimal07;
 invalid argument operator div, bad value [DECIMAL128 INT]
+
+#SQL[@399,N31]Result[13, 14, 8, 11, 45]
 SELECT a, ABS(b) FROM decimal07;
-a    abs(b)
-1    3728193
-2    0
-3    3728
-4    12345678909876543212345678909876543243
+a  ¦  ABS(b)
+1  ¦  3728193
+2  ¦  0
+3  ¦  3728
+4  ¦  12345678909876543212345678909876543243
+
+#SQL[@400,N32]Result[14, 14, 8, 12, 45]
 SELECT a, CEIL(b) FROM decimal07;
-a    ceil(b)
-1    3728193
-2    0
-3    -3728
-4    12345678909876543212345678909876543243
+a  ¦  CEIL(b)
+1  ¦  3728193
+2  ¦  0
+3  ¦  -3728
+4  ¦  12345678909876543212345678909876543243
+
+#SQL[@401,N35]Result[18, 21, 8, 15, 82]
 SELECT a, POWER(b,2) FROM decimal07;
-a    power(b, 2)
-1    1.3899423045249E13
-2    0.0
-3    1.3897984E7
-4    1.5241578774577047E74
+a  ¦  POWER(b, 2)
+1  ¦  13899423045249
+2  ¦  0
+3  ¦  13897984
+4  ¦  152415787745770470000000000000000000000000000000000000000000000000000000000
+
+#SQL[@403,N30]Error[98]
 SELECT a, b / a FROM decimal07;
 invalid input: Decimal128 Div overflow: 12345678909876543212345678909876543243(Scale:0)/4(Scale:0)
+
+#SQL[@404,N30]Result[8, 18, 17, 19, 38]
 SELECT b + pi() FROM decimal07;
 b + pi()
 3728196.1415926535
 3.141592653589793
 -3724.8584073464103
-1.2345678909876543E37
+12345678909876543000000000000000000000
+
+#SQL[@405,N41]Result[19, 17, 1, 18, 16]
 SELECT LOG(10, b + 100000) FROM decimal07;
-log(10, b + 100000)
+LOG(10, b + 100000)
 6.582993824800232
-5.0
+5
 4.9834999941475795
 37.0915149775167
+
+#SQL[@406,N35]Result[13, 18, 17, 16, 17]
 SELECT LN(b + 20000) FROM decimal07;
-ln(b + 20000)
+LN(b + 20000)
 15.136784415144875
 9.903487552536127
 9.69720111828834
 85.40636946379534
+
+#SQL[@407,N28]Result[6, 9, 1, 1, 9]
 SELECT EXP(b) FROM decimal07;
-exp(b)
-Infinity
-1.0
-0.0
-Infinity
+EXP(b)
++Infinity
+1
+0
++Infinity
+
+#SQL[@409,N20]Result[]
 DROP TABLE decimal07;
+
+#SQL[@412,N30]Result[]
 DROP TABLE IF EXISTS decimal08;
+
+#SQL[@413,N39]Result[]
 CREATE TABLE decimal08(a DECIMAL(38,0));
+
+#SQL[@414,N68]Result[]
 INSERT INTO decimal08 VALUES(21737187383787273829839184932843922131);
+
+#SQL[@415,N68]Result[]
 INSERT INTO decimal08 VALUES(99999999999999999999999999999999999999);
+
+#SQL[@416,N69]Result[]
 INSERT INTO decimal08 VALUES(999999999999999.99999999999999999999999);
+
+#SQL[@417,N69]Result[]
 INSERT INTO decimal08 VALUES(1367281378213923.7382197382717382999911);
+
+#SQL[@418,N69]Result[]
 INSERT INTO decimal08 VALUES(-63723829382993920323820398294832849309);
+
+#SQL[@419,N69]Result[]
 INSERT INTO decimal08 VALUES(0.2777389100215365283243325321437821372);
+
+#SQL[@420,N69]Result[]
 INSERT INTO decimal08 VALUES(-99999999999999999999999999999999999999);
+
+#SQL[@421,N23]Result[1, 38, 38, 16, 16, 39, 1, 39]
 SELECT * FROM decimal08;
 a
 21737187383787273829839184932843922131
@@ -789,6 +1201,8 @@ a
 -63723829382993920323820398294832849309
 0
 -99999999999999999999999999999999999999
+
+#SQL[@423,N27]Result[5, 38, 39, 16, 16, 39, 1, 39]
 SELECT a + 1 FROM decimal08;
 a + 1
 21737187383787273829839184932843922132
@@ -798,293 +1212,475 @@ a + 1
 -63723829382993920323820398294832849308
 1
 -99999999999999999999999999999999999998
+
+#SQL[@426,N27]Error[98]
 SELECT a * 2 FROM decimal08;
 invalid input: Decimal128 Mul overflow: 99999999999999999999999999999999999999(Scale:0)*2(Scale:0)
-SELECT a / 3 FROM decimal08;
-[unknown result because it is related to issue#8513]
+
+#SQL[@431,N20]Result[]
 DROP TABLE decimal08;
+
+#SQL[@434,N30]Result[]
 DROP TABLE IF EXISTS decimal09;
+
+#SQL[@435,N47]Result[]
 CREATE TABLE decimal09 (d decimal DEFAULT NULL);
+
+#SQL[@436,N35]Result[]
 INSERT INTO decimal09 VALUES (NULL);
+
+#SQL[@437,N36]Result[]
 INSERT INTO decimal09 VALUES(212839);
+
+#SQL[@438,N68]Result[]
 INSERT INTO decimal09 VALUES(44455788525777778895412365489563123654);
+
+#SQL[@439,N69]Result[]
 INSERT INTO decimal09 VALUES(0.1236547899874561233211236544569877898);
+
+#SQL[@440,N23]Result[1, 4, 6, 38, 1]
 SELECT * FROM decimal09;
 d
 null
 212839
 44455788525777778895412365489563123654
 0
+
+#SQL[@441,N34]Result[12, 4, 10, 53, 4]
 SELECT format(d, 2) FROM decimal09;
 format(d, 2)
 null
 212,839.00
 44,455,788,525,777,778,895,412,365,489,563,123,654.00
 0.00
+
+#SQL[@442,N20]Result[]
 DROP TABLE decimal09;
+
+#SQL[@446,N30]Result[]
 DROP TABLE IF EXISTS decimal10;
+
+#SQL[@447,N79]Result[]
 CREATE TABLE decimal10(a DECIMAL(20,8) NOT NULL, b smallint, c float, d DOUBLE);
+
+#SQL[@448,N74]Result[]
 INSERT INTO decimal10 VALUES(12323.3829, -32768, -483924.43, 32932.323232);
+
+#SQL[@449,N64]Result[]
 INSERT INTO decimal10 VALUES(3829.23, -38, 32943243.1, -3829.32);
+
+#SQL[@450,N75]Result[]
 INSERT INTO decimal10 VALUES(-3728832.3982, 0, 0.32893029, 329832013.32893);
+
+#SQL[@451,N65]Result[]
 INSERT INTO decimal10 VALUES(0.217832913924324,NULL,3728.39,NULL);
+
+#SQL[@453,N23]Result[22, 60, 50, 60, 43]
 SELECT * FROM decimal10;
-a    b    c    d
-12323.38290000    -32768    -483924.44    32932.323232
-3829.23000000    -38    3.2943244E7    -3829.32
--3728832.39820000    0    0.3289303    3.2983201332893E8
-0.21783291    null    3728.39    null
+a  ¦  b  ¦  c  ¦  d
+12323.38290000  ¦  -32768  ¦  -483924.44  ¦  32932.323232
+3829.23000000  ¦  -38  ¦  32943244  ¦  -3829.32
+-3728832.39820000  ¦  0  ¦  0.3289303  ¦  329832013.32893
+0.21783291  ¦  null  ¦  3728.39  ¦  null
+
+#SQL[@456,N46]Error[47]
 INSERT INTO decimal10 VALUES(NULL, 21,32,32.0);
 constraint violation: Column 'a' cannot be null
+
+#SQL[@457,N62]Error[93]
 INSERT INTO decimal10 VALUES(21732843219738283.21,NULL,NULL,0);
 invalid input: 21732843219738283.21 beyond the range, can't be converted to Decimal128(20,8).
+
+#SQL[@460,N35]Result[13, 14, 11, 16, 4]
 SELECT a + b + c - d FROM decimal10;
 a + b + c - d
 -537301.385732
-3.295086532E7
--3.3356084557893E8
+32950865.32
+-333560845.57893
 null
+
+#SQL[@461,N35]Result[13, 19, 16, 18, 4]
 SELECT a * b + c * d FROM decimal10;
 a * b + c * d
--1.6340568606480984E10
--1.2615036862482E11
-1.0849173931838037E8
+-16340568606.480984
+-126150368624.82
+108491739.31838037
 null
+
+#SQL[@462,N35]Result[13, 11, 12, 8, 9]
 SELECT a + c + a * c FROM decimal10;
 a + c + a * c
--5.9640576E9
-1.26180205E11
--4955358.0
+-5964057600
+126180205000
+-4955358
 4540.7734
+
+#SQL[@463,N27]Result[5, 18, 19, 21, 4]
 SELECT a / d FROM decimal10;
 a / d
 0.3742032656847451
 -0.9999764971326501
 -0.011305247057632835
 null
+
+#SQL[@465,N32]Result[10, 11, 12, 7, 7]
 SELECT ABS(a) * c FROM decimal10;
-abs(a) * c
--5.963586E9
-1.2614726E11
-1226526.0
+ABS(a) * c
+-5963586000
+126147260000
+1226526
 812.166
+
+#SQL[@466,N30]Result[8, 5, 4, 8, 1]
 SELECT FLOOR(a) FROM decimal10;
-floor(a)
+FLOOR(a)
 12323
 3829
 -3728833
 0
+
+#SQL[@467,N39]Result[17, 11, 12, 8, 4]
 SELECT CEIL(a) * CEIL(c) FROM decimal10;
-ceil(a) * ceil(c)
--5.963879376E9
-1.2617262452E11
--3728832.0
-3729.0
+CEIL(a) * CEIL(c)
+-5963879376
+126172624520
+-3728832
+3729
+
+#SQL[@468,N39]Result[17, 41, 36, 66, 24]
 SELECT POWER(ABS(a), 10) FROM decimal10;
-power(abs(a), 10)
-8.077917745724969E40
-6.778202311305383E35
-5.196711812449448E65
-2.405663793917006E-7
+POWER(ABS(a), 10)
+80779177457249690000000000000000000000000
+677820231130538300000000000000000000
+519671181244944800000000000000000000000000000000000000000000000000
+0.0000002405663793917006
+
+#SQL[@469,N30]Result[8, 17, 18, 18, 18]
 SELECT pi() * a FROM decimal10;
 pi() * a
 38715.04918601408
 12029.880836905644
--1.171447246865273E7
+-11714472.46865273
 0.6843422697660866
+
+#SQL[@470,N33]Result[11, 17, 17, 18, 18]
 SELECT LOG(ABS(a)) FROM decimal10;
-log(abs(a))
+LOG(ABS(a))
 9.419253785434625
 8.250419017576137
 15.131605712642699
 -1.524026977969649
+
+#SQL[@471,N32]Result[10, 17, 17, 18, 18]
 SELECT LN(ABS(a)) FROM decimal10;
-ln(abs(a))
+LN(ABS(a))
 9.419253785434625
 8.250419017576137
 15.131605712642699
 -1.524026977969649
+
+#SQL[@472,N34]Result[12, 1, 1, 1, 1]
 SELECT EXP(a div c) FROM decimal10;
-exp(a div c)
-1.0
-1.0
-0.0
-1.0
+EXP(a div c)
+1
+1
+0
+1
+
+#SQL[@475,N28]Result[6, 17]
 SELECT SUM(a) FROM decimal10;
-sum(a)
+SUM(a)
 -3712679.56746709
+
+#SQL[@476,N32]Result[10, 21]
 SELECT AVG(a + b) FROM decimal10;
-avg(a + b)
+AVG(a + b)
 -1248495.261766666667
+
+#SQL[@477,N30]Result[8, 1]
 SELECT COUNT(a) FROM decimal10;
-count(a)
+COUNT(a)
 4
+
+#SQL[@478,N28]Result[6, 14]
 SELECT MAX(a) FROM decimal10;
-max(a)
+MAX(a)
 12323.38290000
+
+#SQL[@479,N37]Result[15, 17]
 SELECT MIN(a) + MAX(b) FROM decimal10;
-min(a) + max(b)
+MIN(a) + MAX(b)
 -3728832.39820000
+
+#SQL[@482,N39]Result[22, 60, 50, 43, 60]
 SELECT * FROM decimal10 ORDER BY a DESC;
-a    b    c    d
-12323.38290000    -32768    -483924.44    32932.323232
-3829.23000000    -38    3.2943244E7    -3829.32
-0.21783291    null    3728.39    null
--3728832.39820000    0    0.3289303    3.2983201332893E8
+a  ¦  b  ¦  c  ¦  d
+12323.38290000  ¦  -32768  ¦  -483924.44  ¦  32932.323232
+3829.23000000  ¦  -38  ¦  32943244  ¦  -3829.32
+0.21783291  ¦  null  ¦  3728.39  ¦  null
+-3728832.39820000  ¦  0  ¦  0.3289303  ¦  329832013.32893
+
+#SQL[@483,N51]Result[3, 11, 8, 7, 12]
 SELECT a * c AS SUM FROM decimal10 ORDER BY SUM ASC;
 SUM
--5.963586E9
--1226526.0
+-5963586000
+-1226526
 812.166
-1.2614726E11
+126147260000
+
+#SQL[@484,N20]Result[]
 DROP TABLE decimal10;
+
+#SQL[@487,N39]Error[52]
 SELECT CAST(a AS DOUBLE) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@488,N38]Error[52]
 SELECT CAST(a AS FLOAT) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@489,N46]Error[52]
 SELECT CAST(b AS DECIMAL(10,1)) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@490,N47]Error[52]
 SELECT CAST(b AS decimal(20,10)) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@491,N40]Error[52]
 SELECT CAST(c AS decimal) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@492,N46]Error[52]
 SELECT CAST((a * c) AS DECIMAL) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@493,N55]Error[52]
 SELECT CAST(POWER(c,2) AS DECIMAL(28,6)) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@494,N57]Error[52]
 SELECT CAST((d - c) * a AS DECIMAL(30, 4)) FROM decimal10;
-SQL parser error: table "decimal10" does not exist
+SQL parser error: table \"decimal10\" does not exist
+
+#SQL[@497,N30]Result[]
 DROP TABLE IF EXISTS decimal10;
+
+#SQL[@498,N99]Result[]
 CREATE TABLE decimal10 (a DECIMAL(10,9) PRIMARY KEY DEFAULT 0, b tinyint unsigned, c bigint,id int);
+
+#SQL[@499,N50]Result[]
 INSERT INTO decimal10 VALUES(0, 155, -654346789,1);
+
+#SQL[@500,N55]Result[]
 INSERT INTO decimal10 VALUES(0.389932,78,38238293232,2);
+
+#SQL[@501,N49]Result[]
 INSERT INTO decimal10 VALUES(-2.22,0, 32783232,1);
+
+#SQL[@502,N45]Result[]
 INSERT INTO decimal10 VALUES(9, 111, NULL, 2);
+
+#SQL[@504,N23]Result[23, 43, 43, 40, 37]
 SELECT * FROM decimal10;
-a    b    c    id
-0E-9    155    -654346789    1
-0.389932000    78    38238293232    2
--2.220000000    0    32783232    1
-9.000000000    111    null    2
+a  ¦  b  ¦  c  ¦  id
+0.000000000  ¦  155  ¦  -654346789  ¦  1
+0.389932000  ¦  78  ¦  38238293232  ¦  2
+-2.220000000  ¦  0  ¦  32783232  ¦  1
+9.000000000  ¦  111  ¦  null  ¦  2
+
+#SQL[@507,N49]Error[47]
 INSERT INTO decimal10 VALUES(NULL,9,2819323242,2);
 constraint violation: Column 'a' cannot be null
+
+#SQL[@510,N46]Result[25, 13, 12, 11, 13]
 SELECT CAST(b AS DECIMAL(10,9)) FROM decimal10;
 cast(b as decimal(10, 9))
 155.000000000
 78.000000000
-0E-9
+0.000000000
 111.000000000
+
+#SQL[@511,N44]Result[22, 3, 2, 1, 3]
 SELECT CAST(b AS DECIMAL(10)) FROM decimal10;
 cast(b as decimal(10))
 155
 78
 0
 111
+
+#SQL[@512,N45]Result[27, 1, 1, 1, 1]
 SELECT CAST(ABS(a) AS decimal) FROM decimal10;
-cast(abs(a) as decimal(38))
+cast(ABS(a) as decimal(38))
 0
 0
 2
 9
+
+#SQL[@513,N40]Result[22, 1, 1, 2, 1]
 SELECT CAST(a AS decimal) FROM decimal10;
 cast(a as decimal(38))
 0
 0
 -2
 9
+
+#SQL[@514,N52]Result[31, 7, 6, 6, 7]
 SELECT CAST((a + b) AS DECIMAL(20,3)) FROM decimal10;
 cast((a + b) as decimal(20, 3))
 155.000
 78.390
 -2.220
 120.000
+
+#SQL[@517,N36]Result[23, 43]
 SELECT * FROM decimal10 WHERE a  = 0;
-a    b    c    id
-0E-9    155    -654346789    1
+a  ¦  b  ¦  c  ¦  id
+0.000000000  ¦  155  ¦  -654346789  ¦  1
+
+#SQL[@518,N59]Result[]
 SELECT a, b, c FROM decimal10 WHERE ABS(a) = 12323.38290000;
-a    b    c
+
+#SQL[@519,N47]Result[]
 SELECT * FROM decimal10 WHERE a > 3829.23000000;
-a    b    c    id
+
+#SQL[@520,N42]Result[23, 43, 43, 40]
 SELECT * FROM decimal10 WHERE CEIL(a) != 9;
-a    b    c    id
-0E-9    155    -654346789    1
-0.389932000    78    38238293232    2
--2.220000000    0    32783232    1
+a  ¦  b  ¦  c  ¦  id
+0.000000000  ¦  155  ¦  -654346789  ¦  1
+0.389932000  ¦  78  ¦  38238293232  ¦  2
+-2.220000000  ¦  0  ¦  32783232  ¦  1
+
+#SQL[@521,N45]Result[23, 43, 43, 40, 37]
 SELECT * FROM decimal10 WHERE CEIL(a) < 10000;
-a    b    c    id
-0E-9    155    -654346789    1
-0.389932000    78    38238293232    2
--2.220000000    0    32783232    1
-9.000000000    111    null    2
+a  ¦  b  ¦  c  ¦  id
+0.000000000  ¦  155  ¦  -654346789  ¦  1
+0.389932000  ¦  78  ¦  38238293232  ¦  2
+-2.220000000  ¦  0  ¦  32783232  ¦  1
+9.000000000  ¦  111  ¦  null  ¦  2
+
+#SQL[@522,N41]Result[23, 43, 43]
 SELECT * FROM decimal10 WHERE ABS(a) <= 1;
-a    b    c    id
-0E-9    155    -654346789    1
-0.389932000    78    38238293232    2
+a  ¦  b  ¦  c  ¦  id
+0.000000000  ¦  155  ¦  -654346789  ¦  1
+0.389932000  ¦  78  ¦  38238293232  ¦  2
+
+#SQL[@523,N48]Result[23, 43, 43]
 SELECT * FROM decimal10 WHERE a BETWEEN -1 AND 3;
-a    b    c    id
-0E-9    155    -654346789    1
-0.389932000    78    38238293232    2
+a  ¦  b  ¦  c  ¦  id
+0.000000000  ¦  155  ¦  -654346789  ¦  1
+0.389932000  ¦  78  ¦  38238293232  ¦  2
+
+#SQL[@524,N52]Result[23, 40, 37]
 SELECT * FROM decimal10 WHERE a NOT BETWEEN -1 AND 3;
-a    b    c    id
--2.220000000    0    32783232    1
-9.000000000    111    null    2
+a  ¦  b  ¦  c  ¦  id
+-2.220000000  ¦  0  ¦  32783232  ¦  1
+9.000000000  ¦  111  ¦  null  ¦  2
+
+#SQL[@525,N43]Result[23, 37]
 SELECT * FROM decimal10 WHERE a IN(1.0,9.0);
-a    b    c    id
-9.000000000    111    null    2
+a  ¦  b  ¦  c  ¦  id
+9.000000000  ¦  111  ¦  null  ¦  2
+
+#SQL[@526,N59]Result[15, 36, 36, 33]
 SELECT a,b,c FROM decimal10 WHERE a NOT IN(1.00000,9.00000);
-a    b    c
-0E-9    155    -654346789
-0.389932000    78    38238293232
--2.220000000    0    32783232
+a  ¦  b  ¦  c
+0.000000000  ¦  155  ¦  -654346789
+0.389932000  ¦  78  ¦  38238293232
+-2.220000000  ¦  0  ¦  32783232
+
+#SQL[@528,N39]Result[23, 37]
 SELECT * FROM decimal10 WHERE a IN(1,9);
-a    b    c    id
-9.000000000    111    null    2
+a  ¦  b  ¦  c  ¦  id
+9.000000000  ¦  111  ¦  null  ¦  2
+
+#SQL[@529,N47]Result[15, 36, 36, 33]
 SELECT a,b,c FROM decimal10 WHERE a NOT IN(1,9);
-a    b    c
-0E-9    155    -654346789
-0.389932000    78    38238293232
--2.220000000    0    32783232
+a  ¦  b  ¦  c
+0.000000000  ¦  155  ¦  -654346789
+0.389932000  ¦  78  ¦  38238293232
+-2.220000000  ¦  0  ¦  32783232
+
+#SQL[@531,N55]Result[5, 11, 12, 11]
 SELECT a * b FROM decimal10 WHERE a NOT BETWEEN 2 AND 9;
 a * b
-0E-12
-30.414696000000
-0E-12
+0.000000000
+30.414696000
+0.000000000
+
+#SQL[@532,N64]Result[12, 11, 11]
 SELECT any_value(a) FROM decimal10 WHERE ABS(a) >= 0 GROUP BY id;
 any_value(a)
-0E-9
+0.000000000
 0.389932000
+
+#SQL[@533,N66]Result[23, 37]
 SELECT * FROM decimal10 WHERE a > (SELECT COUNT(a) FROM decimal10);
-a    b    c    id
-9.000000000    111    null    2
+a  ¦  b  ¦  c  ¦  id
+9.000000000  ¦  111  ¦  null  ¦  2
+
+#SQL[@534,N20]Result[]
 DROP TABLE decimal10;
+
+#SQL[@537,N30]Result[]
 DROP TABLE IF EXISTS decimal11;
+
+#SQL[@538,N59]Result[]
 CREATE TABLE decimal11 (a DECIMAL(38,13), b DECIMAL(25,12));
+
+#SQL[@539,N72]Result[]
 INSERT INTO decimal11 VALUES(1234567890981.111231146421, 1.232143214321);
+
+#SQL[@540,N70]Result[]
 INSERT INTO decimal11 VALUES(32838293.3387298323, -37827.382983283022);
+
+#SQL[@541,N23]Result[8, 47, 47]
 SELECT * FROM decimal11;
-a    b
-1234567890981.1112311464210    1.232143214321
-32838293.3387298323000    -37827.382983283022
+a  ¦  b
+1234567890981.1112311464210  ¦  1.232143214321
+32838293.3387298323000  ¦  -37827.382983283022
+
+#SQL[@542,N53]Error[101]
 SELECT CAST((a * b) AS DECIMAL(20,10)) FROM decimal11;
 invalid input: 1521164449490.9642986411848 beyond the range, can't be converted to Decimal128(20,10).
+
+#SQL[@543,N27]Result[5, 27, 28]
 SELECT a * b FROM decimal11;
 a * b
 1521164449490.9642986411848
 -1242186698641.5250726367777
+
+#SQL[@546,N30]Result[]
 DROP TABLE IF EXISTS decimal12;
+
+#SQL[@547,N45]Result[]
 CREATE TABLE decimal12(a char, b VARCHAR(38));
+
+#SQL[@548,N44]Result[]
 INSERT INTO decimal12 VALUES('a','3.14e+09');
+
+#SQL[@549,N46]Result[]
 INSERT INTO decimal12 VALUES('b', '-3.14e+09');
+
+#SQL[@550,N48]Result[]
 INSERT INTO decimal12 VALUES('c','545676678738');
+
+#SQL[@551,N38]Result[]
 INSERT INTO decimal12 VALUES('d',NULL);
+
+#SQL[@552,N74]Result[]
 INSERT INTO decimal12 VALUES('e','99999999009999999999999999999999999999');
+
+#SQL[@554,N23]Result[8, 15, 16, 19, 11, 45]
 SELECT * FROM decimal12;
-a    b
-a    3.14e+09
-b    -3.14e+09
-c    545676678738
-d    null
-e    99999999009999999999999999999999999999
+a  ¦  b
+a  ¦  3.14e+09
+b  ¦  -3.14e+09
+c  ¦  545676678738
+d  ¦  null
+e  ¦  99999999009999999999999999999999999999
+
+#SQL[@557,N46]Result[22, 10, 11, 12, 4, 38]
 SELECT CAST(b AS DECIMAL(38,0)) FROM decimal12;
 cast(b as decimal(38))
 3140000000
@@ -1092,92 +1688,202 @@ cast(b as decimal(38))
 545676678738
 null
 99999999009999999999999999999999999999
+
+#SQL[@558,N54]Result[22, 11]
 SELECT CAST(b AS DECIMAL) FROM decimal12 WHERE a = 'b';
 cast(b as decimal(38))
 -3140000000
+
+#SQL[@561,N30]Result[]
 DROP TABLE IF EXISTS decimal13;
+
+#SQL[@562,N30]Result[]
 DROP TABLE IF EXISTS decimal14;
+
+#SQL[@563,N76]Result[]
 CREATE TABLE decimal13(a DECIMAL(10,2) NOT NULL,b FLOAT,c smallint unsigned);
+
+#SQL[@564,N42]Result[]
 INSERT INTO decimal13 VALUES(1,12.9,61555);
+
+#SQL[@565,N54]Result[]
 INSERT INTO decimal13 VALUES(-38299323.8880,33.3283,0);
+
+#SQL[@566,N53]Result[]
 INSERT INTO decimal13 VALUES(0.894324,-327832.932,90);
+
+#SQL[@567,N23]Result[15, 25, 32, 28]
 SELECT * FROM decimal13;
-a    b    c
-1.00    12.9    61555
--38299323.89    33.3283    0
-0.89    -327832.94    90
+a  ¦  b  ¦  c
+1.00  ¦  12.9  ¦  61555
+-38299323.89  ¦  33.3283  ¦  0
+0.89  ¦  -327832.94  ¦  90
+
+#SQL[@569,N65]Result[]
 CREATE TABLE decimal14(a DECIMAL(11,9), b DOUBLE, c int unsigned);
+
+#SQL[@570,N53]Result[]
 INSERT INTO decimal14 VALUES(1,728.392032,2147483647);
+
+#SQL[@571,N50]Result[]
 INSERT INTO decimal14 VALUES(32.12,38293,23829321);
+
+#SQL[@572,N55]Result[]
 INSERT INTO decimal14 VALUES(0.3289302,382943243.438,0);
+
+#SQL[@573,N23]Result[15, 43, 37, 37]
 SELECT * FROM decimal14;
-a    b    c
-1.000000000    728.392032    2147483647
-32.120000000    38293.0    23829321
-0.328930200    3.82943243438E8    0
+a  ¦  b  ¦  c
+1.000000000  ¦  728.392032  ¦  2147483647
+32.120000000  ¦  38293  ¦  23829321
+0.328930200  ¦  382943243.438  ¦  0
+
+#SQL[@575,N87]Result[8, 21]
 SELECT decimal13.a,decimal14.a FROM decimal13,decimal14 WHERE decimal13.a = decimal14.a;
-a    a
-1.00    1.000000000
+a  ¦  a
+1.00  ¦  1.000000000
+
+#SQL[@576,N89]Error[62]
 SELECT decimal13.a,decimal14.a FROM decimal13 join decimal11 ON decimal13.a = decimal14.a;
 invalid input: missing FROM-clause entry for table 'decimal14'
+
+#SQL[@577,N94]Error[62]
 SELECT decimal13.a,decimal14.a FROM decimal13 left join decimal11 ON decimal13.a = decimal14.a;
 invalid input: missing FROM-clause entry for table 'decimal14'
+
+#SQL[@578,N107]Error[62]
 SELECT decimal13.a,decimal14.b,decimal13.c FROM decimal14 right join decimal13 ON decimal14.a < decimal11.a;
 invalid input: missing FROM-clause entry for table 'decimal11'
+
+#SQL[@579,N20]Result[]
 DROP TABLE decimal13;
+
+#SQL[@580,N20]Result[]
 DROP TABLE decimal14;
+
+#SQL[@583,N30]Result[]
 DROP TABLE IF EXISTS decimal15;
+
+#SQL[@584,N56]Result[]
 CREATE TABLE decimal15(a decimal(10,5),b FLOAT,c double);
+
+#SQL[@585,N43]Result[]
 CREATE UNIQUE INDEX a_index on decimal15(a);
+
+#SQL[@586,N54]Result[]
 INSERT INTO decimal15 VALUES(271.212121,387213.0,3289);
+
+#SQL[@587,N56]Result[]
 INSERT INTO decimal15 VALUES(-28.3232,387213.0,32132313);
+
+#SQL[@588,N57]Result[]
 INSERT INTO decimal15 VALUES(NULL,327.328932,-38922.2123);
+
+#SQL[@589,N23]Result[15, 31, 35, 36]
 SELECT * FROM decimal15;
-a    b    c
-271.21212    387213.0    3289.0
--28.32320    387213.0    3.2132313E7
-null    327.32892    -38922.2123
+a  ¦  b  ¦  c
+271.21212  ¦  387213  ¦  3289
+-28.32320  ¦  387213  ¦  32132313
+null  ¦  327.32892  ¦  -38922.2123
+
+#SQL[@592,N54]Error[39]
 INSERT INTO decimal15 VALUES(271.212121,387213.0,3289);
-Duplicate entry '271.21212' for key '(.*)'
+Duplicate entry '271.21212' for key 'a'
+
+#SQL[@593,N20]Result[]
 DROP TABLE decimal15;
+
+#SQL[@596,N30]Result[]
 DROP TABLE IF EXISTS decimal16;
+
+#SQL[@597,N91]Result[]
 CREATE TABLE decimal16(a decimal, b decimal(38,10), c varchar(20),UNIQUE INDEX(a),INDEX(b));
+
+#SQL[@598,N90]Result[]
 INSERT INTO decimal16 VALUES(1234789456456456456567898552556, 3728321323.4321214,'小明');
+
+#SQL[@599,N23]Result[15, 70]
 SELECT * FROM decimal16;
-a    b    c
-1234789456456456456567898552556    3728321323.4321214000    小明
+a  ¦  b  ¦  c
+1234789456456456456567898552556  ¦  3728321323.4321214000  ¦  小明
+
+#SQL[@601,N77]Result[]
 INSERT INTO decimal16 VALUES(-64564567898552556, 3728321323.4321214,'小花');
+
+#SQL[@602,N71]Result[]
 INSERT INTO decimal16 VALUES(-64564568552556, 8321323.4321214,'小强');
+
+#SQL[@603,N20]Result[]
 DROP TABLE decimal16;
+
+#SQL[@606,N30]Result[]
 DROP TABLE IF EXISTS decimal17;
+
+#SQL[@607,N79]Result[]
 CREATE TABLE decimal17(a decimal,b decimal(38,0),c decimal(20,4),d decimal(10));
+
+#SQL[@608,N85]Result[]
 INSERT INTO decimal17 VALUES(3231.44112,0,-38232432541431.7890,3728739824.0909898765);
+
+#SQL[@609,N65]Result[]
 INSERT INTO decimal17 VALUES(-3892.020,NULL,3872932.3289323,3829);
+
+#SQL[@610,N64]Result[]
 INSERT INTO decimal17 VALUES(123.456,NULL,7281392.902,328392323);
+
+#SQL[@612,N30]Result[]
 DROP TABLE IF EXISTS decimal18;
+
+#SQL[@613,N50]Result[]
 CREATE TABLE decimal18(a DECIMAL, b DECIMAL(38,0));
+
+#SQL[@615,N53]Result[]
 INSERT INTO decimal18 (a,b) SELECT a,b FROM decimal17;
+
+#SQL[@616,N53]Result[]
 INSERT INTO decimal18 (a,b) SELECT c,d FROM decimal17;
+
+#SQL[@617,N23]Result[22, 53, 43, 46]
 SELECT * FROM decimal17;
-a    b    c    d
-3231    0    -38232432541431.7890    3728739824
--3892    null    3872932.3289    3829
-123    null    7281392.9020    328392323
+a  ¦  b  ¦  c  ¦  d
+3231  ¦  0  ¦  -38232432541431.7890  ¦  3728739824
+-3892  ¦  null  ¦  3872932.3289  ¦  3829
+123  ¦  null  ¦  7281392.9020  ¦  328392323
+
+#SQL[@618,N20]Result[]
 DROP TABLE decimal17;
+
+#SQL[@621,N30]Result[]
 DROP TABLE IF EXISTS decimal18;
+
+#SQL[@622,N88]Result[]
 CREATE TABLE decimal18 (col1 decimal(38,37),col2 decimal(38,37),col3 float, col4 double);
+
+#SQL[@623,N141]Result[]
 INSERT INTO decimal18 VALUES(0.1221212134567890987654321333546543213,0.9999999999999999999999999999999999999,1278945.21588,78153178.49845612);
+
+#SQL[@624,N129]Result[]
 INSERT INTO decimal18 VALUES(0.9999999999999999999999999999999999999,0.1484484651187895121879845615156784548,1545.1548,879.89484);
+
+#SQL[@625,N87]Result[]
 INSERT INTO decimal18 VALUES(0.8932839724832437289437927438274832748,0,453201,78465121);
+
+#SQL[@626,N100]Result[]
 INSERT INTO decimal18 VALUES(0.372837842743762,9.9999999999999999999999999999999999999,0,-454.49845);
+
+#SQL[@627,N105]Result[]
 INSERT INTO decimal18 VALUES(-0.3728329487324893628746328746873236438,-9.3820342423,-329837842932.4932,0);
+
+#SQL[@628,N23]Result[34, 122, 114, 110, 107, 112]
 SELECT * FROM decimal18;
-col1    col2    col3    col4
-0.1221212134567890987654321333546543213    0.9999999999999999999999999999999999999    1278945.2    7.815317849845612E7
-0.9999999999999999999999999999999999999    0.1484484651187895121879845615156784548    1545.1548    879.89484
-0.8932839724832437289437927438274832748    0E-37    453201.0    7.8465121E7
-0.3728378427437620000000000000000000000    9.9999999999999999999999999999999999999    0.0    -454.49845
--0.3728329487324893628746328746873236438    -9.3820342423000000000000000000000000000    -3.2983784E11    0.0
+col1  ¦  col2  ¦  col3  ¦  col4
+0.1221212134567890987654321333546543213  ¦  0.9999999999999999999999999999999999999  ¦  1278945.2  ¦  78153178.49845612
+0.9999999999999999999999999999999999999  ¦  0.1484484651187895121879845615156784548  ¦  1545.1548  ¦  879.89484
+0.8932839724832437289437927438274832748  ¦  0.0000000000000000000000000000000000000  ¦  453201  ¦  78465121
+0.3728378427437620000000000000000000000  ¦  9.9999999999999999999999999999999999999  ¦  0  ¦  -454.49845
+-0.3728329487324893628746328746873236438  ¦  -9.3820342423000000000000000000000000000  ¦  -329837840000  ¦  0
+
+#SQL[@631,N47]Result[25, 7, 4, 6, 1, 13]
 SELECT CAST(col3 AS decimal(38)) FROM decimal18;
 cast(col3 as decimal(38))
 1278945
@@ -1185,6 +1891,8 @@ cast(col3 as decimal(38))
 453201
 0
 -329837838336
+
+#SQL[@632,N49]Result[28, 12, 7, 12, 8, 5]
 SELECT CAST(col4 AS decimal(20,3)) FROM decimal18;
 cast(col4 as decimal(20, 3))
 78153178.498
@@ -1192,153 +1900,258 @@ cast(col4 as decimal(20, 3))
 78465121.000
 -454.498
 0.000
+
+#SQL[@635,N72]Result[50, 39, 39, 39, 39, 40]
 SELECT 0.32846287164921643232142372817438921749321 * col1 FROM decimal18;
 0.32846287164921643232142372817438921749321 * col1
 0.0401122844613038803331760546727756160
-0.3284628716492164323214237281743892174
-0.2934106188000658682671043005117996486
+0.3284628716492164323214237281743892175
+0.2934106188000658682671043005117996487
 0.1224633884871150379612231853163806304
--0.1224617809861185439347457501020516214
+-0.1224617809861185439347457501020516215
+
+#SQL[@636,N74]Result[52, 40, 40, 39, 40, 39]
 SELECT -0.487794599999999999999999999999999945451154 * col2 FROM decimal18;
 -0.487794599999999999999999999999999945451154 * col2
--0.4877945999999999999999999999999999454
--0.0724123596632338825819330539907157574
-0E-37
--4.8779459999999999999999999999999994549
-4.5765056404090315799999999999999994886
-SELECT col1 * col2 FROM decimal18;
-[unknown result because it is related to issue#8516]
-SELECT col3 * col2 FROM decimal18;
-[unknown result because it is related to issue#8516]
-SELECT col2 * col4 FROM decimal18;
-[unknown result because it is related to issue#8516]
-SELECT col1 / col2 FROM decimal18;
-[unknown result because it is related to issue#8513]
-SELECT 12345678965412365478965444565896532145 / col1 FROM decimal18;
-[unknown result because it is related to issue#8513]
-SELECT col2/522222222225456987.23212654569987523654 FROM decimal18;
-[unknown result because it is related to issue#8513]
+-0.4877945999999999999999999999999999455
+-0.0724123596632338825819330539907157575
+0.0000000000000000000000000000000000000
+-4.8779459999999999999999999999999994550
+4.5765056404090315799999999999999994887
+
+#SQL[@650,N30]Result[]
 DROP TABLE IF EXISTS decimal19;
+
+#SQL[@651,N62]Result[]
 CREATE TABLE decimal19 (col1 decimal(38,0),col2 decimal(19,0));
+
+#SQL[@652,N89]Result[]
 INSERT INTO decimal19 VALUES(12345645678978945612312345678885229999, 1235467899687894561);
+
+#SQL[@653,N90]Result[]
 INSERT INTO decimal19 VALUES(99999999999999999999999999999999999999, -3123456987456987456);
+
+#SQL[@654,N90]Result[]
 INSERT INTO decimal19 VALUES(-99999999997899999999999999999999999999, 5681569874569999999);
+
+#SQL[@655,N33]Result[11, 26, 27, 27]
 SELECT col1 / col2 FROM decimal19;
 col1 / col2
 9992688342690018894.297291
-32015808253987387864.171827
-17600769189777557874.214319
+32015808253987387864.171828
+17600769189777557874.214320
+
+#SQL[@656,N33]Error[116]
 SELECT col1 * col2 FROM decimal19;
 invalid input: Decimal128 Mul overflow: 12345645678978945612312345678885229999(Scale:0)*1235467899687894561(Scale:0)
+
+#SQL[@657,N71]Error[135]
 SELECT col1 * 0.2871438217498217489217843728134214212143 FROM decimal19;
 invalid input: Decimal128 Mul overflow: 12345645678978945612312345678885229999(Scale:0)*2871438217498217489217843728134214212(Scale:37)
+
+#SQL[@658,N63]Error[112]
 SELECT col2 * -2733892455124775.7851878942123454 FROM decimal19;
 invalid input: Decimal128 Mul overflow: 1235467899687894561(Scale:0)*-27338924551247757851878942123454(Scale:16)
+
+#SQL[@661,N15]Error[41]
 SELECT col1 / 0;
 invalid input: column col1 does not exist
+
+#SQL[@662,N15]Error[41]
 SELECT col2 / 0;
 invalid input: column col2 does not exist
+
+#SQL[@665,N34]Result[26, 4]
 SELECT CAST('1.2' AS decimal(3,2));
 cast(1.2 as decimal(3, 2))
 1.20
+
+#SQL[@666,N38]Result[29, 1]
 SELECT CAST('1.327832' AS decimal(20));
 cast(1.327832 as decimal(20))
 1
+
+#SQL[@667,N54]Result[49, 12]
 SELECT CAST('-29012123143.432478274329432' AS DECIMAL);
 cast(-29012123143.432478274329432 as decimal(38))
 -29012123143
+
+#SQL[@668,N69]Result[60, 39]
 SELECT CAST('-99999999999999999999999999999999999999' AS DECIMAL(38));
 cast(-99999999999999999999999999999999999999 as decimal(38))
 -99999999999999999999999999999999999999
+
+#SQL[@669,N41]Result[33, 19]
 SELECT 1e18 * CAST('1.2' as decimal(3,2));
 1e18 * cast(1.2 as decimal(3, 2))
-1.2E18
+1200000000000000000
+
+#SQL[@670,N58]Result[46, 1]
 SELECT CAST(CAST('1.234221421' AS decimal(3,2)) AS signed);
 cast(cast(1.234221421 as decimal(3, 2)) as as)
 1
+
+#SQL[@671,N12]Result[]
 set @v1=null;
+
+#SQL[@672,N34]Result[27, 4]
 SELECT CAST(@v1 as decimal(22, 2));
 cast(@v1 as decimal(22, 2))
 null
+
+#SQL[@673,N35]Result[29, 23]
 SELECT CAST(-1e18 as decimal(22,2));
 cast(-1e18 as decimal(22, 2))
 -1000000000000000000.00
+
+#SQL[@674,N31]Result[24, 4]
 SELECT CAST(NULL AS decimal(6));
 cast(null as decimal(6))
 null
+
+#SQL[@675,N36]Error[76]
 SELECT 10.0 + CAST('aaa' AS decimal);
 invalid input: aaa beyond the range, can't be converted to Decimal128(38,0).
+
+#SQL[@676,N38]Result[33, 12]
 SELECT CAST('101010101001' AS decimal);
 cast(101010101001 as decimal(38))
 101010101001
+
+#SQL[@677,N56]Result[47, 26]
 SELECT CAST('10101010010101010101010101' AS decimal(26));
 cast(10101010010101010101010101 as decimal(26))
 10101010010101010101010101
+
+#SQL[@678,N33]Result[28, 6]
 SELECT CAST('0101010' AS decimal);
 cast(0101010 as decimal(38))
 101010
+
+#SQL[@679,N26]Error[52]
 SELECT CAST('' AS decimal);
 invalid input: can't cast empty string to Decimal128
+
+#SQL[@681,N30]Result[]
 DROP TABLE IF EXISTS decimal20;
+
+#SQL[@682,N86]Result[]
 CREATE TABLE decimal20(v varchar(40), tt tinytext, t text, mt mediumtext, lt longtext);
+
+#SQL[@683,N80]Result[]
 INSERT INTO decimal20 VALUES('1.01415', '2.02115', '-3.03', '444.04', '4515.05');
+
+#SQL[@684,N130]Result[]
 INSERT INTO decimal20 VALUES('123654.78984115855111555555888859999999','1e18','229e15','2178291','873273271432714032713243214333');
+
+#SQL[@685,N23]Result[32, 56, 110]
 SELECT * FROM decimal20;
-v    tt    t    mt    lt
-1.01415    2.02115    -3.03    444.04    4515.05
-123654.78984115855111555555888859999999    1e18    229e15    2178291    873273271432714032713243214333
+v  ¦  tt  ¦  t  ¦  mt  ¦  lt
+1.01415  ¦  2.02115  ¦  -3.03  ¦  444.04  ¦  4515.05
+123654.78984115855111555555888859999999  ¦  1e18  ¦  229e15  ¦  2178291  ¦  873273271432714032713243214333
+
+#SQL[@686,N40]Result[22, 1, 6]
 SELECT CAST(v AS DECIMAL) FROM decimal20;
 cast(v as decimal(38))
 1
 123655
+
+#SQL[@687,N47]Result[26, 4, 22]
 SELECT CAST(tt AS decimal(24,2)) FROM decimal20;
 cast(tt as decimal(24, 2))
 2.02
 1000000000000000000.00
+
+#SQL[@688,N44]Result[22, 2, 18]
 SELECT CAST(t AS decimal(20)) FROM decimal20;
 cast(t as decimal(20))
 -3
 229000000000000000
+
+#SQL[@689,N41]Result[23, 3, 7]
 SELECT CAST(mt AS decimal) FROM decimal20;
 cast(mt as decimal(38))
 444
 2178291
+
+#SQL[@690,N41]Result[23, 4, 30]
 SELECT CAST(lt AS decimal) FROM decimal20;
 cast(lt as decimal(38))
 4515
 873273271432714032713243214333
+
+#SQL[@691,N67]Result[45, 24, 14]
 SELECT 12487561513.48465123 / CAST(t AS decimal(20)) FROM decimal20;
 12487561513.48465123 / cast(t as decimal(20))
 -4162520504.494883743333
-5.4531E-8
+0.000000054531
+
+#SQL[@692,N69]Result[47, 29, 14]
 SELECT 789414561531231.485416 / CAST(t AS decimal(20)) FROM decimal20;
 789414561531231.485416 / cast(t as decimal(20))
 -263138187177077.161805333333
 0.003447225160
+
+#SQL[@694,N30]Result[]
 DROP TABLE IF EXISTS decimal21;
+
+#SQL[@695,N42]Result[]
 CREATE TABLE decimal21(col1 decimal(38,3));
+
+#SQL[@696,N74]Result[]
 INSERT INTO decimal21 VALUES(99999999999999999999999999999999999.83293323);
+
+#SQL[@697,N74]Result[]
 INSERT INTO decimal21 VALUES(99999999999999999999999999999999999.83293323);
+
+#SQL[@698,N31]Error[117]
 SELECT SUM(col1) from decimal21;
 invalid input: Decimal128 Add overflow: 99999999999999999999999999999999999833+99999999999999999999999999999999999833
+
+#SQL[@699,N20]Result[]
 DROP TABLE decimal21;
+
+#SQL[@701,N30]Result[]
 DROP TABLE IF EXISTS decimal22;
+
+#SQL[@702,N62]Result[]
 CREATE TABLE decimal22(col1 decimal(38,5),col2 decimal(38,25));
+
+#SQL[@703,N82]Result[]
 INSERT INTO decimal22 VALUES('0xffffffffffffffffffffffff ',0.00000000000000000001);
+
+#SQL[@704,N38]Result[20, 33]
 SELECT col1/(col1*col2) from decimal22;
 col1 / (col1 * col2)
 100000000000000000000.00000000000
+
+#SQL[@705,N31]Result[11, 27]
 SELECT col1%col2 from decimal22;
 col1 % col2
 0.0000000000000000000000000
+
+#SQL[@706,N20]Result[]
 DROP TABLE decimal22;
+
+#SQL[@708,N30]Result[]
 DROP TABLE IF EXISTS decimal23;
+
+#SQL[@709,N62]Result[]
 CREATE TABLE decimal23(col1 decimal(18,5),col2 decimal(18,15));
+
+#SQL[@710,N60]Result[]
 INSERT INTO decimal23 VALUES('0xffffffffff',0.0000000000001);
+
+#SQL[@711,N31]Result[11, 17]
 SELECT col1%col2 from decimal23;
-col1 % col2 
+col1 % col2
 0.000000000000000
+
+#SQL[@712,N42]Result[20, 15]
 SELECT cast(col2 as double) from decimal23;
 cast(col2 as double)
 0.0000000000001
+
+#SQL[@713,N20]Result[]
 DROP TABLE decimal23;
+

@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for float datatype
 -- @label:bvt
@@ -98,11 +98,11 @@ CREATE TABLE t_float(id float(2,1));
 INSERT INTO t_float VALUES (1),(1.1), (2);
 SELECT id, id >= 1.1 FROM t_float;
 SELECT id, 1.1 <= id FROM t_float;
--- @bvt:issue#3366
-SELECT id, id = 1.1 FROM t_float;
-SELECT * from t_float WHERE id = 1.1;
-SELECT * from t_float WHERE id = 1.1e0;
--- @bvt:issue
+@issue(no=3366) {
+    SELECT id, id = 1.1 FROM t_float;
+    SELECT * from t_float WHERE id = 1.1;
+    SELECT * from t_float WHERE id = 1.1e0;
+}
 SELECT * from t_float WHERE id = '1.1';
 SELECT * from t_float WHERE id = '1.1e0';
 SELECT * from t_float WHERE id IN (1.1, 2.2);
@@ -116,11 +116,11 @@ SELECT * from t_float WHERE id BETWEEN '1.1e0' AND '1.9e0';
 drop table t1;
 CREATE TABLE t1 (a float(3));
 INSERT INTO t1 VALUES (1),(0.00),(0.8);
--- @bvt:issue#3185
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
--- @bvt:issue
+@issue(no=3185) {
+    SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
+    SELECT * FROM t1 WHERE coalesce(a)=0.9;
+    SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
+}
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
 SELECT * FROM t1 WHERE a=0.9;
 SELECT * FROM t1 WHERE a IN (0.8,0.9);
@@ -131,7 +131,7 @@ insert into t1 values(5.3111,2);
 insert into t1 values(177.171,3);
 select count(*) from t1
 where id>=5.3111 and id <=177.171;
-select count(*) from t1 
+select count(*) from t1
 where id between 5.3111 and 177.171;
 drop table t1;
 SELECT (1234.0 BETWEEN 0 AND 1234);

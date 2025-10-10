@@ -1,516 +1,1003 @@
+#SQL[@1,N149]Result[]
 CREATE TABLE shirts (
-name VARCHAR(40),
-size ENUM('x-small', 'small', 'medium', 'large', 'x-large')
+                        name VARCHAR(40),
+                        size ENUM('x-small', 'small', 'medium', 'large', 'x-large')
 );
+
+#SQL[@5,N108]Result[]
 INSERT INTO shirts (name, size) VALUES ('dress shirt','large'), ('t-shirt','medium'), ('polo shirt','small');
+
+#SQL[@6,N29]Result[14, 22, 19, 21]
 SELECT name, size FROM shirts;
-name    size
-dress shirt    large
-t-shirt    medium
-polo shirt    small
+name  ¦  size
+dress shirt  ¦  large
+t-shirt  ¦  medium
+polo shirt  ¦  small
+
+#SQL[@7,N51]Result[14, 19]
 SELECT name, size FROM shirts WHERE size = 'medium';
-name    size
-t-shirt    medium
+name  ¦  size
+t-shirt  ¦  medium
+
+#SQL[@8,N39]Result[]
 DELETE FROM shirts where size = 'large';
+
+#SQL[@9,N29]Result[14, 19, 21]
 SELECT name, size FROM shirts;
-name    size
-t-shirt    medium
-polo shirt    small
+name  ¦  size
+t-shirt  ¦  medium
+polo shirt  ¦  small
+
+#SQL[@10,N17]Result[]
 DROP TABLE shirts;
+
+#SQL[@12,N54]Result[]
 create table t_enum(a int,b enum('1','2','3','4','5'));
+
+#SQL[@13,N30]Result[]
 insert into t_enum values(1,1);
+
+#SQL[@14,N20]Result[8, 8]
 select * from t_enum;
-a    b
-1    1
+a  ¦  b
+1  ¦  1
+
+#SQL[@15,N17]Result[]
 drop table t_enum;
+
+#SQL[@23,N27]Result[]
 drop table if exists enum01;
+
+#SQL[@24,N52]Error[217]
 create table enum01(col1 enum(132142,'*&*',6278131));
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 36 near "132142,'*&*',6278131));";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 36 near \"132142,'*&*',6278131))\";
+
+#SQL[@25,N17]Error[25]
 drop table enum02;
 no such table enum.enum02
+
+#SQL[@29,N27]Result[]
 drop table if exists enum02;
+
+#SQL[@30,N70]Result[]
 create table enum02(col1 enum('123214','*&*(234','database数据库'));
+
+#SQL[@31,N36]Error[88]
 insert into enum02 values('1232145');
 internal error: convert to MySQL enum failed: number 52497 overflow enum boundary [1, 3]
+
+#SQL[@32,N37]Error[109]
 insert into enum02 values('*&*(2344');
 internal error: convert to MySQL enum failed: item *&*(2344 is not in enum [123214 *&*(234 database数据库]
+
+#SQL[@33,N17]Result[]
 drop table enum02;
+
+#SQL[@37,N27]Result[]
 drop table if exists enum01;
+
+#SQL[@38,N53]Result[]
 create table enum01 (col1 enum('red','blue','green'));
+
+#SQL[@39,N52]Result[]
 insert into enum01 values ('red'),('blue'),('green');
+
+#SQL[@40,N11]Result[71, 73]
 desc enum01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('red','blue','green')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('red','blue','green')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@41,N20]Result[4, 3, 4, 5]
 select * from enum01;
 col1
 red
 blue
 green
+
+#SQL[@42,N51]Result[]
 update enum01 set col1 ='blue' where col1 = 'green';
+
+#SQL[@43,N38]Result[]
 delete from enum01 where col1 = 'blue';
+
+#SQL[@44,N24]Result[23, 86]
 show create table enum01;
-Table    Create Table
-enum01    CREATE TABLE `enum01` (\n  `col1` enum('red','blue','green') DEFAULT NULL\n)
+Table  ¦  Create Table
+enum01  ¦  CREATE TABLE `enum01` (
+  `col1` enum('red','blue','green') DEFAULT NULL
+)
+
+#SQL[@45,N150]Result[59, 35]
 select table_name, COLUMN_NAME, data_type, is_nullable from information_schema.columns where table_name like 'enum01' and COLUMN_NAME not like '__mo%';
-table_name    column_name    data_type    is_nullable
-enum01    col1    ENUM    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+enum01  ¦  col1  ¦  ENUM  ¦  YES
+
+#SQL[@46,N20]Result[4, 3]
 select * from enum01;
 col1
 red
+
+#SQL[@50,N27]Result[]
 drop table if exists enum02;
+
+#SQL[@51,N53]Result[]
 create table enum02 (col1 enum('red','blue','green'));
+
+#SQL[@52,N52]Result[]
 insert into enum02 values ('red'),('blue'),('green');
+
+#SQL[@53,N32]Result[]
 insert into enum02 values (null);
+
+#SQL[@54,N30]Error[83]
 insert into enum02 values ('');
 internal error: convert to MySQL enum failed: item  is not in enum [red blue green]
+
+#SQL[@55,N20]Result[4, 3, 4, 5, 4]
 select * from enum02;
 col1
 red
 blue
 green
 null
+
+#SQL[@56,N24]Error[25]
 show columns from enum03;
 no such table enum.enum03
+
+#SQL[@57,N148]Result[59, 35]
 select table_name,COLUMN_NAME, data_type,is_nullable from information_schema.columns where table_name like 'enum02' and COLUMN_NAME not like '__mo%';
-table_name    column_name    data_type    is_nullable
-enum02    col1    ENUM    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+enum02  ¦  col1  ¦  ENUM  ¦  YES
+
+#SQL[@58,N17]Result[]
 drop table enum02;
+
+#SQL[@62,N27]Result[]
 drop table if exists enum03;
+
+#SQL[@63,N78]Result[]
 create table enum03 (col1 enum('ejwuijfew', 'ewrwrewretr', 'werwre') not null);
+
+#SQL[@64,N39]Result[]
 insert into enum03 values ('ejwuijfew');
+
+#SQL[@65,N32]Error[50]
 insert into enum03 values (null);
 constraint violation: Column 'col1' cannot be null
+
+#SQL[@66,N20]Result[4, 9]
 select * from enum03;
 col1
 ejwuijfew
+
+#SQL[@67,N24]Result[23, 96]
 show create table enum03;
-Table    Create Table
-enum03    CREATE TABLE `enum03` (\n  `col1` enum('ejwuijfew','ewrwrewretr','werwre') NOT NULL\n)
+Table  ¦  Create Table
+enum03  ¦  CREATE TABLE `enum03` (
+  `col1` enum('ejwuijfew','ewrwrewretr','werwre') NOT NULL
+)
+
+#SQL[@68,N24]Result[71, 86]
 show columns from enum03;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('ejwuijfew','ewrwrewretr','werwre')    NO        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('ejwuijfew','ewrwrewretr','werwre')  ¦  NO  ¦    ¦  null  ¦    ¦  
+
+#SQL[@69,N150]Result[]
 select table_name, COLUMN_NAME, data_type, is_nullable from information_schema.columns where table_name like 'enum02' and COLUMN_NAME not like '__mo%';
-table_name    column_name    data_type    is_nullable
+
+#SQL[@70,N17]Result[]
 drop table enum03;
+
+#SQL[@74,N27]Result[]
 drop table if exists enum02;
+
+#SQL[@75,N27]Result[]
 drop table if exists enum03;
+
+#SQL[@76,N85]Result[]
 create table enum02(col1 enum('数据库','数据库管理','数据库管理软件'));
+
+#SQL[@77,N38]Result[]
 insert into enum02 values('数据库');
+
+#SQL[@78,N44]Result[]
 insert into enum02 values('数据库管理');
+
+#SQL[@79,N50]Result[]
 insert into enum02 values('数据库管理软件');
+
+#SQL[@80,N31]Result[]
 insert into enum02 values(null);
+
+#SQL[@81,N20]Result[4, 9, 15, 21, 4]
 select * from enum02;
 col1
 数据库
 数据库管理
 数据库管理软件
 null
+
+#SQL[@82,N85]Result[]
 create table enum03(col1 enum('数据库','数据库管理','数据库管理软件'));
+
+#SQL[@83,N39]Result[]
 insert into enum03 select * from enum02;
+
+#SQL[@84,N20]Result[4, 9, 15, 21, 4]
 select * from enum03;
 col1
 数据库
 数据库管理
 数据库管理软件
 null
+
+#SQL[@85,N17]Result[]
 drop table enum02;
+
+#SQL[@86,N17]Result[]
 drop table enum03;
+
+#SQL[@90,N27]Result[]
 drop table if exists enum04;
+
+#SQL[@91,N86]Result[]
 create table enum04 (col1 enum ('2133212312hsay899323--__', 'euijn2fde324', 'e32rew'));
+
+#SQL[@92,N54]Result[]
 insert into enum04 values ('2133212312hsay899323--__');
+
+#SQL[@93,N42]Result[]
 insert into enum04 values ('euijn2fde324');
+
+#SQL[@94,N42]Error[118]
 insert into enum04 (col1) values ('welll');
 internal error: convert to MySQL enum failed: item welll is not in enum [2133212312hsay899323--__ euijn2fde324 e32rew]
+
+#SQL[@95,N20]Result[4, 24, 12]
 select * from enum04;
 col1
 2133212312hsay899323--__
 euijn2fde324
+
+#SQL[@96,N17]Result[]
 drop table enum04;
+
+#SQL[@100,N27]Result[]
 drop table if exists enum05;
+
+#SQL[@101,N51]Result[]
 create table enum05 (a int,b enum('4','3','2','1'));
+
+#SQL[@102,N30]Result[]
 insert into enum05 values(1,1);
+
+#SQL[@103,N20]Result[8, 8]
 select * from enum05;
-a    b
-1    1
+a  ¦  b
+1  ¦  1
+
+#SQL[@104,N32]Result[]
 insert into enum05 values(2,'1');
+
+#SQL[@105,N20]Result[8, 8, 8]
 select * from enum05;
-a    b
-1    1
-2    4
+a  ¦  b
+1  ¦  1
+2  ¦  4
+
+#SQL[@106,N17]Result[]
 drop table enum05;
+
+#SQL[@110,N26]Result[]
 drop table if exists pri01;
+
+#SQL[@111,N89]Result[]
 create table pri01 (col1 enum('qy4iujd3wi4fu4h3f', '323242r34df432432', '32e3ewfdewrew'));
+
+#SQL[@112,N23]Result[23, 119]
 show create table pri01;
-Table    Create Table
-pri01    CREATE TABLE `pri01` (\n  `col1` enum('qy4iujd3wi4fu4h3f','323242r34df432432','32e3ewfdewrew') DEFAULT NULL\n)
+Table  ¦  Create Table
+pri01  ¦  CREATE TABLE `pri01` (
+  `col1` enum('qy4iujd3wi4fu4h3f','323242r34df432432','32e3ewfdewrew') DEFAULT NULL
+)
+
+#SQL[@113,N46]Result[]
 insert into pri01 values ('qy4iujd3wi4fu4h3f');
+
+#SQL[@114,N46]Result[]
 insert into pri01 values ('qy4iujd3wi4fu4h3f');
+
+#SQL[@115,N53]Result[]
 insert into pri01 (col1) values ('323242r34df432432');
+
+#SQL[@116,N38]Result[]
 insert into pri01 (col1) values (null);
+
+#SQL[@117,N19]Result[4, 17, 17, 17, 4]
 select * from pri01;
 col1
 qy4iujd3wi4fu4h3f
 qy4iujd3wi4fu4h3f
 323242r34df432432
 null
+
+#SQL[@118,N23]Result[23, 119]
 show create table pri01;
-Table    Create Table
-pri01    CREATE TABLE `pri01` (\n  `col1` enum('qy4iujd3wi4fu4h3f','323242r34df432432','32e3ewfdewrew') DEFAULT NULL\n)
+Table  ¦  Create Table
+pri01  ¦  CREATE TABLE `pri01` (
+  `col1` enum('qy4iujd3wi4fu4h3f','323242r34df432432','32e3ewfdewrew') DEFAULT NULL
+)
+
+#SQL[@119,N23]Result[71, 108]
 show columns from pri01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('qy4iujd3wi4fu4h3f','323242r34df432432','32e3ewfdewrew')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('qy4iujd3wi4fu4h3f','323242r34df432432','32e3ewfdewrew')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@120,N16]Result[]
 drop table pri01;
+
+#SQL[@123,N26]Result[]
 drop table if exists pri02;
+
+#SQL[@124,N97]Result[]
 create table pri02 (col1 int, col2 enum('数据库', '数据库系统', '数据库管理系统'));
+
+#SQL[@125,N41]Result[]
 insert into pri02 values (1, '数据库');
+
+#SQL[@126,N41]Result[]
 insert into pri02 values (2, '数据库');
+
+#SQL[@127,N19]Result[14, 16, 16]
 select * from pri02;
-col1    col2
-1    数据库
-2    数据库
+col1  ¦  col2
+1  ¦  数据库
+2  ¦  数据库
+
+#SQL[@128,N40]Error[58]
 alter table pri02 add primary key (col2);
 not supported: ENUM column 'col2' cannot be in primary key
+
+#SQL[@129,N23]Result[23, 144]
 show create table pri02;
-Table    Create Table
-pri02    CREATE TABLE `pri02` (\n  `col1` int DEFAULT NULL,\n  `col2` enum('数据库','数据库系统','数据库管理系统') DEFAULT NULL\n)
+Table  ¦  Create Table
+pri02  ¦  CREATE TABLE `pri02` (
+  `col1` int DEFAULT NULL,
+  `col2` enum('数据库','数据库系统','数据库管理系统') DEFAULT NULL
+)
+
+#SQL[@130,N23]Result[71, 54, 106]
 show columns from pri02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    YES        null        
-col2    ENUM('数据库','数据库系统','数据库管理系统')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  ENUM('数据库','数据库系统','数据库管理系统')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@131,N149]Result[59, 33, 34]
 select table_name, COLUMN_NAME, data_type, is_nullable from information_schema.columns where table_name like 'pri02' and COLUMN_NAME not like '__mo%';
-table_name    column_name    data_type    is_nullable
-pri02    col1    INT    YES
-pri02    col2    ENUM    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri02  ¦  col1  ¦  INT  ¦  YES
+pri02  ¦  col2  ¦  ENUM  ¦  YES
+
+#SQL[@132,N16]Result[]
 drop table pri02;
+
+#SQL[@135,N26]Result[]
 drop table if exists pri03;
+
+#SQL[@136,N97]Result[]
 create table pri03 (col1 int, col2 enum('数据库', '数据库系统', '数据库管理系统'));
+
+#SQL[@137,N41]Result[]
 insert into pri03 values (1, '数据库');
+
+#SQL[@138,N47]Result[]
 insert into pri03 values (2, '数据库系统');
+
+#SQL[@139,N19]Result[14, 16, 22]
 select * from pri03;
-col1    col2
-1    数据库
-2    数据库系统
+col1  ¦  col2
+1  ¦  数据库
+2  ¦  数据库系统
+
+#SQL[@140,N40]Error[58]
 alter table pri03 add primary key (col2);
 not supported: ENUM column 'col2' cannot be in primary key
+
+#SQL[@141,N23]Result[23, 144]
 show create table pri03;
-Table    Create Table
-pri03    CREATE TABLE `pri03` (\n  `col1` int DEFAULT NULL,\n  `col2` enum('数据库','数据库系统','数据库管理系统') DEFAULT NULL\n)
+Table  ¦  Create Table
+pri03  ¦  CREATE TABLE `pri03` (
+  `col1` int DEFAULT NULL,
+  `col2` enum('数据库','数据库系统','数据库管理系统') DEFAULT NULL
+)
+
+#SQL[@142,N23]Result[71, 54, 106]
 show columns from pri03;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    YES        null        
-col2    ENUM('数据库','数据库系统','数据库管理系统')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  ENUM('数据库','数据库系统','数据库管理系统')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@143,N149]Result[59, 33, 34]
 select table_name, COLUMN_NAME, data_type, is_nullable from information_schema.columns where table_name like 'pri03' and COLUMN_NAME not like '__mo%';
-table_name    column_name    data_type    is_nullable
-pri03    col1    INT    YES
-pri03    col2    ENUM    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri03  ¦  col1  ¦  INT  ¦  YES
+pri03  ¦  col2  ¦  ENUM  ¦  YES
+
+#SQL[@144,N16]Result[]
 drop table pri03;
+
+#SQL[@147,N26]Result[]
 drop table if exists pri04;
+
+#SQL[@148,N105]Result[]
 create table pri04 (col1 int, col2 enum('database', 'database management', 'database management system'));
+
+#SQL[@149,N53]Result[]
 insert into pri04 (col1, col2) values (1, 'database');
+
+#SQL[@150,N58]Result[]
 insert into pri04 values (2, 'database management system');
+
+#SQL[@151,N23]Result[23, 152]
 show create table pri04;
-Table    Create Table
-pri04    CREATE TABLE `pri04` (\n  `col1` int DEFAULT NULL,\n  `col2` enum('database','database management','database management system') DEFAULT NULL\n)
+Table  ¦  Create Table
+pri04  ¦  CREATE TABLE `pri04` (
+  `col1` int DEFAULT NULL,
+  `col2` enum('database','database management','database management system') DEFAULT NULL
+)
+
+#SQL[@152,N23]Result[23, 152]
 show create table pri04;
-Table    Create Table
-pri04    CREATE TABLE `pri04` (\n  `col1` int DEFAULT NULL,\n  `col2` enum('database','database management','database management system') DEFAULT NULL\n)
+Table  ¦  Create Table
+pri04  ¦  CREATE TABLE `pri04` (
+  `col1` int DEFAULT NULL,
+  `col2` enum('database','database management','database management system') DEFAULT NULL
+)
+
+#SQL[@153,N23]Result[71, 54, 114]
 show columns from pri04;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    INT(32)    YES        null        
-col2    ENUM('database','database management','database management system')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  INT(32)  ¦  YES  ¦    ¦  null  ¦    ¦  
+col2  ¦  ENUM('database','database management','database management system')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@154,N43]Result[14, 15]
 select * from pri04 where col2 = 'database';
-col1    col2
-1    database
+col1  ¦  col2
+1  ¦  database
+
+#SQL[@155,N149]Result[59, 33, 34]
 select table_name, COLUMN_NAME, data_type, is_nullable from information_schema.columns where table_name like 'pri04' and COLUMN_NAME not like '__mo%';
-table_name    column_name    data_type    is_nullable
-pri04    col1    INT    YES
-pri04    col2    ENUM    YES
+table_name  ¦  COLUMN_NAME  ¦  data_type  ¦  is_nullable
+pri04  ¦  col1  ¦  INT  ¦  YES
+pri04  ¦  col2  ¦  ENUM  ¦  YES
+
+#SQL[@156,N16]Result[]
 drop table pri04;
+
+#SQL[@161,N28]Result[]
 drop table if exists inert01;
+
+#SQL[@162,N179]Result[]
 create table insert01 (id int primary key,
-order_number VARCHAR(20),
-status enum('Pending', 'Processing', 'Completed', 'Cancelled')
+                       order_number VARCHAR(20),
+                       status enum('Pending', 'Processing', 'Completed', 'Cancelled')
 );
+
+#SQL[@166,N84]Result[]
 insert into insert01 values(1,'111',1),(2,'222',2),(3,'333',3),(4,'444','Cancelled');
+
+#SQL[@167,N22]Result[32, 23, 26, 25, 25]
 select * from insert01;
-id    order_number    status
-1    111    Pending
-2    222    Processing
-3    333    Completed
-4    444    Cancelled
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+2  ¦  222  ¦  Processing
+3  ¦  333  ¦  Completed
+4  ¦  444  ¦  Cancelled
+
+#SQL[@168,N26]Result[23, 204]
 show create table insert01;
-Table    Create Table
-insert01    CREATE TABLE `insert01` (\n  `id` int NOT NULL,\n  `order_number` varchar(20) DEFAULT NULL,\n  `status` enum('Pending','Processing','Completed','Cancelled') DEFAULT NULL,\n  PRIMARY KEY (`id`)\n)
+Table  ¦  Create Table
+insert01  ¦  CREATE TABLE `insert01` (
+  `id` int NOT NULL,
+  `order_number` varchar(20) DEFAULT NULL,
+  `status` enum('Pending','Processing','Completed','Cancelled') DEFAULT NULL,
+  PRIMARY KEY (`id`)
+)
+
+#SQL[@169,N26]Result[71, 54, 66, 101]
 show columns from insert01;
-Field    Type    Null    Key    Default    Extra    Comment
-id    INT(32)    NO    PRI    null        
-order_number    VARCHAR(20)    YES        null        
-status    ENUM('Pending','Processing','Completed','Cancelled')    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  INT(32)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+order_number  ¦  VARCHAR(20)  ¦  YES  ¦    ¦  null  ¦    ¦  
+status  ¦  ENUM('Pending','Processing','Completed','Cancelled')  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@170,N35]Error[47]
 delete from insert01 where status=3;
 invalid argument cast to int, bad value Pending
+
+#SQL[@171,N51]Error[47]
 update insert01 set status='Pending' where status=2;
 invalid argument cast to int, bad value Pending
+
+#SQL[@172,N22]Result[32, 23, 26, 25, 25]
 select * from insert01;
-id    order_number    status
-1    111    Pending
-2    222    Processing
-3    333    Completed
-4    444    Cancelled
+id  ¦  order_number  ¦  status
+1  ¦  111  ¦  Pending
+2  ¦  222  ¦  Processing
+3  ¦  333  ¦  Completed
+4  ¦  444  ¦  Cancelled
+
+#SQL[@173,N37]Error[47]
 select * from insert01 where status=4;
 invalid argument cast to int, bad value Pending
+
+#SQL[@174,N52]Error[47]
 select * from insert01 where status in ('Pending',4);
 invalid argument cast to int, bad value Pending
+
+#SQL[@175,N19]Result[]
 drop table insert01;
+
+#SQL[@179,N30]Result[]
 drop table if exists default01;
+
+#SQL[@180,N67]Result[]
 create table default01 (`col1` enum('T', 'E') not null default 'T');
+
+#SQL[@181,N14]Result[71, 56]
 desc default01;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('T','E')    NO        T
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  T  ¦    ¦  
+
+#SQL[@182,N37]Result[]
 insert into default01 values(default);
+
+#SQL[@183,N23]Result[4, 1]
 select * from default01;
 col1
 T
+
+#SQL[@184,N20]Result[]
 drop table default01;
+
+#SQL[@186,N30]Result[]
 drop table if exists default02;
+
+#SQL[@187,N67]Result[]
 create table default02 (`col1` enum('T', 'E') not null default '1');
+
+#SQL[@188,N14]Result[71, 56]
 desc default02;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('T','E')    NO        1
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  1  ¦    ¦  
+
+#SQL[@189,N37]Result[]
 insert into default02 values(default);
+
+#SQL[@190,N23]Result[4, 1]
 select * from default02;
 col1
 T
+
+#SQL[@191,N20]Result[]
 drop table default02;
+
+#SQL[@193,N30]Result[]
 drop table if exists default03;
+
+#SQL[@194,N65]Result[]
 create table default03 (`col1` enum('T', 'E') not null default 1);
+
+#SQL[@195,N14]Result[71, 56]
 desc default03;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('T','E')    NO        1        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  1  ¦    ¦  
+
+#SQL[@196,N37]Result[]
 insert into default03 values(default);
+
+#SQL[@197,N23]Result[4, 1]
 select * from default03;
 col1
 T
+
+#SQL[@198,N20]Result[]
 drop table default03;
+
+#SQL[@200,N30]Result[]
 drop table if exists default04;
+
+#SQL[@201,N65]Result[]
 create table default04 (`col1` enum('T', 'E') not null default 2);
+
+#SQL[@202,N14]Result[71, 56]
 desc default04;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('T','E')    NO        2        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  2  ¦    ¦  
+
+#SQL[@203,N37]Result[]
 insert into default04 values(default);
+
+#SQL[@204,N23]Result[4, 1]
 select * from default04;
 col1
 E
+
+#SQL[@205,N20]Result[]
 drop table default04;
+
+#SQL[@207,N30]Result[]
 drop table if exists default05;
+
+#SQL[@208,N67]Result[]
 create table default05 (`col1` enum('T', 'E') not null default '2');
+
+#SQL[@209,N14]Result[71, 56]
 desc default05;
-Field    Type    Null    Key    Default    Extra    Comment
-col1    ENUM('T','E')    NO        2
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+col1  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  2  ¦    ¦  
+
+#SQL[@210,N37]Result[]
 insert into default05 values(default);
+
+#SQL[@211,N23]Result[4, 1]
 select * from default05;
 col1
 E
+
+#SQL[@212,N20]Result[]
 drop table default05;
+
+#SQL[@216,N27]Result[]
 drop table if exists enum04;
+
+#SQL[@217,N84]Result[]
 create table enum04(col1 int,col2 enum('38921384','abc','','MOMOMO','矩阵起源'));
+
+#SQL[@218,N39]Result[]
 insert into enum04 values(1,'38921384');
+
+#SQL[@219,N31]Result[]
 insert into enum04 values(2,'');
+
+#SQL[@220,N43]Result[]
 insert into enum04 values(3,'矩阵起源');
+
+#SQL[@221,N20]Result[14, 15, 7, 19]
 select * from enum04;
-col1    col2
-1    38921384
-2    
-3    矩阵起源
+col1  ¦  col2
+1  ¦  38921384
+2  ¦  
+3  ¦  矩阵起源
+
+#SQL[@224,N36]Result[14, 7]
 select * from enum04 where col2 = '';
-col1    col2
-2    
+col1  ¦  col2
+2  ¦  
+
+#SQL[@225,N37]Result[14, 15, 19]
 select * from enum04 where col2 != '';
-col1    col2
-1    38921384
-3    矩阵起源
+col1  ¦  col2
+1  ¦  38921384
+3  ¦  矩阵起源
+
+#SQL[@227,N44]Result[14, 19]
 select * from enum04 where col2 > '38921384';
-col1    col2
-3    矩阵起源
+col1  ¦  col2
+3  ¦  矩阵起源
+
+#SQL[@228,N45]Result[14, 15, 19]
 select * from enum04 where col2 >= '38921384';
-col1    col2
-1    38921384
-3    矩阵起源
+col1  ¦  col2
+1  ¦  38921384
+3  ¦  矩阵起源
+
+#SQL[@230,N48]Result[14, 15, 7]
 select * from enum04 where col2 < '矩阵起源';
-col1    col2
-1    38921384
-2    
+col1  ¦  col2
+1  ¦  38921384
+2  ¦  
+
+#SQL[@231,N49]Result[14, 15, 7, 19]
 select * from enum04 where col2 <= '矩阵起源';
-col1    col2
-1    38921384
-2    
-3    矩阵起源
+col1  ¦  col2
+1  ¦  38921384
+2  ¦  
+3  ¦  矩阵起源
+
+#SQL[@233,N69]Result[14, 15, 19]
 select * from enum04 where col2 between '38921384' and '矩阵起源';
-col1    col2
-1    38921384
-3    矩阵起源
+col1  ¦  col2
+1  ¦  38921384
+3  ¦  矩阵起源
+
+#SQL[@234,N73]Result[14, 7]
 select * from enum04 where col2 not between '38921384' and '矩阵起源';
-col1    col2
-2    
+col1  ¦  col2
+2  ¦  
+
+#SQL[@236,N49]Result[14, 15, 7]
 select * from enum04 where col2 in('38921384','');
-col1    col2
-1    38921384
-2    
+col1  ¦  col2
+1  ¦  38921384
+2  ¦  
+
+#SQL[@237,N53]Result[14, 19]
 select * from enum04 where col2 not in('38921384','');
-col1    col2
-3    矩阵起源
+col1  ¦  col2
+3  ¦  矩阵起源
+
+#SQL[@239,N46]Result[14, 15]
 select * from enum04 where col2 like '%921384';
-col1    col2
-1    38921384
+col1  ¦  col2
+1  ¦  38921384
+
+#SQL[@240,N43]Result[26, 8, 0, 12]
 select coalesce(null,null,col2) from enum04;
 coalesce(null, null, col2)
 38921384
 
 矩阵起源
+
+#SQL[@241,N17]Result[]
 drop table enum04;
+
+#SQL[@245,N30]Result[]
 drop table if exists builtin01;
+
+#SQL[@246,N157]Result[]
 create table builtin01(col1 enum('  云原生数据库  ','存储引擎 TAE', 'database system') not null,col2 enum(' database','engine ','index meta data'));
+
+#SQL[@247,N66]Result[]
 insert into builtin01 values('  云原生数据库  ',' database');
+
+#SQL[@248,N58]Result[]
 insert into builtin01 values('存储引擎 TAE','engine ');
+
+#SQL[@249,N57]Result[]
 insert into builtin01 values('database system','engine ');
+
+#SQL[@250,N23]Result[14, 37, 29, 28]
 select * from builtin01;
-col1    col2
-  云原生数据库       database
-存储引擎 TAE    engine 
-database system    engine 
+col1  ¦  col2
+  云原生数据库    ¦   database
+存储引擎 TAE  ¦  engine 
+database system  ¦  engine 
+
+#SQL[@251,N48]Result[26, 34, 26, 25]
 select concat_ws(',,,',col1,col2) from builtin01;
 concat_ws(,,,, col1, col2)
   云原生数据库  ,,, database
 存储引擎 TAE,,,engine 
 database system,,,engine 
+
+#SQL[@252,N64]Result[41, 1, 1, 1]
 select find_in_set('  云原生数据库  ',col1) from builtin01;
 find_in_set(  云原生数据库  , col1)
 1
 0
 0
+
+#SQL[@253,N78]Result[28, 9, 9, 9]
 select length(col1) as length_col1, length(col2) as length_col2 from builtin01;
-length_col1    length_col2
-22    9
-16    7
-15    7
+length_col1  ¦  length_col2
+22  ¦  9
+16  ¦  7
+15  ¦  7
+
+#SQL[@254,N57]Result[40, 9, 8, 9]
 select char_length(col1),char_length(col2) from builtin01;
-char_length(col1)    char_length(col2)
-10    9
-8    7
-15    7
+char_length(col1)  ¦  char_length(col2)
+10  ¦  9
+8  ¦  7
+15  ¦  7
+
+#SQL[@255,N33]Result[11, 20, 16, 15]
 select ltrim(col1) from builtin01;
 ltrim(col1)
 云原生数据库  
 存储引擎 TAE
 database system
+
+#SQL[@256,N33]Result[11, 9, 6, 6]
 select rtrim(col2) from builtin01;
 rtrim(col2)
  database
 engine
 engine
+
+#SQL[@257,N39]Result[17, 32, 28, 20]
 select lpad(col1,20,'-') from builtin01;
 lpad(col1, 20, -)
 ----------  云原生数据库  
 ------------存储引擎 TAE
 -----database system
+
+#SQL[@258,N42]Result[20, 10, 10, 10]
 select rpad(col2,10,'****') from builtin01;
 rpad(col2, 10, ****)
  database*
 engine ***
 engine ***
+
+#SQL[@259,N44]Result[21, 5, 4, 4]
 select startswith(col2,'eng') from builtin01;
 startswith(col2, eng)
 false
 true
 true
+
+#SQL[@260,N48]Result[25, 5, 5, 5]
 select endswith(col1,'数据表') from builtin01;
 endswith(col1, 数据表)
 false
 false
 false
+
+#SQL[@261,N49]Result[32, 37, 29, 28]
 select reverse(col1),reverse(col2) from builtin01;
-reverse(col1)    reverse(col2)
-  库据数生原云      esabatad 
-EAT 擎引储存     enigne
-metsys esabatad     enigne
+reverse(col1)  ¦  reverse(col2)
+  库据数生原云    ¦  esabatad 
+EAT 擎引储存  ¦   enigne
+metsys esabatad  ¦   enigne
+
+#SQL[@262,N61]Result[48, 28, 19, 18]
 select substring(col1,4,6),substring(col2,1,6) from builtin01;
-substring(col1, 4, 6)    substring(col2, 1, 6)
-原生数据库      datab
-擎 TAE    engine
-abase     engine
+substring(col1, 4, 6)  ¦  substring(col2, 1, 6)
+原生数据库   ¦   datab
+擎 TAE  ¦  engine
+abase   ¦  engine
+
+#SQL[@263,N45]Result[]
 select * from builtin01 where col1 = space(5);
-col1    col2
+
+#SQL[@264,N38]Result[16, 2, 2, 2]
 select bit_length(col2) from builtin01;
 bit_length(col2)
 72
 56
 56
+
+#SQL[@265,N33]Result[11, 5, 5, 5]
 select empty(col2) from builtin01;
 empty(col2)
 false
 false
 false
+
+#SQL[@269,N47]Result[10, 1]
 select count(col1) as count_col1 from builtin01;
 count_col1
 3
+
+#SQL[@270,N42]Result[24, 29]
 select max(col1), max(col2) from builtin01;
-max(col1)    max(col2)
-存储引擎 TAE    engine 
+max(col1)  ¦  max(col2)
+存储引擎 TAE  ¦  engine 
+
+#SQL[@271,N42]Result[24, 37]
 select min(col1), min(col2) from builtin01;
-min(col1)    min(col2)
-  云原生数据库       database
+min(col1)  ¦  min(col2)
+  云原生数据库    ¦   database
+
+#SQL[@272,N45]Result[27, 78]
 select group_concat(col1,col2) from builtin01;
 group_concat(col1, col2, ,)
   云原生数据库   database,存储引擎 TAEengine ,database systemengine 
+
+#SQL[@273,N20]Result[]
 drop table builtin01;
+
+#SQL[@276,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@277,N95]Result[]
 create table agg01 (col1 int, col2 enum('egwjqebwq', 'qwewqewqeqewq', 'weueiwqeowqehwgqjhenw'));
+
+#SQL[@278,N41]Result[]
 insert into agg01 values (1, 'egwjqebwq');
+
+#SQL[@279,N53]Result[]
 insert into agg01 values (2, 'weueiwqeowqehwgqjhenw');
+
+#SQL[@280,N45]Result[]
 insert into agg01 values (3, 'qwewqewqeqewq');
+
+#SQL[@281,N34]Result[]
 insert into agg01 values (4, null);
+
+#SQL[@282,N27]Result[9, 21]
 select max(col2) from agg01;
 max(col2)
 weueiwqeowqehwgqjhenw
+
+#SQL[@283,N27]Result[9, 9]
 select min(col2) from agg01;
 min(col2)
 egwjqebwq
+
+#SQL[@284,N19]Result[14, 16, 28, 20, 11]
 select * from agg01;
-col1    col2
-1    egwjqebwq
-2    weueiwqeowqehwgqjhenw
-3    qwewqewqeqewq
-4    null
+col1  ¦  col2
+1  ¦  egwjqebwq
+2  ¦  weueiwqeowqehwgqjhenw
+3  ¦  qwewqewqeqewq
+4  ¦  null
+
+#SQL[@285,N16]Result[]
 drop table agg01;
+
+#SQL[@289,N26]Result[]
 drop table if exists cte01;
+
+#SQL[@290,N70]Result[]
 create table cte01(col1 int, col2 enum('hfjsa','123214321','&**())_'));
+
+#SQL[@291,N36]Result[]
 insert into cte01 VALUES(1, 'hfjsa');
+
+#SQL[@292,N40]Result[]
 insert into cte01 VALUES(2, '123214321');
+
+#SQL[@293,N38]Result[]
 insert into cte01 VALUES(3, '&**())_');
+
+#SQL[@294,N19]Result[14, 12, 16, 14]
 select * from cte01;
-col1    col2
-1    hfjsa
-2    123214321
-3    &**())_
+col1  ¦  col2
+1  ¦  hfjsa
+2  ¦  123214321
+3  ¦  &**())_
+
+#SQL[@295,N99]Result[4, 5]
 with cte_1 as(select * from cte01 where col2 = 'hfjsa') select col2 from cte_1 where col2 = 'hfjsa';
 col2
 hfjsa
+
+#SQL[@296,N103]Result[4, 7]
 with cte_2 as(select col1,col2 from cte01 where col1 = 3) select col2 from cte_2 where col2 = '&**())_';
 col2
 &**())_
+
+#SQL[@297,N16]Result[]
 drop table cte01;
+
+#SQL[@299,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@300,N107]Error[58]
 create table agg01 (col1 int, col2 enum('egwjqebwq', 'qwewqewqeqewq', 'weueiwqeowqehwgqjhenw') primary key);
 not supported: ENUM column 'col2' cannot be in primary key
+
+#SQL[@302,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@303,N115]Error[58]
 create table agg01 (col1 int, col2 enum('egwjqebwq', 'qwewqewqeqewq', 'weueiwqeowqehwgqjhenw'), primary key (col2));
 not supported: ENUM column 'col2' cannot be in primary key
+
+#SQL[@305,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@306,N102]Error[59]
 create table agg01 (col1 int, col2 enum('egwjqebwq', 'qwewqewqeqewq', 'weueiwqeowqehwgqjhenw') unique);
 not supported: ENUM column 'col2' cannot be in unique index
+
+#SQL[@308,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@309,N114]Error[59]
 create table agg01 (col1 int, col2 enum('egwjqebwq', 'qwewqewqeqewq', 'weueiwqeowqehwgqjhenw'), unique key (col2));
 not supported: ENUM column 'col2' cannot be in unique index
+
+#SQL[@311,N26]Result[]
 drop table if exists agg01;
+
+#SQL[@312,N107]Error[62]
 create table agg01 (col1 int, col2 enum('egwjqebwq', 'qwewqewqeqewq', 'weueiwqeowqehwgqjhenw'), key (col2));
 not supported: ENUM column 'col2' cannot be in secondary index
+
+#SQL[@313,N26]Result[]
 drop table if exists agg01;
+

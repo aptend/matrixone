@@ -1,68 +1,119 @@
+#SQL[@1,N28]Result[]
 DROP TABLE IF EXISTS ces0010;
+
+#SQL[@2,N772]Result[]
 CREATE TABLE ces0010 (
-`CPBPDIV` varchar(10) NOT NULL DEFAULT '',
-`CPBPCD` varchar(10) NOT NULL DEFAULT '',
-`CPBPNM` varchar(50) NOT NULL DEFAULT '',
-`CPBPVTYP` enum('T','E') NOT NULL DEFAULT 'T',
-`CPBPV` varchar(200) DEFAULT '',
-`CLEVEL` decimal(1,0) NOT NULL DEFAULT '1',
-`PUNIT` varchar(50) NOT NULL DEFAULT '',
-`REMARK` varchar(200) NOT NULL DEFAULT '',
-`USEYN` varchar(1) NOT NULL DEFAULT '',
-`INIDNO` varchar(20) DEFAULT '',
-`INNAME` varchar(30) DEFAULT '',
-`INTIM` datetime DEFAULT CURRENT_TIMESTAMP,
-`UPIDNO` varchar(20) DEFAULT '',
-`UPNAME` varchar(30) DEFAULT '',
-`UPTIM` datetime DEFAULT NULL,
-PRIMARY KEY (`CPBPDIV`,`CPBPCD`) USING BTREE,
-KEY `IDX_CPBPDIV` (`CPBPDIV`,`CPBPCD`) USING BTREE
+  `CPBPDIV` varchar(10) NOT NULL DEFAULT '',
+  `CPBPCD` varchar(10) NOT NULL DEFAULT '',
+  `CPBPNM` varchar(50) NOT NULL DEFAULT '',
+  `CPBPVTYP` enum('T','E') NOT NULL DEFAULT 'T',
+  `CPBPV` varchar(200) DEFAULT '',
+  `CLEVEL` decimal(1,0) NOT NULL DEFAULT '1',
+  `PUNIT` varchar(50) NOT NULL DEFAULT '',
+  `REMARK` varchar(200) NOT NULL DEFAULT '',
+  `USEYN` varchar(1) NOT NULL DEFAULT '',
+  `INIDNO` varchar(20) DEFAULT '',
+  `INNAME` varchar(30) DEFAULT '',
+  `INTIM` datetime DEFAULT CURRENT_TIMESTAMP,
+  `UPIDNO` varchar(20) DEFAULT '',
+  `UPNAME` varchar(30) DEFAULT '',
+  `UPTIM` datetime DEFAULT NULL,
+  PRIMARY KEY (`CPBPDIV`,`CPBPCD`) USING BTREE,
+  KEY `IDX_CPBPDIV` (`CPBPDIV`,`CPBPCD`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+#SQL[@23,N28]Result[]
 DROP TABLE IF EXISTS ces0010;
+
+#SQL[@24,N72]Result[]
 CREATE TABLE ces0010 (
-`CPBPVTYP` enum('T','E') NOT NULL DEFAULT 'T'
+  `CPBPVTYP` enum('T','E') NOT NULL DEFAULT 'T'
 );
+
+#SQL[@27,N12]Result[71, 60]
 desc ces0010;
-Field    Type    Null    Key    Default    Extra    Comment
-CPBPVTYP    ENUM('T','E')    NO        T
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+CPBPVTYP  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  T  ¦    ¦  
+
+#SQL[@28,N35]Result[]
 insert into ces0010 values(default);
+
+#SQL[@29,N21]Result[8, 1]
 select * from ces0010;
 cpbpvtyp
 T
+
+#SQL[@31,N28]Result[]
 DROP TABLE IF EXISTS ces0010;
+
+#SQL[@32,N72]Result[]
 CREATE TABLE ces0010 (
-`CPBPVTYP` enum('T','E') NOT NULL DEFAULT 'E'
+  `CPBPVTYP` enum('T','E') NOT NULL DEFAULT 'E'
 );
+
+#SQL[@35,N12]Result[71, 60]
 desc ces0010;
-Field    Type    Null    Key    Default    Extra    Comment
-CPBPVTYP    ENUM('T','E')    NO        E
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+CPBPVTYP  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  E  ¦    ¦  
+
+#SQL[@36,N35]Result[]
 insert into ces0010 values(default);
+
+#SQL[@37,N21]Result[8, 1]
 select * from ces0010;
 cpbpvtyp
 E
+
+#SQL[@39,N28]Result[]
 DROP TABLE IF EXISTS ces0010;
+
+#SQL[@40,N72]Result[]
 CREATE TABLE ces0010 (
-`CPBPVTYP` enum('T','E') NOT NULL DEFAULT '1'
+  `CPBPVTYP` enum('T','E') NOT NULL DEFAULT '1'
 );
+
+#SQL[@43,N12]Result[71, 60]
 desc ces0010;
-Field    Type    Null    Key    Default    Extra    Comment
-CPBPVTYP    ENUM('T','E')    NO        1
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+CPBPVTYP  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  1  ¦    ¦  
+
+#SQL[@44,N35]Result[]
 insert into ces0010 values(default);
+
+#SQL[@45,N21]Result[8, 1]
 select * from ces0010;
 cpbpvtyp
 T
+
+#SQL[@47,N28]Result[]
 DROP TABLE IF EXISTS ces0010;
+
+#SQL[@48,N70]Result[]
 CREATE TABLE ces0010 (
-`CPBPVTYP` enum('T','E') NOT NULL DEFAULT 2
+  `CPBPVTYP` enum('T','E') NOT NULL DEFAULT 2
 );
+
+#SQL[@51,N12]Result[71, 60]
 desc ces0010;
-Field    Type    Null    Key    Default    Extra    Comment
-CPBPVTYP    ENUM('T','E')    NO        2        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+CPBPVTYP  ¦  ENUM('T','E')  ¦  NO  ¦    ¦  2  ¦    ¦  
+
+#SQL[@52,N35]Result[]
 insert into ces0010 values(default);
+
+#SQL[@53,N21]Result[8, 1]
 select * from ces0010;
 cpbpvtyp
 E
+
+#SQL[@55,N54]Result[]
 create table t_enum(a int,b enum('1','2','3','4','5'));
+
+#SQL[@56,N24]Result[23, 106]
 show create table t_enum;
-Table    Create Table
-t_enum    CREATE TABLE `t_enum` (\n  `a` int DEFAULT NULL,\n  `b` enum('1','2','3','4','5') DEFAULT NULL\n)
+Table  ¦  Create Table
+t_enum  ¦  CREATE TABLE `t_enum` (
+  `a` int DEFAULT NULL,
+  `b` enum('1','2','3','4','5') DEFAULT NULL
+)
+

@@ -1,63 +1,101 @@
+#SQL[@7,N20]Result[14, 14]
 select 'test',"test";
-test    test
-test    test
+test  ¦  test
+test  ¦  test
+
+#SQL[@8,N306]Result[297, 297]
 select 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-SELECT CONCAT_WS(2,' test');
-CONCAT_WS(2,' test')
-2 test
+
+#SQL[@12,N31]Result[31, 14]
 SELECT 38.8, CAST(38.8 AS CHAR);
-38.8    cast(38.8 as varchar)
-38.8    38.8
+38.8  ¦  cast(38.8 as varchar)
+38.8  ¦  38.8
+
+#SQL[@13,N50]Result[41, 4]
 SELECT '9223372036854775807' = 9223372036854775807;
 9223372036854775807 = 9223372036854775807
 true
+
+#SQL[@14,N52]Result[41, 4]
 SELECT '9223372036854775807' = "9223372036854775807";
 9223372036854775807 = 9223372036854775807
 true
+
+#SQL[@15,N68]Result[59, 5]
 SELECT CAST('9223372036854775807' AS UNSIGNED) = 9223372036854775806;
 cast(9223372036854775807 as unsigned) = 9223372036854775806
 false
+
+#SQL[@16,N33]Result[24, 10]
 SELECT CAST("2017-08-29" AS DATE);
 cast(2017-08-29 as date)
 2017-08-29
+
+#SQL[@17,N24]Result[20, 3]
 SELECT CAST(150 AS CHAR);
 cast(150 as varchar)
 150
+
+#SQL[@18,N25]Result[23, 2]
 SELECT CAST(5-10 AS CHAR);
 cast(5 - 10 as varchar)
 -5
+
+#SQL[@19,N33]Result[20, 5]
 SELECT CONCAT_WS('My', 'S', 'QL');
 CONCAT_WS(My, S, QL)
 SMyQL
+
+#SQL[@20,N34]Result[23, 2]
 SELECT CONCAT_WS('My', NULL, 'QL');
 CONCAT_WS(My, null, QL)
 QL
-SELECT CONCAT_WS(14,'.3');
-CONCAT_WS(14,'.3') 
-14.3 
--- SELECT (CAST(0x7FFFFFFFFFFFFFFF AS char));
--- (CAST(0x7FFFFFFFFFFFFFFF AS char))
--- ������� 
+
+#SQL[@27,N23]Result[]
 drop table if exists t1;
+
+#SQL[@28,N28]Result[]
 create table t1 (a char(10));
+
+#SQL[@29,N31]Result[]
 insert into t1 values('abcdef');
+
+#SQL[@30,N31]Result[]
 insert into t1 values('_bcdef');
+
+#SQL[@31,N31]Result[]
 insert into t1 values('a_cdef');
+
+#SQL[@32,N31]Result[]
 insert into t1 values('ab_def');
+
+#SQL[@33,N31]Result[]
 insert into t1 values('abc_ef');
+
+#SQL[@34,N31]Result[]
 insert into t1 values('abcd_f');
+
+#SQL[@35,N31]Result[]
 insert into t1 values('abcde_');
+
+#SQL[@36,N55]Result[1, 6]
 select * from t1 where a like 'ab\_def' order by a desc;
 a
 ab_def
+
+#SQL[@37,N53]Result[1, 6]
 select * from t1 where a not like 'a%' order by 1 asc;
 a
 _bcdef
+
+#SQL[@38,N55]Result[1, 6]
 select * from t1 where a like "\__cdef" order by 1 desc;
 a
 _bcdef
+
+#SQL[@39,N41]Result[1, 6, 6, 6, 6, 6, 6]
 select * from t1 where a not like "%d_\_";
 a
 abcdef
@@ -66,6 +104,8 @@ a_cdef
 ab_def
 abc_ef
 abcd_f
+
+#SQL[@40,N125]Result[]
 CREATE TABLE Demochar
 (
 LastName char(10) primary key,
@@ -74,57 +114,87 @@ Gender char(1),
 DepartmentName char(20),
 Age int
 );
+
+#SQL[@48,N68]Result[]
 INSERT INTO Demochar VALUES('Gilbert', 'Kevin','M','Tool Design',33);
+
+#SQL[@49,N70]Result[]
 INSERT INTO Demochar VALUES('Tamburello', 'Andrea','F','Marketing',45);
+
+#SQL[@50,N68]Result[]
 INSERT INTO Demochar VALUES('Johnson', 'David','M','Engineering',66);
+
+#SQL[@51,N68]Result[]
 INSERT INTO Demochar VALUES('Sharma', 'Bradley','M','Production',27);
+
+#SQL[@52,N74]Result[]
 INSERT INTO Demochar VALUES('Rapier', 'Abigail','F',	'Human Resources',38);
+
+#SQL[@53,N76]Result[]
 INSERT INTO Demochar VALUES('Martin', 'Kelly','F','Information Services',54);
+
+#SQL[@54,N75]Result[]
 INSERT INTO Demochar VALUES('Poland', 'Carole','F','Production Control',29);
+
+#SQL[@55,N22]Result[64, 50, 52, 50, 50, 55, 58, 57]
 SELECT * FROM Demochar;
-lastname    firstname    gender    departmentname    age
-Gilbert    Kevin    M    Tool Design    33
-Tamburello    Andrea    F    Marketing    45
-Johnson    David    M    Engineering    66
-Sharma    Bradley    M    Production    27
-Rapier    Abigail    F    Human Resources    38
-Martin    Kelly    F    Information Services    54
-Poland    Carole    F    Production Control    29
+lastname  ¦  firstname  ¦  gender  ¦  departmentname  ¦  age
+Gilbert  ¦  Kevin  ¦  M  ¦  Tool Design  ¦  33
+Tamburello  ¦  Andrea  ¦  F  ¦  Marketing  ¦  45
+Johnson  ¦  David  ¦  M  ¦  Engineering  ¦  66
+Sharma  ¦  Bradley  ¦  M  ¦  Production  ¦  27
+Rapier  ¦  Abigail  ¦  F  ¦  Human Resources  ¦  38
+Martin  ¦  Kelly  ¦  F  ¦  Information Services  ¦  54
+Poland  ¦  Carole  ¦  F  ¦  Production Control  ¦  29
+
+#SQL[@56,N80]Result[30, 6, 5, 5]
 select concat_ws(LastName,FirstName) from Demochar where Age > 40 order by 1 asc;
 concat_ws(LastName, FirstName)
 Andrea
 David
 Kelly
+
+#SQL[@57,N100]Result[8, 5, 5, 6]
 select concat_ws(LastName,FirstName) as fullname from Demochar where Age > 40 order by fullname desc;
 fullname
 Kelly
 David
 Andrea
+
+#SQL[@58,N95]Result[51, 21, 22, 21, 20]
 select concat_ws(LastName,FirstName),Gender,Age from Demochar where Gender='F' order by Age asc;
-concat_ws(LastName, FirstName)    Gender    Age
-Carole    F    29
-Abigail    F    38
-Andrea    F    45
-Kelly    F    54
+concat_ws(LastName, FirstName)  ¦  Gender  ¦  Age
+Carole  ¦  F  ¦  29
+Abigail  ¦  F  ¦  38
+Andrea  ¦  F  ¦  45
+Kelly  ¦  F  ¦  54
+
+#SQL[@59,N91]Result[4, 2, 2]
 select cast(Age as char) as cAge from Demochar where cast(Age as char) like '2_' order by 1;
 cAge
 27
 29
+
+#SQL[@60,N86]Result[4, 4, 4]
 select cast(Age as char) and Age as cAge from Demochar where Age>=50 order by cAge asc;
 cAge
 true
 true
+
+#SQL[@61,N310]Result[]
 CREATE TABLE employees (
-employeeNumber int(11) NOT NULL,
-lastName char(50) NOT NULL,
-firstName char(50) NOT NULL,
-extension char(10) NOT NULL,
-email char(100) NOT NULL,
-officeCode char(10) NOT NULL,
-reportsTo int(11) DEFAULT NULL,
-jobTitle char(50) NOT NULL,
-PRIMARY KEY (employeeNumber)
-);
+  employeeNumber int(11) NOT NULL,
+  lastName char(50) NOT NULL,
+  firstName char(50) NOT NULL,
+  extension char(10) NOT NULL,
+  email char(100) NOT NULL,
+  officeCode char(10) NOT NULL,
+  reportsTo int(11) DEFAULT NULL,
+  jobTitle char(50) NOT NULL,
+  PRIMARY KEY (employeeNumber)
+  );
+
+#SQL[@72,N1706]Result[]
 insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values
 (1002,'Murphy','Diane','x5800','dmurphy@classicmodelcars.com','1',NULL,'President'),
 (1056,'Patterson','Mary','x4611','mpatterso@classicmodelcars.com','1',1002,'VP Sales'),
@@ -144,79 +214,103 @@ insert  into employees(employeeNumber,lastName,firstName,extension,email,officeC
 (1501,'Bott','Larry','x2311','lbott@classicmodelcars.com','7',1102,'Sales Rep'),
 (1504,'Jones','Barry','x102','bjones@classicmodelcars.com','7',1102,'Sales Rep'),
 (1611,'Fixter','Andy','x101','afixter@classicmodelcars.com','6',1088,'Sales Rep');
+
+#SQL[@91,N119]Result[33, 8, 8]
 select officeCode,count(officeCode) from employees group by officeCode having count(officeCode)>2 order by 1 asc,2 desc;
-officeCode    count(officeCode)
-1    6
-4    4
+officeCode  ¦  count(officeCode)
+1  ¦  6
+4  ¦  4
+
+#SQL[@92,N94]Result[23, 15, 16]
 select lastName,firstName from employees where cast(officeCode as unsigned)>5 limit 2 offset 1;
-lastName    firstName
-Bott    Larry
-Jones    Barry
+lastName  ¦  firstName
+Bott  ¦  Larry
+Jones  ¦  Barry
+
+#SQL[@93,N49]Result[32, 18]
 select max(lastName),min(lastName) from employees;
-max(lastName)    min(lastName)
-Vanauf    Bondur
+max(lastName)  ¦  min(lastName)
+Vanauf  ¦  Bondur
+
+#SQL[@94,N76]Result[46, 33, 38, 40, 50, 43, 36, 33]
 select max(lastName),min(lastName),JobTitle from employees group by JobTitle;
-max(lastName)    min(lastName)    JobTitle
-Murphy    Murphy    President
-Patterson    Patterson    VP Sales
-Firrelli    Firrelli    VP Marketing
-Patterson    Patterson    Sales Manager (APAC)
-Bondur    Bondur    Sale Manager (EMEA)
-Bow    Bow    Sales Manager (NA)
-Vanauf    Bondur    Sales Rep
+max(lastName)  ¦  min(lastName)  ¦  JobTitle
+Murphy  ¦  Murphy  ¦  President
+Patterson  ¦  Patterson  ¦  VP Sales
+Firrelli  ¦  Firrelli  ¦  VP Marketing
+Patterson  ¦  Patterson  ¦  Sales Manager (APAC)
+Bondur  ¦  Bondur  ¦  Sale Manager (EMEA)
+Bow  ¦  Bow  ¦  Sales Manager (NA)
+Vanauf  ¦  Bondur  ¦  Sales Rep
+
+#SQL[@95,N66]Result[23, 17, 19, 16, 20, 19, 18, 21, 16, 16]
 select lastName,firstName from employees where lastName>=firstName;
-lastName    firstName
-Murphy    Diane
-Patterson    Mary
-Bow    Anthony
-Thompson    Leslie
-Tseng    Foon Yue
-Vanauf    George
-Hernandez    Gerard
-Jones    Barry
-Fixter    Andy
+lastName  ¦  firstName
+Murphy  ¦  Diane
+Patterson  ¦  Mary
+Bow  ¦  Anthony
+Thompson  ¦  Leslie
+Tseng  ¦  Foon Yue
+Vanauf  ¦  George
+Hernandez  ¦  Gerard
+Jones  ¦  Barry
+Fixter  ¦  Andy
+
+#SQL[@96,N86]Result[23, 17, 19, 16, 21, 16, 16]
 select lastName,firstName from employees where lastName between firstName and JobTitle;
-lastName    firstName
-Murphy    Diane
-Patterson    Mary
-Bow    Anthony
-Hernandez    Gerard
-Jones    Barry
-Fixter    Andy
+lastName  ¦  firstName
+Murphy  ¦  Diane
+Patterson  ¦  Mary
+Bow  ¦  Anthony
+Hernandez  ¦  Gerard
+Jones  ¦  Barry
+Fixter  ¦  Andy
+
+#SQL[@97,N89]Result[114, 108, 110]
 select * from employees where officeCode in ('2','3','4') order by 1 asc,3 desc limit 1,2;
-employeenumber    lastname    firstname    extension    email    officecode    reportsto    jobtitle
-1188    Firrelli    Julie    x2173    jfirrelli@classicmodelcars.com    2    1143    Sales Rep
-1216    Patterson    Steve    x4334    spatterson@classicmodelcars.com    2    1143    Sales Rep
+employeenumber  ¦  lastname  ¦  firstname  ¦  extension  ¦  email  ¦  officecode  ¦  reportsto  ¦  jobtitle
+1188  ¦  Firrelli  ¦  Julie  ¦  x2173  ¦  jfirrelli@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+1216  ¦  Patterson  ¦  Steve  ¦  x4334  ¦  spatterson@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+
+#SQL[@98,N61]Result[114, 123, 115, 108, 110, 105, 105, 103, 110, 109, 102]
 select * from employees where officeCode not in ('5','7','1');
-employeenumber    lastname    firstname    extension    email    officecode    reportsto    jobtitle
-1088    Patterson    William    x4871    wpatterson@classicmodelcars.com    6    1056    Sales Manager (APAC)
-1102    Bondur    Gerard    x5408    gbondur@classicmodelcars.com    4    1056    Sale Manager (EMEA)
-1188    Firrelli    Julie    x2173    jfirrelli@classicmodelcars.com    2    1143    Sales Rep
-1216    Patterson    Steve    x4334    spatterson@classicmodelcars.com    2    1143    Sales Rep
-1286    Tseng    Foon Yue    x2248    ftseng@classicmodelcars.com    3    1143    Sales Rep
-1323    Vanauf    George    x4102    gvanauf@classicmodelcars.com    3    1143    Sales Rep
-1337    Bondur    Loui    x6493    lbondur@classicmodelcars.com    4    1102    Sales Rep
-1370    Hernandez    Gerard    x2028    ghernande@classicmodelcars.com    4    1102    Sales Rep
-1401    Castillo    Pamela    x2759    pcastillo@classicmodelcars.com    4    1102    Sales Rep
-1611    Fixter    Andy    x101    afixter@classicmodelcars.com    6    1088    Sales Rep
+employeenumber  ¦  lastname  ¦  firstname  ¦  extension  ¦  email  ¦  officecode  ¦  reportsto  ¦  jobtitle
+1088  ¦  Patterson  ¦  William  ¦  x4871  ¦  wpatterson@classicmodelcars.com  ¦  6  ¦  1056  ¦  Sales Manager (APAC)
+1102  ¦  Bondur  ¦  Gerard  ¦  x5408  ¦  gbondur@classicmodelcars.com  ¦  4  ¦  1056  ¦  Sale Manager (EMEA)
+1188  ¦  Firrelli  ¦  Julie  ¦  x2173  ¦  jfirrelli@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+1216  ¦  Patterson  ¦  Steve  ¦  x4334  ¦  spatterson@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+1286  ¦  Tseng  ¦  Foon Yue  ¦  x2248  ¦  ftseng@classicmodelcars.com  ¦  3  ¦  1143  ¦  Sales Rep
+1323  ¦  Vanauf  ¦  George  ¦  x4102  ¦  gvanauf@classicmodelcars.com  ¦  3  ¦  1143  ¦  Sales Rep
+1337  ¦  Bondur  ¦  Loui  ¦  x6493  ¦  lbondur@classicmodelcars.com  ¦  4  ¦  1102  ¦  Sales Rep
+1370  ¦  Hernandez  ¦  Gerard  ¦  x2028  ¦  ghernande@classicmodelcars.com  ¦  4  ¦  1102  ¦  Sales Rep
+1401  ¦  Castillo  ¦  Pamela  ¦  x2759  ¦  pcastillo@classicmodelcars.com  ¦  4  ¦  1102  ¦  Sales Rep
+1611  ¦  Fixter  ¦  Andy  ¦  x101  ¦  afixter@classicmodelcars.com  ¦  6  ¦  1088  ¦  Sales Rep
+
+#SQL[@99,N86]Result[49, 8, 9, 9, 8, 8, 9]
 select officeCode,sum(cast(officeCode as unsigned)) from employees group by officeCode;
-officeCode    sum(cast(officeCode as unsigned))
-1    6
-6    12
-4    16
-2    4
-3    6
-7    14
+officeCode  ¦  sum(cast(officeCode as unsigned))
+1  ¦  6
+6  ¦  12
+4  ¦  16
+2  ¦  4
+3  ¦  6
+7  ¦  14
+
+#SQL[@100,N146]Result[45, 21, 21, 21, 21]
 select employeeNumber,officeCode,reportsTo from employees where employeeNumber>1400 and reportsTo is not null order by officeCode+1,employeeNumber;
-employeeNumber    officeCode    reportsTo
-1401    4    1102
-1611    6    1088
-1501    7    1102
-1504    7    1102
+employeeNumber  ¦  officeCode  ¦  reportsTo
+1401  ¦  4  ¦  1102
+1611  ¦  6  ¦  1088
+1501  ¦  7  ¦  1102
+1504  ¦  7  ¦  1102
+
+#SQL[@102,N60]Result[]
 create table job(
 jobid int primary key,
 jobTitle char(50)
 );
+
+#SQL[@106,N189]Result[]
 insert into job values
 (1,'President'),
 (2,'VP Sales'),
@@ -226,63 +320,99 @@ insert into job values
 (6,'Sales Manager (NA)'),
 (7,'Sales Rep'),
 (8,'Marketing');
+
+#SQL[@115,N93]Result[39, 26, 25, 29, 37, 36, 35, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26]
 select employeeNumber,e.jobTitle,j.jobid from employees e join job j on e.jobTitle=j.jobTitle;
-employeeNumber    jobTitle    jobid
-1002    President    1
-1056    VP Sales    2
-1076    VP Marketing    3
-1088    Sales Manager (APAC)    4
-1102    Sale Manager (EMEA)    5
-1143    Sales Manager (NA)    6
-1165    Sales Rep    7
-1166    Sales Rep    7
-1188    Sales Rep    7
-1216    Sales Rep    7
-1286    Sales Rep    7
-1323    Sales Rep    7
-1337    Sales Rep    7
-1370    Sales Rep    7
-1401    Sales Rep    7
-1501    Sales Rep    7
-1504    Sales Rep    7
-1611    Sales Rep    7
+employeeNumber  ¦  jobTitle  ¦  jobid
+1002  ¦  President  ¦  1
+1056  ¦  VP Sales  ¦  2
+1076  ¦  VP Marketing  ¦  3
+1088  ¦  Sales Manager (APAC)  ¦  4
+1102  ¦  Sale Manager (EMEA)  ¦  5
+1143  ¦  Sales Manager (NA)  ¦  6
+1165  ¦  Sales Rep  ¦  7
+1166  ¦  Sales Rep  ¦  7
+1188  ¦  Sales Rep  ¦  7
+1216  ¦  Sales Rep  ¦  7
+1286  ¦  Sales Rep  ¦  7
+1323  ¦  Sales Rep  ¦  7
+1337  ¦  Sales Rep  ¦  7
+1370  ¦  Sales Rep  ¦  7
+1401  ¦  Sales Rep  ¦  7
+1501  ¦  Sales Rep  ¦  7
+1504  ¦  Sales Rep  ¦  7
+1611  ¦  Sales Rep  ¦  7
+
+#SQL[@116,N87]Result[19, 16, 15, 19, 27, 26, 25, 16]
 select distinct e.jobTitle,j.jobid from employees e join job j on e.jobTitle=j.jobTitle;
-jobTitle    jobid
-President    1
-VP Sales    2
-VP Marketing    3
-Sales Manager (APAC)    4
-Sale Manager (EMEA)    5
-Sales Manager (NA)    6
-Sales Rep    7
+jobTitle  ¦  jobid
+President  ¦  1
+VP Sales  ¦  2
+VP Marketing  ¦  3
+Sales Manager (APAC)  ¦  4
+Sale Manager (EMEA)  ¦  5
+Sales Manager (NA)  ¦  6
+Sales Rep  ¦  7
+
+#SQL[@117,N121]Result[24, 25, 17]
 select e.jobTitle,sum(jobid) from employees e join job j on e.jobTitle=j.jobTitle group by e.jobTitle having sum(jobid)>5;
-jobTitle    sum(jobid)
-Sales Manager (NA)    6
-Sales Rep    84
+jobTitle  ¦  sum(jobid)
+Sales Manager (NA)  ¦  6
+Sales Rep  ¦  84
+
+#SQL[@118,N137]Result[24, 17, 25]
 select e.jobTitle,sum(jobid) from employees e join job j on e.jobTitle=j.jobTitle group by e.jobTitle having sum(jobid)>5 order by 2 desc;
-jobTitle    sum(jobid)
-Sales Rep    84
-Sales Manager (NA)    6
+jobTitle  ¦  sum(jobid)
+Sales Rep  ¦  84
+Sales Manager (NA)  ¦  6
+
+#SQL[@122,N23]Result[]
 drop table if exists t1;
+
+#SQL[@123,N23]Result[]
 drop table if exists t2;
+
+#SQL[@124,N23]Result[]
 drop table if exists t3;
+
+#SQL[@125,N24]Result[]
 drop table if exists t11;
+
+#SQL[@126,N24]Result[]
 drop table if exists t12;
+
+#SQL[@127,N46]Result[]
 CREATE TABLE t1 (a char(3), b int primary key);
+
+#SQL[@128,N37]Result[]
 INSERT INTO t1 VALUES ('1',1),('1',2);
+
+#SQL[@130,N37]Result[]
 update t1 set a=2 where a='1' limit 1;
+
+#SQL[@131,N16]Result[8, 8, 8]
 select * from t1;
-a    b
-1    2
-2    1
+a  ¦  b
+1  ¦  2
+2  ¦  1
+
+#SQL[@132,N29]Result[]
 INSERT INTO t1 VALUES ('1',3);
+
+#SQL[@133,N31]Result[]
 update t1 set a='a' where a='1';
+
+#SQL[@134,N16]Result[8, 8, 8, 8]
 select * from t1;
-a    b
-2    1
-a    2
-a    3
+a  ¦  b
+2  ¦  1
+a  ¦  2
+a  ¦  3
+
+#SQL[@136,N13]Result[]
 drop table t1;
+
+#SQL[@137,N352]Result[]
 create table t1 (
 a char(10) not null,
 b char(10) not null default '0',
@@ -295,101 +425,88 @@ h char(10) not null default '0',
 i char(10) not null default '0',
 j char(10) not null default '0',
 primary key (a));
-insert into t1 (a) values ('2'),('4'),('6'),('8'),('10'),('12'),('14'),('16'),('18'),('20'),('22'),('24'),('26'),('23');
-update t1 set a=a+'101';
 
-select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+#SQL[@149,N119]Result[]
+insert into t1 (a) values ('2'),('4'),('6'),('8'),('10'),('12'),('14'),('16'),('18'),('20'),('22'),('24'),('26'),('23');
+
+#SQL[@154,N34]Result[]
 update t1 set a='127' where a='25';
-select a,b from t1;
-a    b
-2    0
-4    0
-6    0
-8    0
-10    0
-12    0
-14    0
-16    0
-18    0
-20    0
-22    0
-24    0
-26    0
-23    0
-update t1 set a=a+'a' where 1 > 2;
 
+#SQL[@155,N18]Result[8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-4	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-24	0
-26	0
-23	0
-update t1 set a=a+a where 3 > 2;
+a  ¦  b
+2  ¦  0
+4  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+24  ¦  0
+26  ¦  0
+23  ¦  0
 
-select a,b from t1;
-a	b
-2	0
-4	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-24	0
-26	0
-23	0
+#SQL[@162,N13]Result[]
 drop table t1;
+
+#SQL[@163,N52]Result[]
 create table t1 (a char(10) primary key, b char(32));
+
+#SQL[@164,N53]Result[]
 insert into t1 values ('abc','apple'), ('ab','apple');
+
+#SQL[@165,N16]Result[8, 14, 13]
 select * from t1;
-a    b
-abc    apple
-ab    apple
+a  ¦  b
+abc  ¦  apple
+ab  ¦  apple
+
+#SQL[@168,N23]Result[]
 drop table if exists t1;
+
+#SQL[@169,N23]Result[]
 drop table if exists t2;
+
+#SQL[@170,N23]Result[]
 drop table if exists t3;
+
+#SQL[@171,N24]Result[]
 drop table if exists t11;
+
+#SQL[@172,N24]Result[]
 drop table if exists t12;
+
+#SQL[@173,N50]Result[]
 CREATE TABLE t1 (a char(3), b char(5) primary key);
+
+#SQL[@174,N41]Result[]
 INSERT INTO t1 VALUES ('1','1'),('1','2');
+
+#SQL[@175,N32]Result[]
 delete from t1 where a=1 limit 1;
+
+#SQL[@176,N16]Result[8, 8]
 select * from t1;
-a    b
-1    2
+a  ¦  b
+1  ¦  2
+
+#SQL[@177,N31]Result[]
 INSERT INTO t1 VALUES ('1','3');
+
+#SQL[@178,N24]Result[]
 delete from t1 where a=1;
+
+#SQL[@179,N16]Result[]
 select * from t1;
-a    b
+
+#SQL[@180,N13]Result[]
 drop table t1;
+
+#SQL[@181,N352]Result[]
 create table t1 (
 a char(10) not null,
 b char(10) not null default '0',
@@ -402,60 +519,86 @@ h char(10) not null default '0',
 i char(10) not null default '0',
 j char(10) not null default '0',
 primary key (a));
+
+#SQL[@193,N119]Result[]
 insert into t1 (a) values ('2'),('4'),('6'),('8'),('10'),('12'),('14'),('16'),('18'),('20'),('22'),('24'),('26'),('23');
+
+#SQL[@194,N26]Result[]
 delete from t1 where a=2+2;
+
+#SQL[@195,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a    b
-2    0
-6    0
-8    0
-10    0
-12    0
-14    0
-16    0
-18    0
-20    0
-22    0
-24    0
-26    0
-23    0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+24  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@196,N26]Result[]
 delete from t1 where  a=24;
+
+#SQL[@197,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a    b
-2    0
-6    0
-8    0
-10    0
-12    0
-14    0
-16    0
-18    0
-20    0
-22    0
-26    0
-23    0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@198,N27]Result[]
 delete from t1 where  3 < 2;
+
+#SQL[@199,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a    b
-2    0
-6    0
-8    0
-10    0
-12    0
-14    0
-16    0
-18    0
-20    0
-22    0
-26    0
-23    0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@200,N27]Result[]
 delete from t1 where  1 < 2;
+
+#SQL[@201,N18]Result[]
 select a,b from t1;
-a    b
+
+#SQL[@202,N13]Result[]
 drop table t1;
+
+#SQL[@203,N52]Result[]
 create table t1 (a char(10) primary key, b char(32));
+
+#SQL[@204,N53]Result[]
 insert into t1 values ('abc','apple'), ('ab','apple');
+
+#SQL[@205,N16]Result[8, 14, 13]
 select * from t1;
-a    b
-abc    apple
-ab    apple
+a  ¦  b
+abc  ¦  apple
+ab  ¦  apple
+

@@ -1,280 +1,503 @@
+#SQL[@7,N106]Result[119, 1297]
 select -1.7976931348623157E+308,-2.2250738585072014E-308,0,2.2250738585072014E-308,1.7976931348623157E+308;
--1.7976931348623157e+308    -2.2250738585072014e-308    0    2.2250738585072014e-308    1.7976931348623157e+308
--1.7976931348623157E308    -2.2250738585072014E-308    0    2.2250738585072014E-308    1.7976931348623157E308
+-1.7976931348623157e+308  ¦  -2.2250738585072014e-308  ¦  0  ¦  2.2250738585072014e-308  ¦  1.7976931348623157e+308
+-179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  ¦  -0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000022250738585072014  ¦  0  ¦  0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000022250738585072014  ¦  179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+#SQL[@8,N103]Result[111, 1289]
 select 1.7976931348623158E+308,-2.2250738585072015E-308,2.2250738585072015E-308,1.7976931348623158E+308;
-1.7976931348623158e+308    -2.2250738585072015e-308    2.2250738585072015e-308    1.7976931348623158e+308
-1.7976931348623157E308    -2.2250738585072014E-308    2.2250738585072014E-308    1.7976931348623157E308
+1.7976931348623158e+308  ¦  -2.2250738585072015e-308  ¦  2.2250738585072015e-308  ¦  1.7976931348623158e+308
+179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  ¦  -0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000022250738585072014  ¦  0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000022250738585072014  ¦  179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+#SQL[@9,N81]Result[83, 626]
 select 1.7976931348623158E+308*1,-2.2250738585072015E-308+1.2250738585072015E-308;
-1.7976931348623158e+308 * 1    -2.2250738585072015e-308 + 1.2250738585072015e-308
-1.7976931348623157E308    -1.0E-308
+1.7976931348623158e+308 * 1  ¦  -2.2250738585072015e-308 + 1.2250738585072015e-308
+179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000  ¦  -0.00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001
+
+#SQL[@13,N23]Result[]
 drop table if exists t1;
+
+#SQL[@14,N51]Result[]
 create table t1 (a double not null, primary key(a));
+
+#SQL[@15,N130]Result[]
 insert into t1 values(-1.7976931348623157E+308),(-2.2250738585072014E-308),(0),(2.2250738585072014E-308),(1.7976931348623157E+308);
+
+#SQL[@16,N31]Result[1, 310, 327, 1, 326, 309]
 select * from t1 order by a asc;
 a
--1.7976931348623157E308
--2.2250738585072014E-308
-0.0
-2.2250738585072014E-308
-1.7976931348623157E308
+-179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+-0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000022250738585072014
+0
+0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000022250738585072014
+179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+
+#SQL[@17,N24]Result[]
 delete from t1 where a>0;
+
+#SQL[@18,N23]Result[]
 drop table if exists t1;
+
+#SQL[@19,N32]Result[]
 create table t1(a double(53,30));
+
+#SQL[@20,N109]Result[]
 insert into t1 values(-1.7976931348623157),(2.2250738585072014),(0),(2.2250738585072014),(1.7976931348623157);
+
+#SQL[@21,N31]Result[1, 19, 1, 18, 18, 18]
 select * from t1 order by 1 asc;
 a
 -1.7976931348623157
-0.0
+0
 1.7976931348623157
 2.2250738585072014
 2.2250738585072014
+
+#SQL[@22,N23]Result[]
 drop table if exists t1;
+
+#SQL[@23,N31]Result[]
 create table t1(a double(53,5));
+
+#SQL[@24,N109]Result[]
 insert into t1 values(-1.7976931348623157),(2.2250738585072014),(0),(2.2250738585072014),(1.7976931348623157);
+
+#SQL[@25,N16]Result[1, 8, 7, 1, 7, 7]
 select * from t1;
 a
 -1.79769
 2.22507
-0.0
+0
 2.22507
 1.79769
+
+#SQL[@26,N13]Result[]
 drop table t1;
+
+#SQL[@27,N28]Result[]
 create table t1(a float(34));
+
+#SQL[@28,N20]Result[23, 55]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` double DEFAULT NULL\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` double DEFAULT NULL
+)
+
+#SQL[@29,N13]Result[]
 drop table t1;
+
+#SQL[@30,N65]Result[]
 create table t1 ( a double not null default 1, big double(30,5) );
+
+#SQL[@31,N76]Result[]
 insert into t1 (big) values (-1),(12345678.901234567),(92233720368547.75807);
+
+#SQL[@32,N41]Result[10, 9, 21, 24]
 select * from t1 order by a desc, big asc;
-a    big
-1.0    -1.0
-1.0    1.234567890123E7
-1.0    9.223372036854777E13
+a  ¦  big
+1  ¦  -1
+1  ¦  12345678.90123
+1  ¦  92233720368547.77
+
+#SQL[@33,N43]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1;
-min(big)    max(big)    max(big) - 1
--1.0    9.223372036854777E13    9.223372036854677E13
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  92233720368547.77  ¦  92233720368546.77
+
+#SQL[@34,N67]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1 group by a order by 1+2;
-min(big)    max(big)    max(big) - 1
--1.0    9.223372036854777E13    9.223372036854677E13
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  92233720368547.77  ¦  92233720368546.77
+
+#SQL[@35,N13]Result[]
 drop table t1;
+
+#SQL[@36,N58]Result[]
 create table t1 ( a double not null default 1, big double);
+
+#SQL[@37,N76]Result[]
 insert into t1 (big) values (-1),(12345678.901234567),(92233720368547.75807);
+
+#SQL[@38,N16]Result[10, 9, 25, 24]
 select * from t1;
-a    big
-1.0    -1.0
-1.0    1.2345678901234567E7
-1.0    9.223372036854777E13
+a  ¦  big
+1  ¦  -1
+1  ¦  12345678.901234567
+1  ¦  92233720368547.77
+
+#SQL[@39,N39]Result[10, 25, 24]
 select * from t1 order by big limit 1,2;
-a    big
-1.0    1.2345678901234567E7
-1.0    9.223372036854777E13
+a  ¦  big
+1  ¦  12345678.901234567
+1  ¦  92233720368547.77
+
+#SQL[@40,N46]Result[10, 25, 24]
 select * from t1 order by big limit 2 offset 1;
-a    big
-1.0    1.2345678901234567E7
-1.0    9.223372036854777E13
+a  ¦  big
+1  ¦  12345678.901234567
+1  ¦  92233720368547.77
+
+#SQL[@41,N43]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1;
-min(big)    max(big)    max(big) - 1
--1.0    9.223372036854777E13    9.223372036854677E13
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  92233720368547.77  ¦  92233720368546.77
+
+#SQL[@42,N54]Result[40, 48]
 select min(big),max(big),max(big)+1 from t1 group by a;
-min(big)    max(big)    max(big) + 1
--1.0    9.223372036854777E13    9.223372036854877E13
+min(big)  ¦  max(big)  ¦  max(big) + 1
+-1  ¦  92233720368547.77  ¦  92233720368548.77
+
+#SQL[@43,N13]Result[]
 drop table t1;
+
+#SQL[@44,N46]Result[]
 create table t1 (id double primary key, a int);
+
+#SQL[@45,N29]Result[]
 insert into t1 values (1.1,1);
+
+#SQL[@46,N30]Result[]
 insert into t1 values (2.22,2);
+
+#SQL[@47,N31]Result[]
 insert into t1 values (3.333,3);
+
+#SQL[@48,N32]Result[]
 insert into t1 values (4.4444,4);
+
+#SQL[@49,N33]Result[9, 13, 12, 11, 10]
 select * from t1 order by id desc;
-id    a
-4.4444    4
-3.333    3
-2.22    2
-1.1    1
+id  ¦  a
+4.4444  ¦  4
+3.333  ¦  3
+2.22  ¦  2
+1.1  ¦  1
+
+#SQL[@53,N23]Result[]
 drop table if exists t1;
+
+#SQL[@54,N23]Result[]
 drop table if exists t2;
+
+#SQL[@55,N72]Result[]
 create table t1 (
 a double not null,
 b double not null,
 primary key(a)
 );
+
+#SQL[@60,N77]Result[]
 create table t2 (
 a  double  not null,
 b  integer  not null,
 primary key(a)
 );
+
+#SQL[@65,N34]Result[]
 insert into t1 values(0.123456, 1);
+
+#SQL[@66,N33]Result[]
 insert into t1 values(1.23456, 2);
+
+#SQL[@67,N36]Result[]
 insert into t2 values(1.23456e-1, 3);
+
+#SQL[@68,N35]Result[]
 insert into t2 values(1.23456e1, 4);
+
+#SQL[@69,N26]Result[]
 insert into t1 values(3,5);
+
+#SQL[@70,N16]Result[8, 15, 14, 8]
 select * from t1;
-a    b
-0.123456    1.0
-1.23456    2.0
-3.0    5.0
+a  ¦  b
+0.123456  ¦  1
+1.23456  ¦  2
+3  ¦  5
+
+#SQL[@71,N16]Result[8, 15, 14]
 select * from t2;
-a    b
-0.123456    3
-12.3456    4
+a  ¦  b
+0.123456  ¦  3
+12.3456  ¦  4
+
+#SQL[@72,N60]Result[22, 36]
 select * from t1 join t2 on t1.a=t2.a order by 1 asc, 2 desc;
-a    b    a    b
-0.123456    1.0    0.123456    3
+a  ¦  b  ¦  a  ¦  b
+0.123456  ¦  1  ¦  0.123456  ¦  3
+
+#SQL[@73,N74]Result[22, 36]
 select * from t1 join t2 on t1.a=t2.a where t1.a>=0.123456 order by abs(1);
-a    b    a    b
-0.123456    1.0    0.123456    3
+a  ¦  b  ¦  a  ¦  b
+0.123456  ¦  1  ¦  0.123456  ¦  3
+
+#SQL[@74,N61]Result[22, 29]
 select * from t1 join t2 on t2.b=t1.a order by t1.a, t2.b asc;
-a    b    a    b
-3.0    5.0    0.123456    3
+a  ¦  b  ¦  a  ¦  b
+3  ¦  5  ¦  0.123456  ¦  3
+
+#SQL[@77,N23]Result[]
 drop table if exists t1;
+
+#SQL[@78,N23]Result[]
 drop table if exists t2;
+
+#SQL[@79,N26]Result[]
 create table t1 (a double);
+
+#SQL[@80,N30]Result[]
 insert into t1 values (17.666);
+
+#SQL[@81,N33]Result[1, 6]
 select * from t1 where a>=17.6660;
 a
 17.666
+
+#SQL[@82,N35]Result[1, 6]
 select * from t1 where a>='17.6660';
 a
 17.666
+
+#SQL[@83,N13]Result[]
 drop table t1;
+
+#SQL[@84,N66]Result[]
 CREATE TABLE t1 (id INT PRIMARY KEY,
 a double(20),
 b VARCHAR(100));
+
+#SQL[@87,N160]Result[]
 INSERT INTO t1 (id,a) VALUES
 (1,0),
 (2,CAST(0x7FFFFFFFFFFFFFFF AS UNSIGNED)),
 (3,CAST(0x8000000000000000 AS UNSIGNED)),
 (4,CAST(0xFFFFFFFFFFFFFFFF AS UNSIGNED));
+
+#SQL[@92,N16]Result[16, 18, 36, 36, 37]
 select * from t1;
-id    a    b
-1    0.0    null
-2    9.223372036854776E18    null
-3    9.223372036854776E18    null
-4    1.8446744073709552E19    null
+id  ¦  a  ¦  b
+1  ¦  0  ¦  null
+2  ¦  9223372036854776000  ¦  null
+3  ¦  9223372036854776000  ¦  null
+4  ¦  18446744073709552000  ¦  null
+
+#SQL[@93,N19]Result[]
 UPDATE t1 SET b = a;
+
+#SQL[@94,N16]Result[16, 15, 53, 53, 55]
 select * from t1;
-id    a    b
-1    0.0    0
-2    9.223372036854776E18    9.223372036854776E+18
-3    9.223372036854776E18    9.223372036854776E+18
-4    1.8446744073709552E19    1.8446744073709552E+19
+id  ¦  a  ¦  b
+1  ¦  0  ¦  0
+2  ¦  9223372036854776000  ¦  9.223372036854776E+18
+3  ¦  9223372036854776000  ¦  9.223372036854776E+18
+4  ¦  18446744073709552000  ¦  1.8446744073709552E+19
+
+#SQL[@95,N141]Result[15, 26]
 select a,count(a) from t1 where ((a = 9.223372036854776e18) and (b = '9.223372036854776E+18')) group by a having count(a)>1 order by count(a);
-a    count(a)
-9.223372036854776E18    2
+a  ¦  count(a)
+9223372036854776000  ¦  2
+
+#SQL[@96,N107]Result[]
 select distinct a,b from t1 where ((a = 1.844674407370955e19) and (b != '9.223372036854776e18')) order by 1;
-a    b
+
+#SQL[@97,N38]Result[]
 CREATE TABLE t_double(id double(30,1));
+
+#SQL[@98,N46]Result[]
 INSERT INTO t_double VALUES (1.19),(1.11), (2);
+
+#SQL[@99,N34]Result[17, 13, 13, 11]
 SELECT id, id >= 1.1 FROM t_double;
-id    id >= 1.1
-1.2    true
-1.1    true
-2.0    true
+id  ¦  id >= 1.1
+1.2  ¦  true
+1.1  ¦  true
+2  ¦  true
+
+#SQL[@100,N34]Result[17, 13, 13, 11]
 SELECT id, 1.1 <= id FROM t_double;
-id    1.1 <= id
-1.2    true
-1.1    true
-2.0    true
+id  ¦  1.1 <= id
+1.2  ¦  true
+1.1  ¦  true
+2  ¦  true
+
+#SQL[@102,N33]Result[16, 14, 13, 12]
 SELECT id, id = 1.1 FROM t_double;
-id    id = 1.1
-1.2    false
-1.1    true
-2.0    false
+id  ¦  id = 1.1
+1.2  ¦  false
+1.1  ¦  true
+2  ¦  false
+
+#SQL[@103,N33]Result[16, 14, 13, 12]
 SELECT id, 1.1 = id FROM t_double;
-id    1.1 = id
-1.2    false
-1.1    true
-2.0    false
+id  ¦  1.1 = id
+1.2  ¦  false
+1.1  ¦  true
+2  ¦  false
+
+#SQL[@104,N37]Result[2, 3]
 SELECT * from t_double WHERE id = 1.1;
 id
 1.1
+
+#SQL[@105,N39]Result[2, 3]
 SELECT * from t_double WHERE id = 1.1e0;
 id
 1.1
+
+#SQL[@108,N39]Result[2, 3]
 SELECT * from t_double WHERE id = '1.1';
 id
 1.1
+
+#SQL[@109,N41]Result[2, 3]
 SELECT * from t_double WHERE id = '1.1e0';
 id
 1.1
+
+#SQL[@110,N45]Result[2, 3]
 SELECT * from t_double WHERE id IN (1.1, 2.2);
 id
 1.1
+
+#SQL[@111,N49]Result[2, 3]
 SELECT * from t_double WHERE id IN (1.1e0, 2.2e0);
 id
 1.1
+
+#SQL[@112,N49]Result[2, 3]
 SELECT * from t_double WHERE id IN ('1.1', '2.2');
 id
 1.1
+
+#SQL[@113,N53]Result[2, 3]
 SELECT * from t_double WHERE id IN ('1.1e0', '2.2e0');
 id
 1.1
+
+#SQL[@115,N51]Result[2, 3, 3]
 SELECT * from t_double WHERE id BETWEEN 1.1 AND 1.9;
 id
 1.2
 1.1
+
+#SQL[@116,N55]Result[2, 3, 3]
 SELECT * from t_double WHERE id BETWEEN 1.1e0 AND 1.9e0;
 id
 1.2
 1.1
+
+#SQL[@117,N55]Result[2, 3, 3]
 SELECT * from t_double WHERE id BETWEEN '1.1' AND '1.9';
 id
 1.2
 1.1
+
+#SQL[@118,N59]Result[2, 3, 3]
 SELECT * from t_double WHERE id BETWEEN '1.1e0' AND '1.9e0';
 id
 1.2
 1.1
+
+#SQL[@119,N13]Result[]
 drop table t1;
+
+#SQL[@120,N31]Result[]
 CREATE TABLE t1 (a double(5,4));
+
+#SQL[@121,N45]Result[]
 INSERT INTO t1 VALUES (1),(0.8999),(0.800000);
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-a
-0.8999
-0.8
+
+#SQL[@125,N28]Result[]
 SELECT * FROM t1 WHERE a=0.9;
-a
+
+#SQL[@126,N37]Result[1, 3]
 SELECT * FROM t1 WHERE a in (0.8,0.9);
 a
 0.8
+
+#SQL[@127,N42]Result[1, 6, 3]
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
 a
 0.8999
 0.8
+
+#SQL[@128,N13]Result[]
 drop table t1;
+
+#SQL[@129,N34]Result[]
 create table t1 (id double, b int);
+
+#SQL[@130,N48]Result[]
 insert into t1 values(4.571231231231233534314,1);
+
+#SQL[@131,N50]Result[]
 insert into t1 values(5.31110909092103910293012,2);
+
+#SQL[@132,N48]Result[]
 insert into t1 values(177.1715012301203103111,3);
+
+#SQL[@133,N68]Result[8, 1]
 select count(*) from t1
 where id>=5.3111 and id <=177.171 order by 1;
 count(*)
 1
+
+#SQL[@135,N59]Result[8, 1]
 select count(*) from t1
 where id between 5.3111 and 177.171;
 count(*)
 1
+
+#SQL[@137,N13]Result[]
 drop table t1;
+
+#SQL[@140,N23]Result[]
 drop table if exists t1;
+
+#SQL[@141,N23]Result[]
 drop table if exists t2;
+
+#SQL[@142,N23]Result[]
 drop table if exists t3;
+
+#SQL[@143,N24]Result[]
 drop table if exists t11;
+
+#SQL[@144,N24]Result[]
 drop table if exists t12;
+
+#SQL[@145,N58]Result[]
 CREATE TABLE t1 (a double(3,2), b double(5,2) primary key);
+
+#SQL[@146,N49]Result[]
 INSERT INTO t1 VALUES (1.00,1.0000),(1.00,2.0000);
+
+#SQL[@147,N38]Result[]
 update t1 set a=2.00 where a=1 limit 1;
+
+#SQL[@148,N16]Result[8, 8, 8]
 select * from t1;
-a    b
-1.0    2.0
-2.0    1.0
+a  ¦  b
+1  ¦  2
+2  ¦  1
+
+#SQL[@149,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@150,N30]Result[]
 update t1 set a=2 where a=1.00;
+
+#SQL[@151,N16]Result[8, 8, 8, 8]
 select * from t1;
-a    b
-2.0    1.0
-2.0    2.0
-2.0    3.0
+a  ¦  b
+2  ¦  1
+2  ¦  2
+2  ¦  3
+
+#SQL[@152,N13]Result[]
 drop table t1;
+
+#SQL[@153,N449]Result[]
 create table t1 (
 a double(10,5) not null,
 b int not null default 12346,
@@ -287,98 +510,151 @@ h double(10,5) not null default 12345.67890,
 i double(10,5) not null default 12345.67890,
 j double(10,5) not null default 12345.67890,
 primary key (a));
+
+#SQL[@165,N91]Result[]
 insert into t1 (a) values (2),(4),(6),(8),(10),(12),(14),(16),(18),(20),(22),(24),(26),(23);
+
+#SQL[@166,N21]Result[]
 update t1 set a=a+101;
+
+#SQL[@167,N18]Result[8, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14]
 select a,b from t1;
-a    b
-103.0    12346
-105.0    12346
-107.0    12346
-109.0    12346
-111.0    12346
-113.0    12346
-115.0    12346
-117.0    12346
-119.0    12346
-121.0    12346
-123.0    12346
-125.0    12346
-127.0    12346
-124.0    12346
+a  ¦  b
+103  ¦  12346
+105  ¦  12346
+107  ¦  12346
+109  ¦  12346
+111  ¦  12346
+113  ¦  12346
+115  ¦  12346
+117  ¦  12346
+119  ¦  12346
+121  ¦  12346
+123  ¦  12346
+125  ¦  12346
+127  ¦  12346
+124  ¦  12346
+
+#SQL[@168,N30]Result[]
 update t1 set a=27 where a=125;
+
+#SQL[@169,N18]Result[8, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13]
 select a,b from t1;
-a    b
-103.0    12346
-105.0    12346
-107.0    12346
-109.0    12346
-111.0    12346
-113.0    12346
-115.0    12346
-117.0    12346
-119.0    12346
-121.0    12346
-123.0    12346
-127.0    12346
-124.0    12346
-27.0    12346
+a  ¦  b
+103  ¦  12346
+105  ¦  12346
+107  ¦  12346
+109  ¦  12346
+111  ¦  12346
+113  ¦  12346
+115  ¦  12346
+117  ¦  12346
+119  ¦  12346
+121  ¦  12346
+123  ¦  12346
+127  ¦  12346
+124  ¦  12346
+27  ¦  12346
+
+#SQL[@170,N31]Result[]
 update t1 set a=a-1 where 1 > 2;
+
+#SQL[@171,N18]Result[8, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13]
 select a,b from t1;
-a    b
-103.0    12346
-105.0    12346
-107.0    12346
-109.0    12346
-111.0    12346
-113.0    12346
-115.0    12346
-117.0    12346
-119.0    12346
-121.0    12346
-123.0    12346
-127.0    12346
-124.0    12346
-27.0    12346
+a  ¦  b
+103  ¦  12346
+105  ¦  12346
+107  ¦  12346
+109  ¦  12346
+111  ¦  12346
+113  ¦  12346
+115  ¦  12346
+117  ¦  12346
+119  ¦  12346
+121  ¦  12346
+123  ¦  12346
+127  ¦  12346
+124  ¦  12346
+27  ¦  12346
+
+#SQL[@172,N31]Result[]
 update t1 set a=a-1 where 3 > 2;
+
+#SQL[@173,N18]Result[8, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 13]
 select a,b from t1;
-a    b
-102.0    12346
-104.0    12346
-106.0    12346
-108.0    12346
-110.0    12346
-112.0    12346
-114.0    12346
-116.0    12346
-118.0    12346
-120.0    12346
-122.0    12346
-126.0    12346
-123.0    12346
-26.0    12346
+a  ¦  b
+102  ¦  12346
+104  ¦  12346
+106  ¦  12346
+108  ¦  12346
+110  ¦  12346
+112  ¦  12346
+114  ¦  12346
+116  ¦  12346
+118  ¦  12346
+120  ¦  12346
+122  ¦  12346
+126  ¦  12346
+123  ¦  12346
+26  ¦  12346
+
+#SQL[@174,N13]Result[]
 drop table t1;
+
+#SQL[@175,N56]Result[]
 create table t1 (a double(10,5) primary key, b char(32));
+
+#SQL[@176,N46]Result[]
 insert into t1 values (1,'apple'), (2,'apple');
+
+#SQL[@177,N16]Result[8, 12, 12]
 select * from t1;
-a    b
-1.0    apple
-2.0    apple
+a  ¦  b
+1  ¦  apple
+2  ¦  apple
+
+#SQL[@180,N23]Result[]
 drop table if exists t1;
+
+#SQL[@181,N23]Result[]
 drop table if exists t2;
+
+#SQL[@182,N23]Result[]
 drop table if exists t3;
+
+#SQL[@183,N24]Result[]
 drop table if exists t11;
+
+#SQL[@184,N24]Result[]
 drop table if exists t12;
+
+#SQL[@185,N58]Result[]
 CREATE TABLE t1 (a double(3,2), b double(5,4) primary key);
+
+#SQL[@186,N33]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2);
+
+#SQL[@187,N32]Result[]
 delete from t1 where a=1 limit 1;
+
+#SQL[@188,N16]Result[8, 8]
 select * from t1;
-a    b
-1.0    2.0
+a  ¦  b
+1  ¦  2
+
+#SQL[@189,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@190,N24]Result[]
 delete from t1 where a=1;
+
+#SQL[@191,N16]Result[]
 select * from t1;
-a    b
+
+#SQL[@192,N13]Result[]
 drop table t1;
+
+#SQL[@193,N449]Result[]
 create table t1 (
 a double(10,5) not null,
 b int not null default 12346,
@@ -391,255 +667,531 @@ h double(10,5) not null default 12345.67890,
 i double(10,5) not null default 12345.67890,
 j double(10,5) not null default 12345.67890,
 primary key (a));
+
+#SQL[@205,N72]Result[]
 insert into t1 (a) values (2.1111),(4),(00006.12311),(8.41231),(24.0000);
+
+#SQL[@206,N31]Result[]
 delete from t1 where a=2+2.0000;
+
+#SQL[@207,N18]Result[8, 17, 18, 18, 13]
 select a,b from t1;
-a    b
-2.1111    12346
-6.12311    12346
-8.41231    12346
-24.0    12346
+a  ¦  b
+2.1111  ¦  12346
+6.12311  ¦  12346
+8.41231  ¦  12346
+24  ¦  12346
+
+#SQL[@208,N31]Result[]
 delete from t1 where  a=24.0000;
+
+#SQL[@209,N18]Result[8, 17, 18, 18]
 select a,b from t1;
-a    b
-2.1111    12346
-6.12311    12346
-8.41231    12346
+a  ¦  b
+2.1111  ¦  12346
+6.12311  ¦  12346
+8.41231  ¦  12346
+
+#SQL[@210,N27]Result[]
 delete from t1 where  3 < 2;
+
+#SQL[@211,N18]Result[8, 17, 18, 18]
 select a,b from t1;
-a    b
-2.1111    12346
-6.12311    12346
-8.41231    12346
+a  ¦  b
+2.1111  ¦  12346
+6.12311  ¦  12346
+8.41231  ¦  12346
+
+#SQL[@212,N27]Result[]
 delete from t1 where  1 < 2;
+
+#SQL[@213,N18]Result[]
 select a,b from t1;
-a    b
+
+#SQL[@214,N13]Result[]
 drop table t1;
+
+#SQL[@215,N56]Result[]
 create table t1 (a double(10,5) primary key, b char(32));
+
+#SQL[@216,N46]Result[]
 insert into t1 values (1,'apple'), (2,'apple');
+
+#SQL[@217,N16]Result[8, 12, 12]
 select * from t1;
-a    b
-1.0    apple
-2.0    apple
+a  ¦  b
+1  ¦  apple
+2  ¦  apple
+
+#SQL[@219,N32]Result[]
 drop table if exists double_test;
+
+#SQL[@220,N40]Result[]
 create table double_test(c1 double(6,1));
+
+#SQL[@221,N56]Error[68]
 insert into double_test values(-1.7976931348623157E+308);
-Data truncation: data out of range: data type float, value '-1.7976931348623157e+308'
+data out of range: data type float, value '-1.7976931348623157e+308'
+
+#SQL[@222,N55]Error[67]
 insert into double_test values(1.7976931348623157E+308);
-Data truncation: data out of range: data type float, value '1.7976931348623157e+308'
+data out of range: data type float, value '1.7976931348623157e+308'
+
+#SQL[@223,N39]Error[51]
 insert into double_test values(1000000);
-Data truncation: data out of range: data type float, value '1000000'
+data out of range: data type float, value '1000000'
+
+#SQL[@224,N39]Error[51]
 insert into double_test values(1000001);
-Data truncation: data out of range: data type float, value '1000001'
+data out of range: data type float, value '1000001'
+
+#SQL[@225,N38]Error[50]
 insert into double_test values(999999);
-Data truncation: data out of range: data type float, value '999999'
+data out of range: data type float, value '999999'
+
+#SQL[@226,N40]Error[52]
 insert into double_test values(-1000000);
-Data truncation: data out of range: data type float, value '-1000000'
+data out of range: data type float, value '-1000000'
+
+#SQL[@227,N40]Error[52]
 insert into double_test values(-1000001);
-Data truncation: data out of range: data type float, value '-1000001'
+data out of range: data type float, value '-1000001'
+
+#SQL[@228,N39]Error[51]
 insert into double_test values(-999999);
-Data truncation: data out of range: data type float, value '-999999'
+data out of range: data type float, value '-999999'
+
+#SQL[@229,N38]Error[50]
 insert into double_test values(100000);
-Data truncation: data out of range: data type float, value '100000'
+data out of range: data type float, value '100000'
+
+#SQL[@230,N38]Error[50]
 insert into double_test values(100001);
-Data truncation: data out of range: data type float, value '100001'
+data out of range: data type float, value '100001'
+
+#SQL[@231,N37]Result[]
 insert into double_test values(99999);
+
+#SQL[@232,N39]Error[51]
 insert into double_test values(-100000);
-Data truncation: data out of range: data type float, value '-100000'
+data out of range: data type float, value '-100000'
+
+#SQL[@233,N39]Error[51]
 insert into double_test values(-100001);
-Data truncation: data out of range: data type float, value '-100001'
+data out of range: data type float, value '-100001'
+
+#SQL[@234,N38]Result[]
 insert into double_test values(-99999);
+
+#SQL[@235,N40]Error[52]
 insert into double_test values(10000000);
-Data truncation: data out of range: data type float, value '10000000'
+data out of range: data type float, value '10000000'
+
+#SQL[@236,N40]Error[52]
 insert into double_test values(10000001);
-Data truncation: data out of range: data type float, value '10000001'
+data out of range: data type float, value '10000001'
+
+#SQL[@237,N39]Error[51]
 insert into double_test values(9999999);
-Data truncation: data out of range: data type float, value '9999999'
+data out of range: data type float, value '9999999'
+
+#SQL[@238,N41]Error[53]
 insert into double_test values(-10000000);
-Data truncation: data out of range: data type float, value '-10000000'
+data out of range: data type float, value '-10000000'
+
+#SQL[@239,N41]Error[53]
 insert into double_test values(-10000001);
-Data truncation: data out of range: data type float, value '-10000001'
+data out of range: data type float, value '-10000001'
+
+#SQL[@240,N40]Error[52]
 insert into double_test values(-9999999);
-Data truncation: data out of range: data type float, value '-9999999'
+data out of range: data type float, value '-9999999'
+
+#SQL[@241,N37]Result[]
 insert into double_test values(10000);
+
+#SQL[@242,N37]Result[]
 insert into double_test values(10001);
+
+#SQL[@243,N36]Result[]
 insert into double_test values(9999);
+
+#SQL[@244,N38]Result[]
 insert into double_test values(-10000);
+
+#SQL[@245,N38]Result[]
 insert into double_test values(-10001);
+
+#SQL[@246,N37]Result[]
 insert into double_test values(-9999);
+
+#SQL[@247,N36]Result[2, 6, 6, 6, 5, 4, 5, 5, 5]
 select * from double_test order by 1;
 c1
--99999.0
--10001.0
--10000.0
--9999.0
-9999.0
-10000.0
-10001.0
-99999.0
+-99999
+-10001
+-10000
+-9999
+9999
+10000
+10001
+99999
+
+#SQL[@248,N22]Result[]
 drop table double_test;
+
+#SQL[@250,N23]Result[]
 drop table if exists t1;
+
+#SQL[@251,N31]Result[]
 create table t1(a double(5, 2));
+
+#SQL[@252,N32]Error[51]
 insert into t1 values("999.995");
-Data truncation: data out of range: data type float, value '999.995'
+data out of range: data type float, value '999.995'
+
+#SQL[@253,N29]Error[48]
 insert into t1 values("1000");
-Data truncation: data out of range: data type float, value '1000'
+data out of range: data type float, value '1000'
+
+#SQL[@254,N33]Error[52]
 insert into t1 values("-999.995");
-Data truncation: data out of range: data type float, value '-999.995'
+data out of range: data type float, value '-999.995'
+
+#SQL[@255,N30]Error[49]
 insert into t1 values("-1000");
-Data truncation: data out of range: data type float, value '-1000'
+data out of range: data type float, value '-1000'
+
+#SQL[@256,N53]Result[]
 insert into t1 values("999.994"), ("-999.994"),(null);
+
+#SQL[@257,N93]Result[]
 insert into t1 values("90.004"), ("90.005"), ("-90.004"), ("-90.005"), ("90.006"), ("90.007");
+
+#SQL[@258,N16]Result[1, 6, 7, 4, 2, 2, 3, 3, 5, 5]
 select * from t1;
 a
 999.99
 -999.99
 null
-90.00
-90.00
--90.00
--90.00
+90
+90
+-90
+-90
 90.01
 90.01
+
+#SQL[@259,N14]Result[]
 delete from t1;
+
+#SQL[@260,N59]Result[]
 insert into t1 values(90.012), (90.013), (90.014), (90.015);
+
+#SQL[@261,N16]Result[1, 5, 5, 5, 5]
 select * from t1;
 a
 90.01
 90.01
 90.01
 90.02
+
+#SQL[@262,N32]Result[1, 5]
 select * from t1 where a > 90.01;
 a
 90.02
+
+#SQL[@264,N23]Result[]
 drop table if exists t1;
+
+#SQL[@265,N23]Result[]
 drop table if exists t2;
+
+#SQL[@266,N31]Result[]
 create table t1(a double(3, 1));
+
+#SQL[@267,N26]Result[]
 create table t2(a tinyint);
+
+#SQL[@268,N26]Result[]
 insert into t2 values(100);
+
+#SQL[@269,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '100'
+data out of range: data type float, value '100'
+
+#SQL[@270,N14]Result[]
 delete from t2;
+
+#SQL[@271,N27]Result[]
 insert into t2 values(-100);
+
+#SQL[@272,N31]Error[48]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '-100'
+data out of range: data type float, value '-100'
+
+#SQL[@273,N14]Result[]
 delete from t2;
+
+#SQL[@274,N32]Result[]
 insert into t2 values(99), (-99);
+
+#SQL[@275,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@276,N16]Result[1, 2, 3]
 select * from t1;
 a
-99.0
--99.0
+99
+-99
+
+#SQL[@278,N23]Result[]
 drop table if exists t2;
+
+#SQL[@279,N35]Result[]
 create table t2(a tinyint unsigned);
+
+#SQL[@280,N26]Result[]
 insert into t2 values(100);
+
+#SQL[@281,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '100'
+data out of range: data type float, value '100'
+
+#SQL[@282,N14]Result[]
 delete from t2;
+
+#SQL[@283,N30]Result[]
 insert into t2 values(99), (0);
+
+#SQL[@284,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@285,N16]Result[1, 2, 3, 2, 1]
 select * from t1;
 a
-99.0
--99.0
-99.0
-0.0
+99
+-99
+99
+0
+
+#SQL[@287,N23]Result[]
 drop table if exists t1;
+
+#SQL[@288,N23]Result[]
 drop table if exists t2;
+
+#SQL[@289,N31]Result[]
 create table t1(a double(5, 2));
+
+#SQL[@290,N27]Result[]
 create table t2(a smallint);
+
+#SQL[@291,N29]Result[]
 insert into t2 values("1000");
+
+#SQL[@292,N31]Error[48]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '1000'
+data out of range: data type float, value '1000'
+
+#SQL[@293,N14]Result[]
 delete from t2;
+
+#SQL[@294,N30]Result[]
 insert into t2 values("-1000");
+
+#SQL[@295,N31]Error[49]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '-1000'
+data out of range: data type float, value '-1000'
+
+#SQL[@296,N14]Result[]
 delete from t2;
+
+#SQL[@297,N50]Result[]
 insert into t2 values(999), (-999), (0), (1), (-1);
+
+#SQL[@298,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@299,N16]Result[1, 3, 4, 1, 1, 2]
 select * from t1;
 a
-999.00
--999.00
-0.00
-1.00
--1.00
+999
+-999
+0
+1
+-1
+
+#SQL[@301,N14]Result[]
 delete from t1;
+
+#SQL[@302,N23]Result[]
 drop table if exists t2;
+
+#SQL[@303,N22]Result[]
 create table t2(a int);
+
+#SQL[@304,N29]Result[]
 insert into t2 values("1000");
+
+#SQL[@305,N31]Error[48]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '1000'
+data out of range: data type float, value '1000'
+
+#SQL[@306,N14]Result[]
 delete from t2;
+
+#SQL[@307,N30]Result[]
 insert into t2 values("-1000");
+
+#SQL[@308,N31]Error[49]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '-1000'
+data out of range: data type float, value '-1000'
+
+#SQL[@309,N14]Result[]
 delete from t2;
+
+#SQL[@310,N50]Result[]
 insert into t2 values(999), (-999), (0), (1), (-1);
+
+#SQL[@311,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@312,N16]Result[1, 3, 4, 1, 1, 2]
 select * from t1;
 a
-999.00
--999.00
-0.00
-1.00
--1.00
+999
+-999
+0
+1
+-1
+
+#SQL[@314,N14]Result[]
 delete from t1;
+
+#SQL[@315,N23]Result[]
 drop table if exists t2;
+
+#SQL[@316,N25]Result[]
 create table t2(a bigint);
+
+#SQL[@317,N29]Result[]
 insert into t2 values("1000");
+
+#SQL[@318,N31]Error[48]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '1000'
+data out of range: data type float, value '1000'
+
+#SQL[@319,N14]Result[]
 delete from t2;
+
+#SQL[@320,N30]Result[]
 insert into t2 values("-1000");
+
+#SQL[@321,N31]Error[49]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '-1000'
+data out of range: data type float, value '-1000'
+
+#SQL[@322,N14]Result[]
 delete from t2;
+
+#SQL[@323,N50]Result[]
 insert into t2 values(999), (-999), (0), (1), (-1);
+
+#SQL[@324,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@325,N16]Result[1, 3, 4, 1, 1, 2]
 select * from t1;
 a
-999.00
--999.00
-0.00
-1.00
--1.00
+999
+-999
+0
+1
+-1
+
+#SQL[@327,N23]Result[]
 drop table if exists t2;
+
+#SQL[@328,N33]Result[]
 create table t2(a decimal(10, 3));
+
+#SQL[@329,N30]Result[]
 insert into t2 values(999.995);
+
+#SQL[@330,N31]Error[51]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '999.995'
+data out of range: data type float, value '999.995'
+
+#SQL[@331,N14]Result[]
 delete from t2;
+
+#SQL[@332,N31]Result[]
 insert into t2 values(-999.995);
+
+#SQL[@333,N31]Error[52]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '-999.995'
+data out of range: data type float, value '-999.995'
+
+#SQL[@334,N14]Result[]
 delete from t2;
+
+#SQL[@335,N58]Result[]
 insert into t2 values(999.994), (-999.994), (99.005), (99);
+
+#SQL[@336,N14]Result[]
 delete from t1;
+
+#SQL[@337,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@338,N16]Result[1, 6, 7, 2, 2]
 select * from t1;
 a
 999.99
 -999.99
-99.00
-99.00
+99
+99
+
+#SQL[@340,N23]Result[]
 drop table if exists t2;
+
+#SQL[@341,N33]Result[]
 create table t2(a decimal(30, 3));
+
+#SQL[@342,N30]Result[]
 insert into t2 values(999.995);
+
+#SQL[@343,N31]Error[51]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '999.995'
+data out of range: data type float, value '999.995'
+
+#SQL[@344,N14]Result[]
 delete from t2;
+
+#SQL[@345,N31]Result[]
 insert into t2 values(-999.995);
+
+#SQL[@346,N31]Error[52]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type float, value '-999.995'
+data out of range: data type float, value '-999.995'
+
+#SQL[@347,N14]Result[]
 delete from t2;
+
+#SQL[@348,N58]Result[]
 insert into t2 values(999.994), (-999.994), (99.005), (99);
+
+#SQL[@349,N14]Result[]
 delete from t1;
+
+#SQL[@350,N31]Result[]
 insert into t1 select * from t2;
+
+#SQL[@351,N16]Result[1, 6, 7, 2, 2]
 select * from t1;
 a
 999.99
 -999.99
-99.00
-99.00
+99
+99
+

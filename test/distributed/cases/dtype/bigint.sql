@@ -1,7 +1,7 @@
--- @suite                                                                                                                                                                                
-  
+-- @suite
+
 -- @case
--- @desc:test for bigint type 
+-- @desc:test for bigint type
 -- @label:bvt
 
 #Test cases of query without table
@@ -122,9 +122,9 @@ create table t (id bigint unsigned, b int);
 insert into t values(8894754949779693574,1);
 insert into t values(8894754949779693579,2);
 insert into t values(17790886498483827171,3);
-select count(*) from t 
+select count(*) from t
 where id>=8894754949779693574 and id =17790886498483827171 order by 1 asc;
-select count(*) from t 
+select count(*) from t
 where id between 8894754949779693574 and 17790886498483827171;
 drop table t;
 SELECT (184467440737095 BETWEEN 0 AND 18446744073709551500);

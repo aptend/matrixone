@@ -42,8 +42,8 @@ create table test03 (col1 int, col2 datalink);
 insert into test03 values (1, 'file://$resources/load_data/text.csv.tar.gz');
 insert into test03 values (2, 'file://$resources/load_data/test_columnlist_01.csv');
 select col1, load_file(col2) from test03;
--- @ignore:1
 select * from test03;
+| @ignore(1);
 alter table test03 drop column col2;
 show create table test03;
 select * from test03;

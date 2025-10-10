@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for tinyint datatype
 -- @label:bvt
@@ -100,14 +100,13 @@ SELECT * from t_tinyint WHERE id BETWEEN 1.1 AND 1.9;
 SELECT * from t_tinyint WHERE id BETWEEN 1.1e0 AND 1.9e0;
 SELECT * from t_tinyint WHERE id BETWEEN '1.1' AND '1.9';
 SELECT * from t_tinyint WHERE id BETWEEN '1.1e0' AND '1.9e0';
--- @bvt:issue
 CREATE TABLE t1 (a TINYINT);
 INSERT INTO t1 VALUES (1);
--- @bvt:issue#3185
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
--- @bvt:issue
+@issue(no=3185) {
+    SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
+    SELECT * FROM t1 WHERE coalesce(a)=0.9;
+    SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
+}
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
 SELECT * FROM t1 WHERE a=0.9;
 SELECT * FROM t1 WHERE a IN (0.8,0.9) order by 1;
@@ -116,9 +115,9 @@ create table t (id tinyint unsigned, b tinyint);
 insert into t values(127,1);
 insert into t values(255,2);
 insert into t values(128,3);
-select count(*) from t 
+select count(*) from t
 where id>=127 and id <=255 order by 1;
-select count(*) from t 
+select count(*) from t
 where id between 127 and 255;
 drop table t;
 SELECT (254 BETWEEN 0 AND 255);

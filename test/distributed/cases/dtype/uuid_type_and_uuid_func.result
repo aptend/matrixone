@@ -1,62 +1,133 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@4,N23]Result[]
 create table t1(a uuid);
+
+#SQL[@5,N7]Result[71, 51]
 desc t1;
-Field    Type    Null    Key    Default    Extra    Comment
-a    UUID(0)    YES        null    
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  UUID(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@6,N20]Result[23, 53]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` uuid DEFAULT NULL\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` uuid DEFAULT NULL
+)
+
+#SQL[@7,N13]Result[]
 drop table t1;
+
+#SQL[@9,N23]Result[]
 drop table if exists t1;
+
+#SQL[@10,N38]Error[51]
 create table t1 (a int default uuid());
 invalid input: invalid default value for column 'a'
+
+#SQL[@11,N13]Error[40]
 drop table t1;
 no such table uuid_type_and_uuid_func.t1
+
+#SQL[@14,N23]Result[]
 drop table if exists t2;
+
+#SQL[@15,N35]Result[]
 create table t2(a uuid primary key);
+
+#SQL[@16,N7]Result[71, 53]
 desc t2;
-Field    Type    Null    Key    Default    Extra    Comment
-a    UUID(0)    NO    PRI    null
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  UUID(0)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+
+#SQL[@17,N20]Result[23, 70]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` uuid NOT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` uuid NOT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@18,N13]Result[]
 drop table t2;
+
+#SQL[@22,N23]Result[]
 drop table if exists t3;
+
+#SQL[@23,N36]Result[]
 create table t3(a uuid primary key );
+
+#SQL[@24,N30]Result[]
 insert into t3 values (uuid());
+
+#SQL[@25,N41]Result[26, 2]
 select length(cast(a as varchar)) from t3;
 length(cast(a as varchar))
 36
+
+#SQL[@26,N13]Result[]
 drop table t3;
+
+#SQL[@30,N23]Result[]
 drop table if exists t4;
+
+#SQL[@31,N38]Result[]
 create table t4(a uuid default uuid());
+
+#SQL[@32,N7]Result[71, 53]
 desc t4;
-Field    Type    Null    Key    Default    Extra    Comment
-a    UUID(0)    YES        uuid()
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+a  ¦  UUID(0)  ¦  YES  ¦    ¦  uuid()  ¦    ¦  
+
+#SQL[@33,N20]Result[23, 55]
 show create table t4;
-Table    Create Table
-t4    CREATE TABLE `t4` (\n  `a` uuid DEFAULT uuid()\n)
+Table  ¦  Create Table
+t4  ¦  CREATE TABLE `t4` (
+  `a` uuid DEFAULT uuid()
+)
+
+#SQL[@34,N24]Result[]
 insert into t4 values ();
+
+#SQL[@35,N30]Result[]
 insert into t4 values (uuid());
+
+#SQL[@36,N41]Result[26, 2, 2]
 select length(cast(a as varchar)) from t4;
 length(cast(a as varchar))
 36
 36
+
+#SQL[@37,N13]Result[]
 drop table t4;
+
+#SQL[@41,N38]Result[31, 2]
 select length(cast(uuid() as varchar));
 length(cast(uuid() as varchar))
 36
+
+#SQL[@42,N35]Result[31, 2]
 select length(cast(uuid() as char));
-length(cast(uuid() as char))
+length(cast(uuid() as varchar))
 36
+
+#SQL[@43,N35]Result[28, 2]
 select length(cast(uuid() as text));
 length(cast(uuid() as text))
 36
+
+#SQL[@45,N156]Result[]
 CREATE TABLE ratings (   `book_id` bigint,   `user_id` bigint,   `score` tinyint,   `rated_at` datetime DEFAULT NOW(),   PRIMARY KEY (`book_id`,`user_id`) );
+
+#SQL[@46,N12]Result[71, 62, 62, 58, 63]
 desc ratings;
-Field    Type    Null    Key    Default    Extra    Comment
-book_id    BIGINT(64)    NO    PRI    null        
-user_id    BIGINT(64)    NO    PRI    null        
-score    TINYINT(8)    YES        null        
-rated_at    DATETIME(0)    YES        NOW()        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+book_id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+user_id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+score  ¦  TINYINT(8)  ¦  YES  ¦    ¦  null  ¦    ¦  
+rated_at  ¦  DATETIME(0)  ¦  YES  ¦    ¦  NOW()  ¦    ¦  
+
+#SQL[@47,N18]Result[]
 drop table ratings;
+

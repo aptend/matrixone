@@ -1,75 +1,131 @@
-drop table if exists t1;
-create table t1 (
-a text not null,
-b text default '111'
-);
-drop table t1;
+#SQL[@13,N23]Result[]
 drop table if exists t2;
+
+#SQL[@14,N44]Error[39]
 create table t2(
 a int,
 b text primary key
 );
 not supported: text type in primary key
+
+#SQL[@18,N13]Error[23]
 drop table t2;
 no such table text_1.t2
+
+#SQL[@22,N23]Result[]
 drop table if exists t3;
+
+#SQL[@23,N53]Result[]
 create table t3 (
 col1 bigint,
 col2 bigint unsigned
 );
+
+#SQL[@27,N65]Result[]
 insert into t3 values (-9223372036854775808,18446744073709551615);
+
+#SQL[@29,N53]Result[42, 46]
 select cast(col1 as text), cast(col2 as text) from t3;
-cast(col1 as text)    cast(col2 as text)
--9223372036854775808    18446744073709551615
+cast(col1 as text)  ¦  cast(col2 as text)
+-9223372036854775808  ¦  18446744073709551615
+
+#SQL[@30,N13]Result[]
 drop table t3;
+
+#SQL[@32,N23]Result[]
 drop table if exists t4;
+
+#SQL[@33,N43]Result[]
 create table t4 (
 col1 float,
 col2 double
 );
+
+#SQL[@37,N76]Result[]
 insert into t4 values (1.23456789333, 8.12334456564564564995645674564567457);
+
+#SQL[@39,N53]Result[42, 32]
 select cast(col1 as text), cast(col2 as text) from t4;
-cast(col1 as text)    cast(col2 as text)
-1.2345679    8.123344565645645
+cast(col1 as text)  ¦  cast(col2 as text)
+1.2345679  ¦  8.123344565645645
+
+#SQL[@40,N13]Result[]
 drop table t4;
+
+#SQL[@42,N23]Result[]
 drop table if exists t5;
+
+#SQL[@43,N51]Result[]
 create table t5 (
 col1 char(25),
 col2 varchar(25)
 );
+
+#SQL[@48,N71]Result[]
 insert into t5 values ('this is a char type', 'this is a varchar type');
+
+#SQL[@49,N53]Result[42, 47]
 select cast(col1 as text), cast(col2 as text) from t5;
-cast(col1 as text)    cast(col2 as text)
-this is a char type    this is a varchar type
+cast(col1 as text)  ¦  cast(col2 as text)
+this is a char type  ¦  this is a varchar type
+
+#SQL[@50,N69]Result[14, 47]
 select cast(col1 as text) as col1, cast(col2 as text) as col2 from t5;
-col1    col2
-this is a char type    this is a varchar type
+col1  ¦  col2
+this is a char type  ¦  this is a varchar type
+
+#SQL[@51,N13]Result[]
 drop table t5;
+
+#SQL[@53,N23]Result[]
 drop table if exists t6;
+
+#SQL[@54,N59]Result[]
 create table t6(
 col1 date,
 col2 datetime,
 col3 timestamp
 );
+
+#SQL[@59,N96]Error[64]
 insert into t6 values ('2022-02-01', '2022-02-01:23:59 59.999999', '2037-09-08 23:59:59.999999');
 invalid input: invalid datetime value 2022-02-01:23:59 59.999999
+
+#SQL[@61,N73]Result[]
 select cast(col1 as text), cast(col2 as text), cast(col3 as text) from t6;
-cast(col1 as text)    cast(col2 as text)    cast(col3 as text)
+
+#SQL[@62,N13]Result[]
 drop table t6;
+
+#SQL[@64,N23]Result[]
 drop table if exists t7;
+
+#SQL[@65,N68]Result[]
 create table t7(
 col1 decimal(5,2),
 col2 decimal(22,20),
 col3 bool
 );
+
+#SQL[@71,N68]Result[]
 insert into t7 values (1.12345678,12.112233445566778899009867, TRUE);
+
+#SQL[@72,N69]Result[]
 insert into t7 values (1.12345678,12.112233445566778899009867, FALSE);
+
+#SQL[@73,N73]Result[66, 40, 40]
 select cast(col1 as text), cast(col2 as text), cast(col3 as text) from t7;
-cast(col1 as text)    cast(col2 as text)    cast(col3 as text)
-1.12    12.11223344556677889901    1
-1.12    12.11223344556677889901    0
+cast(col1 as text)  ¦  cast(col2 as text)  ¦  cast(col3 as text)
+1.12  ¦  12.11223344556677889901  ¦  1
+1.12  ¦  12.11223344556677889901  ¦  0
+
+#SQL[@74,N13]Result[]
 drop table t7;
+
+#SQL[@78,N23]Result[]
 drop table if exists t8;
+
+#SQL[@79,N164]Result[]
 create table t8(
 col1 text,
 col2 text,
@@ -85,517 +141,976 @@ col11 text,
 col12 text,
 col13 text
 );
+
+#SQL[@94,N36]Result[]
 insert into t8(col1) values ('-128');
+
+#SQL[@95,N35]Result[]
 insert into t8(col1) values ('127');
+
+#SQL[@97,N34]Result[]
 insert into t8(col1) values (-128);
+
+#SQL[@98,N33]Result[]
 insert into t8(col1) values (127);
+
+#SQL[@99,N36]Result[21, 4, 3, 4, 3]
 select cast(col1 as tinyint) from t8;
 cast(col1 as tinyint)
 -128
 127
 -128
 127
+
+#SQL[@101,N36]Result[]
 insert into t8(col1) values ('-129');
+
+#SQL[@102,N36]Error[47]
 select cast(col1 as tinyint) from t8;
-Data truncation: data out of range: data type int8, value '-129'
+data out of range: data type int8, value '-129'
+
+#SQL[@103,N32]Result[]
 delete from t8 where col1='-129';
+
+#SQL[@105,N35]Result[]
 insert into t8(col1) values ('128');
+
+#SQL[@106,N36]Error[46]
 select cast(col1 as tinyint) from t8;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@107,N37]Result[]
 delete from t8 where col1 is not NULL;
+
+#SQL[@110,N38]Result[]
 insert into t8(col2) values ('-32768');
+
+#SQL[@111,N37]Result[]
 insert into t8(col2) values ('32767');
+
+#SQL[@113,N36]Result[]
 insert into t8(col2) values (-32768);
+
+#SQL[@114,N35]Result[]
 insert into t8(col2) values (32767);
+
+#SQL[@115,N37]Result[22, 6, 5, 6, 5]
 select cast(col2 as smallint) from t8;
 cast(col2 as smallint)
 -32768
 32767
 -32768
 32767
+
+#SQL[@117,N38]Result[]
 insert into t8(col2) values ('-32769');
+
+#SQL[@118,N37]Error[50]
 select cast(col2 as smallint) from t8;
-Data truncation: data out of range: data type int16, value '-32769'
+data out of range: data type int16, value '-32769'
+
+#SQL[@119,N37]Result[]
 delete from t8 where col2 is not NULL;
+
+#SQL[@121,N37]Result[]
 insert into t8(col2) values ('32768');
+
+#SQL[@122,N37]Error[49]
 select cast(col2 as smallint) from t8;
-Data truncation: data out of range: data type int16, value '32768'
+data out of range: data type int16, value '32768'
+
+#SQL[@123,N37]Result[]
 delete from t8 where col2 is not NULL;
+
+#SQL[@126,N43]Result[]
 insert into t8(col3) values ('-2147483648');
+
+#SQL[@127,N42]Result[]
 insert into t8(col3) values ('2147483647');
+
+#SQL[@129,N41]Result[]
 insert into t8(col3) values (-2147483648);
+
+#SQL[@130,N40]Result[]
 insert into t8(col3) values (2147483647);
+
+#SQL[@131,N32]Result[17, 11, 10, 11, 10]
 select cast(col3 as int) from t8;
 cast(col3 as int)
 -2147483648
 2147483647
 -2147483648
 2147483647
+
+#SQL[@133,N43]Result[]
 insert into t8(col3) values ('-2147483649');
+
+#SQL[@134,N32]Error[55]
 select cast(col3 as int) from t8;
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@135,N37]Result[]
 delete from t8 where col3 is not NULL;
+
+#SQL[@137,N42]Result[]
 insert into t8(col3) values ('2147483648');
+
+#SQL[@138,N32]Error[54]
 select cast(col3 as int) from t8;
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@139,N37]Result[]
 delete from t8 where col3 is not NULL;
+
+#SQL[@142,N52]Result[]
 insert into t8(col4) values ('-9223372036854775808');
+
+#SQL[@143,N51]Result[]
 insert into t8(col4) values ('9223372036854775807');
+
+#SQL[@145,N50]Result[]
 insert into t8(col4) values (-9223372036854775808);
+
+#SQL[@146,N49]Result[]
 insert into t8(col4) values (9223372036854775807);
+
+#SQL[@147,N35]Result[20, 20, 19, 20, 19]
 select cast(col4 as bigint) from t8;
 cast(col4 as bigint)
 -9223372036854775808
 9223372036854775807
 -9223372036854775808
 9223372036854775807
+
+#SQL[@149,N52]Result[]
 insert into t8(col4) values ('-9223372036854775809');
+
+#SQL[@150,N35]Error[64]
 select cast(col4 as bigint) from t8;
-Data truncation: data out of range: data type int64, value '-9223372036854775809'
+data out of range: data type int64, value '-9223372036854775809'
+
+#SQL[@151,N37]Result[]
 delete from t8 where col4 is not NULL;
+
+#SQL[@153,N51]Result[]
 insert into t8(col4) values ('9223372036854775808');
+
+#SQL[@154,N35]Error[63]
 select cast(col4 as bigint) from t8;
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@155,N37]Result[]
 delete from t8 where col4 is not NULL;
+
+#SQL[@158,N33]Result[]
 insert into t8(col5) values ('0');
+
+#SQL[@159,N35]Result[]
 insert into t8(col5) values ('255');
+
+#SQL[@161,N31]Result[]
 insert into t8(col5) values (0);
+
+#SQL[@162,N33]Result[]
 insert into t8(col5) values (255);
+
+#SQL[@163,N45]Result[30, 1, 3, 1, 3]
 select cast(col5 as tinyint unsigned) from t8;
 cast(col5 as tinyint unsigned)
 0
 255
 0
 255
+
+#SQL[@165,N34]Result[]
 insert into t8(col5) values ('-1');
+
+#SQL[@166,N45]Error[44]
 select cast(col5 as tinyint unsigned) from t8;
 invalid argument cast to uint8, bad value -1
+
+#SQL[@167,N37]Result[]
 delete from t8 where col5 is not NULL;
+
+#SQL[@169,N35]Result[]
 insert into t8(col5) values ('256');
+
+#SQL[@170,N45]Error[47]
 select cast(col5 as tinyint unsigned) from t8;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@171,N37]Result[]
 delete from t8 where col5 is not NULL;
+
+#SQL[@174,N33]Result[]
 insert into t8(col6) values ('0');
+
+#SQL[@175,N37]Result[]
 insert into t8(col6) values ('65535');
+
+#SQL[@177,N31]Result[]
 insert into t8(col6) values (0);
+
+#SQL[@178,N35]Result[]
 insert into t8(col6) values (65535);
+
+#SQL[@179,N46]Result[31, 1, 5, 1, 5]
 select cast(col6 as smallint unsigned) from t8;
 cast(col6 as smallint unsigned)
 0
 65535
 0
 65535
+
+#SQL[@181,N34]Result[]
 insert into t8(col6) values ('-1');
+
+#SQL[@182,N46]Error[45]
 select cast(col6 as smallint unsigned) from t8;
 invalid argument cast to uint16, bad value -1
+
+#SQL[@183,N37]Result[]
 delete from t8 where col6 is not NULL;
+
+#SQL[@185,N37]Result[]
 insert into t8(col6) values ('65636');
+
+#SQL[@186,N46]Error[50]
 select cast(col6 as smallint unsigned) from t8;
-Data truncation: data out of range: data type uint16, value '65636'
+data out of range: data type uint16, value '65636'
+
+#SQL[@187,N37]Result[]
 delete from t8 where col6 is not NULL;
+
+#SQL[@190,N33]Result[]
 insert into t8(col7) values ('0');
+
+#SQL[@191,N42]Result[]
 insert into t8(col7) values ('4294967295');
+
+#SQL[@193,N31]Result[]
 insert into t8(col7) values (0);
+
+#SQL[@194,N40]Result[]
 insert into t8(col7) values (4294967295);
+
+#SQL[@195,N41]Result[26, 1, 10, 1, 10]
 select cast(col7 as int unsigned) from t8;
 cast(col7 as int unsigned)
 0
 4294967295
 0
 4294967295
+
+#SQL[@197,N34]Result[]
 insert into t8(col7) values ('-1');
+
+#SQL[@198,N41]Error[45]
 select cast(col7 as int unsigned) from t8;
 invalid argument cast to uint32, bad value -1
+
+#SQL[@199,N37]Result[]
 delete from t8 where col7 is not NULL;
+
+#SQL[@201,N42]Result[]
 insert into t8(col7) values ('4294967296');
+
+#SQL[@202,N41]Error[55]
 select cast(col7 as int unsigned) from t8;
-Data truncation: data out of range: data type uint32, value '4294967296'
+data out of range: data type uint32, value '4294967296'
+
+#SQL[@203,N37]Result[]
 delete from t8 where col7 is not NULL;
+
+#SQL[@206,N33]Result[]
 insert into t8(col8) values ('0');
+
+#SQL[@207,N52]Result[]
 insert into t8(col8) values ('18446744073709551615');
+
+#SQL[@209,N50]Result[]
 insert into t8(col8) values (18446744073709551615);
+
+#SQL[@210,N44]Result[29, 1, 20, 20]
 select cast(col8 as bigint unsigned) from t8;
 cast(col8 as bigint unsigned)
 0
 18446744073709551615
 18446744073709551615
+
+#SQL[@212,N34]Result[]
 insert into t8(col8) values ('-1');
+
+#SQL[@213,N44]Error[45]
 select cast(col8 as bigint unsigned) from t8;
 invalid argument cast to uint64, bad value -1
+
+#SQL[@214,N37]Result[]
 delete from t8 where col8 is not NULL;
+
+#SQL[@216,N52]Result[]
 insert into t8(col8) values ('18446744073709551616');
+
+#SQL[@217,N44]Error[65]
 select cast(col8 as bigint unsigned) from t8;
-Data truncation: data out of range: data type uint64, value '18446744073709551616'
+data out of range: data type uint64, value '18446744073709551616'
+
+#SQL[@218,N37]Result[]
 delete from t8 where col8 is not NULL;
+
+#SQL[@221,N61]Result[]
 insert into t8(col9) values ('1.234567890434546457475756856');
+
+#SQL[@222,N75]Result[]
 insert into t8(col9) values ('111.222333344445556667777888899999000008998');
+
+#SQL[@224,N59]Result[]
 insert into t8(col9) values (1.234567890434546457475756856);
+
+#SQL[@225,N73]Result[]
 insert into t8(col9) values (111.222333344445556667777888899999000008998);
+
+#SQL[@227,N34]Result[19, 9, 10, 9, 10]
 select cast(col9 as float) from t8;
 cast(col9 as float)
 1.2345679
 111.222336
 1.2345679
 111.222336
+
+#SQL[@228,N35]Result[20, 18, 18, 18, 18]
 select cast(col9 as double) from t8;
 cast(col9 as double)
 1.2345678904345465
 111.22233334444556
 1.2345678904345465
 111.22233334444556
+
+#SQL[@229,N37]Result[]
 delete from t8 where col9 is not NULL;
+
+#SQL[@231,N73]Result[]
 insert into  t8(col9) values ('1000000000000000000000000000000000000000');
+
+#SQL[@232,N71]Result[]
 insert into  t8(col9) values (1000000000000000000000000000000000000000);
+
+#SQL[@233,N34]Error[92]
 select cast(col9 as float) from t8;
-strconv.ParseFloat: parsing "1000000000000000000000000000000000000000": value out of range
+strconv.ParseFloat: parsing \"1000000000000000000000000000000000000000\": value out of range
+
+#SQL[@234,N35]Result[20, 40, 40]
 select cast(col9 as double) from t8;
 cast(col9 as double)
-1.0E39
-1.0E39
+1000000000000000000000000000000000000000
+1000000000000000000000000000000000000000
+
+#SQL[@235,N37]Result[]
 delete from t8 where col9 is not NULL;
+
+#SQL[@239,N52]Result[]
 insert into t8(col10) values ('this is a char type');
+
+#SQL[@240,N55]Result[]
 insert into t8(col10) values ('this is a varchar type');
+
+#SQL[@242,N34]Result[22, 19, 22]
 select cast(col10 as char) from t8;
 cast(col10 as varchar)
 this is a char type
 this is a varchar type
+
+#SQL[@243,N37]Result[22, 19, 22]
 select cast(col10 as varchar) from t8;
 cast(col10 as varchar)
 this is a char type
 this is a varchar type
+
+#SQL[@245,N37]Error[150]
 select cast(col10 as char(1)) from t8;
 internal error: Can't cast column from TEXT type to CHAR type because of one or more values in that column. Src length 19 is larger than Dest length 1
+
+#SQL[@246,N40]Error[153]
 select cast(col10 as varchar(1)) from t8;
 internal error: Can't cast column from TEXT type to VARCHAR type because of one or more values in that column. Src length 19 is larger than Dest length 1
+
+#SQL[@248,N38]Result[]
 delete from t8 where col10 is not NULL;
+
+#SQL[@251,N43]Result[]
 insert into t8(col11) values ('2020-01-01');
+
+#SQL[@252,N52]Result[]
 insert into t8(col11) values ('2020-01-01 13:10:10');
+
+#SQL[@254,N34]Result[19, 10, 10]
 select cast(col11 as date) from t8;
 cast(col11 as date)
 2020-01-01
 2020-01-01
+
+#SQL[@255,N38]Result[]
 delete from t8 where col11 is not NULL;
+
+#SQL[@258,N43]Result[]
 insert into t8(col11) values ('2020-01-01');
+
+#SQL[@259,N52]Result[]
 insert into t8(col11) values ('2020-01-01 13:10:10');
+
+#SQL[@261,N38]Result[23, 19, 19]
 select cast(col11 as datetime) from t8;
-cast(col11 as datetime(26))
+cast(col11 as datetime)
 2020-01-01 00:00:00
 2020-01-01 13:10:10
+
+#SQL[@262,N38]Result[]
 delete from t8 where col11 is not NULL;
+
+#SQL[@264,N43]Result[]
 insert into t8(col11) values ('2020-01-01');
+
+#SQL[@265,N52]Result[]
 insert into t8(col11) values ('2020-01-01 13:10:10');
+
+#SQL[@266,N59]Result[]
 insert into t8(col11) values ('2020-01-01 13:10:59.999999');
+
+#SQL[@268,N39]Result[24, 19, 19, 19]
 select cast(col11 as timestamp) from t8;
-cast(col11 as timestamp(26))
+cast(col11 as timestamp)
 2020-01-01 00:00:00
 2020-01-01 13:10:10
 2020-01-01 13:11:00
+
+#SQL[@269,N38]Result[]
 delete from t8 where col11 is not NULL;
+
+#SQL[@272,N34]Result[]
 insert into t8(col12) values ('1');
+
+#SQL[@273,N34]Result[]
 insert into t8(col12) values ('0');
+
+#SQL[@274,N32]Result[]
 insert into t8(col12) values (1);
+
+#SQL[@275,N32]Result[]
 insert into t8(col12) values (0);
+
+#SQL[@277,N34]Result[19, 4, 5, 4, 5]
 select cast(col12 as bool) from t8;
 cast(col12 as bool)
 true
 false
 true
 false
+
+#SQL[@278,N38]Result[]
 delete from t8 where col12 is not NULL;
+
+#SQL[@279,N37]Result[]
 insert into t8(col12) values ('true');
+
+#SQL[@280,N37]Result[]
 insert into t8(col12) values ('trUe');
+
+#SQL[@281,N38]Result[]
 insert into t8(col12) values ('falSe');
+
+#SQL[@282,N34]Result[19, 4, 4, 5]
 select cast(col12 as bool) from t8;
 cast(col12 as bool)
 true
 true
 false
+
+#SQL[@283,N38]Result[]
 insert into t8(col12) values ('hello');
+
+#SQL[@284,N34]Error[53]
 select cast(col12 as bool) from t8;
 invalid input: 'hello' is not a valid bool expression
+
+#SQL[@285,N38]Result[]
 delete from t8 where col12 is not NULL;
+
+#SQL[@287,N34]Result[]
 insert into t8(col12) values ('2');
+
+#SQL[@288,N34]Result[19, 4]
 select cast(col12 as bool) from t8;
 cast(col12 as bool)
 true
+
+#SQL[@289,N38]Result[]
 delete from t8 where col12 is not NULL;
+
+#SQL[@293,N48]Result[]
 insert into t8(col13) values ('12345.123456789');
+
+#SQL[@294,N46]Result[]
 insert into t8(col13) values (12345.123456789);
+
+#SQL[@295,N42]Error[86]
 select cast(col13 as decimal(5,3)) from t8;
 invalid input: 12345.123456789 beyond the range, can't be converted to Decimal64(5,3).
+
+#SQL[@296,N41]Result[]
 insert into t8(col13) values ('1.234567');
+
+#SQL[@297,N39]Result[]
 insert into t8(col13) values (1.234567);
+
+#SQL[@299,N42]Error[86]
 select cast(col13 as decimal(5,3)) from t8;
 invalid input: 12345.123456789 beyond the range, can't be converted to Decimal64(5,3).
+
+#SQL[@300,N44]Result[30, 21, 21, 17, 17]
 select cast(col13 as decimal(20,15)) from t8;
 cast(col13 as decimal(20, 15))
 12345.123456789000000
 12345.123456789000000
 1.234567000000000
 1.234567000000000
+
+#SQL[@302,N23]Result[]
 drop table if exists t8;
+
+#SQL[@306,N23]Result[]
 drop table if exists t9;
+
+#SQL[@307,N34]Result[]
 create table t9 (
 a text,
 b text
 );
+
+#SQL[@312,N34]Result[]
 insert into t9 values('aaa','bbb');
+
+#SQL[@313,N36]Result[]
 insert into t9 values('aaa1','bbb1');
+
+#SQL[@314,N38]Result[]
 insert into t9 values('_aaa2','_bbb2');
+
+#SQL[@315,N38]Result[]
 insert into t9 values(',aaa3',',bbb3');
+
+#SQL[@317,N34]Result[18, 7, 9, 11, 11]
 select CONCAT_WS(' ',a, b) from t9;
-concat_ws( , a, b)
+CONCAT_WS( , a, b)
 aaa bbb
 aaa1 bbb1
 _aaa2 _bbb2
 ,aaa3 ,bbb3
+
+#SQL[@318,N34]Result[18, 7, 9, 11, 11]
 select CONCAT_WS(',',a, b) from t9;
-concat_ws(,, a, b)
+CONCAT_WS(,, a, b)
 aaa,bbb
 aaa1,bbb1
 _aaa2,_bbb2
 ,aaa3,,bbb3
+
+#SQL[@319,N34]Result[18, 7, 9, 11, 11]
 select CONCAT_WS('_',a, b) from t9;
-concat_ws(_, a, b)
+CONCAT_WS(_, a, b)
 aaa_bbb
 aaa1_bbb1
 _aaa2__bbb2
 ,aaa3_,bbb3
+
+#SQL[@321,N36]Result[19, 1, 1, 1, 1]
 select find_in_set('aaa', a) from t9;
 find_in_set(aaa, a)
 1
 0
 0
 0
+
+#SQL[@322,N36]Result[19, 1, 1, 1, 1]
 select find_in_set('bbb', b) from t9;
 find_in_set(bbb, b)
 1
 0
 0
 0
+
+#SQL[@324,N34]Result[]
 delete from t9 where a is not NULL;
+
+#SQL[@326,N34]Result[]
 insert into t9 values ('', 'abcd');
+
+#SQL[@327,N34]Error[23]
 insert into t1 values ('1111', '');
 no such table text_1.t1
+
+#SQL[@328,N32]Result[22, 15]
 select empty(a),empty(b) from t9;
-empty(a)    empty(b)
-true    false
+empty(a)  ¦  empty(b)
+true  ¦  false
+
+#SQL[@330,N32]Result[]
 insert into t9 values ('a', 'b');
+
+#SQL[@331,N34]Result[]
 insert into t9 values ('aa', 'bb');
+
+#SQL[@333,N41]Result[38, 24, 22, 24]
 select a, length(a), b, length(b) from t9;
-a    length(a)    b    length(b)
-    0    abcd    4
-a    1    b    1
-aa    2    bb    2
+a  ¦  length(a)  ¦  b  ¦  length(b)
+  ¦  0  ¦  abcd  ¦  4
+a  ¦  1  ¦  b  ¦  1
+aa  ¦  2  ¦  bb  ¦  2
+
+#SQL[@334,N34]Result[]
 delete from t9 where a is not NULL;
+
+#SQL[@336,N51]Result[]
 insert into t9 values ('  matrix',' matrix_origin');
+
+#SQL[@337,N33]Result[22, 25]
 select ltrim(a), ltrim(b) from t9;
-ltrim(a)    ltrim(b)
-matrix    matrix_origin
+ltrim(a)  ¦  ltrim(b)
+matrix  ¦  matrix_origin
+
+#SQL[@339,N48]Result[]
 insert into t9 values ('matrix  ','matrix_one ');
+
+#SQL[@340,N32]Result[22, 28, 22]
 select rtrim(a),rtrim(b) from t9;
-rtrim(a)    rtrim(b)
-  matrix     matrix_origin
-matrix    matrix_one
+rtrim(a)  ¦  rtrim(b)
+  matrix  ¦   matrix_origin
+matrix  ¦  matrix_one
+
+#SQL[@341,N34]Result[]
 delete from t9 where a is not NULL;
+
+#SQL[@343,N31]Result[]
 insert into t9 values ('a','1');
+
+#SQL[@344,N33]Result[]
 insert into t9 values ('ab','12');
+
+#SQL[@345,N35]Result[]
 insert into t9 values ('abc','123');
+
+#SQL[@346,N37]Result[]
 insert into t9 values ('abcd','1234');
+
+#SQL[@347,N31]Result[14, 10, 10, 10, 10]
 select LPAD(a, 10, ',') from t9;
-lpad(a, 10, ,)
+LPAD(a, 10, ,)
 ,,,,,,,,,a
 ,,,,,,,,ab
 ,,,,,,,abc
 ,,,,,,abcd
+
+#SQL[@348,N30]Result[13, 8, 8, 8, 8]
 select LPAD(b, 8, '!') from t9;
-lpad(b, 8, !)
+LPAD(b, 8, !)
 !!!!!!!1
 !!!!!!12
 !!!!!123
 !!!!1234
+
+#SQL[@350,N31]Result[14, 10, 10, 10, 10]
 select RPAD(a, 10, ',') from t9;
-rpad(a, 10, ,)
+RPAD(a, 10, ,)
 a,,,,,,,,,
 ab,,,,,,,,
 abc,,,,,,,
 abcd,,,,,,
+
+#SQL[@351,N30]Result[13, 8, 8, 8, 8]
 select RPAD(b, 8, '!') from t9;
-rpad(b, 8, !)
+RPAD(b, 8, !)
 1!!!!!!!
 12!!!!!!
 123!!!!!
 1234!!!!
+
+#SQL[@352,N34]Result[]
 delete from t9 where a is not NULL;
+
+#SQL[@354,N89]Result[]
 insert into t9 values ('Ananya Majumdar', 'IX'),('Anushka Samanta', 'X'),('Sharma', 'XI');
+
+#SQL[@355,N33]Result[17, 4, 4, 5]
 select startswith(a,'An') from t9;
 startswith(a, An)
 true
 true
 false
+
+#SQL[@356,N30]Result[14, 4, 4, 5]
 select endswith(b,'X') from t9;
 endswith(b, X)
 true
 true
 false
+
+#SQL[@357,N34]Result[]
 delete from t9 where a is not NULL;
+
+#SQL[@359,N56]Result[]
 insert into t9 values('  sdfad  ','2022-02-02 22:22:22');
+
+#SQL[@360,N54]Result[]
 insert into t9 values('sdfad  ','2022-02-02 22:22:22');
+
+#SQL[@361,N58]Result[]
 insert into t9 values('adsf  sdfad','2022-02-02 22:22:22');
+
+#SQL[@362,N56]Result[]
 insert into t9 values('    sdfad','2022-02-02 22:22:22');
+
+#SQL[@364,N36]Result[26, 34, 32, 36, 34]
 select reverse(a),reverse(b) from t9;
-reverse(a)	reverse(b)
-  dafds  	22:22:22 20-20-2202
-  dafds	22:22:22 20-20-2202
-dafds  fsda	22:22:22 20-20-2202
-dafds    	22:22:22 20-20-2202
+reverse(a)  ¦  reverse(b)
+  dafds    ¦  22:22:22 20-20-2202
+  dafds  ¦  22:22:22 20-20-2202
+dafds  fsda  ¦  22:22:22 20-20-2202
+dafds      ¦  22:22:22 20-20-2202
+
+#SQL[@366,N34]Result[]
 delete from t9 where a is not NULL;
+
+#SQL[@368,N47]Result[]
 insert into t9 values ('123456789', 'abcdefgh');
+
+#SQL[@369,N49]Result[]
 insert into t9 values ('987654321', 'aabbccddee');
+
+#SQL[@371,N30]Result[15, 5, 5]
 select substr(a, 2, 5) from t9;
 substr(a, 2, 5)
 23456
 87654
+
+#SQL[@372,N30]Result[15, 5, 5]
 select substr(b, 2, 5) from t9;
 substr(b, 2, 5)
 bcdef
 abbcc
+
+#SQL[@374,N13]Result[]
 drop table t9;
+
+#SQL[@377,N24]Result[]
 drop table if exists t10;
+
+#SQL[@378,N50]Result[]
 create table t10 (
 a int,
 b varchar(255),
 c text
 );
+
+#SQL[@384,N32]Result[]
 insert into t10 values (1, 1, 1);
+
+#SQL[@385,N32]Result[]
 insert into t10 values (1, 2, 2);
+
+#SQL[@386,N32]Result[]
 insert into t10 values (1, 1, 2);
+
+#SQL[@387,N38]Result[]
 insert into t10 values (100, 100, 100);
+
+#SQL[@388,N30]Result[]
 insert into t10(a) values (10);
+
+#SQL[@389,N35]Result[]
 insert into t10 values (10, '', '');
+
+#SQL[@390,N54]Result[]
 insert into t10 values (10, 'aabsdfsb', 'aabdsfsfsdb');
+
+#SQL[@391,N45]Result[]
 insert into t10 values (10, 'aa,bb', 'aa,bb');
+
+#SQL[@392,N45]Result[]
 insert into t10 values (10, 'aa%bb', 'aa%bb');
+
+#SQL[@395,N27]Error[40]
 select * from t10 where c=1;
-invalid argument cast to int, bad value
+invalid argument cast to int, bad value 
+
+#SQL[@396,N33]Result[]
 update t10 set c=10000 where a=10;
+
+#SQL[@397,N32]Result[]
 update t10 set c=true where a=10;
+
+#SQL[@398,N34]Result[]
 update t10 set c='true' where a=10;
+
+#SQL[@399,N35]Result[]
 update t10 set c='false' where a=10;
+
+#SQL[@401,N29]Result[15, 15]
 select * from t10 where c='1';
-a    b    c
-1    1    1
+a  ¦  b  ¦  c
+1  ¦  1  ¦  1
+
+#SQL[@402,N30]Result[15, 15, 15, 21, 23, 19, 27, 24, 24]
 select * from t10 where c!='1';
-a    b    c
-1    2    2
-1    1    2
-100    100    100
-10    null    false
-10        false
-10    aabsdfsb    false
-10    aa,bb    false
-10    aa%bb    false
+a  ¦  b  ¦  c
+1  ¦  2  ¦  2
+1  ¦  1  ¦  2
+100  ¦  100  ¦  100
+10  ¦  null  ¦  false
+10  ¦    ¦  false
+10  ¦  aabsdfsb  ¦  false
+10  ¦  aa,bb  ¦  false
+10  ¦  aa%bb  ¦  false
+
+#SQL[@403,N29]Result[15, 15, 15, 21, 23, 19, 27, 24, 24]
 select * from t10 where c>'1';
-a    b    c
-1    2    2
-1    1    2
-100    100    100
-10    null    false
-10        false
-10    aabsdfsb    false
-10    aa,bb    false
-10    aa%bb    false
+a  ¦  b  ¦  c
+1  ¦  2  ¦  2
+1  ¦  1  ¦  2
+100  ¦  100  ¦  100
+10  ¦  null  ¦  false
+10  ¦    ¦  false
+10  ¦  aabsdfsb  ¦  false
+10  ¦  aa,bb  ¦  false
+10  ¦  aa%bb  ¦  false
+
+#SQL[@404,N30]Result[15, 15, 15, 15, 21, 23, 19, 27, 24, 24]
 select * from t10 where c>='1';
-a    b    c
-1    1    1
-1    2    2
-1    1    2
-100    100    100
-10    null    false
-10        false
-10    aabsdfsb    false
-10    aa,bb    false
-10    aa%bb    false
+a  ¦  b  ¦  c
+1  ¦  1  ¦  1
+1  ¦  2  ¦  2
+1  ¦  1  ¦  2
+100  ¦  100  ¦  100
+10  ¦  null  ¦  false
+10  ¦    ¦  false
+10  ¦  aabsdfsb  ¦  false
+10  ¦  aa,bb  ¦  false
+10  ¦  aa%bb  ¦  false
+
+#SQL[@405,N29]Result[15, 15, 21]
 select * from t10 where c<'2';
-a    b    c
-1    1    1
-100    100    100
+a  ¦  b  ¦  c
+1  ¦  1  ¦  1
+100  ¦  100  ¦  100
+
+#SQL[@406,N30]Error[199]
 select * from t10 where c=<'2';
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 27 near "<'2';";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 27 near \"<'2'\";
+
+#SQL[@407,N33]Result[]
 select * from t10 where c is NULL;
-a    b    c
+
+#SQL[@408,N28]Result[]
 select * from t10 where c='';
-a    b    c
+
+#SQL[@409,N36]Result[15, 23, 19, 27, 24, 24]
 select * from t10 where c like '%a%';
-a    b    c
-10    null    false
-10        false
-10    aabsdfsb    false
-10    aa,bb    false
-10    aa%bb    false
+a  ¦  b  ¦  c
+10  ¦  null  ¦  false
+10  ¦    ¦  false
+10  ¦  aabsdfsb  ¦  false
+10  ¦  aa,bb  ¦  false
+10  ¦  aa%bb  ¦  false
+
+#SQL[@410,N38]Result[]
 select * from t10 where c like '%a\%%';
-a    b    c
+
+#SQL[@411,N37]Result[]
 select * from t10 where c like '%,bb';
-a    b    c
+
+#SQL[@412,N37]Result[]
 select * from t10 where c like 'aa,%';
-a    b    c
+
+#SQL[@414,N37]Result[15, 8, 8, 10, 12]
 select c,count(c) from t10 group by c;
-c    count(c)
-1    1
-2    2
-100    1
-false    5
+c  ¦  count(c)
+1  ¦  1
+2  ¦  2
+100  ¦  1
+false  ¦  5
+
+#SQL[@415,N28]Result[15, 15, 21, 15, 15, 23, 19, 27, 24, 24]
 select * from t10 order by c;
-a    b    c
-1    1    1
-100    100    100
-1    2    2
-1    1    2
-10    null    false
-10        false
-10    aabsdfsb    false
-10    aa,bb    false
-10    aa%bb    false
+a  ¦  b  ¦  c
+1  ¦  1  ¦  1
+100  ¦  100  ¦  100
+1  ¦  2  ¦  2
+1  ¦  1  ¦  2
+10  ¦  null  ¦  false
+10  ¦    ¦  false
+10  ¦  aabsdfsb  ¦  false
+10  ¦  aa,bb  ¦  false
+10  ¦  aa%bb  ¦  false
+
+#SQL[@417,N14]Result[]
 drop table t10;
+
+#SQL[@419,N24]Result[]
 drop table if exists t11;
+
+#SQL[@420,N25]Result[]
 create table t11 (a text);
+
+#SQL[@421,N46]Result[]
 insert into t11 values ('111'),('222'),('333');
+
+#SQL[@423,N24]Result[]
 drop table if exists t12;
+
+#SQL[@424,N25]Result[]
 create table t12 (b text);
+
+#SQL[@425,N46]Result[]
 insert into t12 values ('aaa'),('bbb'),('ccc');
+
+#SQL[@427,N42]Result[8, 12, 12, 12, 12, 12, 12, 12, 12, 12]
 select * from t11 join t12 on t11.a!=t12.b;
-a    b
-111    aaa
-111    bbb
-111    ccc
-222    aaa
-222    bbb
-222    ccc
-333    aaa
-333    bbb
-333    ccc
+a  ¦  b
+111  ¦  aaa
+111  ¦  bbb
+111  ¦  ccc
+222  ¦  aaa
+222  ¦  bbb
+222  ¦  ccc
+333  ¦  aaa
+333  ¦  bbb
+333  ¦  ccc
+
+#SQL[@428,N47]Result[8, 12, 12, 12, 12, 12, 12, 12, 12, 12]
 select * from t11 left join t12 on t11.a!=t12.b;
-a    b
-111    aaa
-111    bbb
-111    ccc
-222    aaa
-222    bbb
-222    ccc
-333    aaa
-333    bbb
-333    ccc
+a  ¦  b
+111  ¦  aaa
+111  ¦  bbb
+111  ¦  ccc
+222  ¦  aaa
+222  ¦  bbb
+222  ¦  ccc
+333  ¦  aaa
+333  ¦  bbb
+333  ¦  ccc
+
+#SQL[@429,N48]Result[8, 12, 12, 12, 12, 12, 12, 12, 12, 12]
 select * from t11 right join t12 on t11.a!=t12.b;
-a    b
-111    aaa
-222    aaa
-333    aaa
-111    bbb
-222    bbb
-333    bbb
-111    ccc
-222    ccc
-333    ccc
+a  ¦  b
+111  ¦  aaa
+222  ¦  aaa
+333  ¦  aaa
+111  ¦  bbb
+222  ¦  bbb
+333  ¦  bbb
+111  ¦  ccc
+222  ¦  ccc
+333  ¦  ccc
+
+#SQL[@431,N52]Result[1, 3, 3, 3, 3, 3, 3]
 select * from t11 union select * from t12 order by a;
 a
 111
@@ -604,6 +1119,8 @@ a
 aaa
 bbb
 ccc
+
+#SQL[@432,N56]Result[1, 3, 3, 3, 3, 3, 3]
 select * from t11 union all select * from t12 order by a;
 a
 111
@@ -612,3 +1129,4 @@ a
 aaa
 bbb
 ccc
+

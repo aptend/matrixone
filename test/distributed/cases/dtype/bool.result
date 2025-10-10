@@ -1,53 +1,80 @@
+#SQL[@7,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@8,N34]Result[]
 create table t1 (a boolean,b bool);
+
+#SQL[@9,N71]Result[]
 insert into t1 values (0,1),(true,false),(true,1),(0,false),(NULL,NULL);
+
+#SQL[@10,N16]Result[8, 15, 15, 14, 16, 14]
 select * from t1;
-a	b
-false	true
-true	false
-true	true
-false	false
-null	null
+a  ¦  b
+false  ¦  true
+true  ¦  false
+true  ¦  true
+false  ¦  false
+null  ¦  null
+
+#SQL[@11,N55]Result[8, 14, 16, 15]
 SELECT * FROM t1 WHERE IF(a AND 1, 0, 1) order by a asc;
-a	b
-false	true
-false	false
-null	null
+a  ¦  b
+null  ¦  null
+false  ¦  false
+false  ¦  true
+
+#SQL[@12,N40]Result[8, 15, 16, 14]
 SELECT * FROM t1 WHERE IF(1 AND a, 0, 1);
-a	b
-false	true
-false	false
-null	null
+a  ¦  b
+false  ¦  true
+false  ¦  false
+null  ¦  null
+
+#SQL[@13,N58]Result[8, 15, 16]
 SELECT * FROM t1 where NOT(a AND 1) order by a asc, b desc;
-a	b
-false	true
-false	false
+a  ¦  b
+false  ¦  true
+false  ¦  false
+
+#SQL[@14,N35]Result[8, 15, 16]
 SELECT * FROM t1 where NOT(1 AND a);
-a	b
-false	true
-false	false
+a  ¦  b
+false  ¦  true
+false  ¦  false
+
+#SQL[@15,N34]Result[8, 15, 16]
 SELECT * FROM t1 where (a AND 1)=0;
-a	b
-false	true
-false	false
+a  ¦  b
+false  ¦  true
+false  ¦  false
+
+#SQL[@16,N34]Result[8, 15, 16]
 SELECT * FROM t1 where (1 AND a)=0;
-a	b
-false	true
-false	false
+a  ¦  b
+false  ¦  true
+false  ¦  false
+
+#SQL[@17,N56]Result[8, 15, 14]
 SELECT * FROM t1 where (1 AND a)=1 order by a asc, 2 asc;
-a	b
-true	false
-true	true
+a  ¦  b
+true  ¦  false
+true  ¦  true
+
+#SQL[@18,N63]Result[8, 14]
 SELECT * FROM t1 where (1 AND a) IS NULL order by 1 desc, 2 asc;
-a	b
-null	null
+a  ¦  b
+null  ¦  null
+
+#SQL[@19,N43]Result[43, 35, 36, 36, 37, 34]
 select not a,a and b,a or b,a xor b from t1;
-not a	a and b	a or b	a xor b
-true	false	true	true
-false	false	true	true
-false	true	true	false
-true	false	false	false
-null	null	null	null
+not a  ¦  a and b  ¦  a or b  ¦  a xor b
+true  ¦  false  ¦  true  ¦  true
+false  ¦  false  ¦  true  ¦  true
+false  ¦  true  ¦  true  ¦  false
+true  ¦  false  ¦  false  ¦  false
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@20,N30]Result[15, 5, 5, 5, 4, 4]
 select not a and not b from t1;
 not a and not b
 false
@@ -55,6 +82,8 @@ false
 false
 true
 null
+
+#SQL[@21,N31]Result[16, 4, 5, 5, 4, 4]
 select not a or b xor b from t1;
 not a or b xor b
 true
@@ -62,89 +91,137 @@ false
 false
 true
 null
+
+#SQL[@22,N23]Result[]
 drop table if exists t2;
+
+#SQL[@23,N28]Result[]
 create table t2(a int,b int);
+
+#SQL[@24,N32]Result[]
 insert into t2 values(1,2),(3,4);
+
+#SQL[@25,N18]Result[5, 4, 5]
 select a<2 from t2;
-a<2
+a < 2
 true
 false
+
+#SQL[@26,N26]Result[15, 4, 5]
 select a<2 and b<3 from t2;
-a<2 and b<3
+a < 2 and b < 3
 true
 false
+
+#SQL[@27,N25]Result[14, 4, 5]
 select a=1 or b=3 from t2;
-a=1 or b=3
+a = 1 or b = 3
 true
 false
+
+#SQL[@28,N36]Result[15, 12, 11, 11]
 select a,count(a) from t1 group by a;
-a	count(a)
-false	2
-true	2
-null	0
+a  ¦  count(a)
+false  ¦  2
+true  ¦  2
+null  ¦  0
+
+#SQL[@29,N21]Result[6, 4]
 select max(b) from t1;
 max(b)
 true
+
+#SQL[@30,N21]Result[6, 5]
 select min(a) from t1;
 min(a)
 false
+
+#SQL[@31,N28]Result[15, 5]
 select max(b)<min(a) from t1;
-max(b)<min(a)
+max(b) < min(a)
 false
+
+#SQL[@32,N38]Result[1, 4]
 select distinct a from t1 where a=true;
 a
 true
+
+#SQL[@35,N32]Result[8, 14]
 select * from t1 where a IS NULL;
-a	b
-null	null
+a  ¦  b
+null  ¦  null
+
+#SQL[@36,N36]Result[8, 15, 15, 14, 16]
 select * from t1 where b is NOT NULL;
-a	b
-false	true
-true	false
-true	true
-false	false
+a  ¦  b
+false  ¦  true
+true  ¦  false
+true  ¦  true
+false  ¦  false
+
+#SQL[@37,N50]Result[]
 select * from t1 where a IS NULL and b is NOT NULL;
-a	b
+
+#SQL[@38,N41]Result[8, 15]
 select * from t1 where a>b order by a asc;
-a	b
-true	false
+a  ¦  b
+true  ¦  false
+
+#SQL[@39,N52]Result[]
 select * from t2 where a<1 AND NOT b order by b desc;
-a	b
+
+#SQL[@40,N65]Result[13, 16, 14]
 select b,max(b) from t1 where b is not NULL group by b order by b;
-b	max(b)
-false	false
-true	true
+b  ¦  max(b)
+false  ¦  false
+true  ¦  true
+
+#SQL[@41,N45]Result[8, 15, 14, 16]
 select * from t1 where a<=b and a is not NULL;
-a	b
-false	true
-true	true
-false	false
+a  ¦  b
+false  ¦  true
+true  ¦  true
+false  ¦  false
+
+#SQL[@43,N72]Result[8, 11, 11]
 select t1.a,t2.b from t1 join t2 on t1.a=t2.a order by t1.a desc, 2 desc;
-a	b
-true	2
-true	2
+a  ¦  b
+true  ¦  2
+true  ¦  2
+
+#SQL[@44,N54]Result[15, 12, 11]
 select a,count(a) from t1 group by a having count(a)>1;
-a	count(a)
-false	2
-true	2
+a  ¦  count(a)
+false  ¦  2
+true  ¦  2
+
+#SQL[@45,N74]Result[19, 15, 15]
 select a,any_value(b) from t1 where isnotnull(a) group by a order by a asc;
-a	any_value(b)
-false	true
-true	false
+a  ¦  any_value(b)
+false  ¦  true
+true  ¦  false
+
+#SQL[@46,N35]Result[8, 15, 15, 14, 16]
 select a,b from t1 where a in (0,1);
-a	b
-false	true
-true	false
-true	true
-false	false
+a  ¦  b
+false  ¦  true
+true  ¦  false
+true  ¦  true
+false  ¦  false
+
+#SQL[@47,N39]Result[8, 15, 14]
 select a,b from t1 where a not in (0,2);
-a    b
-true    false
-true    true
+a  ¦  b
+true  ¦  false
+true  ¦  true
+
+#SQL[@48,N81]Result[1, 5, 4]
 select distinct t.a from (select * from t1) t where a not in (2) order by t.a asc;
 a
 false
 true
+
+#SQL[@49,N86]Result[7, 5, 4, 5, 5, 4]
 select a and b from t1 where exists (select a from t1 where a is null) order by a desc;
 a and b
 false
@@ -152,13 +229,24 @@ true
 false
 false
 null
+
+#SQL[@52,N37]Result[]
 update t1 set a=false where b is null;
+
+#SQL[@53,N28]Result[]
 delete from t1 where a=false;
+
+#SQL[@54,N16]Result[8, 15, 14]
 select * from t1;
-a	b
-true	false	
-true	true
+a  ¦  b
+true  ¦  false
+true  ¦  true
+
+#SQL[@55,N27]Result[]
 delete from t1 where b=true;
+
+#SQL[@56,N16]Result[8, 15]
 select * from t1;
-a	b
-true	false
+a  ¦  b
+true  ¦  false
+

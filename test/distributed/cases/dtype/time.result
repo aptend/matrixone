@@ -1,52 +1,99 @@
+#SQL[@7,N23]Result[]
 drop table if exists t1;
+
+#SQL[@8,N26]Result[]
 create table t1(t time(3));
+
+#SQL[@9,N34]Result[]
 insert into t1 values("100:00:20");
+
+#SQL[@10,N35]Result[]
 insert into t1 values("-800:59:59");
+
+#SQL[@11,N44]Result[]
 insert into t1 values("2012-12-12 12:00:20");
+
+#SQL[@12,N49]Result[]
 insert into t1 values("2012-12-12 12:00:20.1234");
+
+#SQL[@13,N49]Result[]
 insert into t1 values("2012-12-12 12:00:20.1235");
+
+#SQL[@14,N16]Result[1, 13, 14, 12, 12, 12]
 select * from t1;
 t
-100:00:20
--800:59:59
-12:00:20
-12:00:20.123000000
-12:00:20.124000000
+100:00:20.000
+-800:59:59.000
+12:00:20.000
+12:00:20.123
+12:00:20.124
+
+#SQL[@17,N23]Result[]
 drop table if exists t1;
+
+#SQL[@18,N26]Result[]
 create table t1(t time(3));
+
+#SQL[@19,N25]Result[]
 insert into t1 values("");
+
+#SQL[@20,N136]Result[]
 insert into t1 values("1"), ("11"), ("112"), ("1122"), ("11223"),("112233"),("-1"), ("-11"), ("-112"), ("-1122"), ("-11223"),("-112233");
+
+#SQL[@21,N53]Result[]
 insert into t1 values("112233.4445"),("-112233.4445");
+
+#SQL[@22,N16]Result[1, 4, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 12, 13]
 select * from t1;
 t
 null
-00:00:01
-00:00:11
-00:01:12
-00:11:22
-01:12:23
-11:22:33
-00:00:01
-00:00:11
-00:01:12
-00:11:22
--1:12:23
--11:22:33
-11:22:33.445000000
--11:22:33.445000000
+00:00:01.000
+00:00:11.000
+00:01:12.000
+00:11:22.000
+01:12:23.000
+11:22:33.000
+-00:00:01.000
+-00:00:11.000
+-00:01:12.000
+-00:11:22.000
+-01:12:23.000
+-11:22:33.000
+11:22:33.445
+-11:22:33.445
+
+#SQL[@25,N23]Result[]
 drop table if exists t1;
+
+#SQL[@26,N26]Result[]
 create table t1(t time(3));
+
+#SQL[@27,N35]Result[]
 insert into t1 values("2020112211");
+
+#SQL[@28,N40]Result[]
 insert into t1 values("2020112211.1234");
+
+#SQL[@29,N40]Result[]
 insert into t1 values("2020112211.1235");
+
+#SQL[@30,N16]Result[1, 16, 16, 16]
 select * from t1;
 t
-202011:22:11
-202011:22:11.123000000
-202011:22:11.124000000
+202011:22:11.000
+202011:22:11.123
+202011:22:11.124
+
+#SQL[@33,N23]Result[]
 drop table if exists t1;
+
+#SQL[@34,N23]Result[]
 create table t1(t time);
+
+#SQL[@35,N112]Result[]
 insert into t1 values(1), (11), (112), (1122), (11223),(112233),(-1), (-11), (-112), (-1122), (-11223),(-112233);
+
+#SQL[@36,N16]Result[1, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9]
 select * from t1;
 t
 00:00:01
@@ -55,111 +102,207 @@ t
 00:11:22
 01:12:23
 11:22:33
-00:00:01
-00:00:11
-00:01:12
-00:11:22
--1:12:23
+-00:00:01
+-00:00:11
+-00:01:12
+-00:11:22
+-01:12:23
 -11:22:33
+
+#SQL[@39,N23]Result[]
 drop table if exists t1;
+
+#SQL[@40,N23]Result[]
 create table t1(t time);
+
+#SQL[@41,N37]Result[]
 insert into t1 values(20770101112233);
+
+#SQL[@42,N34]Result[]
 insert into t1 values(112233.4445);
+
+#SQL[@43,N16]Result[1, 16, 8]
 select * from t1;
 t
 2077010111:22:33
 11:22:33
+
+#SQL[@46,N23]Result[]
 drop table if exists t1;
+
+#SQL[@47,N23]Result[]
 create table t1(t time);
+
+#SQL[@48,N37]Error[55]
 insert into t1 values(25620477880000);
-Data truncation: data out of range: data type time, value 25620477880000
+data out of range: data type time, value 25620477880000
+
+#SQL[@51,N23]Result[]
 drop table if exists t1;
+
+#SQL[@52,N24]Result[]
 drop table if exists myd;
+
+#SQL[@53,N24]Result[]
 create table myd(d date);
+
+#SQL[@54,N23]Result[]
 create table t1(t time);
+
+#SQL[@55,N50]Result[]
 insert into myd values("2020-12-12"), ("20201212");
+
+#SQL[@56,N32]Result[]
 insert into t1 select * from myd;
+
+#SQL[@57,N16]Result[1, 8, 8]
 select * from t1;
 t
 00:00:00
 00:00:00
+
+#SQL[@60,N23]Result[]
 drop table if exists t1;
+
+#SQL[@61,N25]Result[]
 drop table if exists mydt;
+
+#SQL[@62,N32]Result[]
 create table mydt(d datetime(6));
+
+#SQL[@63,N26]Result[]
 create table t1(t time(3));
+
+#SQL[@64,N106]Result[]
 insert into mydt values("2020-12-12 11:22:33"), ("2020-12-12 11:22:33.4444"), ("2020-12-12 11:22:33.4445");
+
+#SQL[@65,N67]Result[]
 insert into mydt values ("20221212112233"), ("20221212112233.5555");
+
+#SQL[@66,N33]Result[]
 insert into t1 select * from mydt;
+
+#SQL[@67,N16]Result[1, 12, 12, 12, 12, 12]
 select * from t1;
 t
-11:22:33
-11:22:33.444000000
-11:22:33.445000000
-11:22:33
-11:22:33.556000000
+11:22:33.000
+11:22:33.444
+11:22:33.445
+11:22:33.000
+11:22:33.556
+
+#SQL[@70,N34]Result[25, 8]
 select time("2012-12-12 12:00:20");
 time(2012-12-12 12:00:20)
 12:00:20
+
+#SQL[@71,N29]Result[20, 16]
 select time("20201122112233");
 time(20201122112233)
 2020112211:22:33
+
+#SQL[@72,N20]Result[11, 8]
 select time("11223");
 time(11223)
 01:12:23
+
+#SQL[@73,N34]Result[25, 16]
 select time("20201122112233.1234");
 time(20201122112233.1234)
 2020112211:22:33
+
+#SQL[@74,N41]Result[29, 8]
 select cast('11:22:33.445566' as time(0));
-cast(11:22:33.445566 as time(26))
+cast(11:22:33.445566 as time)
 11:22:33
+
+#SQL[@75,N41]Result[35, 12]
 select cast('11:22:33.445566' as time(3));
-cast(11:22:33.445566 as time(26, 3))
-11:22:33.446000000
+cast(11:22:33.445566 as time(3, 3))
+11:22:33.446
+
+#SQL[@76,N33]Result[27, 15]
 select cast('123.445' as time(6));
-cast(123.445 as time(26, 6))
-00:01:23.445000000
+cast(123.445 as time(6, 6))
+00:01:23.445000
+
+#SQL[@79,N47]Result[42, 8]
 select adddate(time'00:00:00', interval 1 hour);
 adddate(time(00:00:00), interval(1, hour))
 01:00:00
+
+#SQL[@80,N49]Result[44, 8]
 select adddate(time'00:00:00', interval 1 minute);
 adddate(time(00:00:00), interval(1, minute))
 00:01:00
+
+#SQL[@81,N49]Result[44, 8]
 select adddate(time'00:00:00', interval 1 second);
 adddate(time(00:00:00), interval(1, second))
 00:00:01
+
+#SQL[@82,N48]Result[43, 9]
 select adddate(time'800:00:00', interval 1 hour);
 adddate(time(800:00:00), interval(1, hour))
 801:00:00
+
+#SQL[@83,N55]Error[35]
 select adddate(time'2562047787:00:00', interval 1 hour);
-Data truncation: data out of range: data type time, 
+data out of range: data type time, 
+
+#SQL[@84,N53]Result[48, 8]
 select adddate(time'100:00:00', interval -100 minute);
 adddate(time(100:00:00), interval(-100, minute))
 98:20:00
+
+#SQL[@85,N54]Result[49, 8]
 select adddate(time'100:00:00', interval -1000 second);
 adddate(time(100:00:00), interval(-1000, second))
 99:43:20
+
+#SQL[@88,N39]Result[30, 6]
 select cast(time("11:22:33") as BIGINT);
 cast(time(11:22:33) as bigint)
 112233
+
+#SQL[@89,N40]Result[31, 7]
 select cast(time("-11:22:33") as BIGINT);
 cast(time(-11:22:33) as bigint)
 -112233
+
+#SQL[@90,N40]Result[35, 6]
 select cast(time("11:22:33") as DECIMAL);
-cast(time(11:22:33) as decimal(34))
+cast(time(11:22:33) as decimal(38))
 112233
+
+#SQL[@91,N41]Result[36, 7]
 select cast(time("-11:22:33") as DECIMAL);
-cast(time(-11:22:33) as decimal(34))
+cast(time(-11:22:33) as decimal(38))
 -112233
+
+#SQL[@94,N23]Result[]
 drop table if exists t1;
+
+#SQL[@95,N23]Result[]
 create table t1(t time);
+
+#SQL[@96,N86]Result[]
 insert into t1 values("0"), ("10"), ("50"), ("1000"), ("5500"), ("100000"), ("990000");
+
+#SQL[@97,N85]Result[]
 insert into t1 values("-10"), ("-50"), ("-1000"), ("-5500"), ("-100000"), ("-990000");
+
+#SQL[@98,N33]Result[1, 8]
 select * from t1 where t > 100000;
 t
 99:00:00
+
+#SQL[@99,N34]Result[1, 9]
 select * from t1 where t < -100000;
 t
 -99:00:00
+
+#SQL[@100,N29]Result[1, 8, 8, 8, 8, 8, 8, 8]
 select * from t1 where t >= 0;
 t
 00:00:00
@@ -169,39 +312,58 @@ t
 00:55:00
 10:00:00
 99:00:00
+
+#SQL[@101,N28]Result[1, 9, 9, 9, 9, 9, 9]
 select * from t1 where t < 0;
 t
-00:00:10
-00:00:50
-00:10:00
-00:55:00
+-00:00:10
+-00:00:50
+-00:10:00
+-00:55:00
 -10:00:00
 -99:00:00
+
+#SQL[@104,N23]Result[]
 drop table if exists t1;
+
+#SQL[@105,N26]Result[]
 create table t1(t time(3));
+
+#SQL[@106,N52]Result[]
 insert into t1 values(0.001),(34.5),("99990000.999");
+
+#SQL[@107,N20]Result[5, 5, 6, 12]
 select t + 1 from t1;
 t + 1
 1.001
 35.500
 99990001.999
+
+#SQL[@108,N20]Result[5, 6, 6, 12]
 select t - 1 from t1;
 t - 1
 -0.999
 33.500
 99989999.999
+
+#SQL[@109,N21]Result[6, 5, 7, 13]
 select t * 10 from t1;
 t * 10
 0.010
 345.000
 999900009.990
+
+#SQL[@110,N21]Result[6, 11, 11, 17]
 select t / 10 from t1;
 t / 10
 0.000100000
 3.450000000
 9999000.099900000
+
+#SQL[@111,N20]Result[5, 5, 5, 5]
 select t % 5 from t1;
 t % 5
 0.001
 4.500
 0.999
+

@@ -1,272 +1,488 @@
+#SQL[@7,N61]Result[]
 create table t1 (a tinyint unsigned not null, primary key(a));
+
+#SQL[@8,N49]Result[]
 insert into t1 values (255), (0xFC), (254), (253);
+
+#SQL[@9,N31]Result[1, 3, 3, 3, 3]
 select * from t1 order by 1 asc;
 a
 252
 253
 254
 255
+
+#SQL[@10,N44]Result[1, 3]
 select * from t1 where a=255 order by a desc;
 a
 255
+
+#SQL[@11,N26]Result[]
 delete from t1 where a=255;
+
+#SQL[@12,N31]Result[1, 3, 3, 3]
 select * from t1 order by a asc;
 a
 252
 253
 254
+
+#SQL[@13,N13]Result[]
 drop table t1;
+
+#SQL[@14,N77]Result[]
 create table t1 ( a tinyint not null default 1, tinyint8 tinyint primary key);
+
+#SQL[@15,N50]Result[]
 insert into t1 (tinyint8) values (-1),(127),(-128);
+
+#SQL[@16,N39]Result[15, 11, 9, 10]
 select * from t1 order by a desc, 2 asc;
-a	tinyint8
-1	-128
-1	-1
-1	127
+a  ¦  tinyint8
+1  ¦  -128
+1  ¦  -1
+1  ¦  127
+
+#SQL[@17,N58]Result[55, 22]
 select min(tinyint8),max(tinyint8),max(tinyint8)-1 from t1;
-min(tinyint8)	max(tinyint8)	max(tinyint8)-1
--128	127	126
+min(tinyint8)  ¦  max(tinyint8)  ¦  max(tinyint8) - 1
+-128  ¦  127  ¦  126
+
+#SQL[@18,N80]Result[55, 22]
 select min(tinyint8),max(tinyint8),max(tinyint8)-1 from t1 group by a order by 1;
-min(tinyint8)	max(tinyint8)	max(tinyint8)-1
--128	127	126
+min(tinyint8)  ¦  max(tinyint8)  ¦  max(tinyint8) - 1
+-128  ¦  127  ¦  126
+
+#SQL[@19,N13]Result[]
 drop table t1;
+
+#SQL[@20,N86]Result[]
 create table t1 ( a tinyint not null default 1, tinyint8 tinyint unsigned primary key);
+
+#SQL[@21,N57]Result[]
 insert into t1 (tinyint8) values (0),(255), (0xFE), (253);
+
+#SQL[@22,N31]Result[15, 8, 10, 10, 10]
 select * from t1 order by 2 asc;
-a	tinyint8
-1	0
-1	253
-1	254
-1	255
+a  ¦  tinyint8
+1  ¦  0
+1  ¦  253
+1  ¦  254
+1  ¦  255
+
+#SQL[@23,N44]Result[15, 10, 10, 10]
 select * from t1 order by tinyint8 limit 1,3;
-a	tinyint8
-1	253
-1	254
-1	255
+a  ¦  tinyint8
+1  ¦  253
+1  ¦  254
+1  ¦  255
+
+#SQL[@24,N51]Result[15, 10, 10, 10]
 select * from t1 order by tinyint8 limit 3 offset 1;
-a	tinyint8
-1	253
-1	254
-1	255
+a  ¦  tinyint8
+1  ¦  253
+1  ¦  254
+1  ¦  255
+
+#SQL[@25,N58]Result[55, 19]
 select min(tinyint8),max(tinyint8),max(tinyint8)-1 from t1;
-min(tinyint8)	max(tinyint8)	max(tinyint8)-1
-0	255	254
+min(tinyint8)  ¦  max(tinyint8)  ¦  max(tinyint8) - 1
+0  ¦  255  ¦  254
+
+#SQL[@26,N85]Result[55, 19]
 select min(tinyint8),max(tinyint8),max(tinyint8)-1 from t1 group by a order by abs(1);
-min(tinyint8)	max(tinyint8)	max(tinyint8)-1
-0	255	254
+min(tinyint8)  ¦  max(tinyint8)  ¦  max(tinyint8) - 1
+0  ¦  255  ¦  254
+
+#SQL[@27,N13]Result[]
 drop table t1;
+
+#SQL[@28,N51]Result[]
 create table t1 (id tinyint primary key, a tinyint);
+
+#SQL[@29,N27]Result[]
 insert into t1 values (1,1);
+
+#SQL[@30,N16]Result[9, 8]
 select * from t1;
-id	a
-1	1
+id  ¦  a
+1  ¦  1
+
+#SQL[@31,N25]Result[9, 8]
 select * from t1 limit 99;
-id	a
-1	1
+id  ¦  a
+1  ¦  1
+
+#SQL[@34,N23]Result[]
 drop table if exists t1;
+
+#SQL[@35,N23]Result[]
 drop table if exists t2;
+
+#SQL[@36,N105]Result[]
 create table t1 (
 valueu8  tinyint unsigned  not null,
 value8  tinyint			 not null,
 primary key(value8)
 );
+
+#SQL[@41,N105]Result[]
 create table t2 (
 valueu8  tinyint unsigned  not null,
 value8  tinyint			 not null,
 primary key(value8)
 );
+
+#SQL[@46,N29]Result[]
 insert into t1 values(255, 1);
+
+#SQL[@47,N30]Result[]
 insert into t1 values( 127, 2);
+
+#SQL[@48,N29]Result[]
 insert into t2 values(255, 3);
+
+#SQL[@49,N30]Result[]
 insert into t2 values( 127, 4);
+
+#SQL[@50,N29]Result[]
 insert into t1 values(5,-128);
+
+#SQL[@51,N29]Result[]
 insert into t2 values(5,-128);
+
+#SQL[@52,N16]Result[19, 10, 10, 11]
 select * from t1;
-valueu8	value8
-5	-128
-255	1
-127	2
+valueu8  ¦  value8
+255  ¦  1
+127  ¦  2
+5  ¦  -128
+
+#SQL[@53,N16]Result[19, 10, 10, 11]
 select * from t2;
-valueu8	value8
-5	-128
-255	3
-127	4
+valueu8  ¦  value8
+255  ¦  3
+127  ¦  4
+5  ¦  -128
+
+#SQL[@54,N81]Result[44, 28, 26, 26]
 select * from t1 join t2 on t1.valueu8=t2.valueu8  order by 1 asc, t2.value8 desc;
-valueu8	value8	valueu8	value8
-5	-128	5	-128
-127	2	127	4
-255	1	255	3
+valueu8  ¦  value8  ¦  valueu8  ¦  value8
+5  ¦  -128  ¦  5  ¦  -128
+127  ¦  2  ¦  127  ¦  4
+255  ¦  1  ¦  255  ¦  3
+
+#SQL[@55,N88]Result[44, 26]
 select * from t1 join t2 on t1.valueu8=t2.valueu8 where t1.valueu8=255 order by 1+2 desc;
-valueu8	value8	valueu8	value8
-255	1	255	3
+valueu8  ¦  value8  ¦  valueu8  ¦  value8
+255  ¦  1  ¦  255  ¦  3
+
+#SQL[@56,N64]Result[44, 28]
 select * from t1 join t2 on t1.value8=t2.value8 order by 2,3 asc;
-valueu8	value8	valueu8	value8
-5	-128	5	-128
+valueu8  ¦  value8  ¦  valueu8  ¦  value8
+5  ¦  -128  ¦  5  ¦  -128
+
+#SQL[@57,N23]Result[]
 drop table if exists t1;
+
+#SQL[@58,N23]Result[]
 drop table if exists t2;
+
+#SQL[@59,N43]Result[]
 create table t1 (tinyint8 tinyint not null);
+
+#SQL[@60,N28]Result[]
 insert into t1 values (-128);
+
+#SQL[@61,N16]Result[8, 4]
 select * from t1;
 tinyint8
 -128
+
+#SQL[@62,N13]Result[]
 drop table t1;
+
+#SQL[@63,N46]Result[]
 create table t1 (tinyint_col tinyint unsigned);
+
+#SQL[@64,N27]Result[]
 insert into t1 values (250);
+
+#SQL[@65,N38]Result[11, 3]
 select * from t1 where tinyint_col=250;
 tinyint_col
 250
+
+#SQL[@66,N40]Result[11, 3]
 select * from t1 where tinyint_col='250';
 tinyint_col
 250
+
+#SQL[@67,N13]Result[]
 drop table t1;
+
+#SQL[@70,N45]Result[6, 1]
 select cast(250 as unsigned) mod 50 as result;
 result
 0
+
+#SQL[@71,N26]Result[19, 3]
 select cast(127 as signed);
 cast(127 as signed)
 127
+
+#SQL[@72,N27]Result[20, 4]
 select cast(-128 as signed);
 cast(-128 as signed)
 -128
+
+#SQL[@73,N77]Result[]
 CREATE TABLE t1 (id TINYINT PRIMARY KEY,
 a TINYINT(4) UNSIGNED,
 b VARCHAR(4));
+
+#SQL[@76,N118]Result[]
 INSERT INTO t1 (id,a) VALUES
 (1,0),
 (2,CAST(0x7F AS UNSIGNED)),
 (3,CAST(0x80 AS UNSIGNED)),
 (4,CAST(0xFF AS UNSIGNED));
+
+#SQL[@81,N19]Result[]
 UPDATE t1 SET b = a;
+
+#SQL[@82,N73]Result[16, 19]
 select * from t1 where ((a = 255) and (b = '255')) order by 1 desc, 2 asc;
-id	a	b
-4	255	255
+id  ¦  a  ¦  b
+4  ¦  255  ¦  255
+
+#SQL[@83,N13]Result[]
 drop table t1;
+
+#SQL[@85,N34]Result[]
 CREATE TABLE t_tinyint(id TINYINT);
+
+#SQL[@86,N37]Result[]
 INSERT INTO t_tinyint VALUES (1), (2);
+
+#SQL[@87,N35]Result[17, 12, 11]
 SELECT id, id >= 1.1 FROM t_tinyint;
-id	id >= 1.1
-1	false	
-2	true	
+id  ¦  id >= 1.1
+1  ¦  false
+2  ¦  true
+
+#SQL[@88,N35]Result[17, 12, 11]
 SELECT id, 1.1 <= id FROM t_tinyint;
-id	1.1 <= id
-1	false	
-2	true	
+id  ¦  1.1 <= id
+1  ¦  false
+2  ¦  true
+
+#SQL[@89,N34]Result[16, 12, 12]
 SELECT id, id = 1.1 FROM t_tinyint;
-id	id = 1.1
-1	false	
-2	false	
+id  ¦  id = 1.1
+1  ¦  false
+2  ¦  false
+
+#SQL[@90,N34]Result[16, 12, 12]
 SELECT id, 1.1 = id FROM t_tinyint;
-id	1.1 = id
-1	false	
-2	false	
+id  ¦  1.1 = id
+1  ¦  false
+2  ¦  false
+
+#SQL[@91,N38]Result[]
 SELECT * from t_tinyint WHERE id = 1.1;
-id
+
+#SQL[@92,N40]Result[]
 SELECT * from t_tinyint WHERE id = 1.1e0;
-id
+
+#SQL[@93,N40]Error[43]
 SELECT * from t_tinyint WHERE id = '1.1';
 invalid argument cast to int, bad value 1.1
+
+#SQL[@94,N42]Error[45]
 SELECT * from t_tinyint WHERE id = '1.1e0';
 invalid argument cast to int, bad value 1.1e0
+
+#SQL[@95,N46]Result[]
 SELECT * from t_tinyint WHERE id IN (1.1, 2.2);
-id
+
+#SQL[@96,N50]Result[]
 SELECT * from t_tinyint WHERE id IN (1.1e0, 2.2e0);
-id
+
+#SQL[@97,N50]Error[43]
 SELECT * from t_tinyint WHERE id IN ('1.1', '2.2');
 invalid argument cast to int, bad value 1.1
+
+#SQL[@98,N54]Error[45]
 SELECT * from t_tinyint WHERE id IN ('1.1e0', '2.2e0');
 invalid argument cast to int, bad value 1.1e0
+
+#SQL[@99,N52]Result[]
 SELECT * from t_tinyint WHERE id BETWEEN 1.1 AND 1.9;
-id
+
+#SQL[@100,N56]Result[]
 SELECT * from t_tinyint WHERE id BETWEEN 1.1e0 AND 1.9e0;
-id
+
+#SQL[@101,N56]Error[43]
 SELECT * from t_tinyint WHERE id BETWEEN '1.1' AND '1.9';
 invalid argument cast to int, bad value 1.1
+
+#SQL[@102,N60]Error[45]
 SELECT * from t_tinyint WHERE id BETWEEN '1.1e0' AND '1.9e0';
 invalid argument cast to int, bad value 1.1e0
+
+#SQL[@103,N27]Result[]
 CREATE TABLE t1 (a TINYINT);
+
+#SQL[@104,N25]Result[]
 INSERT INTO t1 VALUES (1);
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-a
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-a
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
-a
+
+#SQL[@110,N42]Result[]
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
-a
+
+#SQL[@111,N28]Result[]
 SELECT * FROM t1 WHERE a=0.9;
-a
+
+#SQL[@112,N48]Result[]
 SELECT * FROM t1 WHERE a IN (0.8,0.9) order by 1;
-a
+
+#SQL[@113,N13]Result[]
 drop table t1;
+
+#SQL[@114,N47]Result[]
 create table t (id tinyint unsigned, b tinyint);
+
+#SQL[@115,N27]Result[]
 insert into t values(127,1);
+
+#SQL[@116,N27]Result[]
 insert into t values(255,2);
+
+#SQL[@117,N27]Result[]
 insert into t values(128,3);
+
+#SQL[@118,N60]Result[8, 1]
 select count(*) from t
 where id>=127 and id <=255 order by 1;
 count(*)
 3
+
+#SQL[@120,N51]Result[8, 1]
 select count(*) from t
 where id between 127 and 255;
 count(*)
 3
+
+#SQL[@122,N12]Result[]
 drop table t;
+
+#SQL[@123,N30]Result[21, 4]
 SELECT (254 BETWEEN 0 AND 255);
-(254 BETWEEN 0 AND 255)
+254 between 0 and 255
 true
+
+#SQL[@124,N19]Result[11, 4]
 SELECT  -32000 <= 0;
 -32000 <= 0
 true
+
+#SQL[@125,N15]Result[8, 4]
 SELECT 0 <= 127;
 0 <= 127
 true
+
+#SQL[@126,N45]Result[38, 5]
 SELECT CAST(100 AS UNSIGNED) BETWEEN 1 AND -1;
-CAST(100 AS UNSIGNED) BETWEEN 1 AND -1
+cast(100 as unsigned) between 1 and -1
 false
+
+#SQL[@127,N49]Result[42, 4]
 SELECT CAST(100 AS UNSIGNED) NOT BETWEEN 1 AND -1;
-CAST(100 AS UNSIGNED) NOT BETWEEN 1 AND -1
+cast(100 as unsigned) not between 1 and -1
 true
+
+#SQL[@128,N43]Result[36, 5]
 SELECT CAST(0 AS UNSIGNED) BETWEEN 0 AND -1;
-CAST(0 AS UNSIGNED) BETWEEN 0 AND -1
+cast(0 as unsigned) between 0 and -1
 false
+
+#SQL[@129,N47]Result[40, 4]
 SELECT CAST(0 AS UNSIGNED) NOT BETWEEN 0 AND -1;
-CAST(0 AS UNSIGNED) NOT BETWEEN 0 AND -1
+cast(0 as unsigned) not between 0 and -1
 true
+
+#SQL[@130,N34]Result[23, 4]
 SELECT ( 255 BETWEEN 255 AND 255 );
-( 255 BETWEEN 255 AND 255 )
+255 between 255 and 255
 true
+
+#SQL[@131,N32]Result[21, 5]
 SELECT ( 127 BETWEEN 255 AND 1 );
-( 127 BETWEEN 255 AND 1 )
+127 between 255 and 1
 false
+
+#SQL[@132,N31]Result[20, 5]
 SELECT ( -1 BETWEEN 255 AND 1 );
-( -1 BETWEEN 255 AND 1 )
+-1 between 255 and 1
 false
+
+#SQL[@133,N30]Result[19, 5]
 SELECT ( 0 BETWEEN 255 AND 1 );
-( 0 BETWEEN 255 AND 1 )
+0 between 255 and 1
 false
+
+#SQL[@134,N30]Result[19, 5]
 SELECT ( 1 BETWEEN 255 AND 1 );
-( 1 BETWEEN 255 AND 1 )
+1 between 255 and 1
 false
+
+#SQL[@137,N23]Result[]
 drop table if exists t1;
+
+#SQL[@138,N23]Result[]
 drop table if exists t2;
+
+#SQL[@139,N23]Result[]
 drop table if exists t3;
+
+#SQL[@140,N24]Result[]
 drop table if exists t11;
+
+#SQL[@141,N24]Result[]
 drop table if exists t12;
+
+#SQL[@142,N56]Result[]
 CREATE TABLE t1 (a tinyint(3), b tinyint(5) primary key);
+
+#SQL[@143,N33]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2);
+
+#SQL[@144,N35]Result[]
 update t1 set a=2 where a=1 limit 1;
+
+#SQL[@145,N16]Result[8, 8, 8]
 select * from t1;
-a	b
-2	1
-1	2
+a  ¦  b
+1  ¦  2
+2  ¦  1
+
+#SQL[@146,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@147,N27]Result[]
 update t1 set a=2 where a=1;
+
+#SQL[@148,N16]Result[8, 8, 8, 8]
 select * from t1;
-a	b
-2	1
-2	2
-2	3
+a  ¦  b
+2  ¦  1
+2  ¦  2
+2  ¦  3
+
+#SQL[@149,N13]Result[]
 drop table t1;
+
+#SQL[@150,N324]Result[]
 create table t1 (
 a tinyint not null,
 b tinyint not null default 0,
@@ -279,98 +495,151 @@ h tinyint not null default 0,
 i tinyint not null default 0,
 j tinyint not null default 0,
 primary key (a));
+
+#SQL[@162,N91]Result[]
 insert into t1 (a) values (2),(4),(6),(8),(10),(12),(14),(16),(18),(20),(22),(24),(26),(23);
+
+#SQL[@163,N21]Result[]
 update t1 set a=a+101;
+
+#SQL[@164,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+a  ¦  b
+103  ¦  0
+105  ¦  0
+107  ¦  0
+109  ¦  0
+111  ¦  0
+113  ¦  0
+115  ¦  0
+117  ¦  0
+119  ¦  0
+121  ¦  0
+123  ¦  0
+125  ¦  0
+127  ¦  0
+124  ¦  0
+
+#SQL[@165,N30]Result[]
 update t1 set a=127 where a=25;
+
+#SQL[@166,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+a  ¦  b
+103  ¦  0
+105  ¦  0
+107  ¦  0
+109  ¦  0
+111  ¦  0
+113  ¦  0
+115  ¦  0
+117  ¦  0
+119  ¦  0
+121  ¦  0
+123  ¦  0
+125  ¦  0
+127  ¦  0
+124  ¦  0
+
+#SQL[@167,N31]Result[]
 update t1 set a=a-1 where 1 > 2;
+
+#SQL[@168,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-103	0
-105	0
-107	0
-109	0
-111	0
-113	0
-115	0
-117	0
-119	0
-121	0
-123	0
-124	0
-125	0
-127	0
+a  ¦  b
+103  ¦  0
+105  ¦  0
+107  ¦  0
+109  ¦  0
+111  ¦  0
+113  ¦  0
+115  ¦  0
+117  ¦  0
+119  ¦  0
+121  ¦  0
+123  ¦  0
+125  ¦  0
+127  ¦  0
+124  ¦  0
+
+#SQL[@169,N31]Result[]
 update t1 set a=a-1 where 3 > 2;
+
+#SQL[@170,N18]Result[8, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
 select a,b from t1;
-a	b
-102	0
-104	0
-106	0
-108	0
-110	0
-112	0
-114	0
-116	0
-118	0
-120	0
-122	0
-123	0
-124	0
-126	0
+a  ¦  b
+102  ¦  0
+104  ¦  0
+106  ¦  0
+108  ¦  0
+110  ¦  0
+112  ¦  0
+114  ¦  0
+116  ¦  0
+118  ¦  0
+120  ¦  0
+122  ¦  0
+124  ¦  0
+126  ¦  0
+123  ¦  0
+
+#SQL[@171,N13]Result[]
 drop table t1;
+
+#SQL[@172,N51]Result[]
 create table t1 (a tinyint primary key, b char(32));
+
+#SQL[@173,N46]Result[]
 insert into t1 values (1,'apple'), (2,'apple');
+
+#SQL[@174,N16]Result[8, 12, 12]
 select * from t1;
-a	b
-1	apple
-2	apple
+a  ¦  b
+1  ¦  apple
+2  ¦  apple
+
+#SQL[@177,N23]Result[]
 drop table if exists t1;
+
+#SQL[@178,N23]Result[]
 drop table if exists t2;
+
+#SQL[@179,N23]Result[]
 drop table if exists t3;
+
+#SQL[@180,N24]Result[]
 drop table if exists t11;
+
+#SQL[@181,N24]Result[]
 drop table if exists t12;
+
+#SQL[@182,N56]Result[]
 CREATE TABLE t1 (a tinyint(3), b tinyint(5) primary key);
+
+#SQL[@183,N33]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2);
+
+#SQL[@184,N32]Result[]
 delete from t1 where a=1 limit 1;
+
+#SQL[@185,N16]Result[8, 8]
 select * from t1;
-a	b
-1	2
+a  ¦  b
+1  ¦  2
+
+#SQL[@186,N27]Result[]
 INSERT INTO t1 VALUES (1,3);
+
+#SQL[@187,N24]Result[]
 delete from t1 where a=1;
+
+#SQL[@188,N16]Result[]
 select * from t1;
-a	b
+
+#SQL[@189,N13]Result[]
 drop table t1;
+
+#SQL[@190,N324]Result[]
 create table t1 (
 a tinyint not null,
 b tinyint not null default 0,
@@ -383,175 +652,371 @@ h tinyint not null default 0,
 i tinyint not null default 0,
 j tinyint not null default 0,
 primary key (a));
+
+#SQL[@202,N91]Result[]
 insert into t1 (a) values (2),(4),(6),(8),(10),(12),(14),(16),(18),(20),(22),(24),(26),(23);
+
+#SQL[@203,N26]Result[]
 delete from t1 where a=2+2;
+
+#SQL[@204,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-23	0
-24	0
-26	0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+24  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@205,N26]Result[]
 delete from t1 where  a=24;
+
+#SQL[@206,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-23	0
-26	0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@207,N27]Result[]
 delete from t1 where  3 < 2;
+
+#SQL[@208,N18]Result[8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9]
 select a,b from t1;
-a	b
-2	0
-6	0
-8	0
-10	0
-12	0
-14	0
-16	0
-18	0
-20	0
-22	0
-23	0
-26	0
+a  ¦  b
+2  ¦  0
+6  ¦  0
+8  ¦  0
+10  ¦  0
+12  ¦  0
+14  ¦  0
+16  ¦  0
+18  ¦  0
+20  ¦  0
+22  ¦  0
+26  ¦  0
+23  ¦  0
+
+#SQL[@209,N27]Result[]
 delete from t1 where  1 < 2;
+
+#SQL[@210,N18]Result[]
 select a,b from t1;
-a	b
+
+#SQL[@211,N13]Result[]
 drop table t1;
+
+#SQL[@212,N51]Result[]
 create table t1 (a tinyint primary key, b char(32));
+
+#SQL[@213,N46]Result[]
 insert into t1 values (1,'apple'), (2,'apple');
+
+#SQL[@214,N16]Result[8, 12, 12]
 select * from t1;
-a	b
-1	apple
-2	apple
+a  ¦  b
+1  ¦  apple
+2  ¦  apple
+
+#SQL[@216,N13]Result[]
 drop table t1;
+
+#SQL[@217,N26]Result[]
 create table t1(a tinyint);
+
+#SQL[@218,N34]Result[]
 insert into t1 values(-128), (127);
+
+#SQL[@219,N16]Result[1, 4, 3]
 select * from t1;
 a
 -128
 127
+
+#SQL[@220,N27]Error[47]
 insert into t1 values(-129);
-Data truncation: data out of range: data type int8, value '-129'
+data out of range: data type int8, value '-129'
+
+#SQL[@221,N26]Error[46]
 insert into t1 values(128);
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@223,N35]Result[]
 create table t2(a tinyint unsigned);
+
+#SQL[@224,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@225,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@227,N13]Result[]
 drop table t2;
+
+#SQL[@228,N27]Result[]
 create table t2(a smallint);
+
+#SQL[@229,N27]Result[]
 insert into t2 values(-129);
+
+#SQL[@230,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '-129'
+data out of range: data type int8, value '-129'
+
+#SQL[@231,N14]Result[]
 delete from t2;
+
+#SQL[@232,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@233,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@235,N13]Result[]
 drop table t2;
+
+#SQL[@236,N36]Result[]
 create table t2(a smallint unsigned);
+
+#SQL[@237,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@238,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@240,N13]Result[]
 drop table t2;
+
+#SQL[@241,N22]Result[]
 create table t2(a int);
+
+#SQL[@242,N27]Result[]
 insert into t2 values(-129);
+
+#SQL[@243,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '-129'
+data out of range: data type int8, value '-129'
+
+#SQL[@244,N14]Result[]
 delete from t2;
+
+#SQL[@245,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@246,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@248,N13]Result[]
 drop table t2;
+
+#SQL[@249,N31]Result[]
 create table t2(a int unsigned);
+
+#SQL[@250,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@251,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@253,N13]Result[]
 drop table t2;
+
+#SQL[@254,N25]Result[]
 create table t2(a bigint);
+
+#SQL[@255,N27]Result[]
 insert into t2 values(-129);
+
+#SQL[@256,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '-129'
+data out of range: data type int8, value '-129'
+
+#SQL[@257,N14]Result[]
 delete from t2;
+
+#SQL[@258,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@259,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@261,N13]Result[]
 drop table t2;
+
+#SQL[@262,N34]Result[]
 create table t2(a bigint unsigned);
+
+#SQL[@263,N26]Result[]
 insert into t2 values(128);
+
+#SQL[@264,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type int8, value '128'
+data out of range: data type int8, value '128'
+
+#SQL[@266,N13]Result[]
 drop table t1;
+
+#SQL[@267,N35]Result[]
 create table t1(a tinyint unsigned);
+
+#SQL[@268,N31]Result[]
 insert into t1 values(0), (255);
+
+#SQL[@269,N16]Result[1, 1, 3]
 select * from t1;
 a
 0
 255
+
+#SQL[@270,N25]Error[46]
 insert into t1 values(-1);
-Data truncation: data out of range: data type uint8, value '-1'
+data out of range: data type uint8, value '-1'
+
+#SQL[@271,N26]Error[47]
 insert into t1 values(256);
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@273,N13]Result[]
 drop table t2;
+
+#SQL[@274,N26]Result[]
 create table t2(a tinyint);
+
+#SQL[@275,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@276,N31]Error[45]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint, value '-1'
+data out of range: data type uint, value '-1'
+
+#SQL[@278,N13]Result[]
 drop table t2;
+
+#SQL[@279,N27]Result[]
 create table t2(a smallint);
+
+#SQL[@280,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@281,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '-1'
+data out of range: data type uint8, value '-1'
+
+#SQL[@282,N14]Result[]
 delete from t2;
+
+#SQL[@283,N26]Result[]
 insert into t2 values(256);
+
+#SQL[@284,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@286,N13]Result[]
 drop table t2;
+
+#SQL[@287,N36]Result[]
 create table t2(a smallint unsigned);
+
+#SQL[@288,N26]Result[]
 insert into t2 values(256);
+
+#SQL[@289,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@291,N13]Result[]
 drop table t2;
+
+#SQL[@292,N22]Result[]
 create table t2(a int);
+
+#SQL[@293,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@294,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '-1'
+data out of range: data type uint8, value '-1'
+
+#SQL[@295,N14]Result[]
 delete from t2;
+
+#SQL[@296,N26]Result[]
 insert into t2 values(256);
+
+#SQL[@297,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@299,N13]Result[]
 drop table t2;
+
+#SQL[@300,N31]Result[]
 create table t2(a int unsigned);
+
+#SQL[@301,N26]Result[]
 insert into t2 values(256);
+
+#SQL[@302,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@304,N13]Result[]
 drop table t2;
+
+#SQL[@305,N25]Result[]
 create table t2(a bigint);
+
+#SQL[@306,N25]Result[]
 insert into t2 values(-1);
+
+#SQL[@307,N31]Error[46]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '-1'
+data out of range: data type uint8, value '-1'
+
+#SQL[@308,N14]Result[]
 delete from t2;
+
+#SQL[@309,N26]Result[]
 insert into t2 values(256);
+
+#SQL[@310,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+
+#SQL[@312,N13]Result[]
 drop table t2;
+
+#SQL[@313,N34]Result[]
 create table t2(a bigint unsigned);
+
+#SQL[@314,N26]Result[]
 insert into t2 values(256);
+
+#SQL[@315,N31]Error[47]
 insert into t1 select * from t2;
-Data truncation: data out of range: data type uint8, value '256'
+data out of range: data type uint8, value '256'
+

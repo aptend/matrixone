@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for decimal datatype
 -- @label:bvt
@@ -42,7 +42,7 @@ insert into t1 values(20770101112233);
 insert into t1 values(112233.4445);
 select * from t1;
 
-#Basic insert table test with outrange 
+#Basic insert table test with outrange
 drop table if exists t1;
 create table t1(t time);
 insert into t1 values(25620477880000);
@@ -96,7 +96,7 @@ create table t1(t time);
 insert into t1 values("0"), ("10"), ("50"), ("1000"), ("5500"), ("100000"), ("990000");
 insert into t1 values("-10"), ("-50"), ("-1000"), ("-5500"), ("-100000"), ("-990000");
 select * from t1 where t > 100000;
-select * from t1 where t < -100000; 
+select * from t1 where t < -100000;
 select * from t1 where t >= 0;
 select * from t1 where t < 0;
 

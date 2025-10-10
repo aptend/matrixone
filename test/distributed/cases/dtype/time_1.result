@@ -1,82 +1,121 @@
+#SQL[@2,N28]Result[]
 drop table if exists time_01;
+
+#SQL[@3,N28]Result[]
 drop table if exists time_02;
+
+#SQL[@4,N28]Result[]
 drop table if exists time_03;
+
+#SQL[@5,N28]Result[]
 drop table if exists time_04;
+
+#SQL[@8,N45]Result[]
 create table time_01(t1 time,t2 time,t3 time);
+
+#SQL[@9,N71]Result[]
 insert into time_01 values("-838:59:59.0000","838:59:59.00","22:00:00");
+
+#SQL[@10,N53]Result[]
 insert into time_01 values("0:00:00.0000","0","0:00");
+
+#SQL[@11,N42]Result[]
 insert into time_01 values(null,NULL,null);
+
+#SQL[@12,N47]Result[]
 insert into time_01 values("23","1122","-1122");
+
+#SQL[@13,N50]Result[]
 insert into time_01 values("101412","4","-101219");
+
+#SQL[@14,N88]Result[]
 insert into time_01 values("24:59:09.932823","24:02:00.93282332424","24:20:34.00000000");
+
+#SQL[@15,N63]Result[]
 insert into time_01 values("2022-09-08 12:00:01","019","23403");
+
+#SQL[@16,N21]Result[18, 39, 36, 24, 37, 37, 36, 36]
 select * from time_01;
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-00:00:00    00:00:00    00:00:00
-null    null    null
-00:00:23    00:11:22    00:11:22
-10:14:12    00:00:04    -10:12:19
-24:59:10    24:02:01    24:20:34
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+00:00:00  ¦  00:00:00  ¦  00:00:00
+null  ¦  null  ¦  null
+00:00:23  ¦  00:11:22  ¦  -00:11:22
+10:14:12  ¦  00:00:04  ¦  -10:12:19
+24:59:10  ¦  24:02:01  ¦  24:20:34
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@19,N29]Result[]
 create table time_02(t1 time);
+
+#SQL[@20,N39]Error[43]
 insert into time_02 values("200:60:60");
 invalid input: invalid time value 200:60:60
+
+#SQL[@21,N46]Error[50]
 insert into time_02 values("2562047788:00:00");
 invalid input: invalid time value 2562047788:00:00
+
+#SQL[@22,N47]Error[51]
 insert into time_02 values("-2562047788:00:00");
 invalid input: invalid time value -2562047788:00:00
+
+#SQL[@23,N33]Error[37]
 insert into time_02 values("abc");
 invalid input: invalid time value abc
+
+#SQL[@24,N36]Error[40]
 insert into time_02 values("中文");
 invalid input: invalid time value 中文
+
+#SQL[@25,N31]Result[]
 insert into time_02 values(200);
+
+#SQL[@26,N30]Result[]
 insert into time_02 values("");
+
+#SQL[@27,N21]Result[2, 8, 4]
 select * from time_02;
 t1
 00:02:00
 null
+
+#SQL[@29,N39]Result[]
 insert into time_02 values("200:50:10");
+
+#SQL[@30,N45]Result[15, 15]
 select '-838:59:59.0000' from time_01 limit 1;
 -838:59:59.0000
 -838:59:59.0000
+
+#SQL[@31,N23]Result[14, 14]
 select '838:59:59.0000';
 838:59:59.0000
 838:59:59.0000
-select t1-t2,t1+t2 from time_01;
-t1-t2    t1+t2
--16771918    0
-0    0
-null    null
--1099    1145
-101408    101416
-5709    486111
-119982    120020
-select t1+2,t1*2,t1/2,t1%2 from time_01;
-t1+2    t1*2    t1/2    t1%2
--8385957    -16771918    -4192979.5000    -1
-2    0    0.0000    0
-null    null    null    null
-25    46    11.5000    1
-101414    202824    50706.0000    0
-245912    491820    122955.0000    0
-120003    240002    60000.5000    1
+
+#SQL[@36,N42]Result[18, 39, 36, 37, 37, 36, 36]
 select * from time_01 where t2 is not null;
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-00:00:00    00:00:00    00:00:00
-00:00:23    00:11:22    00:11:22
-10:14:12    00:00:04    -10:12:19
-24:59:10    24:02:01    24:20:34
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+00:00:00  ¦  00:00:00  ¦  00:00:00
+00:00:23  ¦  00:11:22  ¦  -00:11:22
+10:14:12  ¦  00:00:04  ¦  -10:12:19
+24:59:10  ¦  24:02:01  ¦  24:20:34
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@37,N38]Result[18, 24]
 select * from time_01 where t2 is null;
-t1    t2    t3
-null    null    null
+t1  ¦  t2  ¦  t3
+null  ¦  null  ¦  null
+
+#SQL[@38,N36]Result[2, 10, 8, 8]
 select t1 from time_01 where t2>"23";
 t1
 -838:59:59
 00:00:23
 24:59:10
+
+#SQL[@39,N50]Result[2, 10, 8, 8, 8, 8]
 select t1 from time_01 where t1!="24:59:09.932823";
 t1
 -838:59:59
@@ -84,268 +123,424 @@ t1
 00:00:23
 10:14:12
 12:00:01
+
+#SQL[@40,N66]Result[18, 36]
 select * from time_01 where t1="24:59:09.932823" and t2>"24:01:00";
-t1    t2    t3
-24:59:10    24:02:01    24:20:34
+t1  ¦  t2  ¦  t3
+24:59:10  ¦  24:02:01  ¦  24:20:34
+
+#SQL[@41,N65]Result[18, 37, 36]
 select * from time_01 where t2 between "23" and "24:59:09.932823";
-t1    t2    t3
-00:00:23    00:11:22    00:11:22
-24:59:10    24:02:01    24:20:34
+t1  ¦  t2  ¦  t3
+00:00:23  ¦  00:11:22  ¦  -00:11:22
+24:59:10  ¦  24:02:01  ¦  24:20:34
+
+#SQL[@42,N69]Result[18, 39, 36, 37, 36]
 select * from time_01 where t2 not between "23" and "24:59:09.932823";
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-00:00:00    00:00:00    00:00:00
-10:14:12    00:00:04    -10:12:19
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+00:00:00  ¦  00:00:00  ¦  00:00:00
+10:14:12  ¦  00:00:04  ¦  -10:12:19
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@43,N53]Result[18, 39, 37]
 select * from time_01 where t2 in("838:59:59.00","4");
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-10:14:12    00:00:04    -10:12:19
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+10:14:12  ¦  00:00:04  ¦  -10:12:19
+
+#SQL[@44,N57]Result[18, 36, 37, 36, 36]
 select * from time_01 where t2 not in("838:59:59.00","4");
-t1    t2    t3
-00:00:00    00:00:00    00:00:00
-00:00:23    00:11:22    00:11:22
-24:59:10    24:02:01    24:20:34
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+00:00:00  ¦  00:00:00  ¦  00:00:00
+00:00:23  ¦  00:11:22  ¦  -00:11:22
+24:59:10  ¦  24:02:01  ¦  24:20:34
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@45,N29]Result[9, 1]
 select count(t1) from time_01;
 count(t1)
 6
+
+#SQL[@46,N56]Result[17, 11, 15, 15, 15, 15, 15, 16]
 select count(t1),t2 from time_01 group by t2 order by t2;
-count(t1)    t2
-0    null
-1    00:00:00
-1    00:00:04
-1    00:00:19
-1    00:11:22
-1    24:02:01
-1    838:59:59
+count(t1)  ¦  t2
+0  ¦  null
+1  ¦  00:00:00
+1  ¦  00:00:04
+1  ¦  00:00:19
+1  ¦  00:11:22
+1  ¦  24:02:01
+1  ¦  838:59:59
+
+#SQL[@47,N35]Result[20, 25]
 select min(t1),max(t2) from time_01;
-min(t1)    max(t2)
--838:59:59    838:59:59
+min(t1)  ¦  max(t2)
+-838:59:59  ¦  838:59:59
+
+#SQL[@48,N18]Result[]
 drop table time_02;
+
+#SQL[@50,N97]Result[]
 create table time_02 (t1 int,t2 time primary key,t3 varchar(25))partition by hash(t2)partitions 4;
+
+#SQL[@51,N64]Result[]
 create table time_03 (t1 int,t2 time primary key,t3 varchar(25));
+
+#SQL[@52,N49]Result[]
 insert into time_03 values (30,"101412","yellow");
+
+#SQL[@53,N48]Error[39]
 insert into time_03 values (40,"101412","apple");
-Duplicate entry ('\d{2}\:\d{2}:\d{2}'|'\d{2}\:\d{2}:\d{2}\.\d{6}') for key 't2'
+Duplicate entry '10:14:12' for key 't2'
+
+#SQL[@54,N21]Result[18, 28]
 select * from time_03;
-t1    t2    t3
-30    10:14:12    yellow
+t1  ¦  t2  ¦  t3
+30  ¦  10:14:12  ¦  yellow
+
+#SQL[@55,N18]Result[]
 drop table time_03;
+
+#SQL[@56,N96]Result[]
 create table time_03 (t1 int,t2 time,t3 varchar(25),t4 time default '110034',primary key(t1,t2));
+
+#SQL[@57,N68]Result[]
 insert into time_03(t1,t2,t3) values (30,"24:59:09.932823","yellow");
+
+#SQL[@58,N70]Error[49]
 insert into time_03(t1,t2,t3) values (30,"24:59:09.932823","oooppppp");
-Duplicate entry ('\(\d{2}\,\d{2}\:\d{2}:\d{2}\)'|'\w{20}') for key '(.*)'
+Duplicate entry '(30,24:59:10)' for key '(t1,t2)'
+
+#SQL[@59,N71]Result[]
 insert into time_03(t1,t2,t3) values (31,"24:59:09.932823","postttttt");
+
+#SQL[@60,N54]Error[48]
 insert into time_03(t1,t2,t3) values (32,NULL,"vinda");
 constraint violation: Column 't2' cannot be null
+
+#SQL[@63,N60]Result[]
 insert into time_03(t1,t2,t3) values (40,"37","gloooooooge");
+
+#SQL[@64,N31]Result[2, 8, 8]
 select distinct t2 from time_03;
 t2
 24:59:10
 00:00:37
+
+#SQL[@65,N45]Result[]
 update time_03 set t4="220:00:00" where t1=30;
+
+#SQL[@66,N21]Result[26, 45, 47, 43]
 select * from time_03;
-t1    t2    t3    t4
-31    24:59:10    postttttt    11:00:34
-40    00:00:37    gloooooooge    11:00:34
-30    24:59:10    yellow    220:00:00
+t1  ¦  t2  ¦  t3  ¦  t4
+31  ¦  24:59:10  ¦  postttttt  ¦  11:00:34
+40  ¦  00:00:37  ¦  gloooooooge  ¦  11:00:34
+30  ¦  24:59:10  ¦  yellow  ¦  220:00:00
+
+#SQL[@67,N38]Result[]
 update time_03 set t4=NULL where t1=30;
+
+#SQL[@68,N21]Result[26, 45, 47, 38]
 select * from time_03;
-t1    t2    t3    t4
-31    24:59:10    postttttt    11:00:34
-40    00:00:37    gloooooooge    11:00:34
-30    24:59:10    yellow    null
+t1  ¦  t2  ¦  t3  ¦  t4
+31  ¦  24:59:10  ¦  postttttt  ¦  11:00:34
+40  ¦  00:00:37  ¦  gloooooooge  ¦  11:00:34
+30  ¦  24:59:10  ¦  yellow  ¦  null
+
+#SQL[@69,N40]Result[]
 delete from time_03 where t2 is not null;
+
+#SQL[@70,N21]Result[]
 select * from time_03;
-t1    t2    t3    t4
+
+#SQL[@71,N58]Result[]
 insert into time_03 values (40,"37","gloooooooge","35:50");
+
+#SQL[@72,N22]Result[]
 truncate table time_03;
+
+#SQL[@73,N111]Result[]
 load data infile "$resources/external_table_file/time_ex_table.csv" into table time_03 fields terminated by ',';
+
+#SQL[@74,N184]Result[]
 create external table time_ex_01(t1 int,t2 time,t3 varchar(25),t4 time)  infile{"filepath"='$resources/external_table_file/time_ex_table.csv'} fields terminated by ',' enclosed by '\"';
+
+#SQL[@75,N24]Result[26, 43, 36, 44, 44]
 select * from time_ex_01;
-t1    t2    t3    t4
-12    00:00:57    errrror    45:02:00
-13    00:00:19    peer    null
-14    838:59:59    zzzow    -838:59:59
-15    34:00:00    errrror    -10:12:19
+t1  ¦  t2  ¦  t3  ¦  t4
+12  ¦  00:00:57  ¦  errrror  ¦  45:02:00
+13  ¦  00:00:19  ¦  peer  ¦  null
+14  ¦  838:59:59  ¦  zzzow  ¦  -838:59:59
+15  ¦  34:00:00  ¦  errrror  ¦  -10:12:19
+
+#SQL[@76,N67]Result[]
 select * from time_01 time1 join time_03 time3 on time1.t1=time3.t2;
-t1    t2    t3    t1    t2    t3    t4
+
+#SQL[@77,N72]Result[50, 79, 76, 64, 77, 77, 76, 76]
 select * from time_01 time1 left join time_03 time3 on time1.t1=time3.t2;
-t1    t2    t3    t1    t2    t3    t4
--838:59:59    838:59:59    22:00:00    null    null    null    null
-00:00:00    00:00:00    00:00:00    null    null    null    null
-null    null    null    null    null    null    null
-00:00:23    00:11:22    00:11:22    null    null    null    null
-10:14:12    00:00:04    -10:12:19    null    null    null    null
-24:59:10    24:02:01    24:20:34    null    null    null    null
-12:00:01    00:00:19    02:34:03    null    null    null    null
+t1  ¦  t2  ¦  t3  ¦  t1  ¦  t2  ¦  t3  ¦  t4
+-838:59:59  ¦  838:59:59  ¦  22:00:00  ¦  null  ¦  null  ¦  null  ¦  null
+00:00:00  ¦  00:00:00  ¦  00:00:00  ¦  null  ¦  null  ¦  null  ¦  null
+null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+00:00:23  ¦  00:11:22  ¦  -00:11:22  ¦  null  ¦  null  ¦  null  ¦  null
+10:14:12  ¦  00:00:04  ¦  -10:12:19  ¦  null  ¦  null  ¦  null  ¦  null
+24:59:10  ¦  24:02:01  ¦  24:20:34  ¦  null  ¦  null  ¦  null  ¦  null
+12:00:01  ¦  00:00:19  ¦  02:34:03  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@78,N73]Result[50, 73, 66, 74, 74]
 select * from time_01 time1 right join time_03 time3 on time1.t1=time3.t2;
-t1    t2    t3    t1    t2    t3    t4
-null    null    null    12    00:00:57    errrror    45:02:00
-null    null    null    13    00:00:19    peer    null
-null    null    null    14    838:59:59    zzzow    -838:59:59
-null    null    null    15    34:00:00    errrror    -10:12:19
+t1  ¦  t2  ¦  t3  ¦  t1  ¦  t2  ¦  t3  ¦  t4
+null  ¦  null  ¦  null  ¦  12  ¦  00:00:57  ¦  errrror  ¦  45:02:00
+null  ¦  null  ¦  null  ¦  13  ¦  00:00:19  ¦  peer  ¦  null
+null  ¦  null  ¦  null  ¦  14  ¦  838:59:59  ¦  zzzow  ¦  -838:59:59
+null  ¦  null  ¦  null  ¦  15  ¦  34:00:00  ¦  errrror  ¦  -10:12:19
+
+#SQL[@79,N57]Result[10, 22, 18, 25, 23, 25, 22, 14, 22, 22, 22, 22]
 select t1,t2 from time_01 union select t2,t4 from time_03;
-t1    t2
--838:59:59    838:59:59
-34:00:00    -10:12:19
-null    null
-24:59:10    24:02:01
-00:00:19    null
-00:00:00    00:00:00
-10:14:12    00:00:04
-838:59:59    -838:59:59
-00:00:23    00:11:22
-00:00:57    45:02:00
-12:00:01    00:00:19
+t1  ¦  t2
+00:00:57  ¦  45:02:00
+00:00:19  ¦  null
+838:59:59  ¦  -838:59:59
+34:00:00  ¦  -10:12:19
+-838:59:59  ¦  838:59:59
+00:00:00  ¦  00:00:00
+null  ¦  null
+00:00:23  ¦  00:11:22
+10:14:12  ¦  00:00:04
+24:59:10  ¦  24:02:01
+12:00:01  ¦  00:00:19
+
+#SQL[@80,N82]Result[]
 select * from (select t1,t2 from time_01 intersect select t2,t4 from time_03) as t;
-t1    t2
+
+#SQL[@81,N57]Result[10, 25, 22, 14, 22, 22, 22, 22]
 select t1,t2 from time_01 minus select t2,t4 from time_03;
-t1    t2
--838:59:59    838:59:59
-null    null
-24:59:10    24:02:01
-00:00:00    00:00:00
-10:14:12    00:00:04
-00:00:23    00:11:22
-12:00:01    00:00:19
+t1  ¦  t2
+-838:59:59  ¦  838:59:59
+00:00:00  ¦  00:00:00
+null  ¦  null
+00:00:23  ¦  00:11:22
+10:14:12  ¦  00:00:04
+24:59:10  ¦  24:02:01
+12:00:01  ¦  00:00:19
+
+#SQL[@82,N58]Result[18, 39, 36]
 select * from time_01 where t2 in (select t2 from time_03);
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@83,N79]Error[48]
 select * from time_01 where t1 > (select t2 from time_03 where t1 = '10:14:12');
 invalid argument cast to int, bad value 10:14:12
+
+#SQL[@84,N89]Error[48]
 select t1,t2,t3 from time_01 where t1 < any(select t2 from time_03 where t1 = '10:14:12');
 invalid argument cast to int, bad value 10:14:12
+
+#SQL[@85,N90]Error[48]
 select t1,t2,t3 from time_01 where t1 >= all(select t2 from time_03 where t1 = '10:14:12');
 invalid argument cast to int, bad value 10:14:12
+
+#SQL[@86,N91]Error[48]
 select t1,t2,t3 from time_01 where t1 >= some(select t2 from time_03 where t1 = '10:14:12');
 invalid argument cast to int, bad value 10:14:12
+
+#SQL[@87,N58]Result[18, 39, 36, 24, 37, 37, 36, 36]
 select * from time_01 where exists(select t2 from time_03);
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-00:00:00    00:00:00    00:00:00
-null    null    null
-00:00:23    00:11:22    00:11:22
-10:14:12    00:00:04    -10:12:19
-24:59:10    24:02:01    24:20:34
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+00:00:00  ¦  00:00:00  ¦  00:00:00
+null  ¦  null  ¦  null
+00:00:23  ¦  00:11:22  ¦  -00:11:22
+10:14:12  ¦  00:00:04  ¦  -10:12:19
+24:59:10  ¦  24:02:01  ¦  24:20:34
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@88,N62]Result[]
 select * from time_01 where not exists(select t2 from time_03);
-t1    t2    t3
+
+#SQL[@89,N49]Result[]
 create view time_view_01 as select * from time_01;
+
+#SQL[@90,N26]Result[18, 39, 36, 24, 37, 37, 36, 36]
 select * from time_view_01;
-t1    t2    t3
--838:59:59    838:59:59    22:00:00
-00:00:00    00:00:00    00:00:00
-null    null    null
-00:00:23    00:11:22    00:11:22
-10:14:12    00:00:04    -10:12:19
-24:59:10    24:02:01    24:20:34
-12:00:01    00:00:19    02:34:03
+t1  ¦  t2  ¦  t3
+-838:59:59  ¦  838:59:59  ¦  22:00:00
+00:00:00  ¦  00:00:00  ¦  00:00:00
+null  ¦  null  ¦  null
+00:00:23  ¦  00:11:22  ¦  -00:11:22
+10:14:12  ¦  00:00:04  ¦  -10:12:19
+24:59:10  ¦  24:02:01  ¦  24:20:34
+12:00:01  ¦  00:00:19  ¦  02:34:03
+
+#SQL[@93,N62]Result[]
 create table time_04 (t1 int,t2 time,t3 datetime,t4 timestamp);
+
+#SQL[@94,N81]Result[]
 insert into time_04 values (1,"344:59:09","2020-09-12","2021-09-22 10:01:23.903");
+
+#SQL[@95,N21]Result[26, 66]
 select * from time_04;
-t1    t2    t3    t4
-1    344:59:09    2020-09-12 00:00:00    2021-09-22 10:01:24
+t1  ¦  t2  ¦  t3  ¦  t4
+1  ¦  344:59:09  ¦  2020-09-12 00:00:00  ¦  2021-09-22 10:01:24
+
+#SQL[@96,N35]Error[61]
 select timediff(t2,t3) from time_04;
 invalid input: timediff function have invalid input args type
+
+#SQL[@97,N35]Result[16, 11, 8, 4, 9, 8, 8, 8]
 select timediff(t1,t2) from time_01;
 timediff(t1, t2)
 -1677:59:58
 00:00:00
 null
-00:10:59
+-00:10:59
 10:14:08
 00:57:09
 11:59:42
+
+#SQL[@98,N54]Result[42, 14, 14, 14, 14, 14, 14, 14]
 select timediff(t1,NULL),timediff(NULL,t2)from time_01;
-timediff(t1, null)    timediff(null, t2)
-null    null
-null    null
-null    null
-null    null
-null    null
-null    null
-null    null
+timediff(t1, null)  ¦  timediff(null, t2)
+null  ¦  null
+null  ¦  null
+null  ¦  null
+null  ¦  null
+null  ¦  null
+null  ¦  null
+null  ¦  null
+
+#SQL[@99,N59]Result[51, 26]
 select timediff('20',NULL) , timediff('20','24:59:09.8453');
-timediff(20, null)    timediff(20, 24:59:09.8453)
-null    -24:58:49.845300000
+timediff(20, null)  ¦  timediff(20, 24:59:09.8453)
+null  ¦  -24:58:49.845300
+
+#SQL[@100,N76]Result[68, 39]
 select timediff('12:00','24:59:09.8453'),timediff('-838:59:59.0000','-1122');
-timediff(12:00, 24:59:09.8453)    timediff(-838:59:59.0000, -1122)
--12:59:09.845300000    -838:48:37
+timediff(12:00, 24:59:09.8453)  ¦  timediff(-838:59:59.0000, -1122)
+-12:59:09.845300  ¦  -838:48:37.000000
+
+#SQL[@101,N56]Result[16, 11, 8, 4, 9, 8, 8, 8]
 select * from (select timediff(t1,t2) from time_01) as t;
 timediff(t1, t2)
 -1677:59:58
 00:00:00
 null
-00:10:59
+-00:10:59
 10:14:08
 00:57:09
 11:59:42
+
+#SQL[@103,N34]Result[25, 8]
 select cast('02 10:11:12' as time);
-cast(02 10:11:12 as time(26))
+cast(02 10:11:12 as time)
 58:11:12
+
+#SQL[@104,N35]Result[26, 10]
 select cast('255 10:11:12' as time);
-cast(255 10:11:12 as time(26))
+cast(255 10:11:12 as time)
 6130:11:12
+
+#SQL[@106,N34]Result[]
 create database if not exists test;
+
+#SQL[@107,N8]Result[]
 use test;
+
+#SQL[@108,N34]Result[]
 drop table if exists mysql_ts_test;
+
+#SQL[@109,N94]Result[]
 create table if not exists mysql_ts_test (id int, col_date date, col_time time, col timestamp);
+
+#SQL[@110,N27]Result[]
 select * from mysql_ts_test;
-id    col_date    col_time    col
+
+#SQL[@111,N85]Result[]
 insert into mysql_ts_test values (1, '2024-03-13', '11:30:00', '2024-03-13 11:30:00');
+
+#SQL[@112,N101]Result[]
 insert into mysql_ts_test values (2, DATE '2024-03-14', TIME '2024', TIMESTAMP '2024-03-14 11:30:00');
+
+#SQL[@113,N98]Result[]
 insert into mysql_ts_test values (3, {d '2024-03-15'}, {t '11:30:30'}, {ts '2024-03-15 11:30:00'});
+
+#SQL[@114,N27]Result[39, 56, 56, 56]
 select * from mysql_ts_test;
-id    col_date    col_time    col
-1    2024-03-13    11:30:00    2024-03-13 11:30:00
-2    2024-03-14    00:20:24    2024-03-14 11:30:00
-3    2024-03-15    11:30:30    2024-03-15 11:30:00
+id  ¦  col_date  ¦  col_time  ¦  col
+1  ¦  2024-03-13  ¦  11:30:00  ¦  2024-03-13 11:30:00
+2  ¦  2024-03-14  ¦  00:20:24  ¦  2024-03-14 11:30:00
+3  ¦  2024-03-15  ¦  11:30:30  ¦  2024-03-15 11:30:00
+
+#SQL[@116,N82]Result[]
 insert into mysql_ts_test values (4, {d '2024-03-16'}, {t '23:59:59'}, {ts now()});
+
+#SQL[@117,N94]Result[]
 insert into mysql_ts_test values (4, {d '2024-03-16'}, {t '23:59:59'}, {ts current_timestamp});
+
+#SQL[@118,N27]Result[39, 56, 56, 56, 56, 56]
 select * from mysql_ts_test;
-id    col_date    col_time    col
-1    2024-03-13    11:30:00    2024-03-13 11:30:00
-2    2024-03-14    00:20:24    2024-03-14 11:30:00
-3    2024-03-15    11:30:30    2024-03-15 11:30:00
-4    2024-03-16    23:59:59    2024-03-15 15:25:37
-4    2024-03-16    23:59:59    2024-03-15 15:25:37
+id  ¦  col_date  ¦  col_time  ¦  col
+1  ¦  2024-03-13  ¦  11:30:00  ¦  2024-03-13 11:30:00
+2  ¦  2024-03-14  ¦  00:20:24  ¦  2024-03-14 11:30:00
+3  ¦  2024-03-15  ¦  11:30:30  ¦  2024-03-15 11:30:00
+4  ¦  2024-03-16  ¦  23:59:59  ¦  2025-10-10 03:42:13
+4  ¦  2024-03-16  ¦  23:59:59  ¦  2025-10-10 03:42:13
+
+#SQL[@120,N24]Result[]
 drop table mysql_ts_test;
+
+#SQL[@122,N45]Result[]
 drop table if exists stockpriceus2_5min_copy1;
+
+#SQL[@123,N125]Result[]
 create table stockpriceus2_5min_copy1 (
-id int auto_increment primary key,
-time_1 datetime,
-price decimal(10, 2));
+    id int auto_increment primary key,
+    time_1 datetime,
+    price decimal(10, 2));
+
+#SQL[@128,N243]Result[]
 insert into stockpriceus2_5min_copy1 (time_1, price) values
-('2023-06-25 14:00:00', 150.50),
-('2023-06-25 14:05:00', 151.00),
-('2022-06-25 14:10:00', 149.75),
-('2021-06-25 14:15:00', 148.25),
-('2020-06-25 14:20:00', 147.00);
+    ('2023-06-25 14:00:00', 150.50),
+    ('2023-06-25 14:05:00', 151.00),
+    ('2022-06-25 14:10:00', 149.75),
+    ('2021-06-25 14:15:00', 148.25),
+    ('2020-06-25 14:20:00', 147.00);
+
+#SQL[@135,N38]Result[25, 38, 38, 38, 38, 38]
 select * from stockpriceus2_5min_copy1;
-id    time_1    price
-1    2023-06-25 14:00:00    150.50
-2    2023-06-25 14:05:00    151.00
-3    2022-06-25 14:10:00    149.75
-4    2021-06-25 14:15:00    148.25
-5    2020-06-25 14:20:00    147.00
+id  ¦  time_1  ¦  price
+1  ¦  2023-06-25 14:00:00  ¦  150.50
+2  ¦  2023-06-25 14:05:00  ¦  151.00
+3  ¦  2022-06-25 14:10:00  ¦  149.75
+4  ¦  2021-06-25 14:15:00  ¦  148.25
+5  ¦  2020-06-25 14:20:00  ¦  147.00
+
+#SQL[@136,N99]Result[12, 4, 4, 4, 4]
 select year(`time_1`) as yr_time_1_ok
-from stockpriceus2_5min_copy1
-group by year(`time_1`);
+    from stockpriceus2_5min_copy1
+    group by year(`time_1`);
 yr_time_1_ok
 2023
 2022
 2021
 2020
+
+#SQL[@139,N82]Result[12, 4, 4, 4, 4]
 select year(`time_1`) as yr_time_1_ok
-from stockpriceus2_5min_copy1
+    from stockpriceus2_5min_copy1
 group by 1;
 yr_time_1_ok
 2023
 2022
 2021
 2020
+
+#SQL[@142,N35]Result[]
 drop table stockpriceus2_5min_copy1;
+
+#SQL[@144,N18]Result[]
 drop database test;
+

@@ -1,62 +1,124 @@
+#SQL[@2,N28]Result[]
 drop table if exists text_01;
+
+#SQL[@3,N28]Result[]
 drop table if exists text_02;
+
+#SQL[@4,N28]Result[]
 drop table if exists text_03;
+
+#SQL[@5,N28]Result[]
 drop table if exists text_04;
+
+#SQL[@6,N28]Result[]
 drop table if exists blob_01;
+
+#SQL[@7,N28]Result[]
 drop table if exists blob_02;
+
+#SQL[@8,N28]Result[]
 drop table if exists blob_03;
+
+#SQL[@9,N28]Result[]
 drop table if exists blob_04;
+
+#SQL[@10,N28]Result[]
 drop table if exists blob_05;
+
+#SQL[@13,N45]Result[]
 create table text_01(t1 text,t2 text,t3 text);
+
+#SQL[@14,N52]Result[]
 insert into text_01 values ('中文123abcd','',NULL);
+
+#SQL[@15,N52]Result[]
 insert into text_01 values ('yef&&190',' wwww ',983);
+
+#SQL[@16,N43]Result[]
 insert into text_01 select '',null,'中文';
+
+#SQL[@17,N54]Result[]
 insert into text_01 select '123','7834','commmmmmment';
+
+#SQL[@18,N51]Result[]
 insert into text_01 values ('789',' 23:50:00','20');
+
+#SQL[@19,N21]Result[18, 29, 29, 22, 31, 26]
 select * from text_01;
-t1    t2    t3
-中文123abcd        null
-yef&&190     wwww     983
-    null    中文
-123    7834    commmmmmment
-789     23:50:00    20
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+yef&&190  ¦   wwww   ¦  983
+  ¦  null  ¦  中文
+123  ¦  7834  ¦  commmmmmment
+789  ¦   23:50:00  ¦  20
+
+#SQL[@20,N75]Result[]
 create table text_02(t1 text,t2 tinytext,t3 mediumtext,t4 longtext,t5 text);
+
+#SQL[@21,N93]Result[]
 load data infile '$resources/blob_file/blob1.csv' into table text_02 fields terminated by ',';
+
+#SQL[@22,N21]Result[34, 94, 108, 99]
 select * from text_02;
-t1    t2    t3    t4    t5
-cat    345.678    2020-10-09    0001-01-01 00:00:00.000000    1970-01-01 00:00:01.0000
-123木头人    zt@126.com    1000-01-01    9999-12-31 23:59:59.999999    2038-01-19 03:14:07.999999
-abc$%*()#$    ttttt    9999-12-31    2019-10-23 23:00:08.9083    2030-01-01 03:14:07.999999
+t1  ¦  t2  ¦  t3  ¦  t4  ¦  t5
+cat  ¦  345.678  ¦  2020-10-09  ¦  0001-01-01 00:00:00.000000  ¦  1970-01-01 00:00:01.0000
+123木头人  ¦  zt@126.com  ¦  1000-01-01  ¦  9999-12-31 23:59:59.999999  ¦  2038-01-19 03:14:07.999999
+abc$%*()#$  ¦  ttttt  ¦  9999-12-31  ¦  2019-10-23 23:00:08.9083  ¦  2030-01-01 03:14:07.999999
+
+#SQL[@23,N127]Result[]
 insert into text_02 values ("123木头人","zt@126.com","1000-01-01","9999-12-31 23:59:59.999999","2038-01-19 03:14:07.999999");
+
+#SQL[@24,N21]Result[34, 94, 108, 99, 108]
 select * from text_02;
-t1    t2    t3    t4    t5
-cat    345.678    2020-10-09    0001-01-01 00:00:00.000000    1970-01-01 00:00:01.0000
-123木头人    zt@126.com    1000-01-01    9999-12-31 23:59:59.999999    2038-01-19 03:14:07.999999
-abc$%*()#$    ttttt    9999-12-31    2019-10-23 23:00:08.9083    2030-01-01 03:14:07.999999
-123木头人    zt@126.com    1000-01-01    9999-12-31 23:59:59.999999    2038-01-19 03:14:07.999999
+t1  ¦  t2  ¦  t3  ¦  t4  ¦  t5
+cat  ¦  345.678  ¦  2020-10-09  ¦  0001-01-01 00:00:00.000000  ¦  1970-01-01 00:00:01.0000
+123木头人  ¦  zt@126.com  ¦  1000-01-01  ¦  9999-12-31 23:59:59.999999  ¦  2038-01-19 03:14:07.999999
+abc$%*()#$  ¦  ttttt  ¦  9999-12-31  ¦  2019-10-23 23:00:08.9083  ¦  2030-01-01 03:14:07.999999
+123木头人  ¦  zt@126.com  ¦  1000-01-01  ¦  9999-12-31 23:59:59.999999  ¦  2038-01-19 03:14:07.999999
+
+#SQL[@25,N202]Result[]
 create external table text_03(t1 text,t2 tinytext,t3 mediumtext,t4 longtext,t5 text)infile{"filepath"='$resources/blob_file/blob1.csv'} fields terminated by ',' enclosed by '\"' lines terminated by '\n';
+
+#SQL[@26,N21]Result[34, 94, 108, 99]
 select * from text_03;
-t1    t2    t3    t4    t5
-cat    345.678    2020-10-09    0001-01-01 00:00:00.000000    1970-01-01 00:00:01.0000
-123木头人    zt@126.com    1000-01-01    9999-12-31 23:59:59.999999    2038-01-19 03:14:07.999999
-abc$%*()#$    ttttt    9999-12-31    2019-10-23 23:00:08.9083    2030-01-01 03:14:07.999999
+t1  ¦  t2  ¦  t3  ¦  t4  ¦  t5
+cat  ¦  345.678  ¦  2020-10-09  ¦  0001-01-01 00:00:00.000000  ¦  1970-01-01 00:00:01.0000
+123木头人  ¦  zt@126.com  ¦  1000-01-01  ¦  9999-12-31 23:59:59.999999  ¦  2038-01-19 03:14:07.999999
+abc$%*()#$  ¦  ttttt  ¦  9999-12-31  ¦  2019-10-23 23:00:08.9083  ¦  2030-01-01 03:14:07.999999
+
+#SQL[@27,N48]Result[]
 update text_02 set t3='yelllllow' where t1='cat';
+
+#SQL[@28,N45]Result[]
 update text_02 set t2='786374' where t1='cat';
+
+#SQL[@29,N40]Result[10, 21]
 select t2,t3 from text_02 where t1='cat';
-t2    t3
-786374    yelllllow
+t2  ¦  t3
+786374  ¦  yelllllow
+
+#SQL[@30,N58]Result[]
 delete from text_02  where t4='0001-01-01 00:00:00.000000';
+
+#SQL[@31,N21]Result[34, 108, 99, 108]
 select * from text_02;
-t1    t2    t3    t4    t5
-123木头人    zt@126.com    1000-01-01    9999-12-31 23:59:59.999999    2038-01-19 03:14:07.999999
-abc$%*()#$    ttttt    9999-12-31    2019-10-23 23:00:08.9083    2030-01-01 03:14:07.999999
-123木头人    zt@126.com    1000-01-01    9999-12-31 23:59:59.999999    2038-01-19 03:14:07.999999
+t1  ¦  t2  ¦  t3  ¦  t4  ¦  t5
+123木头人  ¦  zt@126.com  ¦  1000-01-01  ¦  9999-12-31 23:59:59.999999  ¦  2038-01-19 03:14:07.999999
+abc$%*()#$  ¦  ttttt  ¦  9999-12-31  ¦  2019-10-23 23:00:08.9083  ¦  2030-01-01 03:14:07.999999
+123木头人  ¦  zt@126.com  ¦  1000-01-01  ¦  9999-12-31 23:59:59.999999  ¦  2038-01-19 03:14:07.999999
+
+#SQL[@32,N22]Result[]
 truncate table text_02;
+
+#SQL[@33,N21]Result[]
 select * from text_02;
-t1    t2    t3    t4    t5
+
+#SQL[@36,N68]Result[38, 22]
 select cast(t2 as time), cast(t3 as time)from text_01 where t1='789';
-cast(t2 as time(26))    cast(t3 as time(26))
-23:50:00    00:00:20
+cast(t2 as time)  ¦  cast(t3 as time)
+23:50:00  ¦  00:00:20
+
+#SQL[@37,N36]Result[16, 0, 6, 4, 4, 9]
 select cast(t2 as blob) from text_01;
 cast(t2 as blob)
 
@@ -64,261 +126,468 @@ cast(t2 as blob)
 null
 7834
  23:50:00
+
+#SQL[@38,N42]Result[38, 10]
 select cast(null as text),cast("" as text);
-cast(null as text)    cast( as text)
-null    
+cast(null as text)  ¦  cast( as text)
+null  ¦  
+
+#SQL[@39,N53]Result[]
 create table text_04(t1 text,t2 time,t3 json,t4 blob);
+
+#SQL[@40,N70]Result[]
 insert into text_04 values ('ttttt','12:00','{"a":"1","b":"2"}','yes');
+
+#SQL[@41,N21]Result[26, 54]
 select * from text_04;
-t1    t2    t3    t4
-ttttt    12:00:00    {"a": "1", "b": "2"}    yes
+t1  ¦  t2  ¦  t3  ¦  t4
+ttttt  ¦  12:00:00  ¦  {"a": "1", "b": "2"}  ¦  yes
+
+#SQL[@42,N35]Result[16, 8]
 select cast(t2 as text)from text_04;
 cast(t2 as text)
 12:00:00
+
+#SQL[@43,N35]Result[16, 20]
 select cast(t3 as text)from text_04;
 cast(t3 as text)
 {"a": "1", "b": "2"}
+
+#SQL[@44,N35]Result[16, 3]
 select cast(t4 as text)from text_04;
 cast(t4 as text)
 yes
+
+#SQL[@47,N45]Result[35, 19]
 select count(t1),max(t2),min(t3) from text_01;
-count(t1)    max(t2)    min(t3)
-5    7834    20
+count(t1)  ¦  max(t2)  ¦  min(t3)
+5  ¦  7834  ¦  20
+
+#SQL[@48,N27]Error[47]
 select bin(t3) from text_01;
-Data truncation: data out of range: data type uint8, value '983'
+data out of range: data type uint8, value '983'
+
+#SQL[@49,N29]Error[49]
 select space(t3) from text_01;
 invalid argument cast to uint64, bad value 中文
+
+#SQL[@50,N57]Result[18, 29, 29]
 select * from text_01 where t3 is null or length (t1)  >3;
-t1    t2    t3
-中文123abcd        null
-yef&&190     wwww     983
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+yef&&190  ¦   wwww   ¦  983
+
+#SQL[@51,N56]Result[]
 select * from text_01 where t3 between  '100' and '1000';
-t1    t2    t3
+
+#SQL[@52,N60]Result[18, 29, 22, 31, 26]
 select * from text_01 where t3 not between  '100' and '1000';
-t1    t2    t3
-yef&&190     wwww     983
-    null    中文
-123    7834    commmmmmment
-789     23:50:00    20
+t1  ¦  t2  ¦  t3
+yef&&190  ¦   wwww   ¦  983
+  ¦  null  ¦  中文
+123  ¦  7834  ¦  commmmmmment
+789  ¦   23:50:00  ¦  20
+
+#SQL[@53,N81]Result[18, 29]
 select * from text_01 where t1 in('yef&&190','','789') and t2 not in(' 23:50:00');
-t1    t2    t3
-yef&&190     wwww     983
+t1  ¦  t2  ¦  t3
+yef&&190  ¦   wwww   ¦  983
+
+#SQL[@56,N75]Result[]
 create table text_05(t1 text,t2 text,t3 text, t4 varchar(250),t5 char(250));
+
+#SQL[@57,N41]Result[]
 insert into text_05 select * from text_03;
+
+#SQL[@58,N69]Result[]
 insert into text_05 values ('789',' 23:50:00','20','12345','noooooo');
+
+#SQL[@59,N61]Result[10, 18]
 select t1,t2 from text_01 intersect select t1,t2 from text_05;
-t1    t2
-789     23:50:00
+t1  ¦  t2
+789  ¦   23:50:00
+
+#SQL[@60,N57]Result[10, 19, 20, 10, 13]
 select t1,t2 from text_01 minus select t1,t2 from text_05;
-t1    t2
-    null
-中文123abcd    
-yef&&190     wwww 
-123    7834
+t1  ¦  t2
+中文123abcd  ¦  
+yef&&190  ¦   wwww 
+  ¦  null
+123  ¦  7834
+
+#SQL[@63,N59]Result[18, 29, 31]
 select * from (select * from text_01 where t1 like '%123%');
-t1    t2    t3
-中文123abcd        null
-123    7834    commmmmmment
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+123  ¦  7834  ¦  commmmmmment
+
+#SQL[@64,N58]Result[18, 26]
 select * from text_01 where t1 in (select t1 from text_05);
-t1    t2    t3
-789     23:50:00    20
-select * from text_01 where t2 > (select t2 from text_05 where t1='789');
-t1    t2    t3
-yef&&190     wwww     983
-123    7834    commmmmmment
+t1  ¦  t2  ¦  t3
+789  ¦   23:50:00  ¦  20
+
+#SQL[@68,N67]Result[18, 29, 22, 31, 26]
 select t1,t2,t3 from text_01 where t1 < any(select t2 from text_05);
-t1    t2    t3
-yef&&190     wwww     983
-    null    中文
-123    7834    commmmmmment
-789     23:50:00    20
+t1  ¦  t2  ¦  t3
+yef&&190  ¦   wwww   ¦  983
+  ¦  null  ¦  中文
+123  ¦  7834  ¦  commmmmmment
+789  ¦   23:50:00  ¦  20
+
+#SQL[@69,N68]Result[18, 29]
 select t1,t2,t3 from text_01 where t1 >= all(select t2 from text_05);
-t1    t2    t3
-中文123abcd        null
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+
+#SQL[@70,N69]Result[18, 29, 29, 31, 26]
 select t1,t2,t3 from text_01 where t1 >= some(select t2 from text_05);
-t1    t2    t3
-中文123abcd        null
-yef&&190     wwww     983
-123    7834    commmmmmment
-789     23:50:00    20
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+yef&&190  ¦   wwww   ¦  983
+123  ¦  7834  ¦  commmmmmment
+789  ¦   23:50:00  ¦  20
+
+#SQL[@71,N58]Result[18, 29, 29, 22, 31, 26]
 select * from text_01 where exists(select t2 from text_05);
-t1    t2    t3
-中文123abcd        null
-yef&&190     wwww     983
-    null    中文
-123    7834    commmmmmment
-789     23:50:00    20
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+yef&&190  ¦   wwww   ¦  983
+  ¦  null  ¦  中文
+123  ¦  7834  ¦  commmmmmment
+789  ¦   23:50:00  ¦  20
+
+#SQL[@72,N62]Result[]
 select * from text_01 where not exists(select t2 from text_05);
-t1    t2    t3
+
+#SQL[@75,N63]Error[50]
 create table text_02(t1 int,t2 text,t3 text,primary key(t1,t2));
 not supported: TEXT column 't2' cannot be in index
+
+#SQL[@76,N56]Error[39]
 create table text_02(t1 int,t2 text primary key,t3 text);
 not supported: text type in primary key
+
+#SQL[@78,N42]Result[]
 prepare stmt1 from 'select * from text_01';
+
+#SQL[@79,N13]Result[18, 29, 29, 22, 31, 26]
 execute stmt1;
-t1    t2    t3
-中文123abcd        null
-yef&&190     wwww     983
-    null    中文
-123    7834    commmmmmment
-789     23:50:00    20
+t1  ¦  t2  ¦  t3
+中文123abcd  ¦    ¦  null
+yef&&190  ¦   wwww   ¦  983
+  ¦  null  ¦  中文
+123  ¦  7834  ¦  commmmmmment
+789  ¦   23:50:00  ¦  20
+
+#SQL[@82,N45]Result[]
 create table blob_01(b1 blob,b2 blob,b3 blob);
+
+#SQL[@83,N60]Result[]
 insert into blob_01 values ('no','中文','89233432234234 ');
+
+#SQL[@84,N60]Result[]
 insert into blob_01 values ('',' hhhh@126.com','0001-01-01');
+
+#SQL[@85,N49]Result[]
 insert into blob_01 values ('#$%^&*()',NULL,null);
+
+#SQL[@86,N21]Result[18, 35, 35, 28]
 select * from blob_01;
-b1    b2    b3
-no    ä¸­æ    89233432234234 
-     hhhh@126.com    0001-01-01
-#$%^&*()    null    null
+b1  ¦  b2  ¦  b3
+no  ¦  中文  ¦  89233432234234 
+  ¦   hhhh@126.com  ¦  0001-01-01
+#$%^&*()  ¦  null  ¦  null
+
+#SQL[@87,N52]Result[42, 16, 17, 21]
 select length(b1),length(b2),length(b3) from blob_01;
-length(b1)    length(b2)    length(b3)
-2    6    15
-0    13    10
-8    null    null
+length(b1)  ¦  length(b2)  ¦  length(b3)
+2  ¦  6  ¦  15
+0  ¦  13  ¦  10
+8  ¦  null  ¦  null
+
+#SQL[@88,N51]Result[39, 17, 14, 14]
 select substring(b3,5),substr(b2,-3,2) from blob_01;
-substring(b3, 5)    substr(b2, -3, 2)
-3432234234     
--01-01    co
-null    null
+substring(b3, 5)  ¦  substr(b2, -3, 2)
+3432234234   ¦  
+-01-01  ¦  co
+null  ¦  null
+
+#SQL[@89,N29]Result[9, 1]
 select count(b1) from blob_01;
 count(b1)
 3
+
+#SQL[@90,N35]Result[20, 22]
 select max(b2),min(b3) from blob_01;
-max(b2)    min(b3)
-ä¸­æ    0001-01-01
+max(b2)  ¦  min(b3)
+中文  ¦  0001-01-01
+
+#SQL[@91,N26]Result[14, 8, 13, 4]
 select b1||b2 from blob_01;
 concat(b1, b2)
-noä¸­æ
+no中文
  hhhh@126.com
 null
+
+#SQL[@94,N48]Error[39]
 create table blob_02(b1 blob primary key,b2 int);
 not supported: blob type in primary key
+
+#SQL[@95,N55]Error[50]
 create table blob_02(b1 blob,b2 int,primary key(b1,b2));
 not supported: BLOB column 'b1' cannot be in index
+
+#SQL[@96,N45]Result[]
 create table blob_02(b1 blob not null,b2 int);
+
+#SQL[@97,N36]Error[48]
 insert into blob_02 values (null,40);
 constraint violation: Column 'b1' cannot be null
+
+#SQL[@98,N39]Result[]
 insert into blob_02 values ('12345',43);
+
+#SQL[@99,N44]Result[]
 insert into blob_02 values ('tennis','0934');
+
+#SQL[@100,N21]Result[10, 13, 15]
 select * from blob_02;
-b1    b2
-12345    43
-tennis    934
+b1  ¦  b2
+12345  ¦  43
+tennis  ¦  934
+
+#SQL[@101,N27]Result[]
 update blob_02 set b1='abc';
+
+#SQL[@102,N21]Result[10, 11, 12]
 select * from blob_02;
-b1    b2
-abc    43
-abc    934
+b1  ¦  b2
+abc  ¦  43
+abc  ¦  934
+
+#SQL[@103,N31]Result[]
 delete from blob_02 where b2=43;
+
+#SQL[@104,N21]Result[10, 12]
 select * from blob_02;
-b1    b2
-abc    934
+b1  ¦  b2
+abc  ¦  934
+
+#SQL[@105,N22]Result[]
 truncate table blob_02;
+
+#SQL[@106,N21]Result[]
 select * from blob_02;
-b1    b2
+
+#SQL[@107,N18]Result[]
 drop table blob_02;
+
+#SQL[@108,N50]Result[]
 create table blob_02(b1 blob default 'tom',b2 int);
+
+#SQL[@109,N35]Result[]
 insert into blob_02(b2) values (50);
+
+#SQL[@110,N21]Result[10, 11]
 select * from blob_02;
-b1    b2
-tom    50
+b1  ¦  b2
+tom  ¦  50
+
+#SQL[@111,N18]Result[]
 drop table blob_02;
+
+#SQL[@114,N70]Result[67, 25]
 select cast('苏轼' as blob),cast('alex' as blob),cast('123' as blob);
-cast(苏轼 as blob)    cast(alex as blob)    cast(123 as blob)
-èè½¼    alex    123
+cast(苏轼 as blob)  ¦  cast(alex as blob)  ¦  cast(123 as blob)
+苏轼  ¦  alex  ¦  123
+
+#SQL[@115,N51]Result[46, 18]
 select cast('@#$%^' as blob),cast('hhh@123'as blob);
-cast(@#$%^ as blob)    cast(hhh@123 as blob)
-@#$%^    hhh@123
+cast(@#$%^ as blob)  ¦  cast(hhh@123 as blob)
+@#$%^  ¦  hhh@123
+
+#SQL[@116,N102]Result[]
 create table blob_03(t1 text,t2 time,t3 json,t4 blob,t5 int,t6 varchar(100),t7 double,t8 decimal(6,3));
+
+#SQL[@117,N97]Result[]
 insert into blob_03 values ('枫叶','0150','{"a":"1","b":"2"}','checkin',30,'zzzow',89.02,23.90);
+
+#SQL[@118,N121]Result[126, 62]
 select cast(t1 as blob),cast(t2 as blob),cast(t5 as blob),cast(t6 as blob),cast(t7 as blob),cast(t8 as blob) from blob_03;
-cast(t1 as blob)    cast(t2 as blob)    cast(t5 as blob)    cast(t6 as blob)    cast(t7 as blob)    cast(t8 as blob)
-æ«å¶    00:01:50    30    zzzow    89.02    23.900
+cast(t1 as blob)  ¦  cast(t2 as blob)  ¦  cast(t5 as blob)  ¦  cast(t6 as blob)  ¦  cast(t7 as blob)  ¦  cast(t8 as blob)
+枫叶  ¦  00:01:50  ¦  30  ¦  zzzow  ¦  89.02  ¦  23.900
+
+#SQL[@119,N36]Error[53]
 select cast(t3 as blob) from blob_03;
 invalid argument operator cast, bad value [JSON BLOB]
+
+#SQL[@120,N43]Result[24, 7]
 select cast(t4 as varchar(255))from blob_03;
 cast(t4 as varchar(255))
 checkin
+
+#SQL[@123,N22]Result[15, 4]
 select load_file(null);
 load_file(null)
 null
+
+#SQL[@124,N20]Error[18]
 select load_file('');
 file  is not found
+
+#SQL[@125,N32]Error[25]
 select load_file('/opt/aaa.csv');
 file aaa.csv is not found
+
+#SQL[@126,N20]Error[20]
 select load_file(12);
 file 12 is not found
+
+#SQL[@127,N50]Result[73, 273]
 select load_file('$resources/blob_file/blob1.csv');
-load_file(/Users/heni/matrixone/test/resources/blob_file/blob1.csv)
-"cat","345.678","2020-10-09","0001-01-01 00:00:00.000000","1970-01-01 00:00:01.0000"\n"123木头人","zt@126.com","1000-01-01","9999-12-31 23:59:59.999999","2038-01-19 03:14:07.999999"\n"abc$%*()#$","ttttt","9999-12-31","2019-10-23 23:00:08.9083","2030-01-01 03:14:07.999999"
+load_file(/root/matrixone/test/distributed/resources/blob_file/blob1.csv)
+"cat","345.678","2020-10-09","0001-01-01 00:00:00.000000","1970-01-01 00:00:01.0000"
+"123木头人","zt@126.com","1000-01-01","9999-12-31 23:59:59.999999","2038-01-19 03:14:07.999999"
+"abc$%*()#$","ttttt","9999-12-31","2019-10-23 23:00:08.9083","2030-01-01 03:14:07.999999"
+
+#SQL[@128,N59]Result[82, 5]
 select length(load_file('$resources/blob_file/blob3.jpeg'));
-length(load_file(/Users/heni/matrixone/test/resources/blob_file/blob3.jpeg))
+length(load_file(/root/matrixone/test/distributed/resources/blob_file/blob3.jpeg))
 55886
+
+#SQL[@129,N58]Result[81, 3]
 select length(load_file('$resources/blob_file/blob1.csv'));
-length(load_file(/Users/heni/matrixone/test/resources/blob_file/blob1.csv))
+length(load_file(/root/matrixone/test/distributed/resources/blob_file/blob1.csv))
 273
+
+#SQL[@130,N42]Result[]
 create table blob_04(a int,b varchar(290));
+
+#SQL[@131,N73]Result[]
 insert into blob_04 values(1,load_file('$resources/blob_file/blob1.csv'));
+
+#SQL[@134,N34]Result[]
 create table blob_02(a int,b blob);
+
+#SQL[@135,N73]Result[]
 insert into blob_02 values(3,load_file('$resources/blob_file/blob1.csv'));
+
+#SQL[@136,N74]Result[]
 insert into blob_02 values(4,load_file('$resources/blob_file/blob3.jpeg'));
+
+#SQL[@137,N73]Result[]
 insert into blob_02 values(5,load_file('$resources/blob_file/blob4.gif'));
+
+#SQL[@138,N74]Result[]
 insert into blob_02 values(6,load_file('$resources/blob_file/blob5.docx'));
+
+#SQL[@139,N74]Result[]
 insert into blob_02 values(7,load_file('$resources/blob_file/blob6.pptx'));
+
+#SQL[@140,N73]Result[]
 insert into blob_02 values(8,load_file('$resources/blob_file/blob7.pdf'));
+
+#SQL[@141,N74]Result[]
 insert into blob_02 values(9,load_file('$resources/blob_file/blob8.xlsx'));
+
+#SQL[@142,N74]Result[]
 insert into blob_02 values(10,load_file('$resources/blob_file/blob9.xml'));
+
+#SQL[@143,N31]Result[16, 10, 12, 12, 12, 12, 12, 11, 12]
 select a,length(b) from blob_02;
-a    length(b)
-3    273
-4    55886
-5    48008
-6    10098
-7    44945
-8    15324
-9    8655
-10    3448
+a  ¦  length(b)
+3  ¦  273
+4  ¦  55886
+5  ¦  48008
+6  ¦  10098
+7  ¦  44945
+8  ¦  15324
+9  ¦  8655
+10  ¦  3448
+
+#SQL[@144,N73]Result[]
 insert into blob_02 values(1,load_file('$resources/blob_file/blob2.mp3'));
+
+#SQL[@145,N72]Result[]
 insert into blob_02 select 2,load_file('$resources/blob_file/blob2.mp3');
+
+#SQL[@146,N48]Result[16, 13, 13]
 select a,length(b) from blob_02 where a in (1,2);
-a    length(b)
-1    506267
-2    506267
+a  ¦  length(b)
+1  ¦  506267
+2  ¦  506267
+
+#SQL[@148,N55]Result[]
 prepare stmt2 from 'create table blob_05(a int,b blob)';
+
+#SQL[@149,N14]Result[]
 execute stmt2 ;
+
+#SQL[@150,N96]Result[]
 prepare stmt2 from 'insert into blob_05 values(4, load_file("$resources/blob_file/blob3.jpeg"))';
+
+#SQL[@151,N14]Result[]
 execute stmt2 ;
+
+#SQL[@152,N50]Result[]
 prepare stmt2 from 'select length(b) from blob_05';
+
+#SQL[@153,N14]Result[9, 5]
 execute stmt2 ;
 length(b)
 55886
+
+#SQL[@154,N24]Result[]
 deallocate prepare stmt1;
+
+#SQL[@155,N24]Result[]
 deallocate prepare stmt2;
+
+#SQL[@157,N30]Result[]
 create table testblob(c1 blob);
+
+#SQL[@159,N204]Result[]
 INSERT into testblob VALUES ('<?xml version="1.0" encoding="ISO-8859-1"?><book category="COOKING"><title lang="en">everyday</titile><author>laurentis</author><year>2005</year><price>20.34</price></book>');
+
+#SQL[@160,N35]Result[14, 344]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
+
+#SQL[@162,N43]Result[]
 insert into testblob values(0xC20766572736);
+
+#SQL[@163,N35]Result[14, 344, 12]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
 C20766572736
+
+#SQL[@164,N45]Result[]
 insert into testblob values(0x2635AB72632402);
+
+#SQL[@165,N35]Result[14, 344, 12, 14]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
 C20766572736
 2635AB72632402
+
+#SQL[@167,N44]Result[]
 insert into testblob values('yyyyybbbbbbbb');
+
+#SQL[@168,N35]Result[14, 344, 12, 14, 26]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
 C20766572736
 2635AB72632402
 79797979796262626262626262
+
+#SQL[@170,N34]Result[]
 insert into testblob values(65536);
+
+#SQL[@171,N35]Result[14, 344, 12, 14, 26, 10]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
@@ -326,7 +595,11 @@ C20766572736
 2635AB72632402
 79797979796262626262626262
 3635353336
+
+#SQL[@173,N37]Result[]
 insert into testblob values("中国");
+
+#SQL[@174,N35]Result[14, 344, 12, 14, 26, 10, 12]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
@@ -335,7 +608,11 @@ C20766572736
 79797979796262626262626262
 3635353336
 E4B8ADE59BBD
+
+#SQL[@176,N69]Result[]
 insert into testblob values('12735ksuhWEDf&*()-=+{}[]\:?/,.~!@#$%^|');
+
+#SQL[@177,N35]Result[14, 344, 12, 14, 26, 10, 12, 74]
 select upper(hex(c1)) from testblob;
 upper(hex(c1))
 3C3F786D6C2076657273696F6E3D22312E302220656E636F64696E673D2249534F2D383835392D31223F3E3C626F6F6B2063617465676F72793D22434F4F4B494E47223E3C7469746C65206C616E673D22656E223E65766572796461793C2F746974696C653E3C617574686F723E6C617572656E7469733C2F617574686F723E3C796561723E323030353C2F796561723E3C70726963653E32302E33343C2F70726963653E3C2F626F6F6B3E
@@ -345,3 +622,4 @@ C20766572736
 3635353336
 E4B8ADE59BBD
 31323733356B73756857454466262A28292D3D2B7B7D5B5D3A3F2F2C2E7E21402324255E7C
+

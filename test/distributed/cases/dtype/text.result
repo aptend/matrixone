@@ -1,21 +1,46 @@
+#SQL[@7,N23]Result[]
 drop table if exists t1;
+
+#SQL[@8,N24]Result[]
 create table t1 (a text);
+
+#SQL[@9,N31]Result[]
 insert into t1 values('abcdef');
+
+#SQL[@10,N31]Result[]
 insert into t1 values('_bcdef');
+
+#SQL[@11,N31]Result[]
 insert into t1 values('a_cdef');
+
+#SQL[@12,N31]Result[]
 insert into t1 values('ab_def');
+
+#SQL[@13,N31]Result[]
 insert into t1 values('abc_ef');
+
+#SQL[@14,N31]Result[]
 insert into t1 values('abcd_f');
+
+#SQL[@15,N31]Result[]
 insert into t1 values('abcde_');
+
+#SQL[@16,N54]Result[1, 6]
 select * from t1 where a like 'ab\_def' order by 1 asc;
 a
 ab_def
+
+#SQL[@17,N54]Result[1, 6]
 select * from t1 where a not like 'a%' order by a desc;
 a
 _bcdef
+
+#SQL[@18,N55]Result[1, 6]
 select * from t1 where a like "\__cdef" order by 1 desc;
 a
 _bcdef
+
+#SQL[@19,N41]Result[1, 6, 6, 6, 6, 6, 6]
 select * from t1 where a not like "%d_\_";
 a
 abcdef
@@ -24,18 +49,24 @@ a_cdef
 ab_def
 abc_ef
 abcd_f
+
+#SQL[@20,N13]Result[]
 drop table t1;
+
+#SQL[@21,N285]Result[]
 CREATE TABLE employees (
-employeeNumber int(11) NOT NULL,
-lastName text NOT NULL,
-firstName text NOT NULL,
-extension text NOT NULL,
-email text NOT NULL,
-officeCode text NOT NULL,
-reportsTo int(11) DEFAULT NULL,
-jobTitle text NOT NULL,
-PRIMARY KEY (employeeNumber)
-);
+  employeeNumber int(11) NOT NULL,
+  lastName text NOT NULL,
+  firstName text NOT NULL,
+  extension text NOT NULL,
+  email text NOT NULL,
+  officeCode text NOT NULL,
+  reportsTo int(11) DEFAULT NULL,
+  jobTitle text NOT NULL,
+  PRIMARY KEY (employeeNumber)
+  );
+
+#SQL[@32,N1706]Result[]
 insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values
 (1002,'Murphy','Diane','x5800','dmurphy@classicmodelcars.com','1',NULL,'President'),
 (1056,'Patterson','Mary','x4611','mpatterso@classicmodelcars.com','1',1002,'VP Sales'),
@@ -55,79 +86,103 @@ insert  into employees(employeeNumber,lastName,firstName,extension,email,officeC
 (1501,'Bott','Larry','x2311','lbott@classicmodelcars.com','7',1102,'Sales Rep'),
 (1504,'Jones','Barry','x102','bjones@classicmodelcars.com','7',1102,'Sales Rep'),
 (1611,'Fixter','Andy','x101','afixter@classicmodelcars.com','6',1088,'Sales Rep');
+
+#SQL[@51,N97]Result[33, 8, 8]
 select officeCode,count(officeCode) from employees group by officeCode having count(officeCode)>2;
-officeCode	count(officeCode)
-1	6
-4	4
+officeCode  ¦  count(officeCode)
+1  ¦  6
+4  ¦  4
+
+#SQL[@52,N94]Result[23, 15, 16]
 select lastName,firstName from employees where cast(officeCode as unsigned)>5 limit 2 offset 1;
-lastName	firstName
-Bott	Larry
-Jones	Barry
+lastName  ¦  firstName
+Bott  ¦  Larry
+Jones  ¦  Barry
+
+#SQL[@53,N49]Result[32, 18]
 select max(lastName),min(lastName) from employees;
-max(lastName)	min(lastName)
-Vanauf	Bondur
+max(lastName)  ¦  min(lastName)
+Vanauf  ¦  Bondur
+
+#SQL[@54,N76]Result[46, 33, 38, 40, 50, 43, 36, 33]
 select max(lastName),min(lastName),JobTitle from employees group by JobTitle;
-max(lastName)	min(lastName)	JobTitle
-Murphy	Murphy	President
-Patterson	Patterson	VP Sales
-Firrelli	Firrelli	VP Marketing
-Patterson	Patterson	Sales Manager (APAC)
-Bondur	Bondur	Sale Manager (EMEA)
-Bow	Bow	Sales Manager (NA)
-Vanauf	Bondur	Sales Rep
+max(lastName)  ¦  min(lastName)  ¦  JobTitle
+Murphy  ¦  Murphy  ¦  President
+Patterson  ¦  Patterson  ¦  VP Sales
+Firrelli  ¦  Firrelli  ¦  VP Marketing
+Patterson  ¦  Patterson  ¦  Sales Manager (APAC)
+Bondur  ¦  Bondur  ¦  Sale Manager (EMEA)
+Bow  ¦  Bow  ¦  Sales Manager (NA)
+Vanauf  ¦  Bondur  ¦  Sales Rep
+
+#SQL[@55,N66]Result[23, 17, 19, 16, 20, 19, 18, 21, 16, 16]
 select lastName,firstName from employees where lastName>=firstName;
-lastName	firstName
-Murphy	Diane
-Patterson	Mary
-Bow	Anthony
-Thompson	Leslie
-Tseng	Foon Yue
-Vanauf	George
-Hernandez	Gerard
-Jones	Barry
-Fixter	Andy
+lastName  ¦  firstName
+Murphy  ¦  Diane
+Patterson  ¦  Mary
+Bow  ¦  Anthony
+Thompson  ¦  Leslie
+Tseng  ¦  Foon Yue
+Vanauf  ¦  George
+Hernandez  ¦  Gerard
+Jones  ¦  Barry
+Fixter  ¦  Andy
+
+#SQL[@56,N86]Result[23, 17, 19, 16, 21, 16, 16]
 select lastName,firstName from employees where lastName between firstName and JobTitle;
-lastName	firstName
-Murphy	Diane
-Patterson	Mary
-Bow	Anthony
-Hernandez	Gerard
-Jones	Barry
-Fixter	Andy
+lastName  ¦  firstName
+Murphy  ¦  Diane
+Patterson  ¦  Mary
+Bow  ¦  Anthony
+Hernandez  ¦  Gerard
+Jones  ¦  Barry
+Fixter  ¦  Andy
+
+#SQL[@57,N89]Result[114, 108, 110]
 select * from employees where officeCode in ('2','3','4') order by 1 asc,3 desc limit 1,2;
-employeeNumber	lastName	firstName	extension	email	officeCode	reportsTo	jobTitle
-1188	Firrelli	Julie	x2173	jfirrelli@classicmodelcars.com	2	1143	Sales Rep
-1216	Patterson	Steve	x4334	spatterson@classicmodelcars.com	2	1143	Sales Rep
+employeenumber  ¦  lastname  ¦  firstname  ¦  extension  ¦  email  ¦  officecode  ¦  reportsto  ¦  jobtitle
+1188  ¦  Firrelli  ¦  Julie  ¦  x2173  ¦  jfirrelli@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+1216  ¦  Patterson  ¦  Steve  ¦  x4334  ¦  spatterson@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+
+#SQL[@58,N61]Result[114, 123, 115, 108, 110, 105, 105, 103, 110, 109, 102]
 select * from employees where officeCode not in ('5','7','1');
-employeeNumber	lastName	firstName	extension	email	officeCode	reportsTo	jobTitle
-1088	Patterson	William	x4871	wpatterson@classicmodelcars.com	6	1056	Sales Manager (APAC)
-1102	Bondur	Gerard	x5408	gbondur@classicmodelcars.com	4	1056	Sale Manager (EMEA)
-1188	Firrelli	Julie	x2173	jfirrelli@classicmodelcars.com	2	1143	Sales Rep
-1216	Patterson	Steve	x4334	spatterson@classicmodelcars.com	2	1143	Sales Rep
-1286	Tseng	Foon Yue	x2248	ftseng@classicmodelcars.com	3	1143	Sales Rep
-1323	Vanauf	George	x4102	gvanauf@classicmodelcars.com	3	1143	Sales Rep
-1337	Bondur	Loui	x6493	lbondur@classicmodelcars.com	4	1102	Sales Rep
-1370	Hernandez	Gerard	x2028	ghernande@classicmodelcars.com	4	1102	Sales Rep
-1401	Castillo	Pamela	x2759	pcastillo@classicmodelcars.com	4	1102	Sales Rep
-1611	Fixter	Andy	x101	afixter@classicmodelcars.com	6	1088	Sales Rep
+employeenumber  ¦  lastname  ¦  firstname  ¦  extension  ¦  email  ¦  officecode  ¦  reportsto  ¦  jobtitle
+1088  ¦  Patterson  ¦  William  ¦  x4871  ¦  wpatterson@classicmodelcars.com  ¦  6  ¦  1056  ¦  Sales Manager (APAC)
+1102  ¦  Bondur  ¦  Gerard  ¦  x5408  ¦  gbondur@classicmodelcars.com  ¦  4  ¦  1056  ¦  Sale Manager (EMEA)
+1188  ¦  Firrelli  ¦  Julie  ¦  x2173  ¦  jfirrelli@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+1216  ¦  Patterson  ¦  Steve  ¦  x4334  ¦  spatterson@classicmodelcars.com  ¦  2  ¦  1143  ¦  Sales Rep
+1286  ¦  Tseng  ¦  Foon Yue  ¦  x2248  ¦  ftseng@classicmodelcars.com  ¦  3  ¦  1143  ¦  Sales Rep
+1323  ¦  Vanauf  ¦  George  ¦  x4102  ¦  gvanauf@classicmodelcars.com  ¦  3  ¦  1143  ¦  Sales Rep
+1337  ¦  Bondur  ¦  Loui  ¦  x6493  ¦  lbondur@classicmodelcars.com  ¦  4  ¦  1102  ¦  Sales Rep
+1370  ¦  Hernandez  ¦  Gerard  ¦  x2028  ¦  ghernande@classicmodelcars.com  ¦  4  ¦  1102  ¦  Sales Rep
+1401  ¦  Castillo  ¦  Pamela  ¦  x2759  ¦  pcastillo@classicmodelcars.com  ¦  4  ¦  1102  ¦  Sales Rep
+1611  ¦  Fixter  ¦  Andy  ¦  x101  ¦  afixter@classicmodelcars.com  ¦  6  ¦  1088  ¦  Sales Rep
+
+#SQL[@59,N86]Result[49, 8, 9, 9, 8, 8, 9]
 select officeCode,sum(cast(officeCode as unsigned)) from employees group by officeCode;
-officeCode	sum(cast(officeCode as unsigned))
-1	6
-6	12
-4	16
-2	4
-3	6
-7	14
+officeCode  ¦  sum(cast(officeCode as unsigned))
+1  ¦  6
+6  ¦  12
+4  ¦  16
+2  ¦  4
+3  ¦  6
+7  ¦  14
+
+#SQL[@60,N146]Result[45, 21, 21, 21, 21]
 select employeeNumber,officeCode,reportsTo from employees where employeeNumber>1400 and reportsTo is not null order by officeCode+1,employeeNumber;
-employeeNumber	officeCode	reportsTo
-1401	4	1102
-1611	6	1088
-1501	7	1102
-1504	7	1102
+employeeNumber  ¦  officeCode  ¦  reportsTo
+1401  ¦  4  ¦  1102
+1611  ¦  6  ¦  1088
+1501  ¦  7  ¦  1102
+1504  ¦  7  ¦  1102
+
+#SQL[@62,N56]Result[]
 create table job(
 jobid int primary key,
 jobTitle text
 );
+
+#SQL[@66,N189]Result[]
 insert into job values
 (1,'President'),
 (2,'VP Sales'),
@@ -137,47 +192,86 @@ insert into job values
 (6,'Sales Manager (NA)'),
 (7,'Sales Rep'),
 (8,'Marketing');
+
+#SQL[@75,N43]Result[]
 CREATE TABLE t1 (a text, b int primary key);
+
+#SQL[@76,N37]Result[]
 INSERT INTO t1 VALUES ('1',1),('1',2);
+
+#SQL[@77,N37]Result[]
 update t1 set a=2 where a='1' limit 1;
+
+#SQL[@78,N16]Result[8, 8, 8]
 select * from t1;
-a	b
-2	1
-1	2
+a  ¦  b
+1  ¦  2
+2  ¦  1
+
+#SQL[@79,N29]Result[]
 INSERT INTO t1 VALUES ('1',3);
+
+#SQL[@80,N31]Result[]
 update t1 set a='a' where a='1';
+
+#SQL[@81,N16]Result[8, 8, 8, 8]
 select * from t1;
-a	b
-2	1
-a	2
-a	3
+a  ¦  b
+2  ¦  1
+a  ¦  2
+a  ¦  3
+
+#SQL[@82,N13]Result[]
 drop table t1;
-create table t1 (
-a text not null,
-b text not null default '0'
-);
-Type text don't support default value
+
+#SQL[@89,N51]Error[39]
 create table t1 (a text primary key, b varchar(32));
 not supported: text type in primary key
+
+#SQL[@90,N45]Error[49]
 create table t1 (a text, index index_test(a));
 not supported: TEXT column 'a' cannot be in index
+
+#SQL[@91,N28]Result[]
 create table t1 (a tinytext);
+
+#SQL[@92,N31]Result[]
 insert into t1 values('abcdef');
+
+#SQL[@93,N31]Result[]
 insert into t1 values('_bcdef');
+
+#SQL[@94,N31]Result[]
 insert into t1 values('a_cdef');
+
+#SQL[@95,N31]Result[]
 insert into t1 values('ab_def');
+
+#SQL[@96,N31]Result[]
 insert into t1 values('abc_ef');
+
+#SQL[@97,N31]Result[]
 insert into t1 values('abcd_f');
+
+#SQL[@98,N31]Result[]
 insert into t1 values('abcde_');
+
+#SQL[@99,N54]Result[1, 6]
 select * from t1 where a like 'ab\_def' order by 1 asc;
 a
 ab_def
+
+#SQL[@100,N54]Result[1, 6]
 select * from t1 where a not like 'a%' order by a desc;
 a
 _bcdef
+
+#SQL[@101,N55]Result[1, 6]
 select * from t1 where a like "\__cdef" order by 1 desc;
 a
 _bcdef
+
+#SQL[@102,N41]Result[1, 6, 6, 6, 6, 6, 6]
 select * from t1 where a not like "%d_\_";
 a
 abcdef
@@ -186,24 +280,50 @@ a_cdef
 ab_def
 abc_ef
 abcd_f
+
+#SQL[@103,N13]Result[]
 drop table t1;
+
+#SQL[@104,N30]Result[]
 create table t1 (a mediumtext);
+
+#SQL[@105,N31]Result[]
 insert into t1 values('abcdef');
+
+#SQL[@106,N31]Result[]
 insert into t1 values('_bcdef');
+
+#SQL[@107,N31]Result[]
 insert into t1 values('a_cdef');
+
+#SQL[@108,N31]Result[]
 insert into t1 values('ab_def');
+
+#SQL[@109,N31]Result[]
 insert into t1 values('abc_ef');
+
+#SQL[@110,N31]Result[]
 insert into t1 values('abcd_f');
+
+#SQL[@111,N31]Result[]
 insert into t1 values('abcde_');
+
+#SQL[@112,N54]Result[1, 6]
 select * from t1 where a like 'ab\_def' order by 1 asc;
 a
 ab_def
+
+#SQL[@113,N54]Result[1, 6]
 select * from t1 where a not like 'a%' order by a desc;
 a
 _bcdef
+
+#SQL[@114,N55]Result[1, 6]
 select * from t1 where a like "\__cdef" order by 1 desc;
 a
 _bcdef
+
+#SQL[@115,N41]Result[1, 6, 6, 6, 6, 6, 6]
 select * from t1 where a not like "%d_\_";
 a
 abcdef
@@ -212,24 +332,50 @@ a_cdef
 ab_def
 abc_ef
 abcd_f
+
+#SQL[@116,N13]Result[]
 drop table t1;
+
+#SQL[@117,N28]Result[]
 create table t1 (a longtext);
+
+#SQL[@118,N31]Result[]
 insert into t1 values('abcdef');
+
+#SQL[@119,N31]Result[]
 insert into t1 values('_bcdef');
+
+#SQL[@120,N31]Result[]
 insert into t1 values('a_cdef');
+
+#SQL[@121,N31]Result[]
 insert into t1 values('ab_def');
+
+#SQL[@122,N31]Result[]
 insert into t1 values('abc_ef');
+
+#SQL[@123,N31]Result[]
 insert into t1 values('abcd_f');
+
+#SQL[@124,N31]Result[]
 insert into t1 values('abcde_');
+
+#SQL[@125,N54]Result[1, 6]
 select * from t1 where a like 'ab\_def' order by 1 asc;
 a
 ab_def
+
+#SQL[@126,N54]Result[1, 6]
 select * from t1 where a not like 'a%' order by a desc;
 a
 _bcdef
+
+#SQL[@127,N55]Result[1, 6]
 select * from t1 where a like "\__cdef" order by 1 desc;
 a
 _bcdef
+
+#SQL[@128,N41]Result[1, 6, 6, 6, 6, 6, 6]
 select * from t1 where a not like "%d_\_";
 a
 abcdef
@@ -238,4 +384,7 @@ a_cdef
 ab_def
 abc_ef
 abcd_f
+
+#SQL[@129,N13]Result[]
 drop table t1;
+

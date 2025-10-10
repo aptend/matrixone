@@ -4,28 +4,28 @@ desc t1;
 show create table t1;
 drop table t1;
 -- test uuid type as primary key
--- @bvt:issue#10703
-create table t2(
-a uuid primary key,
-b int,
-c varchar(20),
-d date
-) COMMENT='test uuid parimary key';
-show create table t2;
--- test insert into statement with uuid type
-INSERT INTO t2 VALUES ("6d1b1f73-2dbf-11ed-940f-000c29847904",12,'SMITH','1980-12-17');
-INSERT INTO t2 VALUES ("ad9f809f-2dbd-11ed-940f-000c29847904",34,'ALLEN','1981-02-20');
-INSERT INTO t2 VALUES ("1b50c137-2dba-11ed-940f-000c29847904",15,'WARD','1981-02-22');
-INSERT INTO t2 VALUES ("149e3f0f-2de4-11ed-940f-000c29847904",27,'JONES','1981-04-02');
-select * from t2 where a = '6d1b1f732dbf11ed940f000c29847904';
-select * from t2 where a != '6d1b1f732dbf11ed940f000c29847904';
-select * from t2 where a > '6d1b1f732dbf11ed940f000c29847904';
-select * from t2 where a >= '6d1b1f732dbf11ed940f000c29847904';
-select * from t2 where a <= '6d1b1f732dbf11ed940f000c29847904';
-select * from t2 where a < '6d1b1f732dbf11ed940f000c29847904';
-select * from t2 order by a;
-drop table t2;
--- @bvt:issue
+@issue(no=10703) {
+    create table t2(
+    a uuid primary key,
+    b int,
+    c varchar(20),
+    d date
+    ) COMMENT='test uuid parimary key';
+    show create table t2;
+    -- test insert into statement with uuid type
+    INSERT INTO t2 VALUES ("6d1b1f73-2dbf-11ed-940f-000c29847904",12,'SMITH','1980-12-17');
+    INSERT INTO t2 VALUES ("ad9f809f-2dbd-11ed-940f-000c29847904",34,'ALLEN','1981-02-20');
+    INSERT INTO t2 VALUES ("1b50c137-2dba-11ed-940f-000c29847904",15,'WARD','1981-02-22');
+    INSERT INTO t2 VALUES ("149e3f0f-2de4-11ed-940f-000c29847904",27,'JONES','1981-04-02');
+    select * from t2 where a = '6d1b1f732dbf11ed940f000c29847904';
+    select * from t2 where a != '6d1b1f732dbf11ed940f000c29847904';
+    select * from t2 where a > '6d1b1f732dbf11ed940f000c29847904';
+    select * from t2 where a >= '6d1b1f732dbf11ed940f000c29847904';
+    select * from t2 where a <= '6d1b1f732dbf11ed940f000c29847904';
+    select * from t2 where a < '6d1b1f732dbf11ed940f000c29847904';
+    select * from t2 order by a;
+    drop table t2;
+}
 -- uuid type in DQL
 create table t3(a int, b uuid);
 insert into t3 values(10, "f6355110-2d0c-11ed-940f-000c29847904");

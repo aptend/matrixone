@@ -1,4 +1,4 @@
--- @suite                                                                                                                                                                                
+-- @suite
 -- @case
 -- @desc:test for smallint datatype
 -- @label:bvt
@@ -63,9 +63,9 @@ drop table t1;
 create table t1 (smallint_col smallint unsigned);
 insert into t1 values (65500);
 select * from t1 where smallint_col=65500 order by abs(1) asc;
--- @bvt:issue#3275
-select * from t1 where smallint_col='65500';
--- @bvt:issue
+@issue(no=3275) {
+    select * from t1 where smallint_col='65500';
+}
 drop table t1;
 
 #Test cases of cast and operators
@@ -80,10 +80,10 @@ INSERT INTO t1 (id,a) VALUES
 (2,CAST(0x7FFF AS UNSIGNED)),
 (3,CAST(0x8000 AS UNSIGNED)),
 (4,CAST(0xFFFF AS UNSIGNED));
--- @bvt:issue#3275
-UPDATE t1 SET b = a;
-select * from t1 where ((a = 65535) and (b = '65535')) order by 1 desc, 2 asc;
--- @bvt:issue
+@issue(no=3275) {
+    UPDATE t1 SET b = a;
+    select * from t1 where ((a = 65535) and (b = '65535')) order by 1 desc, 2 asc;
+}
 CREATE TABLE t_smallint(id SMALLINT);
 INSERT INTO t_smallint VALUES (1), (2);
 SELECT id, id >= 1.1 FROM t_smallint;
@@ -92,30 +92,30 @@ SELECT id, id = 1.1 FROM t_smallint;
 SELECT id, 1.1 = id FROM t_smallint;
 SELECT * from t_smallint WHERE id = 1.1;
 SELECT * from t_smallint WHERE id = 1.1e0;
--- @bvt:issue#3275
-SELECT * from t_smallint WHERE id = '1.1';
-SELECT * from t_smallint WHERE id = '1.1e0';
--- @bvt:issue
+@issue(no=3275) {
+    SELECT * from t_smallint WHERE id = '1.1';
+    SELECT * from t_smallint WHERE id = '1.1e0';
+}
 SELECT * from t_smallint WHERE id IN (1.1, 2.2);
 SELECT * from t_smallint WHERE id IN (1.1e0, 2.2e0);
--- @bvt:issue#3275
-SELECT * from t_smallint WHERE id IN ('1.1', '2.2');
-SELECT * from t_smallint WHERE id IN ('1.1e0', '2.2e0');
--- @bvt:issue
+@issue(no=3275) {
+    SELECT * from t_smallint WHERE id IN ('1.1', '2.2');
+    SELECT * from t_smallint WHERE id IN ('1.1e0', '2.2e0');
+}
 SELECT * from t_smallint WHERE id BETWEEN 1.1 AND 1.9;
 SELECT * from t_smallint WHERE id BETWEEN 1.1e0 AND 1.9e0;
--- @bvt:issue#3275
-SELECT * from t_smallint WHERE id BETWEEN '1.1' AND '1.9';
-SELECT * from t_smallint WHERE id BETWEEN '1.1e0' AND '1.9e0';
--- @bvt:issue
+@issue(no=3275) {
+    SELECT * from t_smallint WHERE id BETWEEN '1.1' AND '1.9';
+    SELECT * from t_smallint WHERE id BETWEEN '1.1e0' AND '1.9e0';
+}
 drop table t1;
 CREATE TABLE t1 (a SMALLINT);
 INSERT INTO t1 VALUES (1);
--- @bvt:issue#3185
-SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-SELECT * FROM t1 WHERE coalesce(a)=0.9;
-SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
--- @bvt:issue
+@issue(no=3185) {
+    SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
+    SELECT * FROM t1 WHERE coalesce(a)=0.9;
+    SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
+}
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
 SELECT * FROM t1 WHERE a=0.9;
 SELECT * FROM t1 WHERE a IN (0.8,0.9) order by 1;
@@ -124,9 +124,9 @@ create table t (id smallint unsigned, b smallint);
 insert into t values(32767,1);
 insert into t values(65535,2);
 insert into t values(32768,3);
-select count(*) from t 
+select count(*) from t
 where id>=32767 and id <=65535 order by 1;
-select count(*) from t 
+select count(*) from t
 where id between 32767 and 65535;
 drop table t;
 SELECT (65534 BETWEEN 0 AND 65535);

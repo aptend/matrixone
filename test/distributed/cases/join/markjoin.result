@@ -1,19 +1,46 @@
+#SQL[@1,N23]Result[]
 drop table if exists t1;
+
+#SQL[@2,N23]Result[]
 drop table if exists t2;
+
+#SQL[@3,N52]Result[]
 Create table t1(sid int, sname varchar(20), mid int);
+
+#SQL[@4,N42]Result[]
 Create table t2(mid int,mname varchar(20));
+
+#SQL[@5,N67]Result[]
 insert into t1 values(1,'Seven',1),(2,'Ultraman',2),(3,'Gaia',NULL);
+
+#SQL[@6,N43]Result[]
 insert into t2 values(1,'James'),(3,'Tiga');
+
+#SQL[@7,N88]Result[5, 8, 4]
 select t1.sname from t1 where not exists (select t2.mname from t2 where t2.mid = t1.mid);
 sname
 Ultraman
 Gaia
+
+#SQL[@8,N23]Result[]
 drop table if exists t1;
+
+#SQL[@9,N23]Result[]
 drop table if exists t2;
+
+#SQL[@10,N34]Result[]
 Create table t1(a int,b int,c int);
+
+#SQL[@11,N34]Result[]
 Create table t2(d int,e int,f int);
+
+#SQL[@12,N74]Result[]
 insert into t1 values(1,2,4),(3,4,7),(2,2,5),(5,2,3),(3,NULL,2),(NULL,2,1);
+
+#SQL[@13,N72]Result[]
 insert into t2 values(2,NULL,1),(3,3,4),(5,5,1),(NULL,NULL,7),(NULL,4,5);
+
+#SQL[@14,N68]Result[1, 1, 1, 1, 1, 1]
 select t1.c from t1 where a not in (select d from t2 where t1.b = e);
 c
 4
@@ -21,3 +48,4 @@ c
 3
 2
 1
+

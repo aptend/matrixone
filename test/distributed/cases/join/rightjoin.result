@@ -1,104 +1,134 @@
+#SQL[@1,N23]Result[]
 drop table if exists t1;
+
+#SQL[@2,N23]Result[]
 drop table if exists t2;
+
+#SQL[@3,N23]Result[]
 drop table if exists t3;
+
+#SQL[@4,N40]Result[]
 CREATE TABLE t1 (S1 INT, S2 varchar(10));
+
+#SQL[@5,N40]Result[]
 CREATE TABLE t2 (S1 INT, S2 varchar(10));
+
+#SQL[@6,N40]Result[]
 CREATE TABLE t3 (S1 INT, S2 varchar(10));
+
+#SQL[@7,N148]Result[]
 INSERT INTO t1 VALUES (1,'aaa'),(2,'bbb'),(3,'ccc'),(4,NULL),(5,'eee'),(6,'fff'),(NULL,'aaa'),(9,'bbb'),(10,'ccc'),(11,'ddd'),(12,'abc'),(NULL,NULL);
+
+#SQL[@8,N130]Result[]
 INSERT INTO t2 VALUES  (11,'aaa'),(12,'bbb'),(13,'ccc'),(14,NULL),(1,'aaa'),(2,'bbb'),(3,'ccc'),(4,'ddd'),(NULL,'abc'),(NULL,NULL);
+
+#SQL[@9,N45]Result[26, 28, 28, 31, 32, 26, 26, 26, 27, 33, 34]
 SELECT * FROM t1 RIGHT JOIN t2 on t1.S1=t2.S1;
-s1    s2    s1    s2
-1    aaa    1    aaa
-2    bbb    2    bbb
-3    ccc    3    ccc
-4    null    4    ddd
-11    ddd    11    aaa
-12    abc    12    bbb
-null    null    13    ccc
-null    null    14    null
-null    null    null    abc
-null    null    null    null
+s1  ¦  s2  ¦  s1  ¦  s2
+11  ¦  ddd  ¦  11  ¦  aaa
+12  ¦  abc  ¦  12  ¦  bbb
+null  ¦  null  ¦  13  ¦  ccc
+null  ¦  null  ¦  14  ¦  null
+1  ¦  aaa  ¦  1  ¦  aaa
+2  ¦  bbb  ¦  2  ¦  bbb
+3  ¦  ccc  ¦  3  ¦  ccc
+4  ¦  null  ¦  4  ¦  ddd
+null  ¦  null  ¦  null  ¦  abc
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@10,N45]Result[26, 27, 30, 27, 27, 27, 28, 32, 26, 29, 26, 26, 26, 27, 27, 30, 34]
 SELECT * FROM t1 RIGHT JOIN t2 on t1.S2=t2.S2;
-s1    s2    s1    s2
-1    aaa    11    aaa
-1    aaa    1    aaa
-2    bbb    12    bbb
-2    bbb    2    bbb
-3    ccc    13    ccc
-3    ccc    3    ccc
-null    aaa    11    aaa
-null    aaa    1    aaa
-9    bbb    12    bbb
-9    bbb    2    bbb
-10    ccc    13    ccc
-10    ccc    3    ccc
-11    ddd    4    ddd
-12    abc    null    abc
-null    null    14    null
-null    null    null    null
+s1  ¦  s2  ¦  s1  ¦  s2
+1  ¦  aaa  ¦  11  ¦  aaa
+null  ¦  aaa  ¦  11  ¦  aaa
+2  ¦  bbb  ¦  12  ¦  bbb
+9  ¦  bbb  ¦  12  ¦  bbb
+3  ¦  ccc  ¦  13  ¦  ccc
+10  ¦  ccc  ¦  13  ¦  ccc
+null  ¦  null  ¦  14  ¦  null
+1  ¦  aaa  ¦  1  ¦  aaa
+null  ¦  aaa  ¦  1  ¦  aaa
+2  ¦  bbb  ¦  2  ¦  bbb
+9  ¦  bbb  ¦  2  ¦  bbb
+3  ¦  ccc  ¦  3  ¦  ccc
+10  ¦  ccc  ¦  3  ¦  ccc
+11  ¦  ddd  ¦  4  ¦  ddd
+12  ¦  abc  ¦  null  ¦  abc
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@11,N45]Result[26, 26, 26, 26, 27, 30, 30, 33, 30, 31, 28, 28, 34]
 SELECT * FROM t2 RIGHT JOIN t1 on t1.S1=t2.S1;
-s1    s2    s1    s2
-11    aaa    11    ddd
-12    bbb    12    abc
-1    aaa    1    aaa
-2    bbb    2    bbb
-3    ccc    3    ccc
-4    ddd    4    null
-null    null    5    eee
-null    null    6    fff
-null    null    9    bbb
-null    null    10    ccc
-null    null    null    aaa
-null    null    null    null
+s1  ¦  s2  ¦  s1  ¦  s2
+1  ¦  aaa  ¦  1  ¦  aaa
+2  ¦  bbb  ¦  2  ¦  bbb
+3  ¦  ccc  ¦  3  ¦  ccc
+4  ¦  ddd  ¦  4  ¦  null
+null  ¦  null  ¦  5  ¦  eee
+null  ¦  null  ¦  6  ¦  fff
+null  ¦  null  ¦  null  ¦  aaa
+null  ¦  null  ¦  9  ¦  bbb
+null  ¦  null  ¦  10  ¦  ccc
+11  ¦  aaa  ¦  11  ¦  ddd
+12  ¦  bbb  ¦  12  ¦  abc
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@12,N45]Result[26, 27, 26, 27, 26, 27, 26, 31, 30, 30, 30, 29, 27, 26, 28, 27, 27, 30, 34]
 SELECT * FROM t2 RIGHT JOIN t1 on t1.S2=t2.S2;
-s1    s2    s1    s2
-11    aaa    1    aaa
-11    aaa    null    aaa
-12    bbb    2    bbb
-12    bbb    9    bbb
-13    ccc    3    ccc
-13    ccc    10    ccc
-1    aaa    1    aaa
-1    aaa    null    aaa
-2    bbb    2    bbb
-2    bbb    9    bbb
-3    ccc    3    ccc
-3    ccc    10    ccc
-4    ddd    11    ddd
-null    abc    12    abc
-null    null    5    eee
-null    null    6    fff
-null    null    4    null
-null    null    null    null
+s1  ¦  s2  ¦  s1  ¦  s2
+11  ¦  aaa  ¦  1  ¦  aaa
+1  ¦  aaa  ¦  1  ¦  aaa
+12  ¦  bbb  ¦  2  ¦  bbb
+2  ¦  bbb  ¦  2  ¦  bbb
+13  ¦  ccc  ¦  3  ¦  ccc
+3  ¦  ccc  ¦  3  ¦  ccc
+null  ¦  null  ¦  4  ¦  null
+null  ¦  null  ¦  5  ¦  eee
+null  ¦  null  ¦  6  ¦  fff
+11  ¦  aaa  ¦  null  ¦  aaa
+1  ¦  aaa  ¦  null  ¦  aaa
+12  ¦  bbb  ¦  9  ¦  bbb
+2  ¦  bbb  ¦  9  ¦  bbb
+13  ¦  ccc  ¦  10  ¦  ccc
+3  ¦  ccc  ¦  10  ¦  ccc
+4  ¦  ddd  ¦  11  ¦  ddd
+null  ¦  abc  ¦  12  ¦  abc
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@13,N45]Result[26, 30, 30, 30, 31, 30, 30, 33, 30, 31, 31, 31, 34]
 SELECT * FROM t3 RIGHT JOIN t1 on t1.S1=t3.S1;
-s1    s2    s1    s2
-null    null    1    aaa
-null    null    2    bbb
-null    null    3    ccc
-null    null    4    null
-null    null    5    eee
-null    null    6    fff
-null    null    9    bbb
-null    null    10    ccc
-null    null    11    ddd
-null    null    12    abc
-null    null    null    aaa
-null    null    null    null
+s1  ¦  s2  ¦  s1  ¦  s2
+null  ¦  null  ¦  1  ¦  aaa
+null  ¦  null  ¦  2  ¦  bbb
+null  ¦  null  ¦  3  ¦  ccc
+null  ¦  null  ¦  4  ¦  null
+null  ¦  null  ¦  5  ¦  eee
+null  ¦  null  ¦  6  ¦  fff
+null  ¦  null  ¦  null  ¦  aaa
+null  ¦  null  ¦  9  ¦  bbb
+null  ¦  null  ¦  10  ¦  ccc
+null  ¦  null  ¦  11  ¦  ddd
+null  ¦  null  ¦  12  ¦  abc
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@14,N45]Result[26, 30, 30, 30, 31, 30, 30, 33, 30, 31, 31, 31, 34]
 SELECT * FROM t3 RIGHT JOIN t1 on t1.S2=t3.S2;
-s1    s2    s1    s2
-null    null    1    aaa
-null    null    null    aaa
-null    null    2    bbb
-null    null    9    bbb
-null    null    3    ccc
-null    null    10    ccc
-null    null    5    eee
-null    null    6    fff
-null    null    11    ddd
-null    null    12    abc
-null    null    4    null
-null    null    null    null
+s1  ¦  s2  ¦  s1  ¦  s2
+null  ¦  null  ¦  1  ¦  aaa
+null  ¦  null  ¦  2  ¦  bbb
+null  ¦  null  ¦  3  ¦  ccc
+null  ¦  null  ¦  4  ¦  null
+null  ¦  null  ¦  5  ¦  eee
+null  ¦  null  ¦  6  ¦  fff
+null  ¦  null  ¦  null  ¦  aaa
+null  ¦  null  ¦  9  ¦  bbb
+null  ¦  null  ¦  10  ¦  ccc
+null  ¦  null  ¦  11  ¦  ddd
+null  ¦  null  ¦  12  ¦  abc
+null  ¦  null  ¦  null  ¦  null
+
+#SQL[@15,N45]Result[]
 SELECT * FROM t1 RIGHT JOIN t3 on t1.S1=t3.S1;
-s1    s2    s1    s2
+
+#SQL[@16,N45]Result[]
 SELECT * FROM t1 RIGHT JOIN t3 on t1.S2=t3.S2;
-s1    s2    s1    s2
+

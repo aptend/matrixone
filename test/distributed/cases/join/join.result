@@ -1,43 +1,104 @@
+#SQL[@1,N23]Result[]
 drop table if exists t1;
+
+#SQL[@2,N23]Result[]
 drop table if exists t2;
+
+#SQL[@3,N24]Result[]
 CREATE TABLE t1 (S1 INT);
+
+#SQL[@4,N24]Result[]
 CREATE TABLE t2 (S1 INT);
+
+#SQL[@5,N37]Result[]
 INSERT INTO t1 VALUES (1),(3),(4),(6);
+
+#SQL[@6,N33]Result[]
 INSERT INTO t2 VALUES (2),(4),(5);
+
+#SQL[@7,N39]Result[10, 8]
 SELECT * FROM t1 JOIN t2 on t1.S1=t2.S1;
-S1	S1
-4	4
+s1  ¦  s1
+4  ¦  4
+
+#SQL[@8,N23]Result[]
 drop table if exists t1;
+
+#SQL[@9,N23]Result[]
 drop table if exists t2;
+
+#SQL[@10,N24]Result[]
 create table t1 (id int);
+
+#SQL[@11,N24]Result[]
 create table t2 (id int);
+
+#SQL[@12,N26]Result[]
 insert into t1 values (75);
+
+#SQL[@13,N26]Result[]
 insert into t1 values (79);
+
+#SQL[@14,N26]Result[]
 insert into t1 values (78);
+
+#SQL[@15,N26]Result[]
 insert into t1 values (77);
+
+#SQL[@16,N26]Result[]
 insert into t1 values (76);
+
+#SQL[@17,N26]Result[]
 insert into t1 values (76);
+
+#SQL[@18,N27]Result[]
 insert into t1 values (104);
+
+#SQL[@19,N27]Result[]
 insert into t1 values (103);
+
+#SQL[@20,N27]Result[]
 insert into t1 values (102);
+
+#SQL[@21,N27]Result[]
 insert into t1 values (101);
+
+#SQL[@22,N27]Result[]
 insert into t1 values (105);
+
+#SQL[@23,N27]Result[]
 insert into t1 values (106);
+
+#SQL[@24,N27]Result[]
 insert into t1 values (107);
+
+#SQL[@25,N39]Result[]
 insert into t2 values (107),(75),(1000);
+
+#SQL[@26,N51]Result[10, 10, 12]
 select t1.id, t2.id from t1, t2 where t2.id = t1.id;
-id	id
-75	75
-107	107
+id  ¦  id
+75  ¦  75
+107  ¦  107
+
+#SQL[@27,N72]Result[20, 9, 10]
 select t1.id, count(t2.id) from t1,t2 where t2.id = t1.id group by t1.id;
-id	count(t2.id)
-75	1
-107	1
+id  ¦  count(t2.id)
+75  ¦  1
+107  ¦  1
+
+#SQL[@28,N64]Result[10, 10]
 select t1.id,t2.id from t2 join t1 on t1.id=t2.id where t2.id=75;
-id	id
-75	75
+id  ¦  id
+75  ¦  75
+
+#SQL[@29,N23]Result[]
 drop table if exists t1;
+
+#SQL[@30,N23]Result[]
 drop table if exists t2;
+
+#SQL[@31,N195]Result[]
 CREATE TABLE t1 (
 id int,
 token varchar(100) DEFAULT '' NOT NULL,
@@ -46,17 +107,41 @@ qty int,
 phone char(1) DEFAULT '' NOT NULL,
 times datetime DEFAULT '2000-01-01 00:00:00' NOT NULL
 );
+
+#SQL[@39,N94]Result[]
 INSERT INTO t1 VALUES (21,'e45703b64de71482360de8fec94c3ade',3,7800,'n','1999-12-23 17:22:21');
+
+#SQL[@40,N94]Result[]
 INSERT INTO t1 VALUES (22,'e45703b64de71482360de8fec94c3ade',4,5000,'y','1999-12-23 17:22:21');
+
+#SQL[@41,N95]Result[]
 INSERT INTO t1 VALUES (18,'346d1cb63c89285b2351f0ca4de40eda',3,13200,'b','1999-12-23 11:58:04');
+
+#SQL[@42,N95]Result[]
 INSERT INTO t1 VALUES (17,'ca6ddeb689e1b48a04146b1b5b6f936a',4,15000,'b','1999-12-23 11:36:53');
+
+#SQL[@43,N95]Result[]
 INSERT INTO t1 VALUES (16,'ca6ddeb689e1b48a04146b1b5b6f936a',3,13200,'b','1999-12-23 11:36:53');
+
+#SQL[@44,N94]Result[]
 INSERT INTO t1 VALUES (26,'a71250b7ed780f6ef3185bfffe027983',5,1500,'b','1999-12-27 09:44:24');
+
+#SQL[@45,N94]Result[]
 INSERT INTO t1 VALUES (24,'4d75906f3c37ecff478a1eb56637aa09',3,5400,'y','1999-12-23 17:29:12');
+
+#SQL[@46,N94]Result[]
 INSERT INTO t1 VALUES (25,'4d75906f3c37ecff478a1eb56637aa09',4,6500,'y','1999-12-23 17:29:12');
+
+#SQL[@47,N94]Result[]
 INSERT INTO t1 VALUES (27,'a71250b7ed780f6ef3185bfffe027983',3,6200,'b','1999-12-27 09:44:24');
+
+#SQL[@48,N94]Result[]
 INSERT INTO t1 VALUES (28,'a71250b7ed780f6ef3185bfffe027983',3,5400,'y','1999-12-27 09:44:36');
+
+#SQL[@49,N95]Result[]
 INSERT INTO t1 VALUES (29,'a71250b7ed780f6ef3185bfffe027983',4,17700,'b','1999-12-27 09:45:05');
+
+#SQL[@50,N184]Result[]
 CREATE TABLE t2 (
 id int,
 category int DEFAULT 0 NOT NULL,
@@ -65,23 +150,41 @@ state int DEFAULT 0 NOT NULL,
 phones int DEFAULT 0 NOT NULL,
 nophones int DEFAULT 0 NOT NULL
 );
+
+#SQL[@58,N43]Result[]
 INSERT INTO t2 VALUES (3,2,11,12,5400,7800);
+
+#SQL[@59,N44]Result[]
 INSERT INTO t2 VALUES (4,2,25,12,6500,11200);
+
+#SQL[@60,N44]Result[]
 INSERT INTO t2 VALUES (5,1,37,6,10000,12000);
+
+#SQL[@61,N147]Result[40, 24, 25, 25, 25]
 select t1.id, category as catid, state as stateid, county as countyid from t1 join t2 on count=t2.id where token='a71250b7ed780f6ef3185bfffe027983';
-id	catid	stateid	countyid
-28	2	12	11
-27	2	12	11
-29	2	12	25
-26	1	6	37
+id  ¦  catid  ¦  stateid  ¦  countyid
+26  ¦  1  ¦  6  ¦  37
+27  ¦  2  ¦  12  ¦  11
+28  ¦  2  ¦  12  ¦  11
+29  ¦  2  ¦  12  ¦  25
+
+#SQL[@62,N175]Result[40, 25, 25, 25]
 select t1.id, category as catid, state as stateid, county as countyid from t1 join t2 on count=t2.id where token='a71250b7ed780f6ef3185bfffe027983' and t1.id>26 order by t1.id;
-id	catid	stateid	countyid
-27	2	12	11
-28	2	12	11
-29	2	12	25
+id  ¦  catid  ¦  stateid  ¦  countyid
+27  ¦  2  ¦  12  ¦  11
+28  ¦  2  ¦  12  ¦  11
+29  ¦  2  ¦  12  ¦  25
+
+#SQL[@63,N23]Result[]
 drop table if exists t1;
+
+#SQL[@64,N23]Result[]
 drop table if exists t2;
+
+#SQL[@65,N23]Result[]
 drop table if exists t3;
+
+#SQL[@66,N244]Result[]
 CREATE TABLE t1 (
 t1_id int default NULL,
 t2_id int default NULL,
@@ -92,201 +195,435 @@ max_value double default NULL,
 t3_id int default NULL,
 item_id int default NULL
 );
+
+#SQL[@76,N87]Result[]
 CREATE TABLE t2 (
 id int  NOT NULL,
 name varchar(255) default NULL,
 PRIMARY KEY  (id)
 );
+
+#SQL[@81,N611]Result[]
 INSERT INTO t1 VALUES (12,5,'Percent','Cost',-1,0,-1,-1),(14,4,'Percent','Cost',-1,0,-1,-1),(18,5,'Percent','Cost',-1,0,-1,-1),(19,4,'Percent','Cost',-1,0,-1,-1),(20,5,'Percent','Cost',100,-1,22,291),(21,5,'Percent','Cost',100,-1,18,291),(22,1,'Percent','Cost',100,-1,6,291),(23,1,'Percent','Cost',100,-1,21,291),(24,1,'Percent','Cost',100,-1,9,291),(25,1,'Percent','Cost',100,-1,4,291),(26,1,'Percent','Cost',100,-1,20,291),(27,4,'Percent','Cost',100,-1,7,202),(28,1,'Percent','Cost',50,-1,-1,137),(29,2,'Percent','Cost',100,-1,4,354),(30,2,'Percent','Cost',100,-1,9,137),(93,2,'Cost','Cost',-1,10000000,-1,-1);
+
+#SQL[@82,N66]Result[]
 INSERT INTO t2 VALUES (1,'s1'),(2,'s2'),(3,'s3'),(4,'s4'),(5,'s5');
+
+#SQL[@83,N70]Result[25, 22, 22, 22, 22, 22, 22, 22, 22, 19, 22, 22, 22, 22, 22, 22, 22]
 select t2_id,name, type  from t1 join t2 on t2.id=t1.t2_id order by id;
-t2_id	name	type
-1	s1	Percent
-1	s1	Percent
-1	s1	Percent
-1	s1	Percent
-1	s1	Percent
-1	s1	Percent
-2	s2	Percent
-2	s2	Percent
-2	s2	Cost
-4	s4	Percent
-4	s4	Percent
-4	s4	Percent
-5	s5	Percent
-5	s5	Percent
-5	s5	Percent
-5	s5	Percent
+t2_id  ¦  name  ¦  type
+1  ¦  s1  ¦  Percent
+1  ¦  s1  ¦  Percent
+1  ¦  s1  ¦  Percent
+1  ¦  s1  ¦  Percent
+1  ¦  s1  ¦  Percent
+1  ¦  s1  ¦  Percent
+2  ¦  s2  ¦  Percent
+2  ¦  s2  ¦  Percent
+2  ¦  s2  ¦  Cost
+4  ¦  s4  ¦  Percent
+4  ¦  s4  ¦  Percent
+4  ¦  s4  ¦  Percent
+5  ¦  s5  ¦  Percent
+5  ¦  s5  ¦  Percent
+5  ¦  s5  ¦  Percent
+5  ¦  s5  ¦  Percent
+
+#SQL[@84,N13]Result[]
 drop table t1;
+
+#SQL[@85,N13]Result[]
 drop table t2;
+
+#SQL[@86,N70]Result[]
 CREATE TABLE t1 (ID INTEGER NOT NULL PRIMARY KEY, Value1 VARCHAR(255));
+
+#SQL[@87,N70]Result[]
 CREATE TABLE t2 (ID INTEGER NOT NULL PRIMARY KEY, Value2 VARCHAR(255));
+
+#SQL[@88,N30]Result[]
 INSERT INTO t1 VALUES (1, 'A');
+
+#SQL[@89,N30]Result[]
 INSERT INTO t2 VALUES (1, 'B');
+
+#SQL[@90,N69]Result[14, 8]
 SELECT t1.ID,Value2 FROM t1 JOIN t2 on t1.ID=t2.ID WHERE Value1 = 'A';
-ID	Value2
-1	B
+ID  ¦  Value2
+1  ¦  B
+
+#SQL[@91,N87]Result[]
 SELECT t1.ID,Value2 FROM t1 JOIN t2 on t1.ID=t2.ID WHERE Value1 = 'A' and Value2 <> 'B';
-ID	Value2
+
+#SQL[@92,N23]Result[]
 drop table if exists t1;
+
+#SQL[@93,N23]Result[]
 drop table if exists t2;
+
+#SQL[@94,N23]Result[]
 drop table if exists t3;
+
+#SQL[@95,N23]Result[]
 CREATE TABLE t1 (a int);
+
+#SQL[@96,N23]Result[]
 CREATE TABLE t2 (b int);
+
+#SQL[@97,N23]Result[]
 CREATE TABLE t3 (c int);
+
+#SQL[@98,N40]Result[]
 insert into t1 values(1),(2),(3),(4),(5);
+
+#SQL[@99,N40]Result[]
 insert into t2 values(1),(3),(5),(7),(9);
+
+#SQL[@100,N40]Result[]
 insert into t3 values(1),(1),(3),(4),(7);
+
+#SQL[@101,N72]Result[15, 15]
 select a,b,c from t1 join t2 on t1.a=t2.b join t3 on t1.a=t3.c where a>1;
-a	b	c
-3	3	3
+a  ¦  b  ¦  c
+3  ¦  3  ¦  3
+
+#SQL[@102,N23]Result[]
 drop table if exists t1;
+
+#SQL[@103,N23]Result[]
 drop table if exists t2;
+
+#SQL[@104,N23]Result[]
 drop table if exists t3;
+
+#SQL[@105,N23]Result[]
 create table t1 (i int);
+
+#SQL[@106,N23]Result[]
 create table t2 (i int);
+
+#SQL[@107,N23]Result[]
 create table t3 (i int);
+
+#SQL[@108,N28]Result[]
 insert into t1 values(1),(2);
+
+#SQL[@109,N28]Result[]
 insert into t2 values(2),(3);
+
+#SQL[@110,N29]Result[]
 insert into t3 values (2),(4);
+
+#SQL[@111,N61]Result[1, 1]
 select t3.i from t1 join t2 on t1.i=t2.i join t3 on t2.i=t3.i;
 i
 2
+
+#SQL[@112,N23]Result[]
 drop table if exists t1;
+
+#SQL[@113,N23]Result[]
 drop table if exists t2;
+
+#SQL[@114,N23]Result[]
 drop table if exists t3;
+
+#SQL[@115,N23]Result[]
 drop table if exists t4;
+
+#SQL[@116,N23]Result[]
 drop table if exists t5;
+
+#SQL[@117,N23]Result[]
 drop table if exists t6;
+
+#SQL[@118,N30]Result[]
 create table t1 (c int, b int);
+
+#SQL[@119,N30]Result[]
 create table t2 (a int, b int);
+
+#SQL[@120,N30]Result[]
 create table t3 (b int, c int);
+
+#SQL[@121,N30]Result[]
 create table t4 (y int, c int);
+
+#SQL[@122,N30]Result[]
 create table t5 (y int, z int);
+
+#SQL[@123,N30]Result[]
 create table t6 (a int, c int);
+
+#SQL[@124,N28]Result[]
 insert into t1 values (10,1);
+
+#SQL[@125,N28]Result[]
 insert into t1 values (3 ,1);
+
+#SQL[@126,N28]Result[]
 insert into t1 values (3 ,2);
+
+#SQL[@127,N28]Result[]
 insert into t2 values (2, 1);
+
+#SQL[@128,N28]Result[]
 insert into t3 values (1, 3);
+
+#SQL[@129,N28]Result[]
 insert into t3 values (1,10);
+
+#SQL[@130,N28]Result[]
 insert into t4 values (11,3);
+
+#SQL[@131,N28]Result[]
 insert into t4 values (2, 3);
+
+#SQL[@132,N28]Result[]
 insert into t5 values (11,4);
+
+#SQL[@133,N28]Result[]
 insert into t6 values (2, 3);
+
+#SQL[@134,N77]Result[]
 select distinct a,t1.b,t3.c from t1 join t2 on t1.b=t2.b join t3 on t1.b=t3.c;
-a	b	c
+
+#SQL[@135,N23]Result[]
 drop table if exists t1;
+
+#SQL[@136,N23]Result[]
 drop table if exists t2;
+
+#SQL[@137,N23]Result[]
 drop table if exists t3;
+
+#SQL[@138,N23]Result[]
 drop table if exists t4;
+
+#SQL[@139,N32]Result[]
 create table t1 (a1 int, a2 int);
+
+#SQL[@140,N31]Result[]
 create table t2 (a1 int, b int);
+
+#SQL[@141,N32]Result[]
 create table t3 (c1 int, c2 int);
+
+#SQL[@142,N24]Result[]
 create table t4 (c2 int);
+
+#SQL[@143,N27]Result[]
 insert into t1 values (1,1);
+
+#SQL[@144,N27]Result[]
 insert into t2 values (1,1);
+
+#SQL[@145,N27]Result[]
 insert into t3 values (1,1);
+
+#SQL[@146,N25]Result[]
 insert into t4 values (1);
+
+#SQL[@147,N78]Result[49, 43]
 select * from t1 join t2 on t1.a1=t2.a1 join t3 on b=c1 join t4 on t3.c2=t4.c2;
-a1	a2	a1	b	c1	c2	c2
-1	1	1	1	1	1	1
+a1  ¦  a2  ¦  a1  ¦  b  ¦  c1  ¦  c2  ¦  c2
+1  ¦  1  ¦  1  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@148,N23]Result[]
 drop table if exists t1;
+
+#SQL[@149,N23]Result[]
 create table t1 (a int);
+
+#SQL[@150,N24]Result[]
 insert into t1 values(1);
+
+#SQL[@151,N23]Result[]
 drop table if exists t2;
+
+#SQL[@152,N23]Result[]
 create table t2 (a int);
+
+#SQL[@153,N24]Result[]
 insert into t2 values(1);
+
+#SQL[@154,N41]Result[8, 8]
 select * from (t1 join t2 on t1.a = t2.a);
-a    a   
-1    1
+a  ¦  a
+1  ¦  1
+
+#SQL[@156,N23]Result[]
 drop table if exists tt;
+
+#SQL[@157,N24]Result[]
 drop table if exists tt2;
+
+#SQL[@158,N36]Result[]
 create table tt(a text,b text,c int);
+
+#SQL[@159,N37]Result[]
 create table tt2(a text,b text,c int);
+
+#SQL[@160,N33]Result[]
 insert into tt values("a","bc",1);
+
+#SQL[@161,N34]Result[]
 insert into tt2 values("ab","c",2);
+
+#SQL[@162,N74]Result[]
 select * from tt as t11 join tt2 as t12 on t11.a = t12.a and t11.b = t12.b;
-a    b    c    a    b    c
+
+#SQL[@163,N23]Result[]
 drop table if exists t1;
+
+#SQL[@164,N23]Result[]
 drop table if exists t2;
+
+#SQL[@165,N23]Result[]
 drop table if exists t3;
+
+#SQL[@166,N23]Result[]
 create table t1 (q int);
+
+#SQL[@167,N23]Result[]
 create table t2 (a int);
+
+#SQL[@168,N23]Result[]
 create table t3 (b int);
+
+#SQL[@169,N34]Result[]
 select * from t1,t2 join t3 on a=b;
-q    a    b
+
+#SQL[@171,N23]Result[]
 drop table if exists t1;
+
+#SQL[@172,N23]Result[]
 drop table if exists t2;
+
+#SQL[@173,N41]Result[]
 create table t1(a int, b int primary key);
+
+#SQL[@174,N46]Result[]
 create table t2(a int, b int,primary key(a,b));
+
+#SQL[@175,N72]Result[]
 insert into t1 select result%50,result from generate_series(1,10000,1) g;
+
+#SQL[@176,N77]Result[]
 insert into t2 select result/100,result%100 from generate_series(1,10000,1) g;
+
+#SQL[@177,N86]Result[8, 10, 10, 10, 10]
 select t1.a,t1.b from t1 join t2 on t1.b=t2.a and t1.b=t2.b order by t1.a desc limit 4;
-a    b
-49    99
-49    49
-48    48
-48    98
+a  ¦  b
+49  ¦  99
+49  ¦  49
+48  ¦  48
+48  ¦  98
+
+#SQL[@178,N86]Result[8, 10, 10, 10, 10]
 select t2.a,t2.b from t2 join t1 on t2.a=t1.b and t2.b=t1.a order by t2.a desc limit 4;
-a    b
-100    0
-99    49
-98    48
-97    47
+a  ¦  b
+100  ¦  0
+99  ¦  49
+98  ¦  48
+97  ¦  47
+
+#SQL[@179,N13]Result[]
 drop table t1;
+
+#SQL[@180,N13]Result[]
 drop table t2;
+
+#SQL[@181,N41]Result[]
 create table t1(a int, b int primary key);
+
+#SQL[@182,N46]Result[]
 create table t2(a int, b int,primary key(a,b));
+
+#SQL[@183,N75]Result[]
 insert into t1 select 10000-result,result from generate_series(1,10000,1) g;
+
+#SQL[@184,N80]Result[]
 insert into t2 select result%2,result-result%2 from generate_series(1,10000,1) g;
+
+#SQL[@185,N87]Result[22, 30, 31, 28, 28]
 select t1.a,t1.b,t2.a,t2.b from t1 left join t2 on t1.b=t2.b order by t1.b desc limit 4;
-a    b    a    b
-0    10000    0    10000
-1    9999    NULL    NULL
-2    9998    1    9998
-2    9998    0    9998
+a  ¦  b  ¦  a  ¦  b
+0  ¦  10000  ¦  0  ¦  10000
+1  ¦  9999  ¦  null  ¦  null
+2  ¦  9998  ¦  1  ¦  9998
+2  ¦  9998  ¦  0  ¦  9998
+
+#SQL[@186,N88]Result[22, 30, 28, 28, 28]
 select t1.a,t1.b,t2.a,t2.b from t1 right join t2 on t1.b=t2.b order by t1.b desc limit 4;
-a    b    a    b
-0    10000    0    10000
-2    9998    0    9998
-2    9998    1    9998
-4    9996    0    9996
+a  ¦  b  ¦  a  ¦  b
+0  ¦  10000  ¦  0  ¦  10000
+2  ¦  9998  ¦  1  ¦  9998
+2  ¦  9998  ¦  0  ¦  9998
+4  ¦  9996  ¦  0  ¦  9996
+
+#SQL[@187,N76]Result[8, 12, 11, 11, 11]
 select * from t1 where t1.b in (select b from t2) order by t1.b desc limit 4;
-a    b
-0    10000
-2    9998
-4    9996
-6    9994
+a  ¦  b
+0  ¦  10000
+2  ¦  9998
+4  ¦  9996
+6  ¦  9994
+
+#SQL[@188,N80]Result[8, 11, 11, 11, 11]
 select * from t1 where t1.b not in (select b from t2) order by t1.b desc limit 4;
-a    b
-1    9999
-3    9997
-5    9995
-7    9993
+a  ¦  b
+1  ¦  9999
+3  ¦  9997
+5  ¦  9995
+7  ¦  9993
+
+#SQL[@189,N13]Result[]
 drop table t1;
+
+#SQL[@190,N13]Result[]
 drop table t2;
+
+#SQL[@192,N133]Result[]
 select * from mo_catalog.mo_indexes where name = 'idx1' and table_id = (select rel_id from mo_catalog.mo_tables where relname = 't1');
-id    table_id    database_id    name    type    algo    algo_table_type    algo_params    is_visible    hidden    comment    column_name    ordinal_position    options    index_table_name
+
+#SQL[@194,N30]Result[]
 create table x1 (a int, b int);
+
+#SQL[@195,N44]Result[]
 insert into x1 values (1, 1), (2, 2), (3, 3);
+
+#SQL[@197,N66]Result[]
 insert into x1 select 42, result from generate_series(1,20000,1) g;
+
+#SQL[@198,N40]Result[]
 insert into x1 values (10, 10), (20, 20);
+
+#SQL[@199,N44]Result[]
 create table x2 as select * from x1 limit 10;
+
+#SQL[@200,N52]Result[8, 6]
 select count(*) from x2 inner join x1 on x1.a = x2.a;
 count(*)
 100005
+
+#SQL[@201,N68]Result[22, 22, 22, 22, 26, 26, 24, 24, 24, 24, 24]
 select * from x2 inner join x1 on x1.a = x2.a order by x1.a limit 10;
-a    b    a    b
-1    1    1    1
-2    2    2    2
-3    3    3    3
-10    10    10    10
-20    20    20    20
-42    2    42    1
-42    1    42    1
-42    5    42    1
-42    4    42    1
-42    3    42    1
+a  ¦  b  ¦  a  ¦  b
+1  ¦  1  ¦  1  ¦  1
+2  ¦  2  ¦  2  ¦  2
+3  ¦  3  ¦  3  ¦  3
+10  ¦  10  ¦  10  ¦  10
+20  ¦  20  ¦  20  ¦  20
+42  ¦  2  ¦  42  ¦  1
+42  ¦  1  ¦  42  ¦  1
+42  ¦  5  ¦  42  ¦  1
+42  ¦  4  ¦  42  ¦  1
+42  ¦  3  ¦  42  ¦  1
+
+#SQL[@202,N13]Result[]
 drop table x1;
+
+#SQL[@203,N13]Result[]
 drop table x2;
+

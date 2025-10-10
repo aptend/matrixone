@@ -1,291 +1,459 @@
+#SQL[@1,N22]Result[]
 drop table if exists t;
+
+#SQL[@2,N37]Result[]
 create table t (a int, b int, j json);
+
+#SQL[@3,N74]Result[]
 insert into t values(1,3,'{"foo":1,"bar":2}'),(2,-2,'{"foo":11,"bar":22}');
+
+#SQL[@4,N15]Result[15, 34, 37]
 select * from t;
-a    b    j
-1    3    {"bar": 2, "foo": 1}
-2    -2    {"bar": 22, "foo": 11}
+a  ¦  b  ¦  j
+1  ¦  3  ¦  {"bar": 2, "foo": 1}
+2  ¦  -2  ¦  {"bar": 22, "foo": 11}
+
+#SQL[@5,N67]Result[20, 15, 15, 15, 16, 16, 16, 17, 17]
 select t.a,t.b,tf.* from t cross apply generate_series(t.a, t.b) tf;
-a    b    result
-1    3    1
-1    3    2
-1    3    3
-2    -2    2
-2    -2    1
-2    -2    0
-2    -2    -1
-2    -2    -2
+a  ¦  b  ¦  result
+1  ¦  3  ¦  1
+1  ¦  3  ¦  2
+1  ¦  3  ¦  3
+2  ¦  -2  ¦  2
+2  ¦  -2  ¦  1
+2  ¦  -2  ¦  0
+2  ¦  -2  ¦  -1
+2  ¦  -2  ¦  -2
+
+#SQL[@6,N79]Result[20, 16, 16, 16, 17, 17]
 select t.a,t.b,tf.* from t cross apply generate_series(t.a, t.b) tf where t.a>1;
-a    b    result
-2    -2    2
-2    -2    1
-2    -2    0
-2    -2    -1
-2    -2    -2
+a  ¦  b  ¦  result
+2  ¦  -2  ¦  2
+2  ¦  -2  ¦  1
+2  ¦  -2  ¦  0
+2  ¦  -2  ¦  -1
+2  ¦  -2  ¦  -2
+
+#SQL[@7,N55]Result[70, 80, 80, 83, 83]
 select t.a,tmp.* from t cross apply unnest(t.j,'$') tmp;
-a    col    seq    key    path    index    value    this
-1    t.j    0    bar    $.bar    null    2    {"bar": 2, "foo": 1}
-1    t.j    1    foo    $.foo    null    1    {"bar": 2, "foo": 1}
-2    t.j    0    bar    $.bar    null    22    {"bar": 22, "foo": 11}
-2    t.j    1    foo    $.foo    null    11    {"bar": 22, "foo": 11}
+a  ¦  col  ¦  seq  ¦  key  ¦  path  ¦  index  ¦  value  ¦  this
+1  ¦  t.j  ¦  0  ¦  bar  ¦  $.bar  ¦  null  ¦  2  ¦  {"bar": 2, "foo": 1}
+1  ¦  t.j  ¦  1  ¦  foo  ¦  $.foo  ¦  null  ¦  1  ¦  {"bar": 2, "foo": 1}
+2  ¦  t.j  ¦  0  ¦  bar  ¦  $.bar  ¦  null  ¦  22  ¦  {"bar": 22, "foo": 11}
+2  ¦  t.j  ¦  1  ¦  foo  ¦  $.foo  ¦  null  ¦  11  ¦  {"bar": 22, "foo": 11}
+
+#SQL[@8,N12]Result[]
 drop table t;
+
+#SQL[@10,N23]Result[]
 drop table if exists jt;
+
+#SQL[@11,N49]Result[]
 create table jt (id int, tags json, metrics json);
+
+#SQL[@13,N102]Result[]
 insert into jt values (1, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@14,N107]Result[]
 insert into jt values (2, '{"tag1": "v1", "tag2": "v22", "tag3": "v23"}', '{"m1": 12, "m2": 22, "m3": 32}');
+
+#SQL[@15,N111]Result[]
 insert into jt values (3, '{"tag13": "v13", "tag23": "v23", "tag33": "v33"}', '{"m1": 13, "m2": 23, "m3": 33}');
+
+#SQL[@16,N102]Result[]
 insert into jt values (4, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@17,N102]Result[]
 insert into jt values (5, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@18,N102]Result[]
 insert into jt values (6, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@19,N102]Result[]
 insert into jt values (7, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@20,N102]Result[]
 insert into jt values (8, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@21,N102]Result[]
 insert into jt values (9, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@22,N103]Error[79]
 insert into jt values (10, '{"tag1": "v1", "tag2": "v2", "tag3", "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
-invalid input: json text {"tag1": "v1", "tag2": "v2", "tag3", "v3"}
+invalid input: json text {\"tag1\": \"v1\", \"tag2\": \"v2\", \"tag3\", \"v3\"}
+
+#SQL[@23,N103]Result[]
 insert into jt values (11, '{"tag1": "v1", "tag2": "v2", "tag3": "v3"}', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@24,N108]Result[]
 insert into jt values (12, '{"tag1": "v1", "tag2": "v22", "tag3": "v23"}', '{"m1": 12, "m2": 22, "m3": 32}');
+
+#SQL[@25,N112]Result[]
 insert into jt values (13, '{"tag13": "v13", "tag23": "v23", "tag33": "v33"}', '{"m1": 13, "m2": 23, "m3": 33}');
+
+#SQL[@26,N70]Result[]
 insert into jt values (14, '[1, 2, 3]', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@27,N79]Result[]
 insert into jt values (15, '["v1", "v2", "v3"]', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@28,N65]Result[]
 insert into jt values (16, 'null', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@29,N69]Result[]
 insert into jt values (17, '"string"', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@30,N62]Result[]
 insert into jt values (18, '1', '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@31,N63]Result[]
 insert into jt values (20, null, '{"m1": 1, "m2": 2, "m3": 3}');
+
+#SQL[@33,N91]Result[33, 31, 31, 31, 31, 32, 32, 33, 33, 33, 31, 31, 31]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(tags, '$') u where id < 5;
-id    key    index    value
-1    tag1    null    "v1"
-1    tag2    null    "v2"
-1    tag3    null    "v3"
-2    tag1    null    "v1"
-2    tag2    null    "v22"
-2    tag3    null    "v23"
-3    tag13    null    "v13"
-3    tag23    null    "v23"
-3    tag33    null    "v33"
-4    tag1    null    "v1"
-4    tag2    null    "v2"
-4    tag3    null    "v3"
+id  ¦  key  ¦  index  ¦  value
+1  ¦  tag1  ¦  null  ¦  "v1"
+1  ¦  tag2  ¦  null  ¦  "v2"
+1  ¦  tag3  ¦  null  ¦  "v3"
+2  ¦  tag1  ¦  null  ¦  "v1"
+2  ¦  tag2  ¦  null  ¦  "v22"
+2  ¦  tag3  ¦  null  ¦  "v23"
+3  ¦  tag13  ¦  null  ¦  "v13"
+3  ¦  tag23  ¦  null  ¦  "v23"
+3  ¦  tag33  ¦  null  ¦  "v33"
+4  ¦  tag1  ¦  null  ¦  "v1"
+4  ¦  tag2  ¦  null  ¦  "v2"
+4  ¦  tag3  ¦  null  ¦  "v3"
+
+#SQL[@34,N78]Result[33, 31, 31, 31, 31, 32, 32, 33, 33, 33, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 31, 32, 32, 32, 32, 33, 33, 34, 34, 34, 26, 26, 26, 29, 29, 29]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(tags, '$') u;
-id    key    index    value
-1    tag1    null    "v1"
-1    tag2    null    "v2"
-1    tag3    null    "v3"
-2    tag1    null    "v1"
-2    tag2    null    "v22"
-2    tag3    null    "v23"
-3    tag13    null    "v13"
-3    tag23    null    "v23"
-3    tag33    null    "v33"
-4    tag1    null    "v1"
-4    tag2    null    "v2"
-4    tag3    null    "v3"
-5    tag1    null    "v1"
-5    tag2    null    "v2"
-5    tag3    null    "v3"
-6    tag1    null    "v1"
-6    tag2    null    "v2"
-6    tag3    null    "v3"
-7    tag1    null    "v1"
-7    tag2    null    "v2"
-7    tag3    null    "v3"
-8    tag1    null    "v1"
-8    tag2    null    "v2"
-8    tag3    null    "v3"
-9    tag1    null    "v1"
-9    tag2    null    "v2"
-9    tag3    null    "v3"
-11    tag1    null    "v1"
-11    tag2    null    "v2"
-11    tag3    null    "v3"
-12    tag1    null    "v1"
-12    tag2    null    "v22"
-12    tag3    null    "v23"
-13    tag13    null    "v13"
-13    tag23    null    "v23"
-13    tag33    null    "v33"
-14    null    0    1
-14    null    1    2
-14    null    2    3
-15    null    0    "v1"
-15    null    1    "v2"
-15    null    2    "v3"
+id  ¦  key  ¦  index  ¦  value
+1  ¦  tag1  ¦  null  ¦  "v1"
+1  ¦  tag2  ¦  null  ¦  "v2"
+1  ¦  tag3  ¦  null  ¦  "v3"
+2  ¦  tag1  ¦  null  ¦  "v1"
+2  ¦  tag2  ¦  null  ¦  "v22"
+2  ¦  tag3  ¦  null  ¦  "v23"
+3  ¦  tag13  ¦  null  ¦  "v13"
+3  ¦  tag23  ¦  null  ¦  "v23"
+3  ¦  tag33  ¦  null  ¦  "v33"
+4  ¦  tag1  ¦  null  ¦  "v1"
+4  ¦  tag2  ¦  null  ¦  "v2"
+4  ¦  tag3  ¦  null  ¦  "v3"
+5  ¦  tag1  ¦  null  ¦  "v1"
+5  ¦  tag2  ¦  null  ¦  "v2"
+5  ¦  tag3  ¦  null  ¦  "v3"
+6  ¦  tag1  ¦  null  ¦  "v1"
+6  ¦  tag2  ¦  null  ¦  "v2"
+6  ¦  tag3  ¦  null  ¦  "v3"
+7  ¦  tag1  ¦  null  ¦  "v1"
+7  ¦  tag2  ¦  null  ¦  "v2"
+7  ¦  tag3  ¦  null  ¦  "v3"
+8  ¦  tag1  ¦  null  ¦  "v1"
+8  ¦  tag2  ¦  null  ¦  "v2"
+8  ¦  tag3  ¦  null  ¦  "v3"
+9  ¦  tag1  ¦  null  ¦  "v1"
+9  ¦  tag2  ¦  null  ¦  "v2"
+9  ¦  tag3  ¦  null  ¦  "v3"
+11  ¦  tag1  ¦  null  ¦  "v1"
+11  ¦  tag2  ¦  null  ¦  "v2"
+11  ¦  tag3  ¦  null  ¦  "v3"
+12  ¦  tag1  ¦  null  ¦  "v1"
+12  ¦  tag2  ¦  null  ¦  "v22"
+12  ¦  tag3  ¦  null  ¦  "v23"
+13  ¦  tag13  ¦  null  ¦  "v13"
+13  ¦  tag23  ¦  null  ¦  "v23"
+13  ¦  tag33  ¦  null  ¦  "v33"
+14  ¦  null  ¦  0  ¦  1
+14  ¦  null  ¦  1  ¦  2
+14  ¦  null  ¦  2  ¦  3
+15  ¦  null  ¦  0  ¦  "v1"
+15  ¦  null  ¦  1  ¦  "v2"
+15  ¦  null  ¦  2  ¦  "v3"
+
+#SQL[@35,N81]Result[33, 26, 26, 26, 27, 27, 27, 27, 27, 27, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27, 27, 28, 28, 28, 28, 28, 28, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(metrics, '$') u;
-id    key    index    value
-1    m1    null    1
-1    m2    null    2
-1    m3    null    3
-2    m1    null    12
-2    m2    null    22
-2    m3    null    32
-3    m1    null    13
-3    m2    null    23
-3    m3    null    33
-4    m1    null    1
-4    m2    null    2
-4    m3    null    3
-5    m1    null    1
-5    m2    null    2
-5    m3    null    3
-6    m1    null    1
-6    m2    null    2
-6    m3    null    3
-7    m1    null    1
-7    m2    null    2
-7    m3    null    3
-8    m1    null    1
-8    m2    null    2
-8    m3    null    3
-9    m1    null    1
-9    m2    null    2
-9    m3    null    3
-11    m1    null    1
-11    m2    null    2
-11    m3    null    3
-12    m1    null    12
-12    m2    null    22
-12    m3    null    32
-13    m1    null    13
-13    m2    null    23
-13    m3    null    33
-14    m1    null    1
-14    m2    null    2
-14    m3    null    3
-15    m1    null    1
-15    m2    null    2
-15    m3    null    3
-16    m1    null    1
-16    m2    null    2
-16    m3    null    3
-17    m1    null    1
-17    m2    null    2
-17    m3    null    3
-18    m1    null    1
-18    m2    null    2
-18    m3    null    3
-20    m1    null    1
-20    m2    null    2
-20    m3    null    3
+id  ¦  key  ¦  index  ¦  value
+1  ¦  m1  ¦  null  ¦  1
+1  ¦  m2  ¦  null  ¦  2
+1  ¦  m3  ¦  null  ¦  3
+2  ¦  m1  ¦  null  ¦  12
+2  ¦  m2  ¦  null  ¦  22
+2  ¦  m3  ¦  null  ¦  32
+3  ¦  m1  ¦  null  ¦  13
+3  ¦  m2  ¦  null  ¦  23
+3  ¦  m3  ¦  null  ¦  33
+4  ¦  m1  ¦  null  ¦  1
+4  ¦  m2  ¦  null  ¦  2
+4  ¦  m3  ¦  null  ¦  3
+5  ¦  m1  ¦  null  ¦  1
+5  ¦  m2  ¦  null  ¦  2
+5  ¦  m3  ¦  null  ¦  3
+6  ¦  m1  ¦  null  ¦  1
+6  ¦  m2  ¦  null  ¦  2
+6  ¦  m3  ¦  null  ¦  3
+7  ¦  m1  ¦  null  ¦  1
+7  ¦  m2  ¦  null  ¦  2
+7  ¦  m3  ¦  null  ¦  3
+8  ¦  m1  ¦  null  ¦  1
+8  ¦  m2  ¦  null  ¦  2
+8  ¦  m3  ¦  null  ¦  3
+9  ¦  m1  ¦  null  ¦  1
+9  ¦  m2  ¦  null  ¦  2
+9  ¦  m3  ¦  null  ¦  3
+11  ¦  m1  ¦  null  ¦  1
+11  ¦  m2  ¦  null  ¦  2
+11  ¦  m3  ¦  null  ¦  3
+12  ¦  m1  ¦  null  ¦  12
+12  ¦  m2  ¦  null  ¦  22
+12  ¦  m3  ¦  null  ¦  32
+13  ¦  m1  ¦  null  ¦  13
+13  ¦  m2  ¦  null  ¦  23
+13  ¦  m3  ¦  null  ¦  33
+14  ¦  m1  ¦  null  ¦  1
+14  ¦  m2  ¦  null  ¦  2
+14  ¦  m3  ¦  null  ¦  3
+15  ¦  m1  ¦  null  ¦  1
+15  ¦  m2  ¦  null  ¦  2
+15  ¦  m3  ¦  null  ¦  3
+16  ¦  m1  ¦  null  ¦  1
+16  ¦  m2  ¦  null  ¦  2
+16  ¦  m3  ¦  null  ¦  3
+17  ¦  m1  ¦  null  ¦  1
+17  ¦  m2  ¦  null  ¦  2
+17  ¦  m3  ¦  null  ¦  3
+18  ¦  m1  ¦  null  ¦  1
+18  ¦  m2  ¦  null  ¦  2
+18  ¦  m3  ¦  null  ¦  3
+20  ¦  m1  ¦  null  ¦  1
+20  ¦  m2  ¦  null  ¦  2
+20  ¦  m3  ¦  null  ¦  3
+
+#SQL[@36,N92]Result[]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(tags, '$') u where id = 19;
-id    key    index    value
+
+#SQL[@37,N92]Result[]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(tags, '$') u where id = 20;
-id    key    index    value
+
+#SQL[@39,N102]Result[33, 26, 27, 27, 26, 26, 26, 26, 26, 26, 27, 28, 28, 27, 27, 27, 27, 27, 27]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(metrics, '$') u where u.`key` = 'm2';
-id    key    index    value
-1    m2    null    2
-2    m2    null    22
-3    m2    null    23
-4    m2    null    2
-5    m2    null    2
-6    m2    null    2
-7    m2    null    2
-8    m2    null    2
-9    m2    null    2
-11    m2    null    2
-12    m2    null    22
-13    m2    null    23
-14    m2    null    2
-15    m2    null    2
-16    m2    null    2
-17    m2    null    2
-18    m2    null    2
-20    m2    null    2
+id  ¦  key  ¦  index  ¦  value
+1  ¦  m2  ¦  null  ¦  2
+2  ¦  m2  ¦  null  ¦  22
+3  ¦  m2  ¦  null  ¦  23
+4  ¦  m2  ¦  null  ¦  2
+5  ¦  m2  ¦  null  ¦  2
+6  ¦  m2  ¦  null  ¦  2
+7  ¦  m2  ¦  null  ¦  2
+8  ¦  m2  ¦  null  ¦  2
+9  ¦  m2  ¦  null  ¦  2
+11  ¦  m2  ¦  null  ¦  2
+12  ¦  m2  ¦  null  ¦  22
+13  ¦  m2  ¦  null  ¦  23
+14  ¦  m2  ¦  null  ¦  2
+15  ¦  m2  ¦  null  ¦  2
+16  ¦  m2  ¦  null  ¦  2
+17  ¦  m2  ¦  null  ¦  2
+18  ¦  m2  ¦  null  ¦  2
+20  ¦  m2  ¦  null  ¦  2
+
+#SQL[@40,N118]Error[55]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(metrics, '$') u where u.`key` = 'm2' and u.value > 2;
 invalid argument operator cast, bad value [JSON BIGINT]
+
+#SQL[@41,N145]Result[33, 27, 27, 28, 28]
 select id, u.`key`, u.`index`, u.value from jt cross apply unnest(metrics, '$') u where u.`key` = 'm2' and json_extract_float64(u.value, '$') > 2;
-id    key    index    value
-2    m2    null    22
-3    m2    null    23
-12    m2    null    22
-13    m2    null    23
+id  ¦  key  ¦  index  ¦  value
+2  ¦  m2  ¦  null  ¦  22
+3  ¦  m2  ¦  null  ¦  23
+12  ¦  m2  ¦  null  ¦  22
+13  ¦  m2  ¦  null  ¦  23
+
+#SQL[@43,N69]Result[8, 2]
 select count(*) from jt cross apply unnest(tags, '$') u where id < 10;
 count(*)
 27
+
+#SQL[@44,N68]Result[8, 1]
 select count(*) from jt cross apply unnest(tags, '$') u where id = 2;
 count(*)
 3
+
+#SQL[@45,N55]Result[8, 2]
 select count(*) from jt cross apply unnest(tags, '$') u;
 count(*)
 42
+
+#SQL[@46,N69]Result[8, 1]
 select count(*) from jt cross apply unnest(tags, '$') u where id = 19;
 count(*)
 0
+
+#SQL[@47,N69]Result[8, 1]
 select count(*) from jt cross apply unnest(tags, '$') u where id = 20;
 count(*)
 0
+
+#SQL[@49,N13]Result[]
 drop table jt;
+
+#SQL[@51,N23]Result[]
 drop table if exists t1;
+
+#SQL[@52,N29]Result[]
 create table t1(a int, b int);
+
+#SQL[@53,N33]Result[]
 insert into t1 values(1,3),(1,-1);
+
+#SQL[@54,N58]Result[20, 15, 15, 15]
 select * from t1 cross apply generate_series(t1.a,t1.b,1)g;
-a    b    result
-1    3    1
-1    3    2
-1    3    3
+a  ¦  b  ¦  result
+1  ¦  3  ¦  1
+1  ¦  3  ¦  2
+1  ¦  3  ¦  3
+
+#SQL[@55,N58]Result[20, 15, 15, 15, 19]
 select * from t1 outer apply generate_series(t1.a,t1.b,1)g;
-a    b    result
-1    3    1
-1    3    2
-1    3    3
-1    -1    null
+a  ¦  b  ¦  result
+1  ¦  3  ¦  1
+1  ¦  3  ¦  2
+1  ¦  3  ¦  3
+1  ¦  -1  ¦  null
+
+#SQL[@56,N59]Result[20, 16, 16, 17]
 select * from t1 cross apply generate_series(t1.a,t1.b,-1)g;
-a    b    result
-1    -1    1
-1    -1    0
-1    -1    -1
+a  ¦  b  ¦  result
+1  ¦  -1  ¦  1
+1  ¦  -1  ¦  0
+1  ¦  -1  ¦  -1
+
+#SQL[@57,N59]Result[20, 18, 16, 16, 17]
 select * from t1 outer apply generate_series(t1.a,t1.b,-1)g;
-a    b    result
-1    3    null
-1    -1    1
-1    -1    0
-1    -1    -1
+a  ¦  b  ¦  result
+1  ¦  3  ¦  null
+1  ¦  -1  ¦  1
+1  ¦  -1  ¦  0
+1  ¦  -1  ¦  -1
+
+#SQL[@58,N13]Result[]
 drop table t1;
+
+#SQL[@60,N23]Result[]
 drop table if exists t2;
+
+#SQL[@61,N30]Result[]
 create table t2(id int,j json);
+
+#SQL[@62,N69]Result[]
 insert into t2 values(1,'{"tag1": "v1", "tag2": "v2", "tag3": "v3"}');
+
+#SQL[@63,N29]Result[]
 insert into t2 values(2,null);
+
+#SQL[@64,N56]Result[71, 108, 108, 108]
 select t2.id,tf.* from t2 cross apply unnest(t2.j,'$')tf;
-id    col    seq    key    path    index    value    this
-1    t2.j    0    tag1    $.tag1    null    "v1"    {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
-1    t2.j    1    tag2    $.tag2    null    "v2"    {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
-1    t2.j    2    tag3    $.tag3    null    "v3"    {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+id  ¦  col  ¦  seq  ¦  key  ¦  path  ¦  index  ¦  value  ¦  this
+1  ¦  t2.j  ¦  0  ¦  tag1  ¦  $.tag1  ¦  null  ¦  "v1"  ¦  {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+1  ¦  t2.j  ¦  1  ¦  tag2  ¦  $.tag2  ¦  null  ¦  "v2"  ¦  {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+1  ¦  t2.j  ¦  2  ¦  tag3  ¦  $.tag3  ¦  null  ¦  "v3"  ¦  {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+
+#SQL[@65,N56]Result[71, 108, 108, 108, 71]
 select t2.id,tf.* from t2 outer apply unnest(t2.j,'$')tf;
-id    col    seq    key    path    index    value    this
-1    t2.j    0    tag1    $.tag1    null    "v1"    {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
-1    t2.j    1    tag2    $.tag2    null    "v2"    {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
-1    t2.j    2    tag3    $.tag3    null    "v3"    {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
-2    null    null    null    null    null    null    null
+id  ¦  col  ¦  seq  ¦  key  ¦  path  ¦  index  ¦  value  ¦  this
+1  ¦  t2.j  ¦  0  ¦  tag1  ¦  $.tag1  ¦  null  ¦  "v1"  ¦  {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+1  ¦  t2.j  ¦  1  ¦  tag2  ¦  $.tag2  ¦  null  ¦  "v2"  ¦  {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+1  ¦  t2.j  ¦  2  ¦  tag3  ¦  $.tag3  ¦  null  ¦  "v3"  ¦  {"tag1": "v1", "tag2": "v2", "tag3": "v3"}
+2  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@67,N23]Result[]
 drop table if exists t1;
+
+#SQL[@68,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@69,N33]Result[]
 insert into t1 values(1, 1, NULL);
+
+#SQL[@70,N61]Error[62]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: the value of generate_series step can't be NULL
+
+#SQL[@71,N13]Result[]
 drop table t1;
+
+#SQL[@72,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@73,N33]Result[]
 insert into t1 values(1, NULL, 1);
+
+#SQL[@74,N61]Error[61]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: the value of generate_series end can't be NULL
+
+#SQL[@75,N13]Result[]
 drop table t1;
+
+#SQL[@76,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@77,N33]Result[]
 insert into t1 values(NULL, 1, 1);
+
+#SQL[@78,N61]Error[63]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: the value of generate_series start can't be NULL
+
+#SQL[@79,N13]Result[]
 drop table t1;
+
+#SQL[@80,N45]Result[]
 create table t1(a bigint, b bigint, c bigint);
+
+#SQL[@81,N33]Result[]
 insert into t1 values(1, 1, NULL);
+
+#SQL[@82,N61]Error[62]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: the value of generate_series step can't be NULL
+
+#SQL[@83,N13]Result[]
 drop table t1;
+
+#SQL[@84,N45]Result[]
 create table t1(a bigint, b bigint, c bigint);
+
+#SQL[@85,N33]Result[]
 insert into t1 values(1, NULL, 1);
+
+#SQL[@86,N61]Error[61]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: the value of generate_series end can't be NULL
+
+#SQL[@87,N13]Result[]
 drop table t1;
+
+#SQL[@88,N45]Result[]
 create table t1(a bigint, b bigint, c bigint);
+
+#SQL[@89,N33]Result[]
 insert into t1 values(NULL, 1, 1);
+
+#SQL[@90,N61]Error[63]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: the value of generate_series start can't be NULL
+
+#SQL[@91,N13]Result[]
 drop table t1;
+
+#SQL[@92,N48]Result[]
 create table t1(a datetime,b datetime,c varchar);
+
+#SQL[@93,N72]Result[]
 insert into t1 values('2020-02-28 00:00:00','2021-03-01 00:01:00', NULL);
+
+#SQL[@94,N61]Error[58]
 select * from t1 cross apply generate_series(t1.a,t1.b,t1.c)g;
 invalid input: generate_series datetime step can't be NULL
+

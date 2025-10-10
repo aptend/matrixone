@@ -31,13 +31,13 @@ select space(-18446744073709551615);
 select space(18446744073709551615);
 
 select space(-18446744073709551616);
--- @bvt:issue#3743
-select space(18446744073709551616);
--- @bvt:issue
+@issue(no=3743) {
+    select space(18446744073709551616);
+}
 select space(-18446744073709551617);
--- @bvt:issue#3743
-select space(18446744073709551617);
--- @bvt:issue
+@issue(no=3743) {
+    select space(18446744073709551617);
+}
 
 
 SELECT space(9223372036854775808);

@@ -1,16 +1,16 @@
 SELECT MAKEDATE(0, 0);
-SELECT MAKEDATE(2024, 1); 
+SELECT MAKEDATE(2024, 1);
 SELECT MAKEDATE(2024, 366);
 SELECT DATEDIFF(MAKEDATE(2024, 1), '2024-07-01');
--- @ignore:0
 SELECT MAKEDATE(YEAR(NOW()), DAY(LAST_DAY(NOW())));
--- @ignore:0
+| @ignore(0);
 SELECT DATE_SUB(MAKEDATE(YEAR(CURDATE()), 1), INTERVAL 1 DAY) AS LastDayOfYear;
+| @ignore(0);
 
-SELECT '生日快乐！' AS message, MAKEDATE(1990, 100) AS birthday; 
+SELECT '生日快乐！' AS message, MAKEDATE(1990, 100) AS birthday;
 
--- @ignore:0
 SELECT YEAR(NOW()) - YEAR(MAKEDATE(YEAR(NOW()), 1)) AS years_passed;
+| @ignore(0);
 
 create database abc;
 use abc;
@@ -31,7 +31,7 @@ VALUES
 
 SELECT employee_hire_date,
        MAKEDATE(YEAR(company_founded), 1) AS CompanyFoundedDate,
-       CASE 
+       CASE
            WHEN employee_hire_date > MAKEDATE(YEAR(company_founded), 1) THEN 'After Foundation'
            ELSE 'Before Foundation'
        END AS HirePeriod
@@ -57,7 +57,7 @@ SELECT MAKEDATE(2024, '');
 
 SELECT MAKEDATE(0, 0);
 SELECT MAKEDATE(0, 123);
-SELECT MAKEDATE(2024, 99); 
+SELECT MAKEDATE(2024, 99);
 SELECT MAKEDATE(2024, 366);
 SELECT MAKEDATE(2024, 367);
 SELECT MAKEDATE(2024, -399);
@@ -70,10 +70,10 @@ SELECT MAKEDATE(2832, '0A88');
 SELECT MAKEDATE(2024, 1.2);
 SELECT MAKEDATE(2024, 300.1234890);
 SELECT MAKEDATE(YEAR('2011-01-09'), 10.456);
--- @ignore:0
 SELECT MAKEDATE(YEAR(NOW()), -2);
--- @ignore:0
+| @ignore(0);
 SELECT MAKEDATE(YEAR(NOW()), 2);
+| @ignore(0);
 SELECT MAKEDATE(20244, 123);
 SELECT MAKEDATE(0123, 123);
 SELECT MAKEDATE(0000, 123);

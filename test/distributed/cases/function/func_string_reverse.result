@@ -1,94 +1,217 @@
+#SQL[@2,N21]Result[12, 3]
 SELECT REVERSE('abc');
-reverse(abc)
+REVERSE(abc)
 cba
+
+#SQL[@4,N37]Result[31, 13]
 select reverse('abc'),reverse('abcd');
-reverse(abc)	reverse(abcd)
-cba	dcba
+reverse(abc)  ¦  reverse(abcd)
+cba  ¦  dcba
+
+#SQL[@7,N20]Result[13, 4]
 select reverse(NULL);
 reverse(null)
 null
+
+#SQL[@18,N31]Result[]
 create table t1 (a varchar(20));
+
+#SQL[@19,N46]Result[]
 insert into t1 values ("empty"),(""),("hello");
+
+#SQL[@21,N52]Result[17, 16]
 select a,reverse(a) from t1 where reverse(a)="olleh";
-a	reverse(a)
-hello	olleh
+a  ¦  reverse(a)
+hello  ¦  olleh
+
+#SQL[@22,N13]Result[]
 drop table t1;
+
+#SQL[@26,N29]Result[]
 drop table if exists `Ｔ１`;
+
+#SQL[@27,N29]Result[]
 drop table if exists `Ｔ２`;
+
+#SQL[@28,N29]Result[]
 drop table if exists `Ｔ３`;
+
+#SQL[@29,N29]Result[]
 drop table if exists `Ｔ４`;
+
+#SQL[@30,N29]Result[]
 drop table if exists `Ｔ５`;
+
+#SQL[@31,N29]Result[]
 drop table if exists `Ｔ６`;
+
+#SQL[@32,N29]Result[]
 drop table if exists `Ｔ７`;
+
+#SQL[@33,N29]Result[]
 drop table if exists `Ｔ８`;
+
+#SQL[@34,N29]Result[]
 drop table if exists `Ｔ９`;
+
+#SQL[@35,N58]Result[]
 CREATE TABLE `Ｔ１` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@36,N58]Result[]
 CREATE TABLE `Ｔ２` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@37,N58]Result[]
 CREATE TABLE `Ｔ３` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@38,N58]Result[]
 CREATE TABLE `Ｔ４` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@39,N58]Result[]
 CREATE TABLE `Ｔ５` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@40,N58]Result[]
 CREATE TABLE `Ｔ６` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@41,N58]Result[]
 CREATE TABLE `Ｔ７` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@42,N58]Result[]
 CREATE TABLE `Ｔ８` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@43,N58]Result[]
 CREATE TABLE `Ｔ９` (`Ｃ１` char(50), INDEX(`Ｃ１`));
+
+#SQL[@44,N47]Result[]
 INSERT INTO `Ｔ１` VALUES ('ｱｲｳｴｵ');
+
+#SQL[@45,N47]Result[]
 INSERT INTO `Ｔ２` VALUES ('あいうえお');
+
+#SQL[@46,N47]Result[]
 INSERT INTO `Ｔ３` VALUES ('龔龖龗龞龡');
+
+#SQL[@47,N47]Result[]
 INSERT INTO `Ｔ４` VALUES ('ｱｲｳｴｵ');
+
+#SQL[@48,N47]Result[]
 INSERT INTO `Ｔ５` VALUES ('あいうえお');
+
+#SQL[@49,N47]Result[]
 INSERT INTO `Ｔ６` VALUES ('龔龖龗龞龡');
+
+#SQL[@50,N47]Result[]
 INSERT INTO `Ｔ７` VALUES ('ｱｲｳｴｵ');
+
+#SQL[@51,N47]Result[]
 INSERT INTO `Ｔ８` VALUES ('あいうえお');
+
+#SQL[@52,N47]Result[]
 INSERT INTO `Ｔ９` VALUES ('龔龖龗龞龡');
+
+#SQL[@53,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ１`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 ｵｴｳｲｱ
+
+#SQL[@54,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ２`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 おえういあ
+
+#SQL[@55,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ３`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 龡龞龗龖龔
+
+#SQL[@56,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ４`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 ｵｴｳｲｱ
+
+#SQL[@57,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ５`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 おえういあ
+
+#SQL[@58,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ６`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 龡龞龗龖龔
+
+#SQL[@59,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ７`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 ｵｴｳｲｱ
+
+#SQL[@60,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ８`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 おえういあ
+
+#SQL[@61,N38]Result[15, 15]
 SELECT REVERSE(`Ｃ１`) FROM `Ｔ９`;
-REVERSE(`Ｃ１`)
+REVERSE(Ｃ１)
 龡龞龗龖龔
+
+#SQL[@62,N19]Result[]
 DROP TABLE `Ｔ１`;
+
+#SQL[@63,N19]Result[]
 DROP TABLE `Ｔ２`;
+
+#SQL[@64,N19]Result[]
 DROP TABLE `Ｔ３`;
+
+#SQL[@65,N19]Result[]
 DROP TABLE `Ｔ４`;
+
+#SQL[@66,N19]Result[]
 DROP TABLE `Ｔ５`;
+
+#SQL[@67,N19]Result[]
 DROP TABLE `Ｔ６`;
+
+#SQL[@68,N19]Result[]
 DROP TABLE `Ｔ７`;
+
+#SQL[@69,N19]Result[]
 DROP TABLE `Ｔ８`;
+
+#SQL[@70,N19]Result[]
 DROP TABLE `Ｔ９`;
+
+#SQL[@74,N24]Result[15, 6]
 SELECT REVERSE("你好");
-reverse(你好)
+REVERSE(你好)
 好你
+
+#SQL[@75,N25]Result[16, 7]
 SELECT REVERSE("再 见");
-reverse(再 见)
+REVERSE(再 见)
 见 再
+
+#SQL[@79,N23]Result[]
 drop table if exists t1;
+
+#SQL[@80,N31]Result[]
 create table t1(a varchar(255));
+
+#SQL[@81,N38]Result[]
 insert into t1 select (reverse("abc"));
+
+#SQL[@82,N38]Result[]
 insert into t1 select (reverse("bcd"));
+
+#SQL[@83,N38]Result[]
 insert into t1 select (reverse("def"));
+
+#SQL[@84,N38]Result[]
 insert into t1 select (reverse("xyz"));
+
+#SQL[@85,N38]Result[]
 insert into t1 select (reverse("1a1"));
+
+#SQL[@86,N56]Result[1, 3, 3, 3, 3, 3]
 select a from t1 group by a having reverse(a)=reverse(a);
 a
 cba
@@ -96,38 +219,73 @@ dcb
 fed
 zyx
 1a1
+
+#SQL[@87,N13]Result[]
 drop table t1;
+
+#SQL[@90,N23]Result[]
 drop table if exists t1;
+
+#SQL[@91,N23]Result[]
 drop table if exists t2;
+
+#SQL[@92,N39]Result[]
 create table t1(a INT,  b varchar(255));
+
+#SQL[@93,N39]Result[]
 create table t2(a INT,  b varchar(255));
+
+#SQL[@94,N65]Result[]
 insert into t1 values(1, "abc"),(1, "bbb"),(3, "aaa"),(4, "2012");
+
+#SQL[@95,N65]Result[]
 insert into t2 values(1, "abc"),(1, "aaa"),(3, "cba"),(4, "2012");
+
+#SQL[@96,N77]Result[8, 8, 8, 8]
 SELECT distinct t1.a, t2.a FROM t1 JOIN t2 ON (reverse(t1.b) = reverse(t2.b));
-a	a
-1	1
-3	1
-4	4
+a  ¦  a
+1  ¦  1
+3  ¦  1
+4  ¦  4
+
+#SQL[@97,N13]Result[]
 drop table t1;
+
+#SQL[@98,N13]Result[]
 drop table t2;
+
+#SQL[@101,N31]Result[22, 13]
 SELECT REVERSE("@($)@($#)_@(#");
-reverse(@($)@($#)_@(#)
+REVERSE(@($)@($#)_@(#)
 #(@_)#$(@)$(@
+
+#SQL[@103,N37]Result[32, 1100]
 SELECT REVERSE(space(500)+space(600));
-reverse(space(500) + space(600))
+REVERSE(space(500) + space(600))
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+
+#SQL[@105,N22]Result[15, 6]
 SELECT REVERSE(123124);
-reverse(123124)
+REVERSE(123124)
 421321
+
+#SQL[@106,N23]Result[16, 7]
 SELECT REVERSE(123.124);
-reverse(123.124)
+REVERSE(123.124)
 421.321
+
+#SQL[@107,N22]Result[15, 6]
 SELECT REVERSE(0.3414);
-reverse(0.3414)
+REVERSE(0.3414)
 4143.0
+
+#SQL[@109,N28]Result[19, 10]
 SELECT REVERSE("2023-04-24");
-reverse(2023-04-24)
+REVERSE(2023-04-24)
 42-40-3202
+
+#SQL[@110,N33]Result[24, 15]
 SELECT REVERSE("10:03:23.021412");
-reverse(10:03:23.021412)
+REVERSE(10:03:23.021412)
 214120.32:30:01
+

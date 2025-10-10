@@ -1,4 +1,4 @@
-#SELECT 
+#SELECT
 SELECT REVERSE('abc');
 -- @separator:table
 select reverse('abc'),reverse('abcd');

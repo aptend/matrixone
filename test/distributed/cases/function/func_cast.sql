@@ -50,7 +50,7 @@ select cast('' as signed);
 #select hex(cast(_koi8r x'D4C5D3D4' as char character set cp1251));
 #create table t1 select cast(_koi8r x'D4C5D3D4' as char character set cp1251) as t;
 
-#Replace default engine value with static engine string 
+#Replace default engine value with static engine string
 #show create table t1;
 #drop table t1;
 
@@ -73,7 +73,7 @@ select cast('' as signed);
 #   cast(_latin1'a'   AS char(2) charset binary) as c5;
 # select c1,c2,c3,c4,hex(c5) from t1;
 
-# #Replace default engine value with static engine string 
+# #Replace default engine value with static engine string
 # #replace_result $DEFAULT_ENGINE ENGINE
 # show create table t1;
 # drop table t1;
@@ -100,7 +100,7 @@ select cast('' as signed);
 #   cast(_koi8r x'C6'     AS nchar(2)) as c5;
 # select * from t1;
 
-# #Replace default engine value with static engine string 
+# #Replace default engine value with static engine string
 # #replace_result $DEFAULT_ENGINE ENGINE
 # show create table t1;
 # drop table t1;
@@ -200,7 +200,7 @@ CREATE TABLE t1 (f1 double);
 INSERT INTO t1 SET f1 = -1.0e+30 ;
 INSERT INTO t1 SET f1 = +1.0e+30 ;
 SELECT f1 AS double_val, CAST(f1 AS SIGNED INT) AS cast_val FROM t1;
-DROP TABLE t1;					   
+DROP TABLE t1;
 
 SELECT CAST(cast('01-01-01' as date) AS UNSIGNED);
 SELECT CAST(cast('01-01-01' as date) AS SIGNED);
@@ -279,15 +279,15 @@ drop table t1;
 # DROP TABLE t1;
 
 # #echo #
-# #echo # Bug #11765023: 57934: DOS POSSIBLE SINCE BINARY CASTING 
+# #echo # Bug #11765023: 57934: DOS POSSIBLE SINCE BINARY CASTING
 # #echo #   DOESN'T ADHERE TO MAX_ALLOWED_PACKET
 
 # SET @@GLOBAL.max_allowed_packet=2048;
 # # reconnect to make the new max packet size take effect
 # #connect (newconn, localhost, root,,)
 
-# SELECT CONVERT('a', BINARY(2049));  
-# SELECT CONVERT('a', CHAR(2049));  
+# SELECT CONVERT('a', BINARY(2049));
+# SELECT CONVERT('a', CHAR(2049));
 
 # connection default;
 # disconnect newconn;
@@ -299,8 +299,8 @@ drop table t1;
 
 # CREATE TABLE t1 (a VARCHAR(50));
 
-# SELECT a FROM t1 
-# WHERE CAST(a as BINARY)=x'62736D697468' 
+# SELECT a FROM t1
+# WHERE CAST(a as BINARY)=x'62736D697468'
 #   AND CAST(a AS BINARY)=x'65736D697468';
 
 # DROP TABLE t1;
@@ -325,7 +325,7 @@ drop table t1;
 # CREATE TABLE t1 AS SELECT CONCAT(CAST(REPEAT('9', 1000) AS SIGNED)),
 #                           CONCAT(CAST(REPEAT('9', 1000) AS UNSIGNED));
 
-# #Replace default engine value with static engine string 
+# #Replace default engine value with static engine string
 # #replace_result $DEFAULT_ENGINE ENGINE
 # SHOW CREATE TABLE t1;
 # DROP TABLE t1;

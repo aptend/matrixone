@@ -1,417 +1,696 @@
+#SQL[@2,N15]Result[8, 2]
 select hex(123);
 hex(123)
 7B
+
+#SQL[@3,N17]Result[10, 4]
 select hex(32432);
 hex(32432)
 7EB0
+
+#SQL[@4,N22]Result[15, 8]
 select hex(2178342143);
 hex(2178342143)
 81D6DCFF
+
+#SQL[@5,N22]Result[15, 8]
 select hex(2147483649);
 hex(2147483649)
 80000001
+
+#SQL[@8,N19]Result[12, 3]
 select hex(456.789);
 hex(456.789)
 1C9
+
+#SQL[@9,N24]Result[17, 5]
 select hex(321354.21321);
 hex(321354.21321)
 4E74A
+
+#SQL[@10,N16]Result[9, 3]
 select hex(1092);
 hex(1092)
 444
+
+#SQL[@11,N29]Result[22, 6]
 select hex(3215133.214321432);
 hex(3215133.214321432)
 310F1D
+
+#SQL[@14,N17]Result[8, 6]
 select hex('abc');
 hex(abc)
 616263
+
+#SQL[@15,N19]Result[10, 10]
 select hex('qqqqq');
 hex(qqqqq)
 7171717171
+
+#SQL[@16,N40]Result[31, 52]
 select hex('abcdefghijklmnopqrstuvwxyz');
 hex(abcdefghijklmnopqrstuvwxyz)
 6162636465666768696A6B6C6D6E6F707172737475767778797A
+
+#SQL[@17,N28]Result[19, 28]
 select hex('edwrgewgrewrwe');
 hex(edwrgewgrewrwe)
 6564777267657767726577727765
+
+#SQL[@20,N17]Result[8, 6]
 select hex('123');
 hex(123)
 313233
+
+#SQL[@21,N24]Result[15, 20]
 select hex('4321413432');
 hex(4321413432)
 34333231343133343332
+
+#SQL[@22,N23]Result[14, 18]
 select hex('325324213');
 hex(325324213)
 333235333234323133
+
+#SQL[@23,N27]Result[18, 26]
 select hex('0000000000000');
 hex(0000000000000)
 30303030303030303030303030
+
+#SQL[@26,N15]Result[6, 2]
 select hex('A');
 hex(A)
 41
+
+#SQL[@27,N15]Result[6, 2]
 select hex('a');
 hex(a)
 61
+
+#SQL[@28,N15]Result[6, 2]
 select hex('V');
 hex(V)
 56
+
+#SQL[@29,N15]Result[6, 2]
 select hex('M');
 hex(M)
 4D
+
+#SQL[@30,N15]Result[6, 2]
 select hex('m');
 hex(m)
 6D
+
+#SQL[@33,N14]Result[5, 0]
 select hex('');
 hex()
 
+
+#SQL[@36,N17]Result[8, 6]
 select hex('!@#');
 hex(!@#)
 214023
+
+#SQL[@37,N42]Result[33, 56]
 select hex('@##%%&^^&#$#%^&^*(()#^&**(*(');
 hex(@##%%&^^&#$#%^&^*(()#^&**(*()
 4023232525265E5E26232423255E265E2A282829235E262A2A282A28
+
+#SQL[@38,N24]Result[15, 20]
 select hex('}}}{:"{:""');
 hex(}}}{:"{:"")
 7D7D7D7B3A227B3A2222
+
+#SQL[@39,N15]Result[6, 2]
 select hex('%');
 hex(%)
 25
+
+#SQL[@42,N15]Result[6, 2]
 select hex(' ');
 hex( )
 20
+
+#SQL[@45,N20]Result[11, 12]
 select hex('你好');
 hex(你好)
 E4BDA0E5A5BD
+
+#SQL[@46,N23]Result[14, 18]
 select hex('数据库');
 hex(数据库)
 E695B0E68DAEE5BA93
+
+#SQL[@47,N32]Result[23, 36]
 select hex('数据库云平台');
 hex(数据库云平台)
 E695B0E68DAEE5BA93E4BA91E5B9B3E58FB0
+
+#SQL[@48,N39]Result[30, 50]
 select hex('欢迎来到 MatrixOne！');
 hex(欢迎来到 MatrixOne！)
 E6ACA2E8BF8EE69DA5E588B0204D61747269784F6E65EFBC81
+
+#SQL[@51,N18]Result[9, 8]
 select hex('😀');
 hex(😀)
 F09F9880
+
+#SQL[@54,N34]Result[27, 4]
 select hex(CAST(NULL AS UNSIGNED));
 hex(cast(null as unsigned))
 null
+
+#SQL[@57,N14]Result[7, 16]
 select hex(-1);
 hex(-1)
 FFFFFFFFFFFFFFFF
+
+#SQL[@58,N20]Result[13, 16]
 select hex(-3489234);
 hex(-3489234)
 FFFFFFFFFFCAC22E
+
+#SQL[@59,N23]Result[16, 16]
 select hex(-2147483648);
 hex(-2147483648)
 FFFFFFFF80000000
+
+#SQL[@60,N29]Result[22, 16]
 select hex(-3243123138294343);
 hex(-3243123138294343)
 FFF47A658D610DB9
+
+#SQL[@63,N13]Result[6, 1]
 select hex(0);
 hex(0)
 0
+
+#SQL[@66,N22]Result[15, 8]
 select hex(2147483647);
 hex(2147483647)
 7FFFFFFF
+
+#SQL[@67,N22]Result[15, 8]
 select hex(3278990242);
 hex(3278990242)
 C3716BA2
+
+#SQL[@70,N31]Result[24, 16]
 select hex(9223372036854775807);
 hex(9223372036854775807)
 7FFFFFFFFFFFFFFF
+
+#SQL[@71,N31]Result[24, 16]
 select hex(3280483902382984924);
 hex(3280483902382984924)
 2D869EBA7CECCEDC
+
+#SQL[@74,N22]Result[13, 16]
 select hex('a1b2c3d4');
 hex(a1b2c3d4)
 6131623263336434
+
+#SQL[@75,N22]Result[13, 16]
 select hex('12345678');
 hex(12345678)
 3132333435363738
+
+#SQL[@76,N22]Result[13, 16]
 select hex('AABBCCDD');
 hex(AABBCCDD)
 4141424243434444
+
+#SQL[@77,N20]Result[11, 12]
 select hex('ZZZ999');
 hex(ZZZ999)
 5A5A5A393939
+
+#SQL[@78,N30]Result[21, 32]
 select hex('0123456789abcdef');
 hex(0123456789abcdef)
 30313233343536373839616263646566
+
+#SQL[@79,N34]Result[24, 38]
 select hex('!"#$%&/()=?`~''_+-*^');
 hex(!"#$%&/()=?`~'_+-*^)
 2122232425262F28293D3F607E275F2B2D2A5E
+
+#SQL[@80,N56]Result[47, 84]
 select hex(' 2543g4365435    423532543254&&*32grde5y43');
 hex( 2543g4365435    423532543254&&*32grde5y43)
 203235343367343336353433352020202034323335333235343332353426262A33326772646535793433
+
+#SQL[@81,N14]Result[5, 0]
 select hex('');
 hex()
 
+
+#SQL[@84,N18]Result[9, 1]
 select unhex('7B');
 unhex(7B)
 {
+
+#SQL[@85,N18]Result[9, 1]
 select unhex('7D');
 unhex(7D)
 }
+
+#SQL[@86,N18]Result[9, 1]
 select unhex('30');
 unhex(30)
 0
+
+#SQL[@87,N18]Result[9, 1]
 select unhex('31');
 unhex(31)
 1
+
+#SQL[@88,N18]Result[9, 1]
 select unhex('32');
 unhex(32)
 2
+
+#SQL[@89,N18]Result[9, 1]
 select unhex('33');
 unhex(33)
 3
+
+#SQL[@90,N18]Result[9, 1]
 select unhex('34');
 unhex(34)
 4
+
+#SQL[@91,N18]Result[9, 1]
 select unhex('35');
 unhex(35)
 5
+
+#SQL[@92,N18]Result[9, 1]
 select unhex('36');
 unhex(36)
 6
+
+#SQL[@93,N18]Result[9, 1]
 select unhex('37');
 unhex(37)
 7
+
+#SQL[@94,N18]Result[9, 1]
 select unhex('38');
 unhex(38)
 8
+
+#SQL[@95,N18]Result[9, 1]
 select unhex('39');
 unhex(39)
 9
+
+#SQL[@96,N18]Result[9, 1]
 select unhex('41');
 unhex(41)
 A
+
+#SQL[@97,N18]Result[9, 1]
 select unhex('42');
 unhex(42)
 B
+
+#SQL[@98,N18]Result[9, 1]
 select unhex('43');
 unhex(43)
 C
+
+#SQL[@99,N18]Result[9, 1]
 select unhex('44');
 unhex(44)
 D
+
+#SQL[@100,N18]Result[9, 1]
 select unhex('45');
 unhex(45)
 E
+
+#SQL[@101,N18]Result[9, 1]
 select unhex('46');
 unhex(46)
 F
+
+#SQL[@102,N18]Result[9, 1]
 select unhex('61');
 unhex(61)
 a
+
+#SQL[@103,N18]Result[9, 1]
 select unhex('62');
 unhex(62)
 b
+
+#SQL[@104,N18]Result[9, 1]
 select unhex('63');
 unhex(63)
 c
+
+#SQL[@105,N18]Result[9, 1]
 select unhex('64');
 unhex(64)
 d
+
+#SQL[@106,N18]Result[9, 1]
 select unhex('65');
 unhex(65)
 e
+
+#SQL[@107,N18]Result[9, 1]
 select unhex('66');
 unhex(66)
 f
+
+#SQL[@108,N18]Result[9, 1]
 select unhex('2E');
 unhex(2E)
 .
+
+#SQL[@109,N18]Result[9, 1]
 select unhex('2C');
 unhex(2C)
 ,
+
+#SQL[@110,N18]Result[9, 1]
 select unhex('21');
 unhex(21)
 !
+
+#SQL[@111,N18]Result[9, 1]
 select unhex('22');
 unhex(22)
 "
+
+#SQL[@112,N18]Result[9, 1]
 select unhex('25');
 unhex(25)
 %
+
+#SQL[@113,N18]Result[9, 1]
 select unhex('26');
 unhex(26)
 &
+
+#SQL[@114,N18]Result[9, 1]
 select unhex('2F');
 unhex(2F)
 /
+
+#SQL[@115,N18]Result[9, 1]
 select unhex('3D');
 unhex(3D)
 =
+
+#SQL[@116,N18]Result[9, 1]
 select unhex('40');
 unhex(40)
 @
+
+#SQL[@117,N18]Result[9, 1]
 select unhex('5F');
 unhex(5F)
 _
+
+#SQL[@118,N18]Result[9, 1]
 select unhex('23');
 unhex(23)
 #
+
+#SQL[@119,N18]Result[9, 1]
 select unhex('24');
 unhex(24)
 $
+
+#SQL[@120,N18]Result[9, 1]
 select unhex('2A');
 unhex(2A)
 *
+
+#SQL[@121,N18]Result[9, 1]
 select unhex('28');
 unhex(28)
 (
+
+#SQL[@122,N18]Result[9, 1]
 select unhex('29');
 unhex(29)
 )
+
+#SQL[@123,N18]Result[9, 1]
 select unhex('3A');
 unhex(3A)
 :
+
+#SQL[@124,N18]Result[9, 1]
 select unhex('3B');
 unhex(3B)
 ;
+
+#SQL[@125,N18]Result[9, 1]
 select unhex('3F');
 unhex(3F)
 ?
+
+#SQL[@126,N18]Result[9, 1]
 select unhex('5E');
 unhex(5E)
 ^
+
+#SQL[@127,N18]Result[9, 1]
 select unhex('60');
 unhex(60)
 `
+
+#SQL[@128,N18]Result[9, 1]
 select unhex('7C');
 unhex(7C)
 |
+
+#SQL[@129,N18]Result[9, 1]
 select unhex('2D');
 unhex(2D)
 -
+
+#SQL[@130,N18]Result[9, 1]
 select unhex('5F');
 unhex(5F)
 _
+
+#SQL[@131,N18]Result[9, 1]
 select unhex('7E');
 unhex(7E)
 ~
+
+#SQL[@132,N18]Result[9, 1]
 select unhex('5C');
 unhex(5C)
 \
+
+#SQL[@133,N18]Result[9, 1]
 select unhex('0A');
 unhex(0A)
-\n
+
+
+
+#SQL[@134,N18]Result[9, 1]
 select unhex('7F');
 unhex(7F)
 
+
+#SQL[@135,N20]Result[11, 2]
 select unhex('C3A9');
 unhex(C3A9)
 é
+
+#SQL[@136,N20]Result[11, 2]
 select unhex('C383');
 unhex(C383)
 Ã
+
+#SQL[@137,N22]Result[13, 3]
 select unhex('E28C85');
 unhex(E28C85)
 ⌅
+
+#SQL[@138,N24]Result[15, 4]
 select unhex('F09F98A2');
 unhex(F09F98A2)
 😢
+
+#SQL[@140,N92]Result[83, 38]
 select unhex('2032353433673433363534333534323335333235343332353426262a33326772646535793433');
 unhex(2032353433673433363534333534323335333235343332353426262a33326772646535793433)
  2543g4365435423532543254&&*32grde5y43
+
+#SQL[@141,N16]Result[7, 0]
 select unhex('');
 unhex()
 
+
+#SQL[@142,N54]Result[45, 19]
 select unhex('2122232425262f28293d3f607e275f2b2d2a5e');
 unhex(2122232425262f28293d3f607e275f2b2d2a5e)
 !"#$%&/()=?`~'_+-*^
+
+#SQL[@143,N48]Result[39, 16]
 select unhex('30313233343536373839616263646566');
 unhex(30313233343536373839616263646566)
 0123456789abcdef
+
+#SQL[@144,N32]Result[23, 8]
 select unhex('4141424243434444');
 unhex(4141424243434444)
 AABBCCDD
+
+#SQL[@145,N32]Result[23, 8]
 select unhex('3132333435363738');
 unhex(3132333435363738)
 12345678
+
+#SQL[@146,N28]Result[19, 6]
 select unhex('5a5a5a393939');
 unhex(5a5a5a393939)
 ZZZ999
+
+#SQL[@147,N32]Result[23, 8]
 select unhex('6131623263336434');
 unhex(6131623263336434)
 a1b2c3d4
+
+#SQL[@149,N66]Result[57, 25]
 select unhex('33323830343833393032333832393834393031323833343234');
 unhex(33323830343833393032333832393834393031323833343234)
 3280483902382984901283424
+
+#SQL[@151,N18]Result[9, 1]
 select unhex('41');
 unhex(41)
 A
+
+#SQL[@152,N18]Result[9, 1]
 select unhex('61');
 unhex(61)
 a
+
+#SQL[@153,N18]Result[9, 1]
 select unhex('56');
 unhex(56)
 V
+
+#SQL[@154,N18]Result[9, 1]
 select unhex('4d');
 unhex(4d)
 M
+
+#SQL[@155,N18]Result[9, 1]
 select unhex('6d');
 unhex(6d)
 m
+
+#SQL[@157,N22]Result[13, 3]
 select unhex('313233');
 unhex(313233)
 123
+
+#SQL[@158,N36]Result[27, 10]
 select unhex('34333231343133343332');
 unhex(34333231343133343332)
 4321413432
+
+#SQL[@159,N34]Result[25, 9]
 select unhex('333235333234323133');
 unhex(333235333234323133)
 325324213
+
+#SQL[@160,N42]Result[33, 13]
 select unhex('30303030303030303030303030');
 unhex(30303030303030303030303030)
 0000000000000
+
+#SQL[@162,N50]Result[41, 17]
 select unhex('333231353133332e323134333231343332');
 unhex(333231353133332e323134333231343332)
 3215133.214321432
+
+#SQL[@163,N40]Result[31, 12]
 select unhex('3332313335342e3231333231');
 unhex(3332313335342e3231333231)
 321354.21321
+
+#SQL[@164,N30]Result[21, 7]
 select unhex('3435362e373839');
 unhex(3435362e373839)
 456.789
+
+#SQL[@166,N22]Result[13, 3]
 select unhex('616263');
 unhex(616263)
 abc
+
+#SQL[@167,N26]Result[17, 5]
 select unhex('7171717171');
 unhex(7171717171)
 qqqqq
+
+#SQL[@168,N68]Result[59, 26]
 select unhex('6162636465666768696a6b6c6d6e6f707172737475767778797a');
 unhex(6162636465666768696a6b6c6d6e6f707172737475767778797a)
 abcdefghijklmnopqrstuvwxyz
+
+#SQL[@169,N44]Result[35, 14]
 select unhex('6564777267657767726577727765');
 unhex(6564777267657767726577727765)
 edwrgewgrewrwe
+
+#SQL[@171,N28]Result[19, 6]
 select unhex('e4bda0e5a5bd');
 unhex(e4bda0e5a5bd)
 你好
+
+#SQL[@172,N34]Result[25, 9]
 select unhex('e695b0e68daee5ba93');
 unhex(e695b0e68daee5ba93)
 数据库
+
+#SQL[@173,N52]Result[43, 18]
 select unhex('e695b0e68daee5ba93e4ba91e5b9b3e58fb0');
 unhex(e695b0e68daee5ba93e4ba91e5b9b3e58fb0)
 数据库云平台
+
+#SQL[@174,N66]Result[57, 25]
 select unhex('e6aca2e8bf8ee69da5e588b0204d61747269784f6e65efbc81');
 unhex(e6aca2e8bf8ee69da5e588b0204d61747269784f6e65efbc81)
 欢迎来到 MatrixOne！
+
+#SQL[@175,N40]Result[31, 12]
 select unhex('48656c6c6f20576f726c6421');
 unhex(48656c6c6f20576f726c6421)
 Hello World!
+
+#SQL[@177,N22]Result[13, 3]
 select unhex('214023');
 unhex(214023)
 !@#
+
+#SQL[@178,N72]Result[63, 28]
 select unhex('4023232525265e5e26232423255e265e2a282829235e262a2a282a28');
 unhex(4023232525265e5e26232423255e265e2a282829235e262a2a282a28)
 @##%%&^^&#$#%^&^*(()#^&**(*(
+
+#SQL[@179,N36]Result[27, 10]
 select unhex('7d7d7d7b3a227b3a2222');
 unhex(7d7d7d7b3a227b3a2222)
 }}}{:"{:""
+
+#SQL[@180,N18]Result[9, 1]
 select unhex('25');
 unhex(25)
 %
+

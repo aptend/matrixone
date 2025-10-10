@@ -1,75 +1,153 @@
+#SQL[@1,N42]Result[32, 1]
 SELECT DATEDIFF('2017-08-17','2017-08-17');
-datediff(2017-08-17, 2017-08-17)
+DATEDIFF(2017-08-17, 2017-08-17)
 0
+
+#SQL[@2,N42]Result[32, 1]
 SELECT DATEDIFF('2017-08-17','2017-08-08');
-datediff(2017-08-17, 2017-08-08)
+DATEDIFF(2017-08-17, 2017-08-08)
 9
+
+#SQL[@3,N42]Result[32, 2]
 SELECT DATEDIFF('2017-08-08','2017-08-17');
-datediff(2017-08-08, 2017-08-17)
+DATEDIFF(2017-08-08, 2017-08-17)
 -9
+
+#SQL[@5,N34]Result[26, 4]
 SELECT DATEDIFF(NULL,'2017-08-17');
-datediff(null, 2017-08-17)
+DATEDIFF(null, 2017-08-17)
 null
+
+#SQL[@6,N34]Result[26, 4]
 SELECT DATEDIFF('2017-08-17',NULL);
-datediff(2017-08-17, null)
+DATEDIFF(2017-08-17, null)
 null
+
+#SQL[@7,N27]Result[20, 4]
 SELECT DATEDIFF(NULL, NULL);
-datediff(null, null)
+DATEDIFF(null, null)
 null
+
+#SQL[@9,N23]Result[]
 drop table if exists t1;
+
+#SQL[@10,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@11,N38]Result[]
 insert into t1 values(1, "2012-10-11");
+
+#SQL[@12,N38]Result[]
 insert into t1 values(2, "2004-04-24");
+
+#SQL[@13,N38]Result[]
 insert into t1 values(3, "2008-12-04");
+
+#SQL[@14,N38]Result[]
 insert into t1 values(4, "2012-03-23");
+
+#SQL[@15,N38]Result[]
 insert into t1 values(5, "2000-03-23");
+
+#SQL[@16,N38]Result[]
 insert into t1 values(6, "2030-03-23");
+
+#SQL[@17,N38]Result[]
 insert into t1 values(7, "2040-03-23");
+
+#SQL[@18,N42]Result[29, 11, 11, 11, 11, 11, 12, 12]
 SELECT a, DATEDIFF('2022-10-9', b) from t1;
-a    datediff(2022-10-9, b)
-1    3650
-2    6742
-3    5057
-4    3852
-5    8235
-6    -2722
-7    -6375
+a  ¦  DATEDIFF(2022-10-9, b)
+1  ¦  3650
+2  ¦  6742
+3  ¦  5057
+4  ¦  3852
+5  ¦  8235
+6  ¦  -2722
+7  ¦  -6375
+
+#SQL[@19,N13]Result[]
 drop table t1;
+
+#SQL[@21,N23]Result[]
 drop table if exists t1;
+
+#SQL[@22,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@23,N38]Result[]
 insert into t1 values(1, "2012-10-11");
+
+#SQL[@24,N38]Result[]
 insert into t1 values(2, "2004-04-24");
+
+#SQL[@25,N38]Result[]
 insert into t1 values(3, "2008-12-04");
+
+#SQL[@26,N38]Result[]
 insert into t1 values(4, "2012-03-23");
+
+#SQL[@27,N38]Result[]
 insert into t1 values(5, "2000-03-23");
+
+#SQL[@28,N38]Result[]
 insert into t1 values(6, "2030-03-23");
+
+#SQL[@29,N38]Result[]
 insert into t1 values(7, "2040-03-23");
+
+#SQL[@30,N42]Result[29, 12, 12, 12, 12, 12, 11, 11]
 SELECT a, DATEDIFF(b, '2022-10-9') from t1;
-a    datediff(b, 2022-10-9)
-1    -3650
-2    -6742
-3    -5057
-4    -3852
-5    -8235
-6    2722
-7    6375
+a  ¦  DATEDIFF(b, 2022-10-9)
+1  ¦  -3650
+2  ¦  -6742
+3  ¦  -5057
+4  ¦  -3852
+5  ¦  -8235
+6  ¦  2722
+7  ¦  6375
+
+#SQL[@31,N13]Result[]
 drop table t1;
+
+#SQL[@33,N23]Result[]
 drop table if exists t1;
+
+#SQL[@34,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@35,N48]Result[]
 insert into t1 values('2022-10-9', "2012-10-11");
+
+#SQL[@36,N48]Result[]
 insert into t1 values('2022-10-9', "2004-04-24");
+
+#SQL[@37,N48]Result[]
 insert into t1 values('2022-10-9', "2008-12-04");
+
+#SQL[@38,N48]Result[]
 insert into t1 values('2022-10-9', "2012-03-23");
+
+#SQL[@39,N48]Result[]
 insert into t1 values('2022-10-9', "2000-03-23");
+
+#SQL[@40,N48]Result[]
 insert into t1 values('2022-10-9', "2030-03-23");
+
+#SQL[@41,N48]Result[]
 insert into t1 values('2022-10-9', "2040-03-23");
+
+#SQL[@42,N35]Result[28, 36, 36, 36, 36, 36, 37, 37]
 SELECT a, b, DATEDIFF(a, b) from t1;
-a    b    datediff(a, b)
-2022-10-09    2012-10-11    3650
-2022-10-09    2004-04-24    6742
-2022-10-09    2008-12-04    5057
-2022-10-09    2012-03-23    3852
-2022-10-09    2000-03-23    8235
-2022-10-09    2030-03-23    -2722
-2022-10-09    2040-03-23    -6375
+a  ¦  b  ¦  DATEDIFF(a, b)
+2022-10-09  ¦  2012-10-11  ¦  3650
+2022-10-09  ¦  2004-04-24  ¦  6742
+2022-10-09  ¦  2008-12-04  ¦  5057
+2022-10-09  ¦  2012-03-23  ¦  3852
+2022-10-09  ¦  2000-03-23  ¦  8235
+2022-10-09  ¦  2030-03-23  ¦  -2722
+2022-10-09  ¦  2040-03-23  ¦  -6375
+
+#SQL[@43,N13]Result[]
 drop table t1;
+

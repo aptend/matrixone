@@ -1,5 +1,11 @@
+#SQL[@4,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N48]Error[20]
 create table t1(a int,b varchar(100),c char(20));
+No database selected
+
+#SQL[@6,N174]Error[48]
 insert into t1 values
 (1,'Ananya Majumdar', 'IX'),
 (2,'Anushka Samanta', 'X'),
@@ -7,20 +13,28 @@ insert into t1 values
 (4,'Anik Das', 'X'),
 (5,'Riya Jain', 'IX'),
 (6,'Tapan Samanta', 'X');
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@13,N35]Error[20]
 select a,startswith(b,'An') from t1;
-a    startswith(b, An)
-1    true
-2    true
-3    true
-4    true
-5    false
-6    false
+No database selected
+
+#SQL[@14,N71]Error[20]
 select a,b,c from t1 where startswith(b,'An')=1 and startswith(c,'I')=1;
-a    b    c
-1    Ananya Majumdar    IX
+No database selected
+
+#SQL[@15,N13]Error[48]
 drop table t1;
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@17,N23]Result[]
 drop table if exists t1;
+
+#SQL[@18,N48]Error[20]
 create table t1(a int,b varchar(100),c char(20));
+No database selected
+
+#SQL[@19,N175]Error[48]
 insert into t1 values
 (1,'Ananya Majumdar', 'XI'),
 (2,'Anushka Samanta', 'X'),
@@ -28,53 +42,96 @@ insert into t1 values
 (4,'Anik Das', 'X'),
 (5,'Riya Jain', 'IX'),
 (6,'Tapan Samanta', 'XI');
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@26,N32]Error[20]
 select a,endsWith(b,'a') from t1;
-a    endswith(b, a)
-1    false
-2    true
-3    true
-4    false
-5    false
-6    true
+No database selected
+
+#SQL[@27,N66]Error[20]
 select a,b,c from t1 where endswith(b,'a')=1 and endswith(c,'I')=1;
-a    b    c
-3    Aniket Sharma    XI
-6    Tapan Samanta    XI
+No database selected
+
+#SQL[@28,N13]Error[48]
 drop table t1;
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@32,N23]Result[]
 drop table if exists t1;
+
+#SQL[@33,N43]Error[20]
 create table t1(a varchar(255),b char(255));
+No database selected
+
+#SQL[@34,N33]Error[48]
 insert into t1 values(NULL, NULL);
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@35,N31]Error[48]
 insert into t1 values('a',null);
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@36,N32]Error[48]
 insert into t1 values(null, 'b');
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@37,N30]Error[20]
 select startswith(a,b) from t1;
-startswith(a, b)
-null
-null
-null
+No database selected
+
+#SQL[@38,N13]Error[48]
 drop table t1;
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@40,N23]Result[]
 drop table if exists t1;
+
+#SQL[@41,N43]Error[20]
 create table t1(a varchar(255),b char(255));
+No database selected
+
+#SQL[@42,N33]Error[48]
 insert into t1 values(NULL, NULL);
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@43,N31]Error[48]
 insert into t1 values('a',null);
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@44,N32]Error[48]
 insert into t1 values(null, 'b');
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@45,N28]Error[20]
 select endsWith(a,b) from t1;
-endswith(a, b)
-null
-null
-null
+No database selected
+
+#SQL[@46,N13]Error[48]
 drop table t1;
+no such table func_string_startsWith_endsWith.t1
+
+#SQL[@48,N35]Result[14, 4]
 select endsWith('a', 'a') from dual;
-endswith(a, a)
+endsWith(a, a)
 true
+
+#SQL[@49,N35]Result[14, 5]
 select endsWith('a', 'b') from dual;
-endswith(a, b)
+endsWith(a, b)
 false
+
+#SQL[@50,N38]Result[17, 4]
 select endsWith('aaaa', 'a') from dual;
-endswith(aaaa, a)
+endsWith(aaaa, a)
 true
+
+#SQL[@51,N44]Result[23, 4]
 select endsWith('xsdfsdf', 'fsdf') from dual;
-endswith(xsdfsdf, fsdf)
+endsWith(xsdfsdf, fsdf)
 true
+
+#SQL[@52,N45]Result[24, 5]
 select endsWith('xsdfsdf', 'fsdfx') from dual;
-endswith(xsdfsdf, fsdfx)
+endsWith(xsdfsdf, fsdfx)
 false
+

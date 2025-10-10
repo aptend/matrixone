@@ -5,16 +5,16 @@ SELECT uuid(1) FROM t1;
 drop table t1;
 
 CREATE TABLE namelists (
-    id UUID DEFAULT uuid() PRIMARY KEY, 
-    name VARCHAR NOT NULL 
+    id UUID DEFAULT uuid() PRIMARY KEY,
+    name VARCHAR NOT NULL
 );
 INSERT INTO namelists (name) VALUES ('Tom'), ('Jane'), ('Bob');
--- @ignore:0
 SELECT * from namelists;
+| @ignore(0);
 INSERT INTO namelists (id, name) VALUES ('019213b0-d7bd-7271-a681-49e9d979d8d3', 'Jack');
 INSERT INTO namelists (id, name) VALUES ('019213b0-d7bd-7271-a681-49e9d979d8d3', 'Alan');
--- @ignore:0
 SELECT * from namelists;
+| @ignore(0);
 Drop Table namelists;
 
 create table tttt(a int default 0 primary key, b int);

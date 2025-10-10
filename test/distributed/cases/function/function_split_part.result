@@ -1,79 +1,146 @@
+#SQL[@6,N38]Result[29, 3]
 SELECT split_part('abc^123^ioo','^',1);
 split_part(abc^123^ioo, ^, 1)
 abc
+
+#SQL[@7,N46]Result[37, 4]
 SELECT split_part('efjq34','4r832r432094-3',2);
 split_part(efjq34, 4r832r432094-3, 2)
 null
+
+#SQL[@8,N98]Result[89, 15]
 SELECT split_part('床前明月光，疑是地上霜，举头望明月，低头思故乡','，',4);
 split_part(床前明月光，疑是地上霜，举头望明月，低头思故乡, ，, 4)
 低头思故乡
+
+#SQL[@9,N87]Result[76, 25]
 SELECT split_part('jewkrje的jdksvfe32893**(的——++））（）（  的', '的', 3);
 split_part(jewkrje的jdksvfe32893**(的——++））（）（  的, 的, 3)
 ——++））（）（  
+
+#SQL[@10,N76]Result[67, 15]
 SELECT split_part('fhew嗯嗯圣诞节chejwk嗯嗯__++__w嗯嗯','嗯嗯',2);
 split_part(fhew嗯嗯圣诞节chejwk嗯嗯__++__w嗯嗯, 嗯嗯, 2)
 圣诞节chejwk
+
+#SQL[@11,N124]Result[115, 4]
 SELECT split_part('v23dnnr###ewjrfkjewm#vrewnvrenjvnewmvrdjvrnjerewmvrjenjwvewmvrrnenjvrenjvrejnvewvrevrjewvrnew','ewmvr',8);
 split_part(v23dnnr###ewjrfkjewm#vrewnvrenjvnewmvrdjvrnjerewmvrjenjwvewmvrrnenjvrenjvrejnvewvrevrjewvrnew, ewmvr, 8)
 null
+
+#SQL[@12,N40]Result[31, 3]
 SELECT split_part('www.baidu.com','.',1);
 split_part(www.baidu.com, ., 1)
 www
+
+#SQL[@13,N60]Result[51, 5]
 SELECT split_part('43728943902493-24fjk43nmfjkwek432','3',3);
 split_part(43728943902493-24fjk43nmfjkwek432, 3, 3)
 90249
+
+#SQL[@14,N38]Result[29, 3]
 SELECT split_part('ABC*123*()(','*',2);
 split_part(ABC*123*()(, *, 2)
 123
+
+#SQL[@15,N50]Result[41, 4]
 SELECT split_part('12345*&+789*&dhejwfew2','*&',2);
 split_part(12345*&+789*&dhejwfew2, *&, 2)
 +789
+
+#SQL[@16,N37]Result[28, 0]
 SELECT split_part('.+0___=+. ','.',1);
 split_part(.+0___=+. , ., 1)
 
+
+#SQL[@17,N29]Result[20, 0]
 SELECT split_part('..','.',1);
 split_part(.., ., 1)
 
+
+#SQL[@18,N39]Result[30, 0]
 SELECT split_part('  ewfere..  ',' ',4);
 split_part(  ewfere..  ,  , 4)
 
+
+#SQL[@19,N32]Result[23, 0]
 SELECT split_part('','327832',1);
 split_part(, 327832, 1)
 
+
+#SQL[@20,N29]Result[22, 4]
 SELECT split_part(NULL,'.',6);
 split_part(null, ., 6)
 null
+
+#SQL[@21,N50]Result[43, 4]
 SELECT split_part('-+0988   &^88?/7!@~~~~',NULL,3);
 split_part(-+0988   &^88?/7!@~~~~, null, 3)
 null
+
+#SQL[@22,N48]Result[39, 4]
 SELECT split_part('efwjkfe&*&**(*))))','*',NULL);
 split_part(efwjkfe&*&**(*)))), *, null)
 null
+
+#SQL[@26,N38]Error[62]
 SELECT split_part('dfjwkfrewfr','r',0);
 invalid input: split_part: field contains non-positive integer
+
+#SQL[@27,N67]Error[47]
 SELECT split_part('ejwkvr&&(()))___hf真假ejw真假)','真假',-1);
-Data truncation: data out of range: data type uint32, value '-1'
+data out of range: data type uint32, value '-1'
+
+#SQL[@32,N34]Result[]
 DROP TABLE IF EXISTS split_part_01;
+
+#SQL[@33,N212]Result[]
 CREATE TABLE split_part_01(id int,
-s1 VARCHAR(100),
-delim VARCHAR(20),
-count1 smallint,
-PRIMARY KEY(id));
+                           s1 VARCHAR(100),
+                           delim VARCHAR(20),
+                           count1 smallint,
+                           PRIMARY KEY(id));
+
+#SQL[@40,N55]Result[]
 INSERT INTO split_part_01 VALUES(1, 'abc.com.cn','.',2);
+
+#SQL[@41,N88]Result[]
 INSERT INTO split_part_01 VALUES(2, '新年快乐，身体健康，万事如意', ',',3);
+
+#SQL[@42,N94]Result[]
 INSERT INTO split_part_01 VALUES(3, 'ehjwkvnrkew哈哈哈&9832哈哈哈,84321093,','哈哈',6);
+
+#SQL[@43,N72]Result[]
 INSERT INTO split_part_01 VALUES(4, '123abc&*.jjkmm&*.73290302','&*.',3);
+
+#SQL[@44,N77]Result[]
 INSERT INTO split_part_01 VALUES(5, '  78829,.327hjfew.;,32oi  cekw', ',',22);
+
+#SQL[@45,N85]Result[]
 INSERT INTO split_part_01 VALUES(6, 'efwu3nkjr3w3;;  9099032c45dc3s// *  ',' ', 3242);
+
+#SQL[@46,N84]Result[]
 INSERT INTO split_part_01 VALUES(7, '83092i3f2o.dkwec<>dhwkjv<>789392-3<>', NULL, 3);
+
+#SQL[@47,N49]Result[]
 INSERT INTO split_part_01 VALUES(8, NULL, '.',11);
+
+#SQL[@48,N78]Result[]
 INSERT INTO split_part_01 VALUES(9, '442+562++++——----吃饭了',',',NULL);
+
+#SQL[@51,N59]Error[47]
 INSERT INTO split_part_01 VALUES(1, 'ewjj32..3,l43/.43', 0);
 Column count doesn't match value count at row 1
+
+#SQL[@52,N159]Error[195]
 INSERT INTO split_part_01 VALUES(11, 'vhjdwewj3902i302o302($#$%^&*()_POJHFTY&(*UIOPL:<DQ87*q8JIFWJLWKMDXKLSMDXKSLMKCw54545484154444489897897o8u8&92)(','few',4);
 internal error: Can't cast 'vhjdwewj3902i302o302($#$%^&*()_POJHFTY&(*UIOPL:<DQ87*q8JIFWJLWKMDXKLSMDXKSLMKCw545454841544444898978...' to VARCHAR type. Src length 111 is larger than Dest length 100
+
+#SQL[@53,N62]Error[49]
 INSERT INTO split_part_01 VALUES(12, '', 'vjdkelwvrew', 32769);
-Data truncation: data out of range: data type int16, value '32769'
+data out of range: data type int16, value '32769'
+
+#SQL[@56,N52]Result[28, 4, 4, 4, 4, 4, 4, 4, 4, 4]
 SELECT split_part(s1,NULL,count1) FROM split_part_01;
 split_part(s1, null, count1)
 null
@@ -85,6 +152,8 @@ null
 null
 null
 null
+
+#SQL[@57,N51]Result[27, 4, 4, 4, 4, 4, 4, 4, 4, 4]
 SELECT split_part(s1,delim,NULL) FROM split_part_01;
 split_part(s1, delim, null)
 null
@@ -96,6 +165,8 @@ null
 null
 null
 null
+
+#SQL[@58,N53]Result[29, 3, 4, 4, 8, 4, 4, 4, 4, 4]
 SELECT split_part(s1,delim,count1) FROM split_part_01;
 split_part(s1, delim, count1)
 com
@@ -107,6 +178,8 @@ null
 null
 null
 null
+
+#SQL[@59,N71]Result[29, 3, 4, 4, 8, 4, 4, 4, 4]
 SELECT split_part(s1,delim,count1) FROM split_part_01 WHERE count1 >= 2;
 split_part(s1, delim, count1)
 com
@@ -117,45 +190,72 @@ null
 null
 null
 null
+
+#SQL[@60,N74]Result[]
 SELECT split_part(s1,delim,count1 + 3) FROM split_part_01 WHERE count1 < 0;
-split_part(s1, delim, count1 + 3)
+
+#SQL[@61,N73]Result[29, 4]
 SELECT split_part(s1,delim,count1) FROM split_part_01 WHERE count1 = 3242;
 split_part(s1, delim, count1)
 null
+
+#SQL[@62,N62]Result[33, 31]
 SELECT * FROM split_part_01 WHERE split_part(s1,'.',2) = 'com';
-id    s1    delim    count1
-1    abc.com.cn    .    2
+id  ¦  s1  ¦  delim  ¦  count1
+1  ¦  abc.com.cn  ¦  .  ¦  2
+
+#SQL[@63,N67]Result[33, 31]
 SELECT * FROM split_part_01 WHERE split_part(s1,'.',2) LIKE '%com%';
-id    s1    delim    count1
-1    abc.com.cn    .    2
+id  ¦  s1  ¦  delim  ¦  count1
+1  ¦  abc.com.cn  ¦  .  ¦  2
+
+#SQL[@64,N81]Result[33, 52]
 SELECT * FROM split_part_01 WHERE split_part(s1,' ',3) = '78829,.327hjfew.;,32oi';
-id    s1    delim    count1
-5      78829,.327hjfew.;,32oi  cekw    ,    22
+id  ¦  s1  ¦  delim  ¦  count1
+5  ¦    78829,.327hjfew.;,32oi  cekw  ¦  ,  ¦  22
+
+#SQL[@65,N59]Result[20, 14]
 SELECT split_part(s1,' ',1) FROM split_part_01 WHERE id = 6;
 split_part(s1,  , 1)
 efwu3nkjr3w3;;
+
+#SQL[@66,N66]Result[27, 6]
 SELECT split_part(s1,'*.',ABS(-2)) FROM split_part_01 WHERE id = 4;
-split_part(s1, *., abs(-2))
+split_part(s1, *., ABS(-2))
 jjkmm&
+
+#SQL[@67,N71]Result[]
 SELECT * FROM split_part_01 WHERE split_part(s1, '.', 1 + 6) = 'com.cn';
-id    s1    delim    count1
+
+#SQL[@68,N78]Result[39, 4]
 SELECT split_part(split_part(s1,'.',22),'.',1) FROM split_part_01 WHERE id = 1;
 split_part(split_part(s1, ., 22), ., 1)
 null
+
+#SQL[@72,N67]Result[33, 48]
 SELECT * FROM split_part_01 WHERE LENGTH(split_part(s1,'*.',2)) = 6;
-id    s1    delim    count1
-4    123abc&*.jjkmm&*.73290302    &*.    3
+id  ¦  s1  ¦  delim  ¦  count1
+4  ¦  123abc&*.jjkmm&*.73290302  ¦  &*.  ¦  3
+
+#SQL[@73,N77]Result[]
 SELECT * FROM split_part_01 WHERE split_part(LTRIM(s1),'.',2) = '.327hjfew.;';
-id    s1    delim    count1
+
+#SQL[@74,N94]Result[17, 11]
 SELECT delim,count1 FROM split_part_01 WHERE split_part(RTRIM(s1),'<>',1) = '83092i3f2o.dkwec';
-delim    count1
-null    3
+delim  ¦  count1
+null  ¦  3
+
+#SQL[@75,N99]Result[33, 52]
 SELECT * FROM split_part_01 WHERE LPAD(split_part(LTRIM(s1),'.',2),20,'*') = '************327hjfew';
-id    s1    delim    count1
-5      78829,.327hjfew.;,32oi  cekw    ,    22
+id  ¦  s1  ¦  delim  ¦  count1
+5  ¦    78829,.327hjfew.;,32oi  cekw  ¦  ,  ¦  22
+
+#SQL[@76,N93]Result[33, 48]
 SELECT * FROM split_part_01 WHERE RPAD(split_part(s1,'*.',3),20,'*') = '73290302************';
-id    s1    delim    count1
-4    123abc&*.jjkmm&*.73290302    &*.    3
+id  ¦  s1  ¦  delim  ¦  count1
+4  ¦  123abc&*.jjkmm&*.73290302  ¦  &*.  ¦  3
+
+#SQL[@77,N65]Result[38, 4, 4, 4, 5, 4, 4, 4, 4, 4]
 SELECT startswith(split_part(s1,'*.',3),'123') FROM split_part_01;
 startswith(split_part(s1, *., 3), 123)
 null
@@ -167,6 +267,8 @@ null
 null
 null
 null
+
+#SQL[@78,N61]Result[34, 4, 4, 4, 4, 4, 4, 4, 4, 4]
 SELECT endswith(split_part(s1,'+',2),'62') FROM split_part_01;
 endswith(split_part(s1, +, 2), 62)
 null
@@ -178,11 +280,16 @@ null
 null
 null
 true
+
+#SQL[@79,N86]Result[]
 SELECT * FROM split_part_01 WHERE find_in_set(split_part(s1,delim,count1),NULL) = NULL;
-id    s1    delim    count1
+
+#SQL[@80,N101]Result[62, 4]
 SELECT CONCAT_WS(split_part(s1,delim,count1),'hehaha32789','ABCNSLK') FROM split_part_01 WHERE id = 2;
-concat_ws(split_part(s1, delim, count1), hehaha32789, ABCNSLK)
+CONCAT_WS(split_part(s1, delim, count1), hehaha32789, ABCNSLK)
 null
+
+#SQL[@81,N60]Result[36, 5, 4, 4, 5, 4, 4, 4, 4, 4]
 SELECT empty(split_part(s1,delim,count1)) FROM split_part_01;
 empty(split_part(s1, delim, count1))
 false
@@ -194,6 +301,8 @@ null
 null
 null
 null
+
+#SQL[@82,N68]Result[46, 3, 4, 4, 5, 4, 4, 4, 4, 4]
 SELECT substring(split_part(s1,delim,count1),1,5) FROM split_part_01;
 substring(split_part(s1, delim, count1), 1, 5)
 com
@@ -205,8 +314,10 @@ null
 null
 null
 null
+
+#SQL[@83,N57]Result[33, 2, 4, 13, 8, 10, 16, 4, 4, 4]
 SELECT REVERSE(split_part(s1,delim,3)) FROM split_part_01;
-reverse(split_part(s1, delim, 3))
+REVERSE(split_part(s1, delim, 3))
 nc
 null
 ,39012348,哈
@@ -216,27 +327,49 @@ wkec  io23
 null
 null
 null
+
+#SQL[@87,N116]Result[33, 52]
 SELECT * FROM split_part_01 WHERE s1 = (SELECT s1 FROM split_part_01 WHERE split_part(LTRIM(s1),'.',2) = '327hjfew');
-id    s1    delim    count1
-5      78829,.327hjfew.;,32oi  cekw    ,    22
+id  ¦  s1  ¦  delim  ¦  count1
+5  ¦    78829,.327hjfew.;,32oi  cekw  ¦  ,  ¦  22
+
+#SQL[@88,N92]Result[84, 36]
 SELECT(SELECT s1 FROM split_part_01 WHERE split_part(RTRIM(s1),'<>',1) = '83092i3f2o.dkwec');
-(select s1 from split_part_01 where split_part(rtrim(s1), <>, 1) = 83092i3f2o.dkwec)
+(select s1 from split_part_01 where split_part(RTRIM(s1), <>, 1) = 83092i3f2o.dkwec)
 83092i3f2o.dkwec<>dhwkjv<>789392-3<>
+
+#SQL[@89,N128]Result[21, 41]
 SELECT id ,s1, delim FROM split_part_01 WHERE s1 = (SELECT s1 FROM split_part_01 WHERE split_part(LTRIM(s1),'*.',1) = '123abc&');
-id    s1    delim
-4    123abc&*.jjkmm&*.73290302    &*.
+id  ¦  s1  ¦  delim
+4  ¦  123abc&*.jjkmm&*.73290302  ¦  &*.
+
+#SQL[@94,N34]Result[]
 DROP TABLE IF EXISTS split_part_02;
+
+#SQL[@95,N247]Result[]
 CREATE TABLE split_part_02(id int,
-s1 longtext,
-delim CHAR,
-count1 int NOT NULL,
-count2 bigint,
-PRIMARY KEY(id));
+                           s1 longtext,
+                           delim CHAR,
+                           count1 int NOT NULL,
+                           count2 bigint,
+                           PRIMARY KEY(id));
+
+#SQL[@103,N200]Result[]
 INSERT INTO split_part_02 VALUES(1, 'SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)','a',1231,548494515);
+
+#SQL[@104,N127]Result[]
 INSERT INTO split_part_02 VALUES(2, 'dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&','j',3,123);
+
+#SQL[@105,N52]Result[]
 INSERT INTO split_part_02 VALUES(3, '', NULL, 1, 45);
+
+#SQL[@106,N55]Result[]
 INSERT INTO split_part_02 VALUES(4, NULL, '*', 5, NULL);
+
+#SQL[@107,N111]Result[]
 INSERT INTO split_part_02 VALUES(5, '  dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(  ','*', 6, 83092302);
+
+#SQL[@110,N54]Result[28, 4, 4, 4, 4, 4]
 SELECT split_part(s1, NULL, count1) FROM split_part_02;
 split_part(s1, null, count1)
 null
@@ -244,6 +377,8 @@ null
 null
 null
 null
+
+#SQL[@111,N53]Result[27, 4, 4, 4, 4, 4]
 SELECT split_part(s1, delim, NULL) FROM split_part_02;
 split_part(s1, delim, null)
 null
@@ -251,6 +386,8 @@ null
 null
 null
 null
+
+#SQL[@112,N53]Result[29, 4, 18, 4, 4, 5]
 SELECT split_part(s1,delim,count1) FROM split_part_02;
 split_part(s1, delim, count1)
 null
@@ -258,40 +395,60 @@ iHHDIUWH*&*(UIJCSi
 null
 null
 +=--=
+
+#SQL[@113,N71]Result[54, 14, 25, 14, 14, 18]
 SELECT split_part(s1,delim,3),split_part(s1,delim,4) FROM split_part_02;
-split_part(s1, delim, 3)    split_part(s1, delim, 4)
-null    null
-iHHDIUWH*&*(UIJCSi    f
-null    null
-null    null
-    &&n e89__+&&
+split_part(s1, delim, 3)  ¦  split_part(s1, delim, 4)
+null  ¦  null
+iHHDIUWH*&*(UIJCSi  ¦  f
+null  ¦  null
+null  ¦  null
+  ¦  &&n e89__+&&
+
+#SQL[@114,N78]Result[29, 4, 18, 4, 5]
 SELECT split_part(s1,delim,count1) FROM split_part_02 WHERE count2 IS NOT NULL;
 split_part(s1, delim, count1)
 null
 iHHDIUWH*&*(UIJCSi
 null
 +=--=
+
+#SQL[@115,N86]Result[45, 181]
 SELECT * FROM split_part_02 WHERE split_part(s1,'的',2) = '功能:用于从字符串';
-id    s1    delim    count1    count2
-1    SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)    a    1231    548494515
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+1  ¦  SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)  ¦  a  ¦  1231  ¦  548494515
+
+#SQL[@116,N77]Error[216]
 SELECT * FROM split_part_02 WHERE split_part(s1,'的',2)spilt( LIKE '功能%';
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 61 near "spilt( LIKE '功能%';";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 61 near \"spilt( LIKE '功能%'\";
+
+#SQL[@117,N67]Result[]
 SELECT * FROM split_part_02 WHERE split_part(s1, 'iii', 3-1) = 'cn';
-id    s1    delim    count1    count2
+
+#SQL[@121,N69]Result[45, 108]
 SELECT * FROM split_part_02 WHERE LENGTH(split_part(s1,delim,2)) = 14;
-id    s1    delim    count1    count2
-2    dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&    j    3    123
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+2  ¦  dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&  ¦  j  ¦  3  ¦  123
+
+#SQL[@122,N68]Result[31, 5]
 SELECT split_part(LTRIM(s1),delim,6) FROM split_part_02 WHERE id = 5;
-split_part(ltrim(s1), delim, 6)
+split_part(LTRIM(s1), delim, 6)
 +=--=
+
+#SQL[@123,N73]Result[45, 90]
 SELECT * FROM split_part_02 WHERE split_part(LTRIM(s1),delim,6) = '+=--=';
-id    s1    delim    count1    count2
-5      dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(      *    6    83092302
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+5  ¦    dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(    ¦  *  ¦  6  ¦  83092302
+
+#SQL[@124,N81]Result[]
 SELECT delim,count1 FROM split_part_02 WHERE split_part(RTRIM(s1),delim,3) = NULL;
-delim    count1
+
+#SQL[@125,N100]Result[45, 90]
 SELECT * FROM split_part_02 WHERE LPAD(split_part(LTRIM(s1),'ew',2),20,'*') = '*****************jvr';
-id    s1    delim    count1    count2
-5      dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(      *    6    83092302
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+5  ¦    dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(    ¦  *  ¦  6  ¦  83092302
+
+#SQL[@126,N66]Result[41, 4, 5, 4, 4, 5]
 SELECT startswith(split_part(s1,delim,3),'SUB') FROM split_part_02;
 startswith(split_part(s1, delim, 3), SUB)
 null
@@ -299,6 +456,8 @@ false
 null
 null
 false
+
+#SQL[@127,N63]Result[38, 4, 5, 4, 4, 5]
 SELECT endswith(split_part(s1,delim,6),'h)') FROM split_part_02;
 endswith(split_part(s1, delim, 6), h))
 null
@@ -306,6 +465,8 @@ false
 null
 null
 false
+
+#SQL[@128,N290]Result[265, 4, 1, 4, 4, 1]
 SELECT find_in_set(split_part(s1,delim,count1),'SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length),dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&') FROM split_part_02;
 find_in_set(split_part(s1, delim, count1), SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length),dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&)
 null
@@ -313,50 +474,87 @@ null
 null
 null
 0
+
+#SQL[@129,N101]Result[62, 36]
 SELECT CONCAT_WS(split_part(s1,delim,count1),'hehaha32789','ABCNSLK') FROM split_part_02 WHERE id = 2;
-concat_ws(split_part(s1, delim, count1), hehaha32789, ABCNSLK)
+CONCAT_WS(split_part(s1, delim, count1), hehaha32789, ABCNSLK)
 hehaha32789iHHDIUWH*&*(UIJCSiABCNSLK
+
+#SQL[@130,N57]Result[33, 4, 18, 4, 4, 0]
 SELECT REVERSE(split_part(s1,delim,3)) FROM split_part_02;
-reverse(split_part(s1, delim, 3))
+REVERSE(split_part(s1, delim, 3))
 null
 iSCJIU(*&*HWUIDHHi
 null
 null
 
+
+#SQL[@136,N34]Result[]
 DROP TABLE IF EXISTS split_part_03;
+
+#SQL[@137,N34]Result[]
 DROP TABLE IF EXISTS split_part_04;
+
+#SQL[@138,N93]Result[]
 CREATE TABLE split_part_03(
-id int,
-d1 CHAR,
-str1 VARCHAR(50),
-primary key (id));
+	id int,
+    d1 CHAR,
+    str1 VARCHAR(50),
+    primary key (id));
+
+#SQL[@144,N105]Result[]
 CREATE TABLE split_part_04(
-id int,
-d2 smallint,
-str1 mediumtext NOT NULL,
-primary key (id));
+    id int,
+    d2 smallint,
+	str1 mediumtext NOT NULL,
+    primary key (id));
+
+#SQL[@151,N65]Result[]
 INSERT INTO split_part_03 VALUES(1, ')', '78213)jji)JIJSC_)dhej');
+
+#SQL[@152,N54]Result[]
 INSERT INTO split_part_03 VALUES(2, '', '***((((()))');
+
+#SQL[@153,N46]Result[]
 INSERT INTO split_part_03 VALUES(3, ' ', NULL);
+
+#SQL[@154,N71]Result[]
 INSERT INTO split_part_03 VALUES(4, NULL, '  hciuwejw^&*((*&*^GGHJjqm');
+
+#SQL[@155,N76]Result[]
 INSERT INTO split_part_03 VALUES(5, '*',' fjewlk*(&^de jw*(&^wuio*(&^,,,, ');
+
+#SQL[@157,N68]Result[]
 INSERT INTO split_part_04 VALUES(1, 1, '78213)jji)JIJSC_  )dhej   ');
+
+#SQL[@158,N88]Result[]
 INSERT INTO split_part_04 VALUES(2, 90, 'jewjeioqjeio3j4729u3ewqiu(U)(JOIWJ***((((()))');
+
+#SQL[@159,N61]Result[]
 INSERT INTO split_part_04 VALUES(3, NULL,'  hciuwejw^&*((*&');
+
+#SQL[@160,N72]Result[]
 INSERT INTO split_part_04 VALUES(4, 6, '  hciuwejw^&*(*^GGHJjqmmqjJHGG');
+
+#SQL[@164,N179]Result[16, 33]
 SELECT split_part_03.id AS id_3,split_part_04.str1 AS str1_4 FROM split_part_03,split_part_04 WHERE split_part(split_part_03.str1, ')', 2) = split_part(split_part_04.str1, ')', 2);
-id_3    str1_4
-1    78213)jji)JIJSC_  )dhej   
+id_3  ¦  str1_4
+1  ¦  78213)jji)JIJSC_  )dhej   
+
+#SQL[@165,N185]Result[13, 53, 21, 14, 36, 43]
 SELECT split_part_03.str1 AS tmp,split_part_04.str1 AS temp FROM split_part_03 left join split_part_04 ON split_part(split_part_03.str1, '2', 1) = split_part(split_part_04.str1, '2', 1);
-tmp    temp
-78213)jji)JIJSC_)dhej    78213)jji)JIJSC_  )dhej   
-***((((()))    null
-null    null
-  hciuwejw^&*((*&*^GGHJjqm    null
- fjewlk*(&^de jw*(&^wuio*(&^,,,,     null
+tmp  ¦  temp
+78213)jji)JIJSC_)dhej  ¦  78213)jji)JIJSC_  )dhej   
+***((((()))  ¦  null
+null  ¦  null
+  hciuwejw^&*((*&*^GGHJjqm  ¦  null
+ fjewlk*(&^de jw*(&^wuio*(&^,,,,   ¦  null
+
+#SQL[@166,N183]Result[14, 8, 12, 14, 11]
 SELECT split_part_03.d1 AS d1_3,split_part_04.d2 AS d2_4 FROM split_part_03 right join split_part_04 ON split_part(split_part_03.str1, '2', 1) = split_part(split_part_04.str1, '2', 1);
-d1_3    d2_4
-)    1
-null    90
-null    null
-null    6
+d1_3  ¦  d2_4
+)  ¦  1
+null  ¦  90
+null  ¦  null
+null  ¦  6
+

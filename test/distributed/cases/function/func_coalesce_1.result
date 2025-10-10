@@ -1,120 +1,193 @@
+#SQL[@4,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N39]Result[]
 create table t1(
 a int,
 b varchar(25)
 );
+
+#SQL[@10,N31]Result[]
 insert into  t1 values (0, 'a');
+
+#SQL[@11,N32]Result[]
 insert into  t1 values (1, NULL);
+
+#SQL[@12,N35]Result[]
 insert into  t1 values (NULL, NULL);
+
+#SQL[@13,N34]Result[]
 insert into  t1 values (null, 'b');
+
+#SQL[@15,N16]Result[8, 8, 11, 14, 11]
 select * from t1;
-a    b
-0    a
-1    null
-null    null
-null    b
+a  ¦  b
+0  ¦  a
+1  ¦  null
+null  ¦  null
+null  ¦  b
+
+#SQL[@16,N29]Result[14, 1, 1, 1, 1]
 select coalesce(a, 1) from t1;
 coalesce(a, 1)
 0
 1
 1
 1
+
+#SQL[@18,N29]Error[41]
 select coalesce(b, 1) from t1;
 invalid argument cast to int, bad value a
+
+#SQL[@20,N31]Result[14, 1, 1, 1, 1]
 select coalesce(b, '1') from t1;
 coalesce(b, 1)
 a
 1
 1
 b
+
+#SQL[@22,N13]Result[]
 drop table t1;
+
+#SQL[@25,N23]Result[]
 drop table if exists t2;
+
+#SQL[@26,N38]Result[]
 create table t2(
 a float,
 b datetime
 );
+
+#SQL[@31,N60]Result[]
 insert into t2 values (12.345, '2022-02-20 10:10:10.999999');
+
+#SQL[@32,N37]Result[]
 insert into t2 values (3.45646, NULL);
+
+#SQL[@33,N57]Result[]
 insert into t2 values(NULL, '2023-04-03 22:10:29.999999');
+
+#SQL[@34,N34]Result[]
 insert into t2 values (NULL, NULL);
+
+#SQL[@36,N16]Result[8, 31, 17, 29, 14]
 select * from t2;
-a    b
-12.345    2022-02-20 10:10:11
-3.45646    null
-null    2023-04-03 22:10:30
-null    null
+a  ¦  b
+12.345  ¦  2022-02-20 10:10:11
+3.45646  ¦  null
+null  ¦  2023-04-03 22:10:30
+null  ¦  null
+
+#SQL[@37,N31]Result[16, 18, 18, 1, 1]
 select coalesce(a, 1.0) from t2;
 coalesce(a, 1.0)
 12.345000267028809
 3.4564599990844727
-1.0
-1.0
+1
+1
+
+#SQL[@38,N29]Result[14, 18, 18, 1, 1]
 select coalesce(a, 1) from t2;
 coalesce(a, 1)
 12.345000267028809
 3.4564599990844727
-1.0
-1.0
+1
+1
+
+#SQL[@40,N38]Result[25, 19, 4, 19, 4]
 select coalesce(b, 2022-01-01) from t2;
 coalesce(b, 2022 - 1 - 1)
 2022-02-20 10:10:11
 2020
 2023-04-03 22:10:30
 2020
+
+#SQL[@41,N32]Result[17, 19, 4, 19, 4]
 select coalesce(b, 2022) from t2;
 coalesce(b, 2022)
 2022-02-20 10:10:11
 2022
 2023-04-03 22:10:30
 2022
+
+#SQL[@42,N29]Result[14, 19, 1, 19, 1]
 select coalesce(b, 2) from t2;
 coalesce(b, 2)
 2022-02-20 10:10:11
 2
 2023-04-03 22:10:30
 2
+
+#SQL[@45,N40]Result[23, 19, 10, 19, 10]
 select coalesce(b, '2022-10-01') from t2;
 coalesce(b, 2022-10-01)
 2022-02-20 10:10:11
 2022-10-01
 2023-04-03 22:10:30
 2022-10-01
+
+#SQL[@46,N56]Result[39, 19, 26, 19, 26]
 select coalesce(b, '2022-10-01 10:10:10.999999') from t2;
 coalesce(b, 2022-10-01 10:10:10.999999)
 2022-02-20 10:10:11
 2022-10-01 10:10:10.999999
 2023-04-03 22:10:30
 2022-10-01 10:10:10.999999
+
+#SQL[@49,N34]Result[17, 19, 4, 19, 4]
 select coalesce(b, '2022') from t2;
 coalesce(b, 2022)
 2022-02-20 10:10:11
 2022
 2023-04-03 22:10:30
 2022
+
+#SQL[@52,N40]Result[23, 19, 10, 19, 10]
 select coalesce(b, '2022/10/01') from t2;
 coalesce(b, 2022/10/01)
 2022-02-20 10:10:11
 2022/10/01
 2023-04-03 22:10:30
 2022/10/01
+
+#SQL[@53,N13]Result[]
 drop table t2;
+
+#SQL[@56,N23]Result[]
 drop table if exists t3;
+
+#SQL[@57,N33]Result[]
 create table t3(
 a bool,
 b text
 );
+
+#SQL[@62,N30]Result[]
 insert into t3 values (0, 'a');
+
+#SQL[@63,N30]Result[]
 insert into t3 values (1, 'b');
+
+#SQL[@64,N33]Result[]
 insert into t3 values (NULL, 'c');
+
+#SQL[@65,N34]Result[]
 insert into t3 values (TRUE, NULL);
+
+#SQL[@66,N34]Result[]
 insert into t3 values (NULL, NULL);
+
+#SQL[@68,N16]Result[8, 12, 11, 11, 14, 14]
 select * from t3;
-a    b
-false    a
-true    b
-null    c
-true    null
-null    null
+a  ¦  b
+false  ¦  a
+true  ¦  b
+null  ¦  c
+true  ¦  null
+null  ¦  null
+
+#SQL[@70,N29]Result[14, 5, 4, 4, 4, 4]
 select coalesce(a, 1) from t3;
 coalesce(a, 1)
 false
@@ -122,6 +195,8 @@ true
 true
 true
 true
+
+#SQL[@71,N29]Result[14, 5, 4, 5, 4, 5]
 select coalesce(a, 0) from t3;
 coalesce(a, 0)
 false
@@ -129,6 +204,8 @@ true
 false
 true
 false
+
+#SQL[@73,N31]Result[16, 5, 4, 4, 4, 4]
 select coalesce(a, 200) from t3;
 coalesce(a, 200)
 false
@@ -136,6 +213,8 @@ true
 true
 true
 true
+
+#SQL[@75,N31]Result[14, 1, 1, 1, 1, 1]
 select coalesce(b, '1') from t3;
 coalesce(b, 1)
 a
@@ -143,6 +222,8 @@ b
 c
 1
 1
+
+#SQL[@76,N34]Result[17, 1, 1, 1, 4, 4]
 select coalesce(b, 'bull') from t3;
 coalesce(b, bull)
 a
@@ -150,45 +231,104 @@ b
 c
 bull
 bull
+
+#SQL[@78,N13]Result[]
 drop table t3;
+
+#SQL[@82,N23]Result[]
 drop table if exists t4;
+
+#SQL[@83,N54]Result[]
 create table t4 (f1 date, f2 datetime, f3 varchar(20));
+
+#SQL[@85,N27]Result[]
 drop view if exists view_t1;
+
+#SQL[@86,N59]Result[]
 create view view_t1 as select coalesce(f1,f1) as f4 from t4;
+
+#SQL[@87,N12]Result[71, 52]
 desc view_t1;
-Field    Type    Null    Key    Default    Extra    Comment
-f4    DATE(0)    YES        null
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+f4  ¦  DATE(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@88,N17]Result[]
 drop view view_t1;
+
+#SQL[@90,N27]Result[]
 drop view if exists view_t2;
+
+#SQL[@91,N59]Result[]
 create view view_t2 as select coalesce(f1,f2) as f4 from t4;
+
+#SQL[@92,N12]Result[71, 56]
 desc view_t2;
-Field    Type    Null    Key    Default    Extra    Comment
-f4    DATETIME(0)    YES        null
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+f4  ¦  DATETIME(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@93,N17]Result[]
 drop view view_t2;
+
+#SQL[@96,N27]Result[]
 drop view if exists view_t3;
+
+#SQL[@97,N59]Result[]
 create view view_t3 as select coalesce(f2,f2) as f4 from t4;
+
+#SQL[@98,N12]Result[71, 56]
 desc view_t3;
-Field    Type    Null    Key    Default    Extra    Comment
-f4    DATETIME(0)    YES        null
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+f4  ¦  DATETIME(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@99,N17]Result[]
 drop view view_t3;
+
+#SQL[@101,N27]Result[]
 drop view if exists view_t4;
+
+#SQL[@102,N59]Result[]
 create view view_t4 as select coalesce(f1,f3) as f4 from t4;
+
+#SQL[@103,N12]Result[71, 59]
 desc view_t4;
-Field    Type    Null    Key    Default    Extra    Comment
-f4    VARCHAR(65535)    YES        NULL
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+f4  ¦  VARCHAR(65535)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@104,N17]Result[]
 drop view view_t4;
+
+#SQL[@106,N27]Result[]
 drop view if exists view_t5;
+
+#SQL[@107,N59]Result[]
 create view view_t5 as select coalesce(f2,f3) as f4 from t4;
+
+#SQL[@108,N12]Result[71, 59]
 desc view_t5;
-Field    Type    Null    Key    Default    Extra    Comment
-f4    VARCHAR(65535)    YES        NULL
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+f4  ¦  VARCHAR(65535)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@109,N17]Result[]
 drop view view_t5;
+
+#SQL[@111,N13]Result[]
 drop table t4;
+
+#SQL[@115,N23]Result[]
 drop table if exists t5;
+
+#SQL[@116,N28]Result[]
 CREATE TABLE t5 (b datetime);
+
+#SQL[@118,N70]Result[]
 INSERT INTO t5 VALUES ('2010-01-01 00:00:00'), ('2010-01-01 00:00:00');
+
+#SQL[@119,N49]Result[1, 19, 19]
 SELECT * FROM t5 WHERE b <= coalesce(NULL, now());
 b
 2010-01-01 00:00:00
 2010-01-01 00:00:00
+
+#SQL[@121,N13]Result[]
 DROP TABLE t5;
+

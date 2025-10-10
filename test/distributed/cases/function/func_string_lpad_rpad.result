@@ -1,271 +1,491 @@
+#SQL[@2,N24]Result[15, 4]
 SELECT LPAD('hi',4,'??');
-LPAD('hi',4,'??')
+LPAD(hi, 4, ??)
 ??hi
+
+#SQL[@3,N24]Result[15, 1]
 SELECT LPAD('hi',1,'??');
-LPAD('hi',1,'??')
+LPAD(hi, 1, ??)
 h
+
+#SQL[@4,N23]Result[14, 5]
 SELECT RPAD('hi',5,'?');
-RPAD('hi',5,'?')
+RPAD(hi, 5, ?)
 hi???
+
+#SQL[@5,N23]Result[14, 1]
 SELECT RPAD('hi',1,'?');
-RPAD('hi',1,'?')
+RPAD(hi, 1, ?)
 h
+
+#SQL[@8,N36]Result[]
 CREATE TABLE t1 (title varchar(255));
+
+#SQL[@9,N96]Result[]
 INSERT INTO t1 VALUES ('Congress reconvenes in September to debate welfare and adult education');
+
+#SQL[@10,N55]Result[]
 INSERT INTO t1 VALUES ('House passes the CAREERS bill');
+
+#SQL[@11,N48]Result[31, 4, 26]
 SELECT RPAD("",(55 - LENGTH(title)),".") from t1;
-RPAD("",(55 - LENGTH(title)),".")
+RPAD(, (55 - LENGTH(title)), .)
 null
 ..........................
+
+#SQL[@12,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@15,N98]Result[100, 55]
 select rpad('a',4,'1'),rpad('a',4,'12'),rpad('abcd',3,'12'), rpad(11, 10 , 22), rpad("ab", 10, 22);
-rpad('a',4,'1')	rpad('a',4,'12')	rpad('abcd',3,'12')	rpad(11, 10 , 22)	rpad("ab", 10, 22)
-a111	a121	abc	1122222222	ab22222222
+rpad(a, 4, 1)  ¦  rpad(a, 4, 12)  ¦  rpad(abcd, 3, 12)  ¦  rpad(11, 10, 22)  ¦  rpad(ab, 10, 22)
+a111  ¦  a121  ¦  abc  ¦  1122222222  ¦  ab22222222
+
+#SQL[@16,N78]Result[78, 39]
 select lpad('a',4,'1'),lpad('a',4,'12'),lpad('abcd',3,'12'), lpad(11, 10 , 22);
-lpad('a',4,'1')	lpad('a',4,'12')	lpad('abcd',3,'12')	lpad(11, 10 , 22)
-111a	121a	abc	2222222211
+lpad(a, 4, 1)  ¦  lpad(a, 4, 12)  ¦  lpad(abcd, 3, 12)  ¦  lpad(11, 10, 22)
+111a  ¦  121a  ¦  abc  ¦  2222222211
+
+#SQL[@17,N52]Result[50, 40]
 select rpad(741653838,17,'0'),lpad(741653838,17,'0');
-rpad(741653838,17,'0')	lpad(741653838,17,'0')
-74165383800000000	00000000741653838
+rpad(741653838, 17, 0)  ¦  lpad(741653838, 17, 0)
+74165383800000000  ¦  00000000741653838
+
+#SQL[@18,N46]Result[40, 20]
 select rpad('abcd',7,'ab'),lpad('abcd',7,'ab');
-rpad('abcd',7,'ab')	lpad('abcd',7,'ab')
-abcdaba	abaabcd
+rpad(abcd, 7, ab)  ¦  lpad(abcd, 7, ab)
+abcdaba  ¦  abaabcd
+
+#SQL[@19,N46]Result[40, 8]
 select rpad('abcd',1,'ab'),lpad('abcd',1,'ab');
-rpad('abcd',1,'ab')	lpad('abcd',1,'ab')
-a	a
+rpad(abcd, 1, ab)  ¦  lpad(abcd, 1, ab)
+a  ¦  a
+
+#SQL[@20,N50]Result[36, 20]
 select rpad('STRING', 20, CONCAT_WS('p','a','d') );
-rpad('STRING', 20, CONCAT_WS('p','a','d') )
+rpad(STRING, 20, CONCAT_WS(p, a, d))
 STRINGapdapdapdapdap
+
+#SQL[@21,N50]Result[36, 20]
 select lpad('STRING', 20, CONCAT_WS('p','a','d') );
-lpad('STRING', 20, CONCAT_WS('p','a','d') )
+lpad(STRING, 20, CONCAT_WS(p, a, d))
 apdapdapdapdapSTRING
+
+#SQL[@22,N29]Result[18, 4]
 select rpad('hello', -1, '1');
-rpad('hello', -1, '1')
+rpad(hello, -1, 1)
 null
+
+#SQL[@23,N38]Result[27, 4]
 select rpad('hello', -4294967295, '1');
-rpad('hello', -4294967295, '1')
+rpad(hello, -4294967295, 1)
 null
+
+#SQL[@24,N37]Result[26, 4]
 select rpad('hello', 4294967295, '1');
-rpad('hello', 4294967295, '1')
+rpad(hello, 4294967295, 1)
 null
+
+#SQL[@25,N38]Result[27, 4]
 select rpad('hello', -4294967296, '1');
-rpad('hello', -4294967296, '1')
+rpad(hello, -4294967296, 1)
 null
+
+#SQL[@26,N37]Result[26, 4]
 select rpad('hello', 4294967296, '1');
-rpad('hello', 4294967296, '1')
+rpad(hello, 4294967296, 1)
 null
+
+#SQL[@27,N38]Result[27, 4]
 select rpad('hello', -4294967297, '1');
-rpad('hello', -4294967297, '1')
+rpad(hello, -4294967297, 1)
 null
+
+#SQL[@28,N37]Result[26, 4]
 select rpad('hello', 4294967297, '1');
-rpad('hello', 4294967297, '1')
+rpad(hello, 4294967297, 1)
 null
+
+#SQL[@30,N48]Error[65]
 select rpad('hello', -18446744073709551615, '1');
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@31,N47]Error[64]
 select rpad('hello', 18446744073709551615, '1');
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@32,N48]Error[65]
 select rpad('hello', -18446744073709551616, '1');
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@33,N47]Error[64]
 select rpad('hello', 18446744073709551616, '1');
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@34,N48]Error[65]
 select rpad('hello', -18446744073709551617, '1');
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@35,N47]Error[64]
 select rpad('hello', 18446744073709551617, '1');
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@37,N29]Result[18, 4]
 select lpad('hello', -1, '1');
-lpad('hello', -1, '1')
+lpad(hello, -1, 1)
 null
+
+#SQL[@38,N38]Result[27, 4]
 select lpad('hello', -4294967295, '1');
-lpad('hello', -4294967295, '1')
+lpad(hello, -4294967295, 1)
 null
+
+#SQL[@39,N37]Result[26, 4]
 select lpad('hello', 4294967295, '1');
-lpad('hello', 4294967295, '1')
+lpad(hello, 4294967295, 1)
 null
+
+#SQL[@40,N38]Result[27, 4]
 select lpad('hello', -4294967296, '1');
-lpad('hello', -4294967296, '1')
+lpad(hello, -4294967296, 1)
 null
+
+#SQL[@41,N37]Result[26, 4]
 select lpad('hello', 4294967296, '1');
-lpad('hello', 4294967296, '1')
+lpad(hello, 4294967296, 1)
 null
+
+#SQL[@42,N38]Result[27, 4]
 select lpad('hello', -4294967297, '1');
-lpad('hello', -4294967297, '1')
+lpad(hello, -4294967297, 1)
 null
+
+#SQL[@43,N37]Result[26, 4]
 select lpad('hello', 4294967297, '1');
-lpad('hello', 4294967297, '1')
+lpad(hello, 4294967297, 1)
 null
+
+#SQL[@45,N48]Error[65]
 select lpad('hello', -18446744073709551615, '1');
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@46,N47]Error[64]
 select lpad('hello', 18446744073709551615, '1');
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@47,N48]Error[65]
 select lpad('hello', -18446744073709551616, '1');
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@48,N47]Error[64]
 select lpad('hello', 18446744073709551616, '1');
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@49,N48]Error[65]
 select lpad('hello', -18446744073709551617, '1');
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@50,N47]Error[64]
 select lpad('hello', 18446744073709551617, '1');
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@52,N46]Result[36, 4]
 SELECT RPAD('hi', year(FROM_UNIXTIME(-1)),'?');
-RPAD('hi', year(FROM_UNIXTIME(-1)),'?')
+RPAD(hi, year(FROM_UNIXTIME(-1)), ?)
 null
+
+#SQL[@53,N46]Result[36, 4]
 SELECT LPAD('hi', year(FROM_UNIXTIME(-1)),'?');
-LPAD('hi', year(FROM_UNIXTIME(-1)),'?')
+LPAD(hi, year(FROM_UNIXTIME(-1)), ?)
 null
+
+#SQL[@57,N35]Result[6, 4]
 SELECT LPAD(NULL, 5, 'x') AS result;
 result
 null
+
+#SQL[@58,N38]Result[6, 4]
 SELECT LPAD(NULL, NULL, 'x') AS result;
 result
 null
+
+#SQL[@59,N39]Result[6, 4]
 SELECT LPAD(NULL, NULL, NULL) AS result;
 result
 null
+
+#SQL[@60,N37]Result[6, 4]
 SELECT LPAD('a', NULL, 'x') AS result;
 result
 null
+
+#SQL[@61,N38]Result[6, 4]
 SELECT LPAD('a', NULL, NULL) AS result;
 result
 null
+
+#SQL[@62,N35]Result[6, 4]
 SELECT LPAD('a', 5, NULL) AS result;
 result
 null
+
+#SQL[@63,N36]Result[6, 4]
 SELECT LPAD(NULL, 5, NULL) AS result;
 result
 null
+
+#SQL[@64,N34]Result[6, 0]
 SELECT LPAD('a', 0, 'x') AS result;
 result
 
+
+#SQL[@65,N33]Result[6, 0]
 SELECT LPAD('a', 0, '') AS result;
 result
 
+
+#SQL[@66,N33]Result[6, 0]
 SELECT LPAD('', 0, 'x') AS result;
 result
 
+
+#SQL[@67,N32]Result[6, 0]
 SELECT LPAD('', 0, '') AS result;
 result
 
+
+#SQL[@68,N25]Result[14, 4]
 SELECT LPAD('a', -1, 'x');
-LPAD('a', -1, 'x')
+LPAD(a, -1, x)
 null
+
+#SQL[@69,N35]Result[6, 4]
 SELECT RPAD(NULL, 5, 'x') AS result;
 result
 null
+
+#SQL[@70,N38]Result[6, 4]
 SELECT RPAD(NULL, NULL, 'x') AS result;
 result
 null
+
+#SQL[@71,N39]Result[6, 4]
 SELECT RPAD(NULL, NULL, NULL) AS result;
 result
 null
+
+#SQL[@72,N37]Result[6, 4]
 SELECT RPAD('a', NULL, 'x') AS result;
 result
 null
+
+#SQL[@73,N38]Result[6, 4]
 SELECT RPAD('a', NULL, NULL) AS result;
 result
 null
+
+#SQL[@74,N35]Result[6, 4]
 SELECT RPAD('a', 5, NULL) AS result;
 result
 null
+
+#SQL[@75,N36]Result[6, 4]
 SELECT RPAD(NULL, 5, NULL) AS result;
 result
 null
+
+#SQL[@76,N34]Result[6, 0]
 SELECT RPAD('a', 0, 'x') AS result;
 result
 
+
+#SQL[@77,N33]Result[6, 0]
 SELECT RPAD('a', 0, '') AS result;
 result
 
+
+#SQL[@78,N33]Result[6, 0]
 SELECT RPAD('', 0, 'x') AS result;
 result
 
+
+#SQL[@79,N32]Result[6, 0]
 SELECT RPAD('', 0, '') AS result;
 result
 
+
+#SQL[@80,N25]Result[14, 4]
 SELECT RPAD('a', -1, 'x');
-RPAD('a', -1, 'x')
+RPAD(a, -1, x)
 null
+
+#SQL[@84,N38]Result[33, 4]
 SELECT (rpad(1.0,2048,1)) IS NOT FALSE;
-(rpad(1.0, 2048, 1)) != false
+(rpad(1.0, 2048, 1)) is not false
 true
+
+#SQL[@87,N104]Error[2088]
 SELECT ((+0) IN
 ((0b111111111111111111111111111111111111111111111111111),(rpad(1.0,2048,1)),
 (32767.1)));
 invalid argument cast to int, bad value 1.011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+
+#SQL[@91,N44]Error[2088]
 SELECT ((rpad(1.0,2048,1)) = ('4(') ^ (0.1));
 invalid argument cast to int, bad value 1.011111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+
+#SQL[@95,N35]Result[24, 30]
 SELECT RPAD("你好", 10, "再见");
-RPAD("你好", 10, "再见")
+RPAD(你好, 10, 再见)
 你好再见再见再见再见
+
+#SQL[@96,N35]Result[24, 30]
 SELECT LPAD("你好", 10, "再见");
-LPAD("你好", 10, "再见")
+LPAD(你好, 10, 再见)
 再见再见再见再见你好
+
+#SQL[@99,N23]Result[]
 drop table if exists t1;
+
+#SQL[@100,N39]Result[]
 create table t1(a INT,  b varchar(255));
+
+#SQL[@101,N69]Result[]
 insert into t1 values(1, "2012"),(2, "21241"),(3, "20032"),(4, "200");
+
+#SQL[@102,N47]Result[8, 12, 10]
 select * from t1 where rpad(b, 5, "32")="20032";
-a	b
-3	20032
-4	200
+a  ¦  b
+3  ¦  20032
+4  ¦  200
+
+#SQL[@103,N13]Result[]
 drop table t1;
+
+#SQL[@107,N39]Result[]
 create table t1(a INT,  b varchar(255));
+
+#SQL[@108,N39]Result[]
 create table t2(a INT,  b varchar(255));
+
+#SQL[@109,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@110,N92]Result[]
 insert into t2 values(1, "2013-04-30"),(2, "1994-10-04"),(3, "2018-06-04"),(4, "2012-10-12");
+
+#SQL[@111,N82]Result[8, 8]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (rpad(t1.b, 12, "ab") = rpad(t2.b, 12, "ab"));
-a	a
-1	4
+a  ¦  a
+1  ¦  4
+
+#SQL[@112,N13]Result[]
 drop table t1;
+
+#SQL[@113,N13]Result[]
 drop table t2;
+
+#SQL[@116,N23]Result[]
 drop table if exists t1;
+
+#SQL[@117,N31]Result[]
 create table t1(a varchar(255));
+
+#SQL[@118,N39]Result[]
 insert into t1 select (rpad('a',4,'1'));
+
+#SQL[@119,N39]Result[]
 insert into t1 select (rpad('a',4,'1'));
+
+#SQL[@120,N39]Result[]
 insert into t1 select (rpad('a',4,'1'));
+
+#SQL[@121,N39]Result[]
 insert into t1 select (lpad('a',4,'1'));
+
+#SQL[@122,N25]Result[1, 4, 4]
 select distinct * from t1;
 a
 a111
 111a
+
+#SQL[@123,N13]Result[]
 drop table t1;
+
+#SQL[@126,N23]Result[]
 drop table if exists t1;
+
+#SQL[@127,N38]Result[]
 create table t1(a INT, b varchar(255));
+
+#SQL[@128,N69]Result[]
 insert into t1 values(1, "2012"),(2, "21241"),(3, "20032"),(4, "200");
+
+#SQL[@129,N59]Result[1, 3]
 select b from t1 group by b having rpad(b, 5, "12")="20012";
 b
 200
+
+#SQL[@130,N13]Result[]
 drop table t1;
+
+#SQL[@133,N26]Result[17, 4]
 SELECT RPAD("123", 4, 123);
-RPAD("123", 4, 123)
+RPAD(123, 4, 123)
 1231
+
+#SQL[@135,N25]Result[18, 7]
 SELECT RPAD(1234, 7, 123);
 RPAD(1234, 7, 123)
 1234123
+
+#SQL[@136,N30]Result[21, 4]
 SELECT RPAD("123", 4, 123.242);
-RPAD("123", 4, 123.242)
+RPAD(123, 4, 123.242)
 1231
+
+#SQL[@137,N34]Result[25, 3]
 SELECT RPAD("123", 3.422, 123.242);
-RPAD("123", 3.422, 123.242)
+RPAD(123, 3.422, 123.242)
 123
+
+#SQL[@139,N34]Result[27, 3]
 SELECT RPAD(0.341, 3.422, 123.242);
 RPAD(0.341, 3.422, 123.242)
 0.3
+
+#SQL[@141,N26]Result[17, 4]
 SELECT LPAD("123", 4, 123);
-LPAD("123", 4, 123)
+LPAD(123, 4, 123)
 1123
+
+#SQL[@142,N25]Result[18, 7]
 SELECT LPAD(1234, 7, 123);
 LPAD(1234, 7, 123)
 1231234
+
+#SQL[@143,N30]Result[21, 4]
 SELECT LPAD("123", 4, 123.242);
-LPAD("123", 4, 123.242)
+LPAD(123, 4, 123.242)
 1123
+
+#SQL[@144,N34]Result[25, 3]
 SELECT LPAD("123", 3.422, 123.242);
-LPAD("123", 3.422, 123.242)
+LPAD(123, 3.422, 123.242)
 123
+
+#SQL[@145,N34]Result[27, 3]
 SELECT LPAD(0.341, 3.422, 123.242);
 LPAD(0.341, 3.422, 123.242)
 0.3
+
+#SQL[@147,N32]Result[21, 4]
 select rpad(binary('a'), 4, 'b');
 rpad(binary(a), 4, b)
 abbb
+
+#SQL[@148,N32]Result[21, 4]
 select lpad(binary('a'), 4, 'b');
 lpad(binary(a), 4, b)
 bbba
+

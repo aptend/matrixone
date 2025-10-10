@@ -1,3 +1,4 @@
+#SQL[@2,N37]Result[6, 1, 1, 1, 1, 1]
 select * from generate_series(1, 5) g;
 result
 1
@@ -5,6 +6,8 @@ result
 3
 4
 5
+
+#SQL[@3,N37]Result[6, 1, 1, 1, 1, 1]
 select * from generate_series(5, 1) g;
 result
 5
@@ -12,76 +15,114 @@ result
 3
 2
 1
+
+#SQL[@4,N40]Result[6, 1, 1, 1]
 select * from generate_series(1, 5, 2) g;
 result
 1
 3
 5
+
+#SQL[@5,N41]Result[6, 1, 1, 1]
 select * from generate_series(5, 1, -2) g;
 result
 5
 3
 1
+
+#SQL[@6,N40]Error[50]
 select * from generate_series(1, 5, 0) g;
 invalid input: generate_series step cannot be zero
+
+#SQL[@7,N41]Result[]
 select * from generate_series(1, 5, -1) g;
-result
+
+#SQL[@8,N40]Result[]
 select * from generate_series(5, 1, 1) g;
-result
+
+#SQL[@9,N57]Result[6, 10]
 select * from generate_series(2147483646, 2147483647,5) g;
 result
 2147483646
+
+#SQL[@10,N60]Result[6, 11, 11]
 select * from generate_series(-2147483645, -2147483648,-2) g;
 result
 -2147483645
 -2147483647
+
+#SQL[@13,N55]Result[6, 10, 10, 10]
 select * from generate_series(2147483647, 2147483649) g;
 result
 2147483647
 2147483648
 2147483649
+
+#SQL[@14,N58]Result[6, 10, 10]
 select * from generate_series(2147483647, 2147483649, 2) g;
 result
 2147483647
 2147483649
+
+#SQL[@15,N59]Result[6, 10, 10]
 select * from generate_series(2147483649, 2147483647, -2) g;
 result
 2147483649
 2147483647
+
+#SQL[@16,N58]Error[50]
 select * from generate_series(2147483647, 2147483649, 0) g;
 invalid input: generate_series step cannot be zero
+
+#SQL[@17,N59]Result[]
 select * from generate_series(2147483647, 2147483649, -1) g;
-result
+
+#SQL[@18,N58]Result[]
 select * from generate_series(2147483649, 2147483647, 1) g;
-result
+
+#SQL[@19,N73]Result[6, 19, 19]
 select * from generate_series(9223372036854775806, 9223372036854775807) g;
 result
 9223372036854775806
 9223372036854775807
+
+#SQL[@20,N76]Result[6, 19]
 select * from generate_series(9223372036854775806, 9223372036854775807, 2) g;
 result
 9223372036854775806
+
+#SQL[@21,N75]Result[6, 20, 20, 20]
 select * from generate_series(-9223372036854775805, -9223372036854775807) g;
 result
 -9223372036854775805
 -9223372036854775806
 -9223372036854775807
+
+#SQL[@22,N78]Result[6, 20, 20]
 select * from generate_series(-9223372036854775805, -9223372036854775807,-2) g;
 result
 -9223372036854775805
 -9223372036854775807
+
+#SQL[@23,N94]Result[6, 20, 20]
 select * from generate_series(-9223372036854775805, cast(-9223372036854775808 as bigint),-2) g;
 result
 -9223372036854775805
 -9223372036854775807
+
+#SQL[@26,N86]Result[6, 19, 19]
 select * from generate_series('2020-02-28 00:00:00','2021-03-01 00:01:00', '1 year') g;
 result
 2020-02-28 00:00:00
 2021-02-28 00:00:00
+
+#SQL[@27,N86]Result[6, 19, 19]
 select * from generate_series('2020-02-29 00:00:00','2021-03-01 00:01:00', '1 year') g;
 result
 2020-02-29 00:00:00
 2021-02-28 00:00:00
+
+#SQL[@28,N89]Result[6, 19, 19, 19, 19, 19]
 select * from generate_series('2020-02-29 00:00:00','2021-03-01 00:01:00', '1 quarter') g;
 result
 2020-02-29 00:00:00
@@ -89,6 +130,8 @@ result
 2020-08-29 00:00:00
 2020-11-29 00:00:00
 2021-02-28 00:00:00
+
+#SQL[@29,N89]Result[6, 19, 19, 19, 19, 19]
 select * from generate_series('2020-02-28 00:00:00','2021-03-01 00:01:00', '1 quarter') g;
 result
 2020-02-28 00:00:00
@@ -96,6 +139,8 @@ result
 2020-08-28 00:00:00
 2020-11-28 00:00:00
 2021-02-28 00:00:00
+
+#SQL[@30,N87]Result[6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19]
 select * from generate_series('2020-02-29 00:00:00','2021-03-01 00:01:00', '1 month') g;
 result
 2020-02-29 00:00:00
@@ -111,6 +156,8 @@ result
 2020-12-29 00:00:00
 2021-01-29 00:00:00
 2021-02-28 00:00:00
+
+#SQL[@31,N87]Result[6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19]
 select * from generate_series('2020-02-28 00:00:00','2021-03-01 00:01:00', '1 month') g;
 result
 2020-02-28 00:00:00
@@ -126,10 +173,14 @@ result
 2020-12-28 00:00:00
 2021-01-28 00:00:00
 2021-02-28 00:00:00
+
+#SQL[@32,N86]Result[6, 19, 19]
 select * from generate_series('2020-02-29 00:00:00','2020-03-08 00:01:00', '1 week') g;
 result
 2020-02-29 00:00:00
 2020-03-07 00:00:00
+
+#SQL[@33,N85]Result[6, 19, 19, 19, 19, 19]
 select * from generate_series('2000-01-01 00:00:00', '2000-01-05 00:00:00','1 day') g;
 result
 2000-01-01 00:00:00
@@ -137,13 +188,19 @@ result
 2000-01-03 00:00:00
 2000-01-04 00:00:00
 2000-01-05 00:00:00
+
+#SQL[@34,N86]Result[6, 19]
 select * from generate_series('2020-02-29 23:59:59','2020-03-01 00:01:00', '1 hour') g;
 result
 2020-02-29 23:59:59
+
+#SQL[@35,N88]Result[6, 19, 19]
 select * from generate_series('2020-02-29 23:59:59','2020-03-01 00:01:00', '1 minute') g;
 result
 2020-02-29 23:59:59
 2020-03-01 00:00:59
+
+#SQL[@36,N88]Result[6, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19]
 select * from generate_series('2020-02-29 23:59:59','2020-03-01 00:00:10', '1 second') g;
 result
 2020-02-29 23:59:59
@@ -158,6 +215,8 @@ result
 2020-03-01 00:00:08
 2020-03-01 00:00:09
 2020-03-01 00:00:10
+
+#SQL[@37,N107]Result[6, 26, 26, 26, 26, 26]
 select * from generate_series('2020-02-29 23:59:59.124356','2020-02-29 23:59:59.124360', '1 microsecond') g;
 result
 2020-02-29 23:59:59.124356
@@ -165,6 +224,8 @@ result
 2020-02-29 23:59:59.124358
 2020-02-29 23:59:59.124359
 2020-02-29 23:59:59.124360
+
+#SQL[@40,N34]Result[6, 1, 1, 1, 1, 1]
 select * from generate_series(5) g;
 result
 1
@@ -172,19 +233,33 @@ result
 3
 4
 5
+
+#SQL[@43,N29]Result[]
 create table t(a int, b text);
+
+#SQL[@44,N89]Result[]
 insert into t select result, repeat('foobarzoo', 500) t from generate_series(1, 200000) t;
+
+#SQL[@45,N29]Result[3, 6]
 select count(*) as ttl from t;
 ttl
 200000
+
+#SQL[@46,N12]Result[]
 drop table t;
+
+#SQL[@49,N28]Result[]
 create table t(a int, b int);
+
+#SQL[@51,N72]Result[13, 7, 17, 54, 45]
 explain select t.*, tf.* from t cross apply generate_series(t.a, t.b) tf;
 TP QUERY PLAN
 Project
   ->  CROSS APPLY
         ->  Table Scan on table_func_generate_series.t
         ->  Table Function on generate_series
+
+#SQL[@53,N86]Result[13, 7, 17, 54, 36, 45]
 explain select t.*, tf.* from t cross apply generate_series(t.a, t.b) tf where t.a > 1;
 TP QUERY PLAN
 Project
@@ -192,93 +267,126 @@ Project
         ->  Table Scan on table_func_generate_series.t
               Filter Cond: (t.a > 1)
         ->  Table Function on generate_series
+
+#SQL[@54,N12]Result[]
 drop table t;
+
+#SQL[@56,N23]Result[]
 create table t (id int);
+
+#SQL[@57,N59]Error[69]
 insert into t select result from generate_series(1,100.0) g;
 invalid input: the type of generate_series end must be int32 or int64
+
+#SQL[@58,N57]Error[57]
 insert into t select result from generate_series(1,1e2) g;
 invalid input: generate_series end must be int32 or int64
+
+#SQL[@59,N65]Error[58]
 insert into t select result from generate_series(1,100, "step") g;
 invalid input: generate_series step must be int32 or int64
+
+#SQL[@63,N39]Error[60]
 select * from generate_random_int64() t;
 invalid input: random tvf: at least one argument is required
+
+#SQL[@64,N52]Error[83]
 select * from generate_random_int64(10, 42, 'foo') t;
 invalid input: gen_random method must be one of int64, int64n, float64, exp, normal
+
+#SQL[@65,N52]Error[83]
 select * from generate_random_int64(10, 42, 'exp') t;
 invalid input: gen_random method exp can't be used to generate int64 random numbers
+
+#SQL[@66,N57]Error[88]
 select * from generate_random_float64(10, 42, 'int64n') t;
 invalid input: gen_random method int64n can't be used to generate float64 random numbers
+
+#SQL[@67,N58]Error[47]
 select * from generate_random_float64(10, 42, 'exp', 10) t;
 invalid input: only int64n can have a max value
+
+#SQL[@70,N45]Result[12, 26, 25, 26, 26, 25, 26, 26, 26, 26, 27]
 select * from generate_random_int64(10, 42) t;
-nth    i64
-1    3440579354231278675
-2    608747136543856411
-3    5571782338101878760
-4    1926012586526624009
-5    404153945743547657
-6    3534334367214237261
-7    7497468244883513247
-8    3545887102062614208
-9    3532963341805492868
-10    5961769557461764184
+nth  ¦  i64
+1  ¦  3440579354231278675
+2  ¦  608747136543856411
+3  ¦  5571782338101878760
+4  ¦  1926012586526624009
+5  ¦  404153945743547657
+6  ¦  3534334367214237261
+7  ¦  7497468244883513247
+8  ¦  3545887102062614208
+9  ¦  3532963341805492868
+10  ¦  5961769557461764184
+
+#SQL[@71,N60]Result[12, 9, 9, 9, 8, 9, 9, 9, 8, 9, 10]
 select * from generate_random_int64(10, 42, 'int64n', 100) t;
-nth    i64
-1    75
-2    11
-3    60
-4    9
-5    57
-6    61
-7    47
-8    8
-9    68
-10    84
+nth  ¦  i64
+1  ¦  75
+2  ¦  11
+3  ¦  60
+4  ¦  9
+5  ¦  57
+6  ¦  61
+7  ¦  47
+8  ¦  8
+9  ¦  68
+10  ¦  84
+
+#SQL[@72,N47]Result[12, 25, 26, 24, 26, 27, 26, 25, 26, 25, 26]
 select * from generate_random_float64(10, 42) t;
-nth    f64
-1    0.3730283610466326
-2    0.06600049679351791
-3    0.604093851558642
-4    0.20881870305465913
-5    0.043818458599374305
-6    0.38319329992238566
-7    0.8128771359243787
-8    0.38444584994446157
-9    0.3830446530497163
-10    0.6463763506057989
+nth  ¦  f64
+1  ¦  0.3730283610466326
+2  ¦  0.06600049679351791
+3  ¦  0.604093851558642
+4  ¦  0.20881870305465913
+5  ¦  0.043818458599374305
+6  ¦  0.38319329992238566
+7  ¦  0.8128771359243787
+8  ¦  0.38444584994446157
+9  ¦  0.3830446530497163
+10  ¦  0.6463763506057989
+
+#SQL[@73,N51]Result[12, 25, 26, 24, 26, 27, 26, 25, 26, 25, 26]
 select * from generate_random_float64(10, 42, '') t;
-nth    f64
-1    0.3730283610466326
-2    0.06600049679351791
-3    0.604093851558642
-4    0.20881870305465913
-5    0.043818458599374305
-6    0.38319329992238566
-7    0.8128771359243787
-8    0.38444584994446157
-9    0.3830446530497163
-10    0.6463763506057989
+nth  ¦  f64
+1  ¦  0.3730283610466326
+2  ¦  0.06600049679351791
+3  ¦  0.604093851558642
+4  ¦  0.20881870305465913
+5  ¦  0.043818458599374305
+6  ¦  0.38319329992238566
+7  ¦  0.8128771359243787
+8  ¦  0.38444584994446157
+9  ¦  0.3830446530497163
+10  ¦  0.6463763506057989
+
+#SQL[@74,N54]Result[12, 26, 26, 25, 25, 26, 25, 25, 26, 25, 26]
 select * from generate_random_float64(10, 42, 'exp') t;
-nth    f64
-1    0.49573841490239784
-2    0.13054718375896252
-3    0.1532334522090758
-4    0.3384463626094486
-5    0.11596423879404183
-6    1.0556589395524805
-7    0.8590152290261559
-8    0.14863368108076302
-9    1.3978047977724948
-10    1.4262739889914782
+nth  ¦  f64
+1  ¦  0.49573841490239784
+2  ¦  0.13054718375896252
+3  ¦  0.1532334522090758
+4  ¦  0.3384463626094486
+5  ¦  0.11596423879404183
+6  ¦  1.0556589395524805
+7  ¦  0.8590152290261559
+8  ¦  0.14863368108076302
+9  ¦  1.3978047977724948
+10  ¦  1.4262739889914782
+
+#SQL[@75,N57]Result[12, 25, 26, 26, 25, 25, 25, 26, 25, 24, 26]
 select * from generate_random_float64(10, 42, 'normal') t;
-nth    f64
-1    1.5536305584564762
-2    0.12525608682704692
-3    -0.4943748127704828
-4    1.2440150150762053
-5    0.1319784842710705
-6    1.2063677897017713
-7    -0.6257615850500378
-8    0.6296099782367262
-9    1.565520076524086
-10    -0.834259977430416
+nth  ¦  f64
+1  ¦  1.5536305584564762
+2  ¦  0.12525608682704692
+3  ¦  -0.4943748127704828
+4  ¦  1.2440150150762053
+5  ¦  0.1319784842710705
+6  ¦  1.2063677897017713
+7  ¦  -0.6257615850500378
+8  ¦  0.6296099782367262
+9  ¦  1.565520076524086
+10  ¦  -0.834259977430416
+

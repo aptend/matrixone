@@ -1,66 +1,119 @@
+#SQL[@2,N18]Result[11, 1]
 SELECT COUNT(NULL);
-COUNT(NULL)
+COUNT(null)
 0
+
+#SQL[@5,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@6,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@7,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@8,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@9,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@10,N23]Result[8, 1]
 select count(a) from t1;
 count(a)
 4
+
+#SQL[@11,N23]Result[8, 1]
 select count(b) from t1;
 count(b)
 4
+
+#SQL[@12,N23]Result[8, 1]
 select count(c) from t1;
 count(c)
 4
+
+#SQL[@13,N23]Result[8, 1]
 select count(d) from t1;
 count(d)
 4
+
+#SQL[@14,N23]Result[8, 1]
 select count(e) from t1;
 count(e)
 4
+
+#SQL[@15,N23]Result[8, 1]
 select count(f) from t1;
 count(f)
 4
+
+#SQL[@16,N23]Result[8, 1]
 select count(g) from t1;
 count(g)
 4
+
+#SQL[@17,N23]Result[8, 1]
 select count(h) from t1;
 count(h)
 4
+
+#SQL[@18,N23]Result[8, 1]
 select count(i) from t1;
 count(i)
 4
+
+#SQL[@19,N23]Result[8, 1]
 select count(k) from t1;
 count(k)
 4
+
+#SQL[@20,N23]Result[8, 1]
 select count(l) from t1;
 count(l)
 4
+
+#SQL[@21,N23]Result[8, 1]
 select count(m) from t1;
 count(m)
 4
+
+#SQL[@22,N23]Result[8, 1]
 select count(n) from t1;
 count(n)
 4
+
+#SQL[@23,N13]Result[]
 drop table t1;
+
+#SQL[@36,N22]Result[]
 create table t1(a int);
+
+#SQL[@37,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 0
+
+#SQL[@38,N48]Result[]
 insert into t1 values(null),(null),(null),(null);
+
+#SQL[@39,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 4
+
+#SQL[@40,N13]Result[]
 drop table t1;
+
+#SQL[@44,N154]Result[]
 CREATE TABLE t1 (
 bug_id bigint(9) NOT NULL,
 groupset bigint(20) DEFAULT 0 NOT NULL,
 assigned_to bigint(9) DEFAULT 0 NOT NULL,
 bug_file_loc varchar(255)
 );
+
+#SQL[@50,N170]Result[]
 CREATE TABLE t2 (
 value varchar(255),
 program varchar(64),
@@ -68,354 +121,656 @@ initialowner varchar(255) NOT NULL,
 initialqacontact varchar(255) NOT NULL,
 description varchar(255) NOT NULL
 );
+
+#SQL[@57,N45]Result[]
 INSERT INTO t1 VALUES (1,0,0,'TestComponent');
+
+#SQL[@58,N45]Result[]
 INSERT INTO t1 VALUES (2,0,0,'BBBBBBBBBBBBB');
+
+#SQL[@59,N46]Result[]
 INSERT INTO t1 VALUES (3,0,0,'TestComponent2');
+
+#SQL[@60,N46]Result[]
 INSERT INTO t1 VALUES (4,0,0,'TestComponent2');
+
+#SQL[@61,N68]Result[]
 INSERT INTO t2 VALUES ('TestComponent','TestProduct','id0001','','');
+
+#SQL[@62,N75]Result[]
 INSERT INTO t2 VALUES ('BBBBBBBBBBBBB - conversion','AAAAA','id0001','','');
+
+#SQL[@63,N72]Result[]
 INSERT INTO t2 VALUES ('BBBBBBBBBBBBB - generic','AAAAA','id0001','','');
+
+#SQL[@64,N69]Result[]
 INSERT INTO t2 VALUES ('TestComponent2','TestProduct','id0001','','');
+
+#SQL[@65,N154]Result[63, 39, 36, 27]
 select any_value(value),any_value(description),COUNT(bug_id) from t2 left join t1 on t2.value=t1.bug_file_loc group by value having COUNT(bug_id) IN (0,2);
-any_value(value)	any_value(description)	COUNT(bug_id)
-BBBBBBBBBBBBB - conversion		0
-BBBBBBBBBBBBB - generic		0
-TestComponent2		2
+any_value(value)  ¦  any_value(description)  ¦  COUNT(bug_id)
+BBBBBBBBBBBBB - conversion  ¦    ¦  0
+BBBBBBBBBBBBB - generic  ¦    ¦  0
+TestComponent2  ¦    ¦  2
+
+#SQL[@66,N88]Result[35, 4]
 SELECT COUNT(t1.bug_id) >= COUNT(t2.value) from t1 join t2 on t1.bug_file_loc = t2.value;
 COUNT(t1.bug_id) >= COUNT(t2.value)
 true
+
+#SQL[@67,N13]Result[]
 drop table t1;
+
+#SQL[@68,N13]Result[]
 drop table t2;
+
+#SQL[@70,N65]Result[]
 create table t1 (grp int, a bigint unsigned, c char(10) not null);
+
+#SQL[@71,N31]Result[]
 insert into t1 values (1,1,"a");
+
+#SQL[@72,N31]Result[]
 insert into t1 values (2,2,"b");
+
+#SQL[@73,N31]Result[]
 insert into t1 values (2,3,"c");
+
+#SQL[@74,N31]Result[]
 insert into t1 values (3,4,"E");
+
+#SQL[@75,N31]Result[]
 insert into t1 values (3,5,"C");
+
+#SQL[@76,N31]Result[]
 insert into t1 values (3,6,"D");
+
+#SQL[@77,N34]Result[6, 4]
 select sum(a) from t1 where a > 10;
 sum(a)
 null
+
+#SQL[@78,N52]Result[42, 8]
 select count(distinct a),count(distinct grp) from t1;
-count(distinct a)	count(distinct grp)
-6	3
+count(distinct a)  ¦  count(distinct grp)
+6  ¦  3
+
+#SQL[@79,N36]Result[]
 insert into t1 values (null,null,'');
+
+#SQL[@80,N52]Result[42, 8]
 select count(distinct a),count(distinct grp) from t1;
-count(distinct a)	count(distinct grp)
-6	3
+count(distinct a)  ¦  count(distinct grp)
+6  ¦  3
+
+#SQL[@81,N56]Result[]
 create table t2 (grp int, a bigint unsigned, c char(10));
+
+#SQL[@82,N69]Result[]
 insert into t2 select grp,max(a)+max(grp),max(c) from t1 group by grp;
+
+#SQL[@83,N13]Result[]
 drop table t1;
+
+#SQL[@84,N13]Result[]
 drop table t2;
+
+#SQL[@87,N71]Result[]
 create table t1 (a smallint(6) primary key, c char(10), b varchar(255));
+
+#SQL[@88,N33]Result[]
 INSERT INTO t1 VALUES (1,'1','1');
+
+#SQL[@89,N33]Result[]
 INSERT INTO t1 VALUES (2,'2','2');
+
+#SQL[@90,N33]Result[]
 INSERT INTO t1 VALUES (4,'4','4');
+
+#SQL[@91,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 3
+
+#SQL[@92,N35]Result[8, 1]
 select count(*) from t1 where a = 1;
 count(*)
 1
+
+#SQL[@93,N37]Result[8, 1]
 select count(*) from t1 where a = 100;
 count(*)
 0
+
+#SQL[@94,N37]Result[8, 1]
 select count(*) from t1 where a >= 10;
 count(*)
 0
+
+#SQL[@95,N35]Result[8, 1]
 select count(a) from t1 where a = 1;
 count(a)
 1
+
+#SQL[@96,N37]Result[8, 1]
 select count(a) from t1 where a = 100;
 count(a)
 0
+
+#SQL[@97,N37]Result[8, 1]
 select count(a) from t1 where a >= 10;
 count(a)
 0
+
+#SQL[@101,N36]Result[8, 1]
 select count(b) from t1 where b >= 2;
 count(b)
 2
+
+#SQL[@102,N37]Result[8, 1]
 select count(b) from t1 where b >= 10;
 count(b)
 0
+
+#SQL[@103,N36]Result[8, 1]
 select count(c) from t1 where c = 10;
 count(c)
 0
+
+#SQL[@105,N13]Result[]
 drop table t1;
+
+#SQL[@107,N35]Result[]
 CREATE TABLE t1 (d DATETIME, i INT);
+
+#SQL[@110,N46]Result[]
 INSERT INTO t1 SELECT "2021-10-23 10:01:01", 1;
+
+#SQL[@111,N49]Result[33, 15]
 SELECT COUNT(i), i, COUNT(i)*i FROM t1 GROUP BY i;
-COUNT(i)	i	COUNT(i)*i
-1	1	1
+COUNT(i)  ¦  i  ¦  COUNT(i) * i
+1  ¦  1  ¦  1
+
+#SQL[@112,N57]Result[43, 15]
 SELECT COUNT(i), (i+0), COUNT(i)*(i+0) FROM t1 GROUP BY i;
-COUNT(i)	(i+0)	COUNT(i)*(i+0)
-1	1	1
+COUNT(i)  ¦  i + 0  ¦  COUNT(i) * (i + 0)
+1  ¦  1  ¦  1
+
+#SQL[@113,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@116,N30]Result[]
 CREATE TABLE t1 (a int, b int);
+
+#SQL[@117,N86]Result[99, 71]
 select count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1;
-count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-0	null	null	null	null	null	null	null
+count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@118,N99]Result[]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
+
+#SQL[@119,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@120,N99]Result[106, 78]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@121,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@122,N30]Result[]
 insert into t1 values (2,null);
+
+#SQL[@123,N99]Result[106, 78, 78]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	0	null	null	null	null	null	null	null
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@124,N27]Result[]
 insert into t1 values (2,1);
+
+#SQL[@125,N99]Result[106, 78, 57]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	1	1	1.0	0.0	1	1	1	1
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@126,N27]Result[]
 insert into t1 values (3,1);
+
+#SQL[@127,N99]Result[106, 78, 57, 57]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	1	1	1.0	0.0	1	1	1	1
-3	1	1	1.0	0.0	1	1	1	1
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+3  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@128,N13]Result[]
 drop table t1;
+
+#SQL[@141,N30]Result[]
 CREATE TABLE t1 (a INT, b INT);
+
+#SQL[@142,N39]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2),(2,3);
+
+#SQL[@143,N58]Error[63]
 SELECT (SELECT COUNT(DISTINCT t1.b)) FROM t1 GROUP BY t1.a;
 correlated columns in aggregate function is not yet implemented
+
+#SQL[@144,N56]Result[27, 1, 1]
 SELECT (SELECT COUNT(DISTINCT 12)) FROM t1 GROUP BY t1.a;
-(SELECT COUNT(DISTINCT 12))
+(select COUNT(distinct 12))
 1
 1
+
+#SQL[@145,N130]Result[171, 78]
 SELECT AVG(2), BIT_AND(2), BIT_OR(2), BIT_XOR(2), COUNT(*), COUNT(12),COUNT(DISTINCT 12), MIN(2),MAX(2),STD(2), VARIANCE(2),SUM(2);
-avg(2)	bit_and(2)	bit_or(2)	bit_xor(2)	count(*)	count(12)	count(distinct 12)	min(2)	max(2)	std(2)	variance(2)	sum(2)
-2.0	2	2	2	1	1	1	2	2	0.0	0.0	2
+AVG(2)  ¦  BIT_AND(2)  ¦  BIT_OR(2)  ¦  BIT_XOR(2)  ¦  COUNT(*)  ¦  COUNT(12)  ¦  COUNT(distinct 12)  ¦  MIN(2)  ¦  MAX(2)  ¦  STD(2)  ¦  VARIANCE(2)  ¦  SUM(2)
+2  ¦  2  ¦  2  ¦  2  ¦  1  ¦  1  ¦  1  ¦  2  ¦  2  ¦  0  ¦  0  ¦  2
+
+#SQL[@146,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@149,N37]Result[]
 CREATE TABLE t1 (col1 decimal(16,12));
+
+#SQL[@150,N123]Result[]
 INSERT INTO t1 VALUES (-5.00000000001),(-5.00000000002),(-5.00000000003),(-5.00000000000),(-5.00000000001),(-5.00000000002);
+
+#SQL[@151,N31]Result[]
 insert into t1 select * from t1;
+
+#SQL[@152,N65]Result[51, 65, 65, 65, 65]
 select col1,count(col1),sum(col1),avg(col1) from t1 group by col1;
-col1	count(col1)	sum(col1)	avg(col1)
--5.000000000010	4	-20.000000000040	-5.0000000000100000
--5.000000000020	4	-20.000000000080	-5.0000000000200000
--5.000000000030	2	-10.000000000060	-5.0000000000300000
--5.000000000000	2	-10.000000000000	-5.0000000000000000
+col1  ¦  count(col1)  ¦  sum(col1)  ¦  avg(col1)
+-5.000000000010  ¦  4  ¦  -20.000000000040  ¦  -5.000000000010
+-5.000000000020  ¦  4  ¦  -20.000000000080  ¦  -5.000000000020
+-5.000000000030  ¦  2  ¦  -10.000000000060  ¦  -5.000000000030
+-5.000000000000  ¦  2  ¦  -10.000000000000  ¦  -5.000000000000
+
+#SQL[@153,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@155,N32]Result[]
 CREATE TABLE t1 (a VARCHAR(400));
+
+#SQL[@156,N87]Result[]
 INSERT INTO t1 (a) VALUES ("A"), ("a"), ("a "), ("a   "),("B"), ("b"), ("b "), ("b   ");
+
+#SQL[@157,N32]Result[17, 1]
 SELECT COUNT(DISTINCT a) FROM t1;
-COUNT(DISTINCT a)
+COUNT(distinct a)
 8
+
+#SQL[@158,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@162,N106]Result[]
 create table bug22555 (i smallint, s1 smallint, s2 smallint, o1 double, o2 double, e1 decimal, e2 decimal);
+
+#SQL[@163,N93]Result[]
 insert into bug22555 values (1,53,78,53,78,53,78),(2,17,78,17,78,17,78),(3,18,76,18,76,18,76);
+
+#SQL[@164,N43]Result[15, 8, 8, 8]
 select i, count(*) from bug22555 group by i;
-i	count(*)
-1	1
-2	1
-3	1
+i  ¦  count(*)
+1  ¦  1
+2  ¦  1
+3  ¦  1
+
+#SQL[@165,N41]Result[12, 1]
 select std(s1/s2) from bug22555 where i=1;
-std(s1/s2)
-0.0
+std(s1 / s2)
+0
+
+#SQL[@166,N41]Result[12, 1]
 select std(s1/s2) from bug22555 where i=2;
-std(s1/s2)
-0.0
+std(s1 / s2)
+0
+
+#SQL[@167,N41]Result[12, 1]
 select std(s1/s2) from bug22555 where i=3;
-std(s1/s2)
-0.0
+std(s1 / s2)
+0
+
+#SQL[@168,N52]Result[12, 1]
 select std(s1/s2) from bug22555 where i=1 group by i;
-std(s1/s2)
-0.0
+std(s1 / s2)
+0
+
+#SQL[@169,N52]Result[12, 1]
 select std(s1/s2) from bug22555 where i=2 group by i;
-std(s1/s2)
-0.0
+std(s1 / s2)
+0
+
+#SQL[@170,N52]Result[12, 1]
 select std(s1/s2) from bug22555 where i=3 group by i;
-std(s1/s2)
-0.0
+std(s1 / s2)
+0
+
+#SQL[@171,N53]Result[12, 1, 1, 1]
 select std(s1/s2) from bug22555 group by i order by i;
-std(s1/s2)
-0.0
-0.0
-0.0
+std(s1 / s2)
+0
+0
+0
+
+#SQL[@172,N66]Result[33, 15, 15, 15]
 select i, count(*), std(o1/o2) from bug22555 group by i order by i;
-i	count(*)	std(o1/o2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(o1 / o2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@173,N66]Result[33, 28, 28, 28]
 select i, count(*), std(e1/e2) from bug22555 group by i order by i;
-i	count(*)	std(e1/e2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(e1 / e2)
+1  ¦  1  ¦  0.000000000000
+2  ¦  1  ¦  0.000000000000
+3  ¦  1  ¦  0.000000000000
+
+#SQL[@174,N71]Result[38, 15, 15, 15]
 select i, count(*), variance(s1/s2) from bug22555 group by i order by i;
-i	count(*)	variance(s1/s2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  variance(s1 / s2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@175,N71]Result[38, 15, 15, 15]
 select i, count(*), variance(o1/o2) from bug22555 group by i order by i;
-i	count(*)	variance(o1/o2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  variance(o1 / o2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@176,N71]Result[38, 28, 28, 28]
 select i, count(*), variance(e1/e2) from bug22555 group by i order by i;
-i	count(*)	variance(e1/e2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  variance(e1 / e2)
+1  ¦  1  ¦  0.000000000000
+2  ¦  1  ¦  0.000000000000
+3  ¦  1  ¦  0.000000000000
+
+#SQL[@177,N66]Result[33, 15, 15, 15]
 select i, count(*), std(s1/s2) from bug22555 group by i order by i;
-i	count(*)	std(s1/s2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(s1 / s2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@178,N66]Result[33, 15, 15, 15]
 select i, count(*), std(o1/o2) from bug22555 group by i order by i;
-i	count(*)	std(o1/o2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(o1 / o2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@179,N66]Result[33, 28, 28, 28]
 select i, count(*), std(e1/e2) from bug22555 group by i order by i;
-i	count(*)	std(e1/e2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(e1 / e2)
+1  ¦  1  ¦  0.000000000000
+2  ¦  1  ¦  0.000000000000
+3  ¦  1  ¦  0.000000000000
+
+#SQL[@180,N71]Result[38, 15, 15, 15]
 select i, count(*), variance(s1/s2) from bug22555 group by i order by i;
-i	count(*)	variance(s1/s2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  variance(s1 / s2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@181,N71]Result[38, 15, 15, 15]
 select i, count(*), variance(o1/o2) from bug22555 group by i order by i;
-i	count(*)	variance(o1/o2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  variance(o1 / o2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@182,N71]Result[38, 28, 28, 28]
 select i, count(*), variance(e1/e2) from bug22555 group by i order by i;
-i	count(*)	variance(e1/e2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  variance(e1 / e2)
+1  ¦  1  ¦  0.000000000000
+2  ¦  1  ¦  0.000000000000
+3  ¦  1  ¦  0.000000000000
+
+#SQL[@183,N66]Result[33, 15, 15, 15]
 select i, count(*), std(s1/s2) from bug22555 group by i order by i;
-i	count(*)	std(s1/s2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(s1 / s2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@184,N66]Result[33, 15, 15, 15]
 select i, count(*), std(o1/o2) from bug22555 group by i order by i;
-i	count(*)	std(o1/o2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(o1 / o2)
+1  ¦  1  ¦  0
+2  ¦  1  ¦  0
+3  ¦  1  ¦  0
+
+#SQL[@185,N66]Result[33, 28, 28, 28]
 select i, count(*), std(e1/e2) from bug22555 group by i order by i;
-i	count(*)	std(e1/e2)
-1	1	0.0
-2	1	0.0
-3	1	0.0
+i  ¦  count(*)  ¦  std(e1 / e2)
+1  ¦  1  ¦  0.000000000000
+2  ¦  1  ¦  0.000000000000
+3  ¦  1  ¦  0.000000000000
+
+#SQL[@186,N93]Result[]
 insert into bug22555 values (1,53,78,53,78,53,78),(2,17,78,17,78,17,78),(3,18,76,18,76,18,76);
+
+#SQL[@187,N93]Result[]
 insert into bug22555 values (1,53,78,53,78,53,78),(2,17,78,17,78,17,78),(3,18,76,18,76,18,76);
+
+#SQL[@188,N93]Result[]
 insert into bug22555 values (1,53,78,53,78,53,78),(2,17,78,17,78,17,78),(3,18,76,18,76,18,76);
+
+#SQL[@189,N66]Result[33, 15, 15, 15]
 select i, count(*), std(s1/s2) from bug22555 group by i order by i;
-i	count(*)	std(s1/s2)
-1	4	0.0
-2	4	0.0
-3	4	0.0
+i  ¦  count(*)  ¦  std(s1 / s2)
+1  ¦  4  ¦  0
+2  ¦  4  ¦  0
+3  ¦  4  ¦  0
+
+#SQL[@190,N77]Result[44, 15, 15, 15]
 select i, count(*), round(std(o1/o2), 16) from bug22555 group by i order by i;
-i	count(*)	round(std(o1/o2), 16)
-1	4	0.0
-2	4	0.0
-3	4	0.0
+i  ¦  count(*)  ¦  round(std(o1 / o2), 16)
+1  ¦  4  ¦  0
+2  ¦  4  ¦  0
+3  ¦  4  ¦  0
+
+#SQL[@191,N66]Result[33, 28, 28, 28]
 select i, count(*), std(e1/e2) from bug22555 group by i order by i;
-i	count(*)	std(e1/e2)
-1	4	0.0
-2	4	0.0
-3	4	0.0
+i  ¦  count(*)  ¦  std(e1 / e2)
+1  ¦  4  ¦  0.000000000000
+2  ¦  4  ¦  0.000000000000
+3  ¦  4  ¦  0.000000000000
+
+#SQL[@192,N31]Result[12, 18]
 select std(s1/s2) from bug22555;
-std(s1/s2)
-0.21325763593256278
-select std(o1/o2) from bug22555;
-std(o1/o2)
+std(s1 / s2)
 0.2132576358664934
+
+#SQL[@193,N31]Result[12, 18]
+select std(o1/o2) from bug22555;
+std(o1 / o2)
+0.2132576358664934
+
+#SQL[@194,N31]Result[12, 14]
 select std(e1/e2) from bug22555;
-std(e1/e2)
-0.21325763593256278
+std(e1 / e2)
+0.213257503950
+
+#SQL[@195,N66]Result[33, 15, 15, 15]
 select i, count(*), std(s1/s2) from bug22555 group by i order by i;
-i	count(*)	std(s1/s2)
-1	4	0.0
-2	4	0.0
-3	4	0.0
+i  ¦  count(*)  ¦  std(s1 / s2)
+1  ¦  4  ¦  0
+2  ¦  4  ¦  0
+3  ¦  4  ¦  0
+
+#SQL[@196,N77]Result[44, 15, 15, 15]
 select i, count(*), round(std(o1/o2), 16) from bug22555 group by i order by i;
-i	count(*)	round(std(o1/o2), 16)
-1	4	0.0
-2	4	0.0
-3	4	0.0
+i  ¦  count(*)  ¦  round(std(o1 / o2), 16)
+1  ¦  4  ¦  0
+2  ¦  4  ¦  0
+3  ¦  4  ¦  0
+
+#SQL[@197,N66]Result[33, 28, 28, 28]
 select i, count(*), std(e1/e2) from bug22555 group by i order by i;
-i	count(*)	std(e1/e2)
-1	4	0.0
-2	4	0.0
-3	4	0.0
+i  ¦  count(*)  ¦  std(e1 / e2)
+1  ¦  4  ¦  0.000000000000
+2  ¦  4  ¦  0.000000000000
+3  ¦  4  ¦  0.000000000000
+
+#SQL[@198,N42]Result[23, 18]
 select round(std(s1/s2), 17) from bug22555;
-round(std(s1/s2), 17)
-0.21325763593256275
-select std(o1/o2) from bug22555;
-std(o1/o2)
+round(std(s1 / s2), 17)
 0.2132576358664934
+
+#SQL[@199,N31]Result[12, 18]
+select std(o1/o2) from bug22555;
+std(o1 / o2)
+0.2132576358664934
+
+#SQL[@200,N42]Result[23, 14]
 select round(std(e1/e2), 17) from bug22555;
-round(std(e1/e2), 17)
-0.21325763593256275
+round(std(e1 / e2), 17)
+0.213257503950
+
+#SQL[@201,N19]Result[]
 drop table bug22555;
+
+#SQL[@206,N31]Result[]
 create table t1 (a decimal(20));
+
+#SQL[@207,N44]Result[]
 insert into t1 values (12345678901234567890);
+
+#SQL[@208,N23]Result[8, 1]
 select count(a) from t1;
 count(a)
 1
+
+#SQL[@209,N32]Result[17, 1]
 select count(distinct a) from t1;
 count(distinct a)
 1
+
+#SQL[@210,N13]Result[]
 drop table t1;
+
+#SQL[@213,N30]Result[]
 CREATE TABLE t1 (a INT, b INT);
+
+#SQL[@214,N69]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8);
+
+#SQL[@215,N42]Result[]
 INSERT INTO t1 SELECT a, b+8       FROM t1;
+
+#SQL[@216,N42]Result[]
 INSERT INTO t1 SELECT a, b+16      FROM t1;
+
+#SQL[@217,N42]Result[]
 INSERT INTO t1 SELECT a, b+32      FROM t1;
+
+#SQL[@218,N42]Result[]
 INSERT INTO t1 SELECT a, b+64      FROM t1;
+
+#SQL[@219,N42]Result[]
 INSERT INTO t1 SELECT a, b+128     FROM t1;
+
+#SQL[@220,N42]Result[]
 INSERT INTO t1 SELECT a, b+256     FROM t1;
+
+#SQL[@221,N42]Result[]
 INSERT INTO t1 SELECT a, b+512     FROM t1;
+
+#SQL[@222,N42]Result[]
 INSERT INTO t1 SELECT a, b+1024    FROM t1;
+
+#SQL[@223,N42]Result[]
 INSERT INTO t1 SELECT a, b+2048    FROM t1;
+
+#SQL[@224,N42]Result[]
 INSERT INTO t1 SELECT a, b+4096    FROM t1;
+
+#SQL[@225,N42]Result[]
 INSERT INTO t1 SELECT a, b+8192    FROM t1;
+
+#SQL[@226,N42]Result[]
 INSERT INTO t1 SELECT a, b+16384   FROM t1;
+
+#SQL[@227,N42]Result[]
 INSERT INTO t1 SELECT a, b+32768   FROM t1;
+
+#SQL[@230,N68]Result[10, 12]
 SELECT a,COUNT(DISTINCT b) AS cnt FROM t1 GROUP BY a HAVING cnt > 50;
-a    cnt
-1    65536
+a  ¦  cnt
+1  ¦  65536
+
+#SQL[@231,N69]Result[15, 17]
 SELECT a, SUM( b) AS sumation FROM t1 GROUP BY a HAVING sumation > 50;
-a    sumation
-1    2147516416
+a  ¦  sumation
+1  ¦  2147516416
+
+#SQL[@232,N67]Result[14, 14]
 SELECT a, AVG( b) AS average FROM t1 GROUP BY a HAVING average > 50;
-a    average
-1    32768.5
+a  ¦  average
+1  ¦  32768.5
+
+#SQL[@233,N75]Result[24, 12]
 SELECT a,COUNT(DISTINCT b) FROM t1 GROUP BY a HAVING COUNT(DISTINCT b) > 50;
-a	COUNT(DISTINCT b)
-1	65536
+a  ¦  COUNT(distinct b)
+1  ¦  65536
+
+#SQL[@234,N65]Result[13, 17]
 SELECT DISTINCT a, SUM( b) FROM t1 GROUP BY a HAVING SUM( b) > 50;
-a	SUM( b)
-1	2147516416
+a  ¦  SUM(b)
+1  ¦  2147516416
+
+#SQL[@235,N65]Result[13, 14]
 SELECT DISTINCT a, AVG( b) FROM t1 GROUP BY a HAVING AVG( b) > 50;
-a	AVG( b)
-1	32768.5000
+a  ¦  AVG(b)
+1  ¦  32768.5
+
+#SQL[@236,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@238,N23]Result[]
 CREATE TABLE t1 (a INT);
+
+#SQL[@239,N61]Result[]
 INSERT INTO t1 SELECT result FROM generate_series(1,100000) g;
+
+#SQL[@240,N23]Result[8, 6]
 SELECT COUNT(*) FROM t1;
-count(*)
+COUNT(*)
 100000
+
+#SQL[@241,N28]Result[]
 DELETE FROM t1 WHERE a>50000;
+
+#SQL[@242,N23]Result[8, 5]
 SELECT COUNT(*) FROM t1;
-count(*)
+COUNT(*)
 50000
+
+#SQL[@243,N23]Result[8, 5]
 SELECT COUNT(a) FROM t1;
-count(a)
+COUNT(a)
 50000
+
+#SQL[@244,N26]Result[]
 DELETE FROM t1 WHERE a%2=1;
+
+#SQL[@245,N23]Result[8, 5]
 SELECT COUNT(*) FROM t1;
-count(*)
+COUNT(*)
 25000
+
+#SQL[@246,N13]Result[]
 DROP TABLE t1;
+

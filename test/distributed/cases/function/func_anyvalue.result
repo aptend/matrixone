@@ -1,136 +1,264 @@
+#SQL[@3,N36]Result[]
 create table t1(a int, b int, c int);
+
+#SQL[@4,N60]Result[]
 insert into t1 values(200,1,1),(100,1,2),(400,2,2),(300,2,1);
+
+#SQL[@5,N74]Error[65]
 SELECT distinct 1 FROM t1 group by a order by any_value(count(*)-count(b));
 SQL syntax error: aggregate function count calls cannot be nested
+
+#SQL[@6,N85]Error[65]
 SELECT distinct 1 FROM t1 group by a order by any_value(count(*))-any_value(count(b));
 SQL syntax error: aggregate function count calls cannot be nested
+
+#SQL[@7,N95]Error[86]
 SELECT DISTINCT GP1.a AS g1 FROM t1 AS GP1
 WHERE GP1.a >= 0
 ORDER BY 2+ANY_VALUE(GP1.b) LIMIT 8;
 SQL syntax error: for SELECT DISTINCT, ORDER BY expressions must appear in select list
+
+#SQL[@10,N13]Result[]
 drop table t1;
+
+#SQL[@13,N38]Result[]
 create table t1(
 a int,
 b int,
 c int
 );
+
+#SQL[@18,N38]Result[]
 create table t2(
 a int,
 b int,
 c int
 );
+
+#SQL[@23,N40]Result[]
 insert into t1 values(1,10,34),(2,20,14);
+
+#SQL[@24,N32]Result[]
 insert into t2 values(1,-10,-45);
+
+#SQL[@25,N84]Result[15, 2, 2]
 select ANY_VALUE(t1.b) from t1 left join t2 on t1.c=t1.b and t1.a=t1.c group by t1.a;
 ANY_VALUE(t1.b)
 10
 20
+
+#SQL[@26,N90]Result[25, 2, 3]
 select 3+(5*ANY_VALUE(t1.b)) from t1 left join t2 on t1.c=t1.b and t1.a=t1.c group by t1.a;
-3+(5*ANY_VALUE(t1.b))
+3 + (5 * ANY_VALUE(t1.b))
 53
 103
+
+#SQL[@27,N14]Result[]
 delete from t1;
+
+#SQL[@28,N54]Result[]
 insert into t1 (a,b) values(1,10),(1,20),(2,30),(2,40);
+
+#SQL[@29,N35]Result[24, 10]
 select any_value(a), sum(b) from t1;
-any_value(a)	sum(b)
-1	100
+any_value(a)  ¦  sum(b)
+1  ¦  100
+
+#SQL[@30,N72]Result[24, 10]
 select any_value(a), sum(b) from (select * from t1 order by a desc) as d;
-any_value(a)	sum(b)
-2	100
+any_value(a)  ¦  sum(b)
+2  ¦  100
+
+#SQL[@31,N47]Result[31, 19, 19]
 select a,any_value(b),sum(c) from t1 group by a;
-a	any_value(b)	sum(c)
-1	10	null
-2	30	null
+a  ¦  any_value(b)  ¦  sum(c)
+1  ¦  10  ¦  null
+2  ¦  30  ¦  null
+
+#SQL[@32,N92]Result[31, 19, 19]
 select a,any_value(b),sum(c) from (select * from t1 order by a desc, b desc) as d group by a;
-a	any_value(b)	sum(c)
-2	40	null
-1	20	null
+a  ¦  any_value(b)  ¦  sum(c)
+2  ¦  40  ¦  null
+1  ¦  20  ¦  null
+
+#SQL[@33,N13]Result[]
 drop table t1;
+
+#SQL[@34,N13]Result[]
 drop table t2;
+
+#SQL[@37,N22]Result[15, 4]
 select any_value(null);
 any_value(null)
 null
+
+#SQL[@39,N31]Result[24, 1]
 SELECT any_value(floor(0.5413));
 any_value(floor(0.5413))
 0
+
+#SQL[@42,N57]Result[52, 2]
 SELECT any_value(floor(0.5413))-any_value(ceiling(0.553));
-any_value(floor(0.5413))-any_value(ceiling(0.553))
+any_value(floor(0.5413)) - any_value(ceiling(0.553))
 -1
+
+#SQL[@45,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c BIGINT, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@46,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@47,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@48,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@49,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@50,N27]Result[12, 1]
 select any_value(a) from t1;
 any_value(a)
 1
+
+#SQL[@51,N27]Result[12, 1]
 select any_value(b) from t1;
 any_value(b)
 1
+
+#SQL[@52,N27]Result[12, 1]
 select any_value(c) from t1;
 any_value(c)
 2
+
+#SQL[@53,N27]Result[12, 2]
 select any_value(d) from t1;
 any_value(d)
 43
+
+#SQL[@54,N27]Result[12, 1]
 select any_value(e) from t1;
 any_value(e)
 5
+
+#SQL[@55,N27]Result[12, 4]
 select any_value(f) from t1;
 any_value(f)
 35.5
+
+#SQL[@56,N27]Result[12, 6]
 select any_value(g) from t1;
 any_value(g)
 31.133
+
+#SQL[@57,N27]Result[12, 22]
 select any_value(h) from t1;
 any_value(h)
 14.3140000000000000000
+
+#SQL[@58,N27]Result[12, 10]
 select any_value(i) from t1;
 any_value(i)
 2012-03-10
+
+#SQL[@59,N27]Result[12, 19]
 select any_value(k) from t1;
 any_value(k)
 2012-03-12 10:03:12
+
+#SQL[@60,N27]Result[12, 19]
 select any_value(l) from t1;
 any_value(l)
 2022-03-12 13:03:12
+
+#SQL[@61,N27]Result[12, 5]
 select any_value(m) from t1;
 any_value(m)
 ab23c
+
+#SQL[@62,N27]Result[12, 4]
 select any_value(n) from t1;
 any_value(n)
 d5cf
+
+#SQL[@63,N13]Result[]
 drop table t1;
+
+#SQL[@76,N57]Result[50, 39]
 select any_value(9999999999999999999999999999.9999999999);
 any_value(9999999999999999999999999999.9999999999)
 9999999999999999999999999999.9999999999
+
+#SQL[@78,N39]Result[30, 19]
 select any_value("0000-00-00 00:00:00");
-any_value("0000-00-00 00:00:00")
+any_value(0000-00-00 00:00:00)
 0000-00-00 00:00:00
+
+#SQL[@79,N26]Result[17, 6]
 select any_value("你好");
-any_value("你好")
+any_value(你好)
 你好
+
+#SQL[@82,N23]Result[]
 drop table if exists t1;
+
+#SQL[@83,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@84,N60]Result[]
 insert into t1 values(12124, -4213.413), (12124, -42413.409);
+
+#SQL[@85,N50]Error[74]
 select distinct * from t1 where any_value(a)>12100;
 SQL syntax error: aggregate function any_value not allowed in WHERE clause
+
+#SQL[@86,N13]Result[]
 drop table t1;
+
+#SQL[@90,N23]Result[]
 drop table if exists t1;
+
+#SQL[@91,N23]Result[]
 drop table if exists t2;
+
+#SQL[@92,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@93,N32]Result[]
 create table t2(a INT,  b float);
+
+#SQL[@94,N59]Result[]
 insert into t1 values(12124, -4213.413), (1212, -42413.409);
+
+#SQL[@95,N57]Result[]
 insert into t2 values(14124, -4213.413), (8479, -980.409);
+
+#SQL[@96,N72]Error[58]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (any_value(t1.b) = any_value(t2.b));
 SQL syntax error: aggregate function any_value not allowed
+
+#SQL[@97,N13]Result[]
 drop table t1;
+
+#SQL[@98,N13]Result[]
 drop table t2;
+
+#SQL[@101,N23]Result[]
 drop table if exists t1;
+
+#SQL[@102,N24]Result[]
 create table t1(a float);
+
+#SQL[@103,N71]Result[]
 insert into t1 values(14124.413), (-4213.413), (984798.123), (-980.409);
+
+#SQL[@104,N49]Result[1, 9, 8]
 select a from t1 group by a having any_value(a)<0;
 a
--4213.41
+-4213.413
 -980.409
+
+#SQL[@105,N13]Result[]
 drop table t1;
+

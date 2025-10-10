@@ -1,39 +1,65 @@
+#SQL[@1,N68]Result[55, 13]
 SELECT DECODE(ENCODE('Hello, World!', 'mysecretkey'), 'mysecretkey');
 DECODE(ENCODE(Hello, World!, mysecretkey), mysecretkey)
 Hello, World!
+
+#SQL[@2,N33]Result[20, 0]
 SELECT DECODE(ENCODE('', ''), '');
 DECODE(ENCODE(, ), )
 
+
+#SQL[@3,N74]Result[61, 9]
 SELECT DECODE(ENCODE('MatrixOne', '1234567890123456'), '1234567890123456');
 DECODE(ENCODE(MatrixOne, 1234567890123456), 1234567890123456)
 MatrixOne
+
+#SQL[@4,N74]Result[61, 9]
 SELECT DECODE(ENCODE('MatrixOne', 'asdfjasfwefjfjkj'), 'asdfjasfwefjfjkj');
 DECODE(ENCODE(MatrixOne, asdfjasfwefjfjkj), asdfjasfwefjfjkj)
 MatrixOne
+
+#SQL[@5,N93]Result[80, 12]
 SELECT DECODE(ENCODE('MatrixOne123', '123456789012345678901234'), '123456789012345678901234');
 DECODE(ENCODE(MatrixOne123, 123456789012345678901234), 123456789012345678901234)
 MatrixOne123
+
+#SQL[@6,N73]Result[60, 14]
 SELECT DECODE(ENCODE('MatrixOne#%$%^', '*^%YTu1234567'), '*^%YTu1234567');
 DECODE(ENCODE(MatrixOne#%$%^, *^%YTu1234567), *^%YTu1234567)
 MatrixOne#%$%^
+
+#SQL[@7,N42]Result[29, 9]
 SELECT DECODE(ENCODE('MatrixOne', ''), '');
 DECODE(ENCODE(MatrixOne, ), )
 MatrixOne
+
+#SQL[@8,N92]Result[79, 27]
 SELECT DECODE(ENCODE('分布式データベース', 'pass1234@#$%%^^&'), 'pass1234@#$%%^^&');
 DECODE(ENCODE(分布式データベース, pass1234@#$%%^^&), pass1234@#$%%^^&)
 分布式データベース
+
+#SQL[@9,N110]Result[97, 27]
 SELECT DECODE(ENCODE('分布式データベース', '分布式7782734adgwy1242'), '分布式7782734adgwy1242');
 DECODE(ENCODE(分布式データベース, 分布式7782734adgwy1242), 分布式7782734adgwy1242)
 分布式データベース
+
+#SQL[@10,N54]Result[41, 9]
 SELECT DECODE(ENCODE('MatrixOne', '密匙'), '密匙');
 DECODE(ENCODE(MatrixOne, 密匙), 密匙)
 MatrixOne
+
+#SQL[@11,N97]Result[84, 18]
 SELECT DECODE(ENCODE('MatrixOne数据库', '数据库passwd12345667'), '数据库passwd12345667');
 DECODE(ENCODE(MatrixOne数据库, 数据库passwd12345667), 数据库passwd12345667)
 MatrixOne数据库
+
+#SQL[@12,N67]Result[56, 36]
 SELECT HEX(ENCODE('MatrixOne数据库', '数据库passwd12345667'));
 HEX(ENCODE(MatrixOne数据库, 数据库passwd12345667))
 34B8B67B8C4EDF31009142BC6346E3C32B0C
+
+#SQL[@13,N42]Result[32, 12]
 SELECT HEX(ENCODE('mytext','mykeystring'));
 HEX(ENCODE(mytext, mykeystring))
 562C778A6367
+

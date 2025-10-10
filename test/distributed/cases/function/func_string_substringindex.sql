@@ -21,7 +21,7 @@ SELECT SUBSTRING_INDEX('www.mysql.com', '', '0');
 select substring_index('xyz', 'abc', 9223372036854775808);
 select substring_index("aaa.bbb.ccc.ddd.eee",'.',18446744073709551613);
 select substring_index("aaa.bbb.ccc.ddd.eee",'.',-18446744073709551613);
-    
+
 
 select substring_index(null, 'abc', 9223372036854775808);
 select substring_index('xyz', null, 9223372036854775808);

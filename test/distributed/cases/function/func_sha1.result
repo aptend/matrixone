@@ -1,82 +1,138 @@
+#SQL[@1,N18]Result[9, 40]
 SELECT sha1('abc');
 sha1(abc)
 a9993e364706816aba3e25717850c26c9cd0d89d
+
+#SQL[@2,N17]Result[8, 40]
 SELECT sha('abc');
 sha(abc)
 a9993e364706816aba3e25717850c26c9cd0d89d
+
+#SQL[@4,N15]Result[6, 40]
 SELECT sha1('');
 sha1()
 da39a3ee5e6b4b0d3255bfef95601890afd80709
+
+#SQL[@5,N14]Result[5, 40]
 SELECT sha('');
 sha()
 da39a3ee5e6b4b0d3255bfef95601890afd80709
+
+#SQL[@7,N17]Result[10, 4]
 SELECT sha1(NULL);
 sha1(null)
 null
+
+#SQL[@8,N16]Result[9, 4]
 SELECT sha(NULL);
 sha(null)
 null
+
+#SQL[@11,N29]Result[20, 40]
 select sha1('kfieli3453l5lj');
 sha1(kfieli3453l5lj)
 b68bbc108ce71dea691d6c3c5a4a6873b0bafa06
+
+#SQL[@12,N17]Result[8, 40]
 select sha1('  ');
 sha1(  )
 099600a10a944114aac406d136b625fb416dd779
+
+#SQL[@13,N21]Result[12, 40]
 select sha1('中文');
 sha1(中文)
 7be2d2d20c106eee0836c9bc2b939890a78e8fb3
+
+#SQL[@14,N21]Result[12, 40]
 select sha1('0x45df');
 sha1(0x45df)
 f9719cb48b21623c2817c6c4595df6a4b3f321db
+
+#SQL[@15,N32]Result[22, 40]
 select sha1('#$%^&*()!++={}|\~');
 sha1(#$%^&*()!++={}|~)
 15483756ef9cc19bf3988143e7ebc193c8d8fbaa
+
+#SQL[@16,N243]Result[234, 40]
 select sha1('flijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsfflijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsf');
 sha1(flijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsfflijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsf)
 6127353ba6e4c964bbd29b41f2a887a98c320b0d
+
+#SQL[@17,N41]Result[31, 40]
 select sha1(concat('oewo#$%',' 2335325'));
 sha1(concat(oewo#$%,  2335325))
 4cf95feb95b625915aa4b235938ae719c68ea579
+
+#SQL[@18,N17]Result[10, 40]
 select sha1(4336);
 sha1(4336)
 2a4bd0cf67355067881ba559d5b304a7ad090ed3
+
+#SQL[@19,N23]Result[18, 40]
 select sha1(2008-09-09);
 sha1(2008 - 9 - 9)
 bb3acf149db4936fbaca693a61d56be89205d997
+
+#SQL[@20,N25]Result[16, 40]
 select sha1('2008-09-09');
 sha1(2008-09-09)
 e4b2f57a23d6ab4ef103a8bbcd4efc82355d287f
+
+#SQL[@21,N18]Error[42]
 select sha1(fsfsf);
 invalid input: column fsfsf does not exist
+
+#SQL[@23,N28]Result[19, 40]
 select sha('kfieli3453l5lj');
 sha(kfieli3453l5lj)
 b68bbc108ce71dea691d6c3c5a4a6873b0bafa06
+
+#SQL[@24,N16]Result[7, 40]
 select sha('  ');
 sha(  )
 099600a10a944114aac406d136b625fb416dd779
+
+#SQL[@25,N20]Result[11, 40]
 select sha('中文');
 sha(中文)
 7be2d2d20c106eee0836c9bc2b939890a78e8fb3
+
+#SQL[@26,N20]Result[11, 40]
 select sha('0x45df');
 sha(0x45df)
 f9719cb48b21623c2817c6c4595df6a4b3f321db
+
+#SQL[@27,N31]Result[21, 40]
 select sha('#$%^&*()!++={}|\~');
 sha(#$%^&*()!++={}|~)
 15483756ef9cc19bf3988143e7ebc193c8d8fbaa
+
+#SQL[@28,N242]Result[233, 40]
 select sha('flijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsfflijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsf');
 sha(flijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsfflijeoijfoiejetjioejo349857789345789$%^&ljiofejiojaojfieoaio7934729749263589237592739284920983075jkncmnd,sfkjdsfsf)
 6127353ba6e4c964bbd29b41f2a887a98c320b0d
+
+#SQL[@29,N16]Result[9, 40]
 select sha(4336);
 sha(4336)
 2a4bd0cf67355067881ba559d5b304a7ad090ed3
+
+#SQL[@30,N40]Result[30, 40]
 select sha(concat('oewo#$%',' 2335325'));
 sha(concat(oewo#$%,  2335325))
 4cf95feb95b625915aa4b235938ae719c68ea579
+
+#SQL[@31,N22]Result[17, 40]
 select sha(2008-09-09);
 sha(2008 - 9 - 9)
 bb3acf149db4936fbaca693a61d56be89205d997
+
+#SQL[@32,N24]Result[15, 40]
 select sha('2008-09-09');
 sha(2008-09-09)
 e4b2f57a23d6ab4ef103a8bbcd4efc82355d287f
+
+#SQL[@33,N17]Error[42]
 select sha(fsfsf);
 invalid input: column fsfsf does not exist
+

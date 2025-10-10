@@ -1,128 +1,244 @@
+#SQL[@3,N63]Result[5, 1]
 SELECT MONTH(date_add("2021-09-30", interval 200 day)) AS MONTH;
 MONTH
 4
+
+#SQL[@6,N36]Result[5, 4]
 SELECT MONTH("10000-12-21") as month;
 month
 null
+
+#SQL[@7,N36]Result[5, 4]
 SELECT MONTH("-1234-12-21") as month;
 month
 null
+
+#SQL[@8,N42]Result[5, 4]
 SELECT MONTH("12415141412-12-21") as month;
 month
 null
+
+#SQL[@9,N35]Result[5, 4]
 SELECT MONTH("0000-00-00") as month;
 month
 null
+
+#SQL[@10,N35]Result[5, 4]
 SELECT MONTH("2049-14-34") as month;
 month
 null
+
+#SQL[@11,N30]Result[5, 4]
 SELECT MONTH("13-12") as month;
 month
 null
+
+#SQL[@15,N32]Result[5, 4]
 SELECT MONTH("2015-09") as MONTH;
 MONTH
 null
+
+#SQL[@18,N29]Result[5, 4]
 SELECT MONTH(201509) as MONTH;
-month
+MONTH
 null
+
+#SQL[@19,N30]Result[5, 1]
 SELECT MONTH(1340124) as MONTH;
-month
+MONTH
 1
+
+#SQL[@20,N30]Result[5, 4]
 SELECT MONTH(0.45133) as MONTH;
-month
+MONTH
 null
+
+#SQL[@21,N25]Result[5, 4]
 SELECT MONTH(10) as MONTH;
-month
+MONTH
 null
+
+#SQL[@22,N26]Result[5, 4]
 SELECT MONTH(1=1) as MONTH;
-month
+MONTH
 null
+
+#SQL[@26,N35]Result[5, 1]
 SELECT MONTH('2015-09-30') as MONTH;
 MONTH
 9
+
+#SQL[@29,N31]Result[5, 4]
 SELECT MONTH('2015-0') as MONTH;
 MONTH
 null
+
+#SQL[@32,N38]Result[5, 4]
 SELECT MONTH('2015-09.30 12') as MONTH;
 MONTH
 null
+
+#SQL[@35,N44]Result[5, 1]
 SELECT MONTH('2015-09-26 08:09:22') AS MONTH;
 MONTH
 9
+
+#SQL[@39,N47]Result[37, 1]
 SELECT MONTH("2015-09-10")- MONTH("2016-04-24");
-MONTH("2015-09-10")- MONTH("2016-04-24")
+MONTH(2015-09-10) - MONTH(2016-04-24)
 5
+
+#SQL[@40,N47]Result[37, 2]
 SELECT MONTH("2015-09-10")+ MONTH("2016-04-24");
-MONTH("2015-09-10")+ MONTH("2016-04-24")
+MONTH(2015-09-10) + MONTH(2016-04-24)
 13
+
+#SQL[@41,N46]Result[37, 2]
 SELECT MONTH("2015-09-10")*MONTH("2016-04-24");
-MONTH("2015-09-10")*MONTH("2016-04-24")
+MONTH(2015-09-10) * MONTH(2016-04-24)
 36
+
+#SQL[@42,N46]Result[37, 4]
 SELECT MONTH("2015-09-10")/MONTH("2016-04-24");
-MONTH("2015-09-10")/MONTH("2016-04-24")
-2.2500
+MONTH(2015-09-10) / MONTH(2016-04-24)
+2.25
+
+#SQL[@45,N46]Result[37, 4]
 SELECT MONTH("2015-09-10")>MONTH("2016-04-24");
-month(2015-09-10) > month(2016-04-24)
+MONTH(2015-09-10) > MONTH(2016-04-24)
 true
+
+#SQL[@46,N46]Result[37, 5]
 SELECT MONTH("2015-09-10")<MONTH("2016-04-24");
-month(2015-09-10) < month(2016-04-24)
+MONTH(2015-09-10) < MONTH(2016-04-24)
 false
+
+#SQL[@47,N46]Result[37, 5]
 SELECT MONTH("2015-09-10")=MONTH("2016-04-24");
-month(2015-09-10) = month(2016-04-24)
+MONTH(2015-09-10) = MONTH(2016-04-24)
 false
+
+#SQL[@48,N47]Result[38, 4]
 SELECT MONTH("2015-09-10")<>MONTH("2016-04-24");
-month(2015-09-10) != month(2016-04-24)
+MONTH(2015-09-10) != MONTH(2016-04-24)
 true
+
+#SQL[@49,N47]Result[38, 4]
 SELECT MONTH("2015-09-10")!=MONTH("2016-04-24");
-month(2015-09-10) != month(2016-04-24)
+MONTH(2015-09-10) != MONTH(2016-04-24)
 true
+
+#SQL[@52,N28]Result[5, 4]
 SELECT MONTH(NULL) AS Month ;
 Month
 null
+
+#SQL[@55,N199]Result[]
 CREATE TABLE Product(Product_id INT,  Product_name VARCHAR(100) NOT NULL,Buying_price DECIMAL(13, 2) NOT NULL,Selling_price DECIMAL(13, 2) NOT NULL,Selling_Date Date NOT NULL,PRIMARY KEY(Product_id));
+
+#SQL[@56,N526]Error[60]
 INSERT INTO  Product(Product_name, Buying_price, Selling_price, Selling_Date) VALUES ('Audi Q8', 10000000.00, 15000000.00, '2018-01-26' ),('Volvo XC40', 2000000.00, 3000000.00, '2018-04-20' ),('Audi A6', 4000000.00, 5000000.00, '2018-07-25' ),('BMW X5', 5000500.00, 7006500.00, '2018-10-18'  ),('Jaguar XF', 5000000, 7507000.00, '2019-01-27'  ),('Mercedes-Benz C-Class', 4000000.00, 6000000.00, '2019-04-01'  ),('Jaguar F-PACE', 5000000.00, 7000000.00, '2019-12-26'  ),('Porsche Macan', 6500000.00, 8000000.00, '2020-04-16' ) ;
 invalid input: invalid default value for column 'product_id'
+
+#SQL[@57,N140]Result[]
 SELECT  MONTH (Selling_Date) month,  COUNT(Product_id) Product_Sold FROM Product GROUP BY MONTH (Selling_Date) ORDER BY MONTH (Selling_Date);
-month	Product_Sold
+
+#SQL[@58,N18]Result[]
 DROP TABLE Product;
+
+#SQL[@61,N23]Result[]
 drop table if exists t1;
+
+#SQL[@62,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@63,N55]Result[]
 insert into t1 select month("2012-10-12"), "2012-10-12";
+
+#SQL[@64,N55]Result[]
 insert into t1 select month("2004-04-24"), "2004-04-24";
+
+#SQL[@65,N55]Result[]
 insert into t1 select month("2008-12-04"), "2008-12-04";
+
+#SQL[@66,N16]Result[8, 18, 17, 18]
 select * from t1;
-a	b
-10	2012-10-12
-4	2004-04-24
-12	2008-12-04
+a  ¦  b
+10  ¦  2012-10-12
+4  ¦  2004-04-24
+12  ¦  2008-12-04
+
+#SQL[@67,N13]Result[]
 drop table t1;
+
+#SQL[@71,N23]Result[]
 drop table if exists t1;
+
+#SQL[@72,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@73,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@74,N34]Result[8, 17]
 select * from t1 where month(b)=10;
-a	b
-1	2012-10-12
+a  ¦  b
+1  ¦  2012-10-12
+
+#SQL[@75,N13]Result[]
 drop table t1;
+
+#SQL[@79,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@80,N31]Result[]
 create table t2(a INT,  b date);
+
+#SQL[@81,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@82,N92]Result[]
 insert into t2 values(1, "2013-04-30"),(2, "1994-10-04"),(3, "2018-06-04"),(4, "2012-08-12");
+
+#SQL[@83,N64]Result[8, 8, 8]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (month(t1.b) = month(t2.b));
-a	a
-2	1
-1	2
+a  ¦  a
+1  ¦  2
+2  ¦  1
+
+#SQL[@84,N13]Result[]
 drop table t1;
+
+#SQL[@85,N13]Result[]
 drop table t2;
+
+#SQL[@89,N23]Result[]
 drop table if exists t1;
+
+#SQL[@90,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@91,N110]Result[]
 insert into t1 values(1, "2012-10-12"),(1, "2012-07-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@92,N46]Result[1, 10]
 select b from t1 group by b having month(b)=12;
 b
 2008-12-04
+
+#SQL[@93,N13]Result[]
 drop table t1;
+
+#SQL[@96,N23]Result[]
 drop table if exists t1;
+
+#SQL[@97,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@98,N128]Result[]
 insert into t1 values(1, "2012-10-12"),(1, "2012-07-12"),(2, "2004-04-24"),(3, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@99,N32]Result[8, 2, 1, 1, 2, 1]
 select distinct month(b) from t1;
 month(b)
 10
@@ -130,13 +246,29 @@ month(b)
 4
 12
 3
+
+#SQL[@100,N13]Result[]
 drop table t1;
+
+#SQL[@107,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@108,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@109,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@110,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@111,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@112,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@113,N24]Result[9, 1, 2, 1, 2, 1]
 SELECT MONTH(c1) FROM t3;
 MONTH(c1)
 1
@@ -144,13 +276,29 @@ MONTH(c1)
 1
 12
 2
+
+#SQL[@114,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@115,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@116,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@117,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@118,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@119,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@120,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@121,N24]Result[9, 1, 2, 1, 2, 1]
 SELECT MONTH(c1) FROM t3;
 MONTH(c1)
 1
@@ -158,13 +306,29 @@ MONTH(c1)
 1
 12
 2
+
+#SQL[@122,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@124,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@125,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@126,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@127,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@128,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@129,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@130,N24]Result[9, 1, 2, 1, 2, 1]
 SELECT MONTH(c1) FROM t3;
 MONTH(c1)
 1
@@ -172,4 +336,7 @@ MONTH(c1)
 1
 12
 2
+
+#SQL[@131,N13]Result[]
 DROP TABLE t3;
+

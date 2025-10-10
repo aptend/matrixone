@@ -65,9 +65,9 @@ insert into t1 values ("ö");
 insert into t2 select * from t1;
 select * from t1 order by name;
 select concat_ws(",","*",name,"*") from t1 order by 1;
--- @bvt:issue#3344
-select min(name),min(concat_ws(",","*",name,"*")),max(name),max(concat_ws("*",name,"*")) from t1;
--- @bvt:issue
+@issue(no=3344) {
+    select min(name),min(concat_ws(",","*",name,"*")),max(name),max(concat_ws("*",name,"*")) from t1;
+}
 drop table t1;
 drop table t2;
 
@@ -106,9 +106,9 @@ create table t1 (a1 int, a2 char(3));
 insert into t1 values(10,'aaa'), (10,null), (10,'bbb'), (20,'zzz');
 create table t2(a1 char(3), a2 int, a3 real);
 select * from t1;
--- @bvt:issue#3344
-select min(a2) from t1;
--- @bvt:issue
+@issue(no=3344) {
+    select min(a2) from t1;
+}
 select max(t1.a1), max(t2.a2) from t1, t2;
 select max(t1.a1) from t1, t2;
 select max(t2.a2), max(t1.a1) from t1, t2;
@@ -258,12 +258,12 @@ insert into t1 values(02,2002,20020101,"2002-01-01 23:59:59");
 insert into t1 values(60,2060,20600101,"2060-01-01 11:11:11");
 insert into t1 values(70,1970,19700101,"1970-11-11 22:22:22");
 insert into t1 values(NULL,NULL,NULL,NULL);
--- @bvt:issue#3523
-select min(f1),max(f1) from t1;
-select min(f2),max(f2) from t1;
-select min(f3),max(f3) from t1;
-select min(f4),max(f4) from t1;
--- @bvt:issue
+@issue(no=3523) {
+    select min(f1),max(f1) from t1;
+    select min(f2),max(f2) from t1;
+    select min(f3),max(f3) from t1;
+    select min(f4),max(f4) from t1;
+}
 drop table t1;
 
 create table t1 (grp int, a bigint unsigned, c char(10) not null);

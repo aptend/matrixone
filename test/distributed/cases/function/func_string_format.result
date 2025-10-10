@@ -1,213 +1,374 @@
+#SQL[@7,N30]Result[23, 11]
 SELECT FORMAT(12332.123456, 4);
-format(12332.123456, 4)
+FORMAT(12332.123456, 4)
 12,332.1235
+
+#SQL[@8,N24]Result[18, 11]
 SELECT FORMAT(12332.1,4);
-format(12332.1, 4)
+FORMAT(12332.1, 4)
 12,332.1000
+
+#SQL[@9,N24]Result[18, 6]
 SELECT FORMAT(12332.2,0);
-format(12332.2, 0)
+FORMAT(12332.2, 0)
 12,332
+
+#SQL[@10,N35]Result[29, 15]
 SELECT FORMAT(19999999.999999999,4);
-format(19999999.999999999, 4)
+FORMAT(19999999.999999999, 4)
 20,000,000.0000
+
+#SQL[@11,N24]Result[18, 19]
 SELECT FORMAT(4545456,9);
-format(4545456, 9)
+FORMAT(4545456, 9)
 4,545,456.000000000
+
+#SQL[@12,N28]Result[22, 14]
 SELECT format(73829324324,0);
 format(73829324324, 0)
 73,829,324,324
+
+#SQL[@14,N28]Result[20, 5]
 SELECT FORMAT("-.12334.2",2);
-format(-.12334.2, 2)
+FORMAT(-.12334.2, 2)
 -0.12
+
+#SQL[@15,N32]Result[23, 11]
 SELECT FORMAT("12332.123456", 4);
-format(12332.123456, 4)
+FORMAT(12332.123456, 4)
 12,332.1235
+
+#SQL[@16,N26]Result[18, 11]
 SELECT FORMAT("12332.1",4);
-format(12332.1, 4)
+FORMAT(12332.1, 4)
 12,332.1000
+
+#SQL[@17,N26]Result[18, 6]
 SELECT FORMAT("12332.2",0);
-format(12332.2, 0)
+FORMAT(12332.2, 0)
 12,332
+
+#SQL[@18,N37]Result[29, 15]
 SELECT FORMAT("19999999.999999999",4);
-format(19999999.999999999, 4)
+FORMAT(19999999.999999999, 4)
 20,000,000.0000
+
+#SQL[@19,N32]Result[23, 11]
 SELECT FORMAT(12332.123456, "4");
-format(12332.123456, 4)
+FORMAT(12332.123456, 4)
 12,332.1235
+
+#SQL[@20,N26]Result[18, 11]
 SELECT FORMAT(12332.1,"4");
-format(12332.1, 4)
+FORMAT(12332.1, 4)
 12,332.1000
+
+#SQL[@21,N26]Result[18, 6]
 SELECT FORMAT(12332.2,"0");
-format(12332.2, 0)
+FORMAT(12332.2, 0)
 12,332
+
+#SQL[@22,N37]Result[29, 15]
 SELECT FORMAT(19999999.999999999,"4");
-format(19999999.999999999, 4)
+FORMAT(19999999.999999999, 4)
 20,000,000.0000
+
+#SQL[@23,N30]Result[20, 5]
 SELECT FORMAT("-.12334.2","2");
-format(-.12334.2, 2)
+FORMAT(-.12334.2, 2)
 -0.12
+
+#SQL[@24,N34]Result[23, 11]
 SELECT FORMAT("12332.123456", "4");
-format(12332.123456, 4)
+FORMAT(12332.123456, 4)
 12,332.1235
+
+#SQL[@25,N28]Result[18, 11]
 SELECT FORMAT("12332.1","4");
-format(12332.1, 4)
+FORMAT(12332.1, 4)
 12,332.1000
+
+#SQL[@26,N28]Result[18, 6]
 SELECT FORMAT("12332.2","0");
-format(12332.2, 0)
+FORMAT(12332.2, 0)
 12,332
+
+#SQL[@27,N39]Result[29, 15]
 SELECT FORMAT("19999999.999999999","4");
-format(19999999.999999999, 4)
+FORMAT(19999999.999999999, 4)
 20,000,000.0000
+
+#SQL[@29,N39]Result[27, 5]
 SELECT FORMAT("-.12334.2","2", "en_US");
-format(-.12334.2, 2, en_US)
+FORMAT(-.12334.2, 2, en_US)
 -0.12
+
+#SQL[@30,N43]Result[30, 11]
 SELECT FORMAT("12332.123456", "4", "en_US");
-format(12332.123456, 4, en_US)
+FORMAT(12332.123456, 4, en_US)
 12,332.1235
+
+#SQL[@31,N38]Result[25, 11]
 SELECT FORMAT("12332.1","4",  "en_US");
-format(12332.1, 4, en_US)
+FORMAT(12332.1, 4, en_US)
 12,332.1000
+
+#SQL[@32,N38]Result[25, 6]
 SELECT FORMAT("12332.2","0",  "en_US");
-format(12332.2, 0, en_US)
+FORMAT(12332.2, 0, en_US)
 12,332
+
+#SQL[@33,N48]Result[36, 15]
 SELECT FORMAT("19999999.999999999","4", "en_US");
-format(19999999.999999999, 4, en_US)
+FORMAT(19999999.999999999, 4, en_US)
 20,000,000.0000
+
+#SQL[@35,N39]Result[27, 5]
 SELECT FORMAT("-.12334.2","2", "ar_SA");
-format(-.12334.2, 2, ar_SA)
+FORMAT(-.12334.2, 2, ar_SA)
 -0.12
+
+#SQL[@36,N44]Result[30, 10]
 SELECT FORMAT("12332.123456", "4",  "ar_SA");
-format(12332.123456, 4, ar_SA)
+FORMAT(12332.123456, 4, ar_SA)
 12332.1235
+
+#SQL[@37,N38]Result[25, 10]
 SELECT FORMAT("12332.1","4",  "ar_SA");
-format(12332.1, 4, ar_SA)
+FORMAT(12332.1, 4, ar_SA)
 12332.1000
+
+#SQL[@38,N38]Result[25, 5]
 SELECT FORMAT("12332.2","0",  "ar_SA");
-format(12332.2, 0, ar_SA)
+FORMAT(12332.2, 0, ar_SA)
 12332
+
+#SQL[@39,N49]Result[36, 13]
 SELECT FORMAT("19999999.999999999","4",  "ar_SA");
-format(19999999.999999999, 4, ar_SA)
+FORMAT(19999999.999999999, 4, ar_SA)
 20000000.0000
+
+#SQL[@41,N39]Result[27, 5]
 SELECT FORMAT("-.12334.2","2", "be_BY");
-format(-.12334.2, 2, be_BY)
+FORMAT(-.12334.2, 2, be_BY)
 -0,12
+
+#SQL[@42,N44]Result[30, 11]
 SELECT FORMAT("12332.123456", "4",  "be_BY");
-format(12332.123456, 4, be_BY)
+FORMAT(12332.123456, 4, be_BY)
 12.332,1235
+
+#SQL[@43,N38]Result[25, 11]
 SELECT FORMAT("12332.1","4",  "be_BY");
-format(12332.1, 4, be_BY)
+FORMAT(12332.1, 4, be_BY)
 12.332,1000
+
+#SQL[@44,N38]Result[25, 6]
 SELECT FORMAT("12332.2","0",  "be_BY");
-format(12332.2, 0, be_BY)
+FORMAT(12332.2, 0, be_BY)
 12.332
+
+#SQL[@45,N49]Result[36, 15]
 SELECT FORMAT("19999999.999999999","4",  "be_BY");
-format(19999999.999999999, 4, be_BY)
+FORMAT(19999999.999999999, 4, be_BY)
 20.000.000,0000
+
+#SQL[@47,N39]Result[27, 5]
 SELECT FORMAT("-.12334.2","2", "bg_BG");
-format(-.12334.2, 2, bg_BG)
+FORMAT(-.12334.2, 2, bg_BG)
 -0,12
+
+#SQL[@48,N44]Result[30, 11]
 SELECT FORMAT("12332.123456", "4",  "bg_BG");
-format(12332.123456, 4, bg_BG)
+FORMAT(12332.123456, 4, bg_BG)
 12 332,1235
+
+#SQL[@49,N38]Result[25, 11]
 SELECT FORMAT("12332.1","4",  "bg_BG");
-format(12332.1, 4, bg_BG)
+FORMAT(12332.1, 4, bg_BG)
 12 332,1000
+
+#SQL[@50,N38]Result[25, 6]
 SELECT FORMAT("12332.2","0",  "bg_BG");
-format(12332.2, 0, bg_BG)
+FORMAT(12332.2, 0, bg_BG)
 12 332
+
+#SQL[@51,N49]Result[36, 15]
 SELECT FORMAT("19999999.999999999","4",  "bg_BG");
-format(19999999.999999999, 4, bg_BG)
+FORMAT(19999999.999999999, 4, bg_BG)
 20 000 000,0000
+
+#SQL[@53,N39]Result[27, 5]
 SELECT FORMAT("-.12334.2","2", "de_CH");
-format(-.12334.2, 2, de_CH)
+FORMAT(-.12334.2, 2, de_CH)
 -0.12
+
+#SQL[@54,N44]Result[30, 11]
 SELECT FORMAT("12332.123456", "4",  "de_CH");
-format(12332.123456, 4, de_CH)
+FORMAT(12332.123456, 4, de_CH)
 12'332.1235
+
+#SQL[@55,N38]Result[25, 11]
 SELECT FORMAT("12332.1","4",  "de_CH");
-format(12332.1, 4, de_CH)
+FORMAT(12332.1, 4, de_CH)
 12'332.1000
+
+#SQL[@56,N38]Result[25, 6]
 SELECT FORMAT("12332.2","0",  "de_CH");
-format(12332.2, 0, de_CH)
+FORMAT(12332.2, 0, de_CH)
 12'332
+
+#SQL[@57,N49]Result[36, 15]
 SELECT FORMAT("19999999.999999999","4",  "de_CH");
-format(19999999.999999999, 4, de_CH)
+FORMAT(19999999.999999999, 4, de_CH)
 20'000'000.0000
+
+#SQL[@60,N49]Result[]
 create table test(a varchar(100), b varchar(100));
+
+#SQL[@61,N40]Result[]
 insert into test values("-.12334.2","2");
+
+#SQL[@62,N44]Result[]
 insert into test values("12332.123456", "4");
+
+#SQL[@63,N38]Result[]
 insert into test values("12332.1","4");
+
+#SQL[@64,N38]Result[]
 insert into test values("12332.2","0");
+
+#SQL[@65,N45]Error[47]
 insert into test values("19999999.999999999");
 Column count doesn't match value count at row 1
+
+#SQL[@66,N29]Result[12, 5, 11, 11, 6]
 SELECT FORMAT(a, b) from test;
-format(a, b)
+FORMAT(a, b)
 -0.12
 12,332.1235
 12,332.1000
 12,332
+
+#SQL[@67,N35]Result[18, 5, 11, 11, 6]
 SELECT FORMAT(a, b, null) from test;
-format(a, b, null)
+FORMAT(a, b, null)
 -0.12
 12,332.1235
 12,332.1000
 12,332
+
+#SQL[@68,N38]Result[19, 5, 11, 11, 6]
 SELECT FORMAT(a, b, "en_US") from test;
-format(a, b, en_US)
+FORMAT(a, b, en_US)
 -0.12
 12,332.1235
 12,332.1000
 12,332
+
+#SQL[@69,N38]Result[19, 5, 10, 10, 5]
 SELECT FORMAT(a, b, "ar_SA") from test;
-format(a, b, ar_SA)
+FORMAT(a, b, ar_SA)
 -0.12
 12332.1235
 12332.1000
 12332
+
+#SQL[@70,N38]Result[19, 5, 11, 11, 6]
 SELECT FORMAT(a, b, "be_BY") from test;
-format(a, b, be_BY)
+FORMAT(a, b, be_BY)
 -0,12
 12.332,1235
 12.332,1000
 12.332
+
+#SQL[@71,N38]Result[19, 5, 11, 11, 6]
 SELECT FORMAT(a, b, "bg_BG") from test;
-format(a, b, bg_BG)
+FORMAT(a, b, bg_BG)
 -0,12
 12 332,1235
 12 332,1000
 12 332
+
+#SQL[@72,N38]Result[19, 5, 11, 11, 6]
 SELECT FORMAT(a, b, "de_CH") from test;
-format(a, b, de_CH)
+FORMAT(a, b, de_CH)
 -0.12
 12'332.1235
 12'332.1000
 12'332
+
+#SQL[@73,N15]Result[]
 drop table test;
+
+#SQL[@75,N64]Result[]
 create table test(a varchar(100), b varchar(100), c varchar(20));
+
+#SQL[@76,N49]Result[]
 insert into test values("-.12334.2","2", "en_US");
+
+#SQL[@77,N53]Result[]
 insert into test values("12332.123456", "4", "en_US");
+
+#SQL[@78,N47]Result[]
 insert into test values("12332.1","4", "en_US");
+
+#SQL[@79,N47]Result[]
 insert into test values("12332.2","0", "en_US");
+
+#SQL[@80,N53]Error[47]
 insert into test values("19999999.999999999","en_US");
 Column count doesn't match value count at row 1
+
+#SQL[@81,N64]Error[25]
 create table test(a varchar(100), b varchar(100), c varchar(20));
 table test already exists
+
+#SQL[@82,N49]Result[]
 insert into test values("-.12334.2","2", "de_CH");
+
+#SQL[@83,N53]Result[]
 insert into test values("12332.123456", "4", "de_CH");
+
+#SQL[@84,N47]Result[]
 insert into test values("12332.1","4", "de_CH");
+
+#SQL[@85,N47]Result[]
 insert into test values("12332.2","0", "de_CH");
+
+#SQL[@86,N53]Error[47]
 insert into test values("19999999.999999999","de_CH");
 Column count doesn't match value count at row 1
+
+#SQL[@87,N15]Result[]
 drop table test;
+
+#SQL[@92,N30]Result[]
 DROP TABLE IF EXISTS format_01;
+
+#SQL[@93,N110]Result[]
 CREATE TABLE format_01(id INT, d1 tinyint, d2 smallint unsigned, d3 int, d4 bigint unsigned, PRIMARY KEY (id));
+
+#SQL[@94,N66]Result[]
 INSERT INTO format_01 VALUES(1, -3, 46382, 46787698, 454987456415);
+
+#SQL[@95,N62]Result[]
 INSERT INTO format_01 VALUES(2, 126, NULL, 743482 , 938256415);
+
+#SQL[@96,N51]Result[]
 INSERT INTO format_01 VALUES(3, 21, 37821, 3782, 0);
+
+#SQL[@97,N43]Result[]
 INSERT INTO format_01 VALUES(4, 0, 0, 0, 0);
+
+#SQL[@101,N62]Result[]
 INSERT INTO format_01 VALUES(5, 127, 3892, 743482 , 938256415);
+
+#SQL[@102,N64]Error[66]
 INSERT INTO format_01 VALUES(6, 22, 3, 4, 184467440737095516152);
-Data truncation: data out of range: data type uint64, value '184467440737095516152'
+data out of range: data type uint64, value '184467440737095516152'
+
+#SQL[@107,N36]Result[14, 4, 6, 6, 6, 9]
 SELECT format(d1, id) from format_01;
 format(d1, id)
 -3.0
@@ -215,6 +376,8 @@ format(d1, id)
 21.000
 0.0000
 127.00000
+
+#SQL[@108,N42]Result[20, 4, 6, 6, 6, 9]
 SELECT format(d1, id, NULL) from format_01;
 format(d1, id, null)
 -3.0
@@ -222,6 +385,8 @@ format(d1, id, null)
 21.000
 0.0000
 127.00000
+
+#SQL[@109,N45]Result[21, 4, 6, 6, 6, 9]
 SELECT format(d1, id, "en_US") from format_01;
 format(d1, id, en_US)
 -3.0
@@ -229,6 +394,8 @@ format(d1, id, en_US)
 21.000
 0.0000
 127.00000
+
+#SQL[@110,N45]Result[21, 4, 6, 6, 6, 9]
 SELECT format(d1, id, "ar_SA") from format_01;
 format(d1, id, ar_SA)
 -3.0
@@ -236,6 +403,8 @@ format(d1, id, ar_SA)
 21.000
 0.0000
 127.00000
+
+#SQL[@111,N45]Result[21, 4, 6, 6, 6, 9]
 SELECT format(d1, id, "be_BY") from format_01;
 format(d1, id, be_BY)
 -3,0
@@ -243,6 +412,8 @@ format(d1, id, be_BY)
 21,000
 0,0000
 127,00000
+
+#SQL[@112,N45]Result[21, 4, 6, 6, 6, 9]
 SELECT format(d1, id, "bg_BG") from format_01;
 format(d1, id, bg_BG)
 -3,0
@@ -250,12 +421,18 @@ format(d1, id, bg_BG)
 21,000
 0,0000
 127,00000
+
+#SQL[@116,N48]Result[34, 47]
 SELECT * FROM format_01 WHERE format(d1,0) = 126;
-id    d1    d2    d3    d4
-2    126    null    743482    938256415
+id  ¦  d1  ¦  d2  ¦  d3  ¦  d4
+2  ¦  126  ¦  null  ¦  743482  ¦  938256415
+
+#SQL[@117,N70]Result[2, 1]
 SELECT id FROM (SELECT * FROM format_01 WHERE format(d1,0) = 126) as a;
 id
 2
+
+#SQL[@118,N53]Result[14, 4, 6, 6, 6, 9]
 SELECT format(d1, id) FROM format_01 WHERE d3 % 2 = 0;
 format(d1, id)
 -3.0
@@ -263,88 +440,144 @@ format(d1, id)
 21.000
 0.0000
 127.00000
+
+#SQL[@119,N56]Result[13, 15, 12, 10, 12]
 SELECT format(d3, 4) FROM format_01 WHERE ABS(d3) > 1000;
 format(d3, 4)
 46,787,698.0000
 743,482.0000
 3,782.0000
 743,482.0000
+
+#SQL[@120,N54]Result[20, 1, 1, 1, 1, 1]
 SELECT COUNT(format(d1, 2)) FROM format_01 GROUP BY d1;
-count(format(d1, 2))
+COUNT(format(d1, 2))
 1
 1
 1
 1
 1
+
+#SQL[@121,N51]Result[34, 47, 29, 37, 47, 52]
 SELECT * FROM format_01 ORDER BY format(id, 0) DESC;
-id    d1    d2    d3    d4
-5    127    3892    743482    938256415
-4    0    0    0    0
-3    21    37821    3782    0
-2    126    null    743482    938256415
-1    -3    46382    46787698    454987456415
+id  ¦  d1  ¦  d2  ¦  d3  ¦  d4
+5  ¦  127  ¦  3892  ¦  743482  ¦  938256415
+4  ¦  0  ¦  0  ¦  0  ¦  0
+3  ¦  21  ¦  37821  ¦  3782  ¦  0
+2  ¦  126  ¦  null  ¦  743482  ¦  938256415
+1  ¦  -3  ¦  46382  ¦  46787698  ¦  454987456415
+
+#SQL[@122,N78]Result[66, 66, 67, 67, 50, 67]
 SELECT SIN(format(d1,2)), TAN(format(id, 0)), COS(format(id,0)) from format_01;
-sin(format(d1, 2))    tan(format(id, 0))    cos(format(id, 0))
--0.1411200080598672    1.557407724654902    0.5403023058681398
-0.3299908256737821    -2.185039863261519    -0.4161468365471424
-0.836655638536056    -0.1425465430742778    -0.9899924966004454
-0.0    1.1578212823495775    -0.6536436208636119
-0.9726300672424079    -3.3805150062465854    0.2836621854632263
+SIN(format(d1, 2))  ¦  TAN(format(id, 0))  ¦  COS(format(id, 0))
+-0.1411200080598672  ¦  1.557407724654902  ¦  0.5403023058681398
+0.3299908256737821  ¦  -2.185039863261519  ¦  -0.4161468365471424
+0.836655638536056  ¦  -0.1425465430742778  ¦  -0.9899924966004454
+0  ¦  1.1578212823495775  ¦  -0.6536436208636119
+0.9726300672424079  ¦  -3.3805150062465854  ¦  0.2836621854632263
+
+#SQL[@123,N67]Result[68, 86]
 SELECT cot(format(45, 0)), ATAN(format(75, 0)), SINH(format(90, 1));
-cot(format(45, 0))    atan(format(75, 0))    sinh(format(90, 1))
-0.6173696237835573    1.557463783500751    6.102016471589204E38
+cot(format(45, 0))  ¦  ATAN(format(75, 0))  ¦  SINH(format(90, 1))
+0.6173696237835573  ¦  1.557463783500751  ¦  610201647158920400000000000000000000000
+
+#SQL[@124,N24]Result[17, 18]
 SELECT EXP(format(4, 2));
-exp(format(4, 2))
+EXP(format(4, 2))
 54.598150033144236
+
+#SQL[@125,N61]Result[43, 13]
 SELECT MAX(format(d1, id)), MIN(format(d3, 0)) from format_01;
-max(format(d1, id))    min(format(d3, 0))
-21.000    0
+MAX(format(d1, id))  ¦  MIN(format(d3, 0))
+21.000  ¦  0
+
+#SQL[@126,N28]Result[22, 1]
 SELECT power(format(2,1), 2);
 power(format(2, 1), 2)
-4.0
+4
+
+#SQL[@127,N41]Result[20, 1]
 SELECT COUNT(format(d3,2)) FROM format_01;
-count(format(d3, 2))
+COUNT(format(d3, 2))
 5
+
+#SQL[@131,N39]Error[50]
 SELECT ABS(format(d3,0)) FROM format_01;
 invalid argument cast to int, bad value 46,787,698
+
+#SQL[@132,N39]Error[60]
 SELECT SUM(format(id,2)) FROM format_01;
 invalid argument aggregate function sum, bad value [VARCHAR]
+
+#SQL[@133,N40]Error[63]
 SELECT CEIL(format(d3, 4))FROM format_01;
-strconv.ParseFloat: parsing "46,787,698.0000": invalid syntax
+strconv.ParseFloat: parsing \"46,787,698.0000\": invalid syntax
+
+#SQL[@134,N42]Error[55]
 SELECT ROUND(format(d4, 0)) FROM format_01;
 invalid argument cast to int, bad value 454,987,456,415
+
+#SQL[@135,N20]Result[]
 DROP TABLE format_01;
+
+#SQL[@140,N30]Result[]
 DROP TABLE IF EXISTS format_02;
+
+#SQL[@141,N60]Result[]
 CREATE TABLE format_02(id INT, d1 FLOAT, d2 DOUBLE NOT NULL);
+
+#SQL[@144,N47]Result[]
 INSERT INTO format_02 VALUES(1, 1.2, 47832.434);
+
+#SQL[@145,N48]Result[]
 INSERT INTO format_02 VALUES(2, -3283.33, 73.32);
+
+#SQL[@146,N47]Result[]
 INSERT INTO format_02 VALUES(3, NULL, 32789.33);
+
+#SQL[@147,N50]Result[]
 INSERT INTO format_02 VALUES(4, 0, -38902093.4324);
+
+#SQL[@148,N44]Result[]
 INSERT INTO format_02 VALUES(5, 323232.0, 0);
+
+#SQL[@149,N52]Result[]
 INSERT INTO format_02 VALUES(6, 323, 37827329.43432);
+
+#SQL[@152,N60]Error[222]
 INSERT INTO format_02 VALUES(6, -1.8976931348623157E+308, 0);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 56 near "1.8976931348623157E+308, 0);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 56 near \"1.8976931348623157E+308, 0)\";
+
+#SQL[@153,N48]Error[48]
 INSERT INTO format_02 VALUES(7, 328739232, NULL);
 constraint violation: Column 'd2' cannot be null
+
+#SQL[@154,N53]Result[]
 INSERT INTO format_02 VALUES(8, 7382,3923404.2132421);
+
+#SQL[@156,N59]Result[10, 18, 19, 18, 21, 13, 23, 25]
 SELECT d1, d2 FROM format_02 WHERE format(d2,0) IS NOT NULL;
-d1    d2
-1.2    47832.434
--3283.33    73.32
-null    32789.33
-0.0    -3.89020934324E7
-323232.0    0.0
-323.0    3.782732943432E7
-7382.0    3923404.2132421
+d1  ¦  d2
+1.2  ¦  47832.434
+-3283.33  ¦  73.32
+null  ¦  32789.33
+0  ¦  -38902093.4324
+323232  ¦  0
+323  ¦  37827329.43432
+7382  ¦  3923404.2132421
+
+#SQL[@157,N64]Result[18, 25, 26, 25, 28, 20, 30, 32]
 SELECT * from format_02 WHERE format(d2, 3) NOT LIKE '47832.43%';
-id    d1    d2
-1    1.2    47832.434
-2    -3283.33    73.32
-3    null    32789.33
-4    0.0    -3.89020934324E7
-5    323232.0    0.0
-6    323.0    3.782732943432E7
-8    7382.0    3923404.2132421
+id  ¦  d1  ¦  d2
+1  ¦  1.2  ¦  47832.434
+2  ¦  -3283.33  ¦  73.32
+3  ¦  null  ¦  32789.33
+4  ¦  0  ¦  -38902093.4324
+5  ¦  323232  ¦  0
+6  ¦  323  ¦  37827329.43432
+8  ¦  7382  ¦  3923404.2132421
+
+#SQL[@158,N36]Result[14, 8, 5, 10, 16, 7, 17, 18]
 SELECT format(d2, id) FROM format_02;
 format(d2, id)
 47,832.4
@@ -354,6 +587,8 @@ format(d2, id)
 0.00000
 37,827,329.434320
 3,923,404.21324210
+
+#SQL[@159,N42]Result[20, 8, 5, 10, 16, 7, 17, 18]
 SELECT format(d2, id, NULL) from format_02;
 format(d2, id, null)
 47,832.4
@@ -363,6 +598,8 @@ format(d2, id, null)
 0.00000
 37,827,329.434320
 3,923,404.21324210
+
+#SQL[@160,N45]Result[21, 8, 5, 10, 16, 7, 17, 18]
 SELECT format(d2, id, "en_US") from format_02;
 format(d2, id, en_US)
 47,832.4
@@ -372,6 +609,8 @@ format(d2, id, en_US)
 0.00000
 37,827,329.434320
 3,923,404.21324210
+
+#SQL[@161,N33]Result[13, 6, 2, 6, 11, 1, 10, 9]
 SELECT format(d2,0)FROM format_02;
 format(d2, 0)
 47,832
@@ -381,9 +620,13 @@ format(d2, 0)
 0
 37,827,329
 3,923,404
+
+#SQL[@162,N53]Result[14, 13]
 SELECT format(d1, id) FROM format_02 WHERE d2 % 2 = 0;
 format(d1, id)
 323,232.00000
+
+#SQL[@163,N56]Result[13, 11, 11, 16, 15, 14]
 SELECT format(d2, 4) FROM format_02 WHERE ABS(d2) > 1000;
 format(d2, 4)
 47,832.4340
@@ -391,22 +634,29 @@ format(d2, 4)
 -38,902,093.4324
 37,827,329.4343
 3,923,404.2132
+
+#SQL[@164,N45]Result[24, 4]
 SELECT any_value(format(id,2)) FROM format_02;
 any_value(format(id, 2))
 1.00
+
+#SQL[@165,N81]Result[10, 18, 19, 18, 21, 13, 23, 25]
 SELECT d1, d2 FROM format_02 WHERE cast(format(id,0) as bigint) BETWEEN 0 AND 400;
-d1    d2
-1.2    47832.434
--3283.33    73.32
-null    32789.33
-0.0    -3.89020934324E7
-323232.0    0.0
-323.0    3.782732943432E7
-7382.0    3923404.2132421
+d1  ¦  d2
+1.2  ¦  47832.434
+-3283.33  ¦  73.32
+null  ¦  32789.33
+0  ¦  -38902093.4324
+323232  ¦  0
+323  ¦  37827329.43432
+7382  ¦  3923404.2132421
+
+#SQL[@166,N54]Result[]
 SELECT * from format_02 WHERE format(id, 1) like '1.2';
-id    d1    d2
+
+#SQL[@167,N41]Result[20, 11, 7, 11, 16, 6, 15, 14]
 SELECT format(FLOOR(d2),4) FROM format_02;
-format(floor(d2), 4)
+format(FLOOR(d2), 4)
 47,832.0000
 73.0000
 32,789.0000
@@ -414,8 +664,10 @@ format(floor(d2), 4)
 0.0000
 37,827,329.0000
 3,923,404.0000
+
+#SQL[@168,N40]Result[19, 13, 9, 13, 18, 8, 17, 16]
 SELECT format(CEIL(d2),6) FROM format_02;
-format(ceil(d2), 6)
+format(CEIL(d2), 6)
 47,833.000000
 74.000000
 32,790.000000
@@ -423,23 +675,35 @@ format(ceil(d2), 6)
 0.000000
 37,827,330.000000
 3,923,405.000000
+
+#SQL[@169,N61]Result[18, 26]
 SELECT * FROM format_02 WHERE format(d2,0) IN ('73', '32789');
-id    d1    d2
-2    -3283.33    73.32
+id  ¦  d1  ¦  d2
+2  ¦  -3283.33  ¦  73.32
+
+#SQL[@170,N65]Result[18, 25, 25, 28, 20, 30, 32]
 SELECT * FROM format_02 WHERE format(d2,0) NOT IN ('73', '32789');
-id    d1    d2
-1    1.2    47832.434
-3    null    32789.33
-4    0.0    -3.89020934324E7
-5    323232.0    0.0
-6    323.0    3.782732943432E7
-8    7382.0    3923404.2132421
+id  ¦  d1  ¦  d2
+1  ¦  1.2  ¦  47832.434
+3  ¦  null  ¦  32789.33
+4  ¦  0  ¦  -38902093.4324
+5  ¦  323232  ¦  0
+6  ¦  323  ¦  37827329.43432
+8  ¦  7382  ¦  3923404.2132421
+
+#SQL[@174,N48]Error[49]
 SELECT * from format_02 WHERE format(d2, 2) >= 0;
 invalid argument cast to int, bad value 47,832.43
+
+#SQL[@175,N65]Error[46]
 SELECT * FROM format_02 WHERE format(d2, 0) NOT BETWEEN 0 AND 100;
 invalid argument cast to int, bad value 47,832
+
+#SQL[@176,N53]Error[49]
 SELECT * FROM format_02 WHERE format(d2, 2) MOD 2 = 0;
 invalid argument cast to int, bad value 47,832.43
+
+#SQL[@180,N51]Result[29, 3, 3, 3, 3, 3, 3, 3]
 SELECT concat_ws(format(d2,3),'abc') from format_02;
 concat_ws(format(d2, 3), abc)
 abc
@@ -449,8 +713,10 @@ abc
 abc
 abc
 abc
+
+#SQL[@181,N42]Result[21, 2, 1, 2, 2, 1, 2, 2]
 SELECT LENGTH(format(d2,3)) from format_02;
-length(format(d2, 3))
+LENGTH(format(d2, 3))
 10
 6
 10
@@ -458,8 +724,10 @@ length(format(d2, 3))
 5
 14
 13
+
+#SQL[@182,N48]Result[27, 20, 20, 20, 20, 20, 20, 20]
 SELECT LPAD(format(d2,3),20,'**') from format_02;
-lpad(format(d2, 3), 20, **)
+LPAD(format(d2, 3), 20, **)
 **********47,832.434
 **************73.320
 **********32,789.330
@@ -467,8 +735,10 @@ lpad(format(d2, 3), 20, **)
 ***************0.000
 ******37,827,329.434
 *******3,923,404.213
+
+#SQL[@183,N47]Result[26, 20, 20, 4, 20, 20, 20, 20]
 SELECT RPAD(format(d1,2),20,'-') from format_02;
-rpad(format(d1, 2), 20, -)
+RPAD(format(d1, 2), 20, -)
 1.20----------------
 -3,283.33-----------
 null
@@ -476,6 +746,8 @@ null
 323,232.00----------
 323.00--------------
 7,382.00------------
+
+#SQL[@184,N34]Result[13, 10, 6, 10, 15, 5, 14, 13]
 SELECT format(d2,3) from format_02;
 format(d2, 3)
 47,832.434
@@ -485,12 +757,18 @@ format(d2, 3)
 0.000
 37,827,329.434
 3,923,404.213
+
+#SQL[@185,N67]Result[32, 5]
 SELECT startswith(format(d2,1),'47823') from format_02 WHERE id = 1;
 startswith(format(d2, 1), 47823)
 false
+
+#SQL[@186,N64]Result[29, 4]
 SELECT endswith(format(d2,1),'32.4') from format_02 WHERE id = 1;
 endswith(format(d2, 1), 32.4)
 true
+
+#SQL[@187,N49]Result[30, 3, 5, 4, 3, 5, 5, 5]
 SELECT substring(format(d1,3),3,5) from format_02;
 substring(format(d1, 3), 3, 5)
 200
@@ -500,8 +778,10 @@ null
 3,232
 3.000
 382.0
+
+#SQL[@188,N43]Result[22, 7, 12, 4, 7, 13, 9, 11]
 SELECT REVERSE(format(d1,5)) from format_02;
-reverse(format(d1, 5))
+REVERSE(format(d1, 5))
 00002.1
 00033.382,3-
 null
@@ -509,210 +789,367 @@ null
 00000.232,323
 00000.323
 00000.283,7
+
+#SQL[@189,N20]Result[]
 DROP TABLE format_02;
+
+#SQL[@194,N30]Result[]
 DROP TABLE IF EXISTS format_04;
+
+#SQL[@196,N69]Result[]
 CREATE TABLE format_04(a varchar(100), b varchar(100), c varchar(20));
+
+#SQL[@197,N53]Result[]
 INSERT INTO format_04 VALUES("-0.12334","2", "en_US");
+
+#SQL[@198,N58]Result[]
 INSERT INTO format_04 VALUES("12332.123456", "4", "en_US");
+
+#SQL[@199,N52]Result[]
 INSERT INTO format_04 VALUES("12332.1","4", "en_US");
+
+#SQL[@200,N52]Result[]
 INSERT INTO format_04 VALUES("12332.2","0", "en_US");
+
+#SQL[@202,N34]Result[12, 7, 11, 11, 11]
 SELECT format(a, 4) from format_04;
 format(a, 4)
 -0.1233
 12,332.1235
 12,332.1000
 12,332.2000
+
+#SQL[@203,N59]Result[30, 16, 20, 20]
 SELECT format(a, 2),format(b, 3) FROM format_04 WHERE b > 0;
-format(a, 2)    format(b, 3)
--0.12    2.000
-12,332.12    4.000
-12,332.10    4.000
+format(a, 2)  ¦  format(b, 3)
+-0.12  ¦  2.000
+12,332.12  ¦  4.000
+12,332.10  ¦  4.000
+
+#SQL[@204,N49]Result[15, 30, 25]
 SELECT a,b,c FROM format_04 WHERE format(b,0) = 4;
-a    b    c
-12332.123456    4    en_US
-12332.1    4    en_US
+a  ¦  b  ¦  c
+12332.123456  ¦  4  ¦  en_US
+12332.1  ¦  4  ¦  en_US
+
+#SQL[@205,N20]Result[]
 DROP table format_04;
+
+#SQL[@210,N30]Result[]
 DROP TABLE if exists format_05;
+
+#SQL[@211,N30]Result[]
 DROP TABLE if exists format_06;
+
+#SQL[@212,N73]Result[]
 CREATE TABLE format_05(
-c1 int,
-c2 bigint,
-primary key (c1)
+    c1 int,
+    c2 bigint,
+    primary key (c1)
 );
+
+#SQL[@217,N70]Result[]
 create TABLE format_06(
-i int,
-b bigint,
-primary key (i)
+    i int,
+    b bigint,
+    primary key (i)
 );
+
+#SQL[@224,N75]Result[]
 INSERT INTO format_05 values ('111', '222'), ('000', '111'), ('-111', null);
+
+#SQL[@225,N79]Result[]
 INSERT INTO format_06 values (111, 999999), (0,0000000), (-1, null), (11111, 1);
+
+#SQL[@226,N122]Result[46, 34, 26]
 SELECT c1, format(c1,1), i, format(i,1) from format_05 inner join format_06 on format_05.c1 = format_06.i order by c1 desc;
-c1    format(c1, 1)    i    format(i, 1)
-111    111.0    111    111.0
-0    0.0    0    0.0
+c1  ¦  format(c1, 1)  ¦  i  ¦  format(i, 1)
+111  ¦  111.0  ¦  111  ¦  111.0
+0  ¦  0.0  ¦  0  ¦  0.0
+
+#SQL[@227,N80]Result[13, 9, 9]
 SELECT format(c2, 5) FROM format_05 join format_06 ON format_05.c1 = format_06.i;
 format(c2, 5)
 222.00000
 111.00000
+
+#SQL[@228,N99]Result[2, 3, 1]
 SELECT format_05.c1 from format_05 join format_06 ON format(format_05.c1,1) = format(format_06.i,1);
 c1
 111
 0
+
+#SQL[@229,N115]Result[8, 15, 8, 14]
 SELECT format_06.i,format_06.b from format_05 left join format_06 ON format(format_05.c1,1) = format(format_06.i,1);
-i    b
-111    999999
-0    0
-null    null
+i  ¦  b
+111  ¦  999999
+0  ¦  0
+null  ¦  null
+
+#SQL[@230,N20]Result[]
 DROP TABLE format_05;
+
+#SQL[@231,N20]Result[]
 DROP TABLE format_06;
+
+#SQL[@234,N22]Result[]
 drop table if exists t;
+
+#SQL[@235,N54]Result[]
 create table t(
 d date,
 dt datetime,
 primary key (d)
 );
+
+#SQL[@240,N58]Result[]
 insert into t values ('2022-12-04', '2022-12-04 00:03:36');
+
+#SQL[@241,N58]Result[]
 insert into t values ('2023-11-11', '2023-11-11 03:00:48');
+
+#SQL[@242,N45]Error[57]
 select d, format(d, 1) from t order by d desc;
 invalid argument function format, bad value [DATE BIGINT]
+
+#SQL[@243,N45]Error[57]
 select d, format(d, 0) from t order by d desc;
 invalid argument function format, bad value [DATE BIGINT]
+
+#SQL[@244,N46]Error[57]
 select d, format(d, -1) from t order by d desc;
 invalid argument function format, bad value [DATE BIGINT]
+
+#SQL[@245,N63]Error[57]
 select d, format(d, length("123456789")) from t order by d desc;
 invalid argument function format, bad value [DATE BIGINT]
+
+#SQL[@246,N48]Error[61]
 select dt, format(dt, 1) from t order by dt desc;
 invalid argument function format, bad value [DATETIME BIGINT]
+
+#SQL[@247,N48]Error[61]
 select dt, format(dt, 0) from t order by dt desc;
 invalid argument function format, bad value [DATETIME BIGINT]
+
+#SQL[@248,N49]Error[61]
 select dt, format(dt, -1) from t order by dt desc;
 invalid argument function format, bad value [DATETIME BIGINT]
+
+#SQL[@249,N66]Error[61]
 select dt, format(dt, length("123456789")) from t order by dt desc;
 invalid argument function format, bad value [DATETIME BIGINT]
+
+#SQL[@250,N12]Result[]
 drop table t;
+
+#SQL[@252,N22]Result[]
 drop table if exists t;
+
+#SQL[@253,N50]Result[]
 create table t(
 i int,
 b bigint,
 primary key (i)
 );
+
+#SQL[@258,N54]Result[]
 insert into t values (-1, null), (0000000000000000, 1);
+
+#SQL[@259,N45]Result[19, 10, 14]
 select b, format(b, 1) from t order by b desc;
-b    format(b, 1)
-1    1.0
-null    null
+b  ¦  format(b, 1)
+1  ¦  1.0
+null  ¦  null
+
+#SQL[@260,N45]Result[19, 8, 14]
 select b, format(b, 0) from t order by b desc;
-b    format(b, 0)
-1    1
-null    null
+b  ¦  format(b, 0)
+1  ¦  1
+null  ¦  null
+
+#SQL[@261,N46]Result[20, 8, 14]
 select b, format(b, -1) from t order by b desc;
-b    format(b, -1)
-1    1
-null    null
+b  ¦  format(b, -1)
+1  ¦  1
+null  ¦  null
+
+#SQL[@262,N47]Result[19, 10, 14]
 select b, format(b, '1') from t order by b desc;
-b    format(b, 1)
-1    1.0
-null    null
+b  ¦  format(b, 1)
+1  ¦  1.0
+null  ¦  null
+
+#SQL[@263,N48]Result[20, 8, 14]
 select b, format(b, '-1') from t order by b desc;
-b    format(b, -1)
-1    1
-null    null
+b  ¦  format(b, -1)
+1  ¦  1
+null  ¦  null
+
+#SQL[@264,N47]Result[19, 8, 14]
 select b, format(b, '0') from t order by b desc;
-b    format(b, 0)
-1    1
-null    null
+b  ¦  format(b, 0)
+1  ¦  1
+null  ¦  null
+
+#SQL[@265,N47]Result[19, 8, 14]
 select b, format(b, 'x') from t order by b desc;
-b    format(b, x)
-1    1
-null    null
+b  ¦  format(b, x)
+1  ¦  1
+null  ¦  null
+
+#SQL[@266,N12]Result[]
 drop table t;
+
+#SQL[@268,N23]Result[]
 drop table if exists t1;
+
+#SQL[@269,N23]Result[]
 drop table if exists t2;
+
+#SQL[@270,N54]Result[]
 create table t1(
 c1 int,
 c2 bigint,
 primary key (c1)
 );
+
+#SQL[@275,N51]Result[]
 create table t2(
 i int,
 b bigint,
 primary key (i)
 );
+
+#SQL[@280,N68]Result[]
 insert into t1 values ('111', '222'), ('000', '111'), ('-111', null);
+
+#SQL[@281,N72]Result[]
 insert into t2 values (111, 999999), (0,0000000), (-1, null), (11111, 1);
+
+#SQL[@282,N93]Result[46, 34, 26, 36]
 select c1, format(c1,1), i, format(i,1) from t1 left join t2 on t1.c1 = t2.i order by c1 desc;
-c1    format(c1, 1)    i    format(i, 1)
-111    111.0    111    111.0
-0    0.0    0    0.0
--111    -111.0    null    null
+c1  ¦  format(c1, 1)  ¦  i  ¦  format(i, 1)
+111  ¦  111.0  ¦  111  ¦  111.0
+0  ¦  0.0  ¦  0  ¦  0.0
+-111  ¦  -111.0  ¦  null  ¦  null
+
+#SQL[@283,N94]Result[46, 34, 26, 32, 39]
 select c1, format(c1,1), i, format(i,1) from t1 right join t2 on t1.c1 = t2.i order by c1 desc;
-c1    format(c1, 1)    i    format(i, 1)
-111    111.0    111    111.0
-0    0.0    0    0.0
-null    null    -1    -1.0
-null    null    11111    11,111.0
+c1  ¦  format(c1, 1)  ¦  i  ¦  format(i, 1)
+111  ¦  111.0  ¦  111  ¦  111.0
+0  ¦  0.0  ¦  0  ¦  0.0
+null  ¦  null  ¦  -1  ¦  -1.0
+null  ¦  null  ¦  11111  ¦  11,111.0
+
+#SQL[@284,N13]Result[]
 drop table t1;
+
+#SQL[@285,N13]Result[]
 drop table t2;
+
+#SQL[@287,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","ca_ES");
-format(12332.2, 2, ca_ES)
+FORMAT(12332.2, 2, ca_ES)
 12332,20
+
+#SQL[@288,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","de_AT");
-format(12332.2, 2, de_AT)
+FORMAT(12332.2, 2, de_AT)
 12332,20
+
+#SQL[@289,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","el_GR");
-format(12332.2, 2, el_GR)
+FORMAT(12332.2, 2, el_GR)
 12332,20
+
+#SQL[@290,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","eu_ES");
-format(12332.2, 2, eu_ES)
+FORMAT(12332.2, 2, eu_ES)
 12332,20
+
+#SQL[@291,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","fr_BE");
-format(12332.2, 2, fr_BE)
+FORMAT(12332.2, 2, fr_BE)
 12332,20
+
+#SQL[@292,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","fr_CA");
-format(12332.2, 2, fr_CA)
+FORMAT(12332.2, 2, fr_CA)
 12332,20
+
+#SQL[@293,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","fr_CH");
-format(12332.2, 2, fr_CH)
+FORMAT(12332.2, 2, fr_CH)
 12332,20
+
+#SQL[@294,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","fr_FR");
-format(12332.2, 2, fr_FR)
+FORMAT(12332.2, 2, fr_FR)
 12332,20
+
+#SQL[@295,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","fr_LU");
-format(12332.2, 2, fr_LU)
+FORMAT(12332.2, 2, fr_LU)
 12332,20
+
+#SQL[@296,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","gl_ES");
-format(12332.2, 2, gl_ES)
+FORMAT(12332.2, 2, gl_ES)
 12332,20
+
+#SQL[@297,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","hr_HR");
-format(12332.2, 2, hr_HR)
+FORMAT(12332.2, 2, hr_HR)
 12332,20
+
+#SQL[@298,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","it_IT");
-format(12332.2, 2, it_IT)
+FORMAT(12332.2, 2, it_IT)
 12332,20
+
+#SQL[@299,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","nl_BE");
-format(12332.2, 2, nl_BE)
+FORMAT(12332.2, 2, nl_BE)
 12332,20
+
+#SQL[@300,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","nl_NL");
-format(12332.2, 2, nl_NL)
+FORMAT(12332.2, 2, nl_NL)
 12332,20
+
+#SQL[@301,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","pl_PL");
-format(12332.2, 2, pl_PL)
+FORMAT(12332.2, 2, pl_PL)
 12332,20
+
+#SQL[@302,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","pt_BR");
-format(12332.2, 2, pt_BR)
+FORMAT(12332.2, 2, pt_BR)
 12332,20
+
+#SQL[@303,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","pt_PT");
-format(12332.2, 2, pt_PT)
+FORMAT(12332.2, 2, pt_PT)
 12332,20
+
+#SQL[@304,N37]Result[25, 8]
 SELECT FORMAT("12332.2", "2","sl_SI");
-format(12332.2, 2, sl_SI)
+FORMAT(12332.2, 2, sl_SI)
 12332,20
+
+#SQL[@306,N37]Result[25, 9]
 SELECT FORMAT("12332.2", "2","it_CH");
-format(12332.2, 2, it_CH)
+FORMAT(12332.2, 2, it_CH)
 12'332,20
+
+#SQL[@307,N37]Result[25, 9]
 SELECT FORMAT("12332.2", "2","rm_CH");
-format(12332.2, 2, rm_CH)
+FORMAT(12332.2, 2, rm_CH)
 12'332,20
+
+#SQL[@309,N37]Result[25, 9]
 SELECT FORMAT("12332.2", "2","ro_RO");
-format(12332.2, 2, ro_RO)
+FORMAT(12332.2, 2, ro_RO)
 12.332,20
+

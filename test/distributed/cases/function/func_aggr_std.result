@@ -1,169 +1,307 @@
+#SQL[@3,N16]Result[9, 4]
 SELECT STD(null);
 STD(null)
 null
+
+#SQL[@4,N23]Result[16, 4]
 SELECT STDDEV_POP(null);
 STDDEV_POP(null)
 null
+
+#SQL[@9,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c BIGINT, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@10,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@11,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@12,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@13,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@14,N21]Result[6, 17]
 select std(a) from t1;
 std(a)
-30.310889132455355
+30.31088913245535
+
+#SQL[@15,N21]Result[6, 17]
 select std(b) from t1;
 std(b)
 30.31088913245535
+
+#SQL[@16,N21]Result[6, 17]
 select std(c) from t1;
 std(c)
 8.227241335952167
+
+#SQL[@17,N21]Result[6, 16]
 select std(d) from t1;
 std(d)
 14.7542366796795
+
+#SQL[@18,N21]Result[6, 17]
 select std(e) from t1;
 std(e)
 21.21762239271875
+
+#SQL[@19,N21]Result[6, 18]
 select std(f) from t1;
 std(f)
 20.512191496766015
+
+#SQL[@20,N21]Result[6, 18]
 select std(g) from t1;
 std(g)
 180.28380047095192
+
+#SQL[@22,N21]Result[6, 22]
 select std(h) from t1;
 std(h)
-47.47713870906711
+47.4771387090671206400
+
+#SQL[@23,N21]Error[57]
 select std(i) from t1;
 invalid argument aggregate function std, bad value [DATE]
+
+#SQL[@24,N21]Error[61]
 select std(k) from t1;
 invalid argument aggregate function std, bad value [DATETIME]
+
+#SQL[@25,N21]Error[62]
 select std(l) from t1;
 invalid argument aggregate function std, bad value [TIMESTAMP]
+
+#SQL[@26,N21]Error[57]
 select std(m) from t1;
 invalid argument aggregate function std, bad value [CHAR]
+
+#SQL[@27,N21]Error[60]
 select std(n) from t1;
 invalid argument aggregate function std, bad value [VARCHAR]
+
+#SQL[@29,N28]Result[13, 17]
 select STDDEV_POP(a) from t1;
 STDDEV_POP(a)
-30.310889132455355
+30.31088913245535
+
+#SQL[@30,N28]Result[13, 17]
 select STDDEV_POP(b) from t1;
 STDDEV_POP(b)
 30.31088913245535
+
+#SQL[@31,N28]Result[13, 17]
 select STDDEV_POP(c) from t1;
 STDDEV_POP(c)
 8.227241335952167
+
+#SQL[@32,N28]Result[13, 16]
 select STDDEV_POP(d) from t1;
 STDDEV_POP(d)
 14.7542366796795
+
+#SQL[@33,N28]Result[13, 17]
 select STDDEV_POP(e) from t1;
 STDDEV_POP(e)
 21.21762239271875
+
+#SQL[@34,N28]Result[13, 18]
 select STDDEV_POP(f) from t1;
 STDDEV_POP(f)
 20.512191496766015
+
+#SQL[@35,N28]Result[13, 18]
 select STDDEV_POP(g) from t1;
 STDDEV_POP(g)
 180.28380047095192
+
+#SQL[@37,N28]Result[13, 22]
 select STDDEV_POP(h) from t1;
 STDDEV_POP(h)
-47.47713870906711
+47.4771387090671206400
+
+#SQL[@38,N28]Error[64]
 select STDDEV_POP(i) from t1;
 invalid argument aggregate function stddev_pop, bad value [DATE]
+
+#SQL[@39,N28]Error[68]
 select STDDEV_POP(k) from t1;
 invalid argument aggregate function stddev_pop, bad value [DATETIME]
+
+#SQL[@40,N28]Error[69]
 select STDDEV_POP(l) from t1;
 invalid argument aggregate function stddev_pop, bad value [TIMESTAMP]
+
+#SQL[@41,N28]Error[64]
 select STDDEV_POP(m) from t1;
 invalid argument aggregate function stddev_pop, bad value [CHAR]
+
+#SQL[@42,N28]Error[67]
 select STDDEV_POP(n) from t1;
 invalid argument aggregate function stddev_pop, bad value [VARCHAR]
+
+#SQL[@43,N13]Result[]
 drop table t1;
+
+#SQL[@56,N42]Result[35, 14]
 select STDDEV_POP(99999999999999999.99999);
 STDDEV_POP(99999999999999999.99999)
-0.0
+0.000000000000
+
+#SQL[@57,N49]Result[42, 14]
 select STDDEV_POP(999999999999999933193939.99999);
 STDDEV_POP(999999999999999933193939.99999)
-0.0
+0.000000000000
+
+#SQL[@58,N67]Result[60, 14]
 select STDDEV_POP(9999999999999999999999999999999999.9999999999999);
 STDDEV_POP(9999999999999999999999999999999999.9999999999999)
-0.0
+0.000000000000
+
+#SQL[@59,N43]Result[36, 14]
 select STDDEV_POP(-99999999999999999.99999);
 STDDEV_POP(-99999999999999999.99999)
-0.0
+0.000000000000
+
+#SQL[@60,N50]Result[43, 14]
 select STDDEV_POP(-999999999999999933193939.99999);
 STDDEV_POP(-999999999999999933193939.99999)
-0.0
+0.000000000000
+
+#SQL[@61,N68]Result[61, 14]
 select STDDEV_POP(-9999999999999999999999999999999999.9999999999999);
 STDDEV_POP(-9999999999999999999999999999999999.9999999999999)
-0.0
+0.000000000000
+
+#SQL[@62,N25]Result[]
 create table t1(a bigint);
+
+#SQL[@63,N28]Result[13, 4]
 select STDDEV_POP(a) from t1;
 STDDEV_POP(a)
 null
+
+#SQL[@64,N48]Result[]
 insert into t1 values(null),(null),(null),(null);
+
+#SQL[@65,N28]Result[13, 4]
 select STDDEV_POP(a) from t1;
 STDDEV_POP(a)
 null
+
+#SQL[@66,N89]Result[]
 insert into t1 values(12417249128419),(124124125124151),(5124125151415),(124125152651515);
+
+#SQL[@67,N28]Result[13, 17]
 select STDDEV_POP(a) from t1;
 STDDEV_POP(a)
-5.773458455090072E13
+57734584550900.71
+
+#SQL[@68,N13]Result[]
 drop table t1;
+
+#SQL[@69,N56]Result[]
 create table t1 ( a int not null default 1, big bigint );
+
+#SQL[@70,N85]Result[]
 insert into t1 (big) values (-1),(1234567890167),(92233720368547),(18446744073709515);
+
+#SQL[@71,N16]Result[10, 9, 20, 21, 24]
 select * from t1;
-a	big
-1	-1
-1	1234567890167
-1	92233720368547
-1	18446744073709515
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+
+#SQL[@72,N66]Result[54, 61]
 select distinct STDDEV_POP(big),max(big),STDDEV_POP(big)-1 from t1;
-STDDEV_POP(big)	max(big)	STDDEV_POP(big)-1
-7.974271234688913E15	18446744073709515	7.974271234688912E15
+STDDEV_POP(big)  ¦  max(big)  ¦  STDDEV_POP(big) - 1
+7974271234688913  ¦  18446744073709515  ¦  7974271234688912
+
+#SQL[@73,N68]Result[54, 61]
 select STDDEV_POP(big),max(big),STDDEV_POP(big)-1 from t1 group by a;
-STDDEV_POP(big)	max(big)	STDDEV_POP(big)-1
-7.974271234688913E15	18446744073709515	7.974271234688912E15
+STDDEV_POP(big)  ¦  max(big)  ¦  STDDEV_POP(big) - 1
+7974271234688913  ¦  18446744073709515  ¦  7974271234688912
+
+#SQL[@74,N45]Result[]
 insert into t1 (big) values (184467440737615);
+
+#SQL[@75,N16]Result[10, 9, 20, 21, 24, 22]
 select * from t1;
-a	big
-1	-1
-1	1234567890167
-1	92233720368547
-1	18446744073709515
-1	184467440737615
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+1  ¦  184467440737615
+
+#SQL[@76,N57]Result[54, 61]
 select STDDEV_POP(big),max(big),STDDEV_POP(big)-1 from t1;
-STDDEV_POP(big)	max(big)	STDDEV_POP(big)-1
-7.351219993962748E15	18446744073709515	7.351219993962747E15
+STDDEV_POP(big)  ¦  max(big)  ¦  STDDEV_POP(big) - 1
+7351219993962747  ¦  18446744073709515  ¦  7351219993962746
+
+#SQL[@77,N68]Result[54, 61]
 select STDDEV_POP(big),max(big),STDDEV_POP(big)-1 from t1 group by a;
-STDDEV_POP(big)	max(big)	STDDEV_POP(big)-1
-7.351219993962748E15	18446744073709515	7.351219993962747E15
+STDDEV_POP(big)  ¦  max(big)  ¦  STDDEV_POP(big) - 1
+7351219993962747  ¦  18446744073709515  ¦  7351219993962746
+
+#SQL[@78,N13]Result[]
 drop table t1;
+
+#SQL[@81,N69]Result[]
 CREATE TABLE t1 (Fld1 int(11) default NULL,Fld2 int(11) default NULL);
+
+#SQL[@82,N60]Result[]
 INSERT INTO t1 VALUES (1,10),(1,20),(2,NULL),(2,NULL),(3,50);
+
+#SQL[@83,N77]Result[11, 8, 8]
 select Fld1, STDDEV_POP(Fld2) as q from t1 group by Fld1 having q is not null;
-fld1    q
-1    5.0
-3    0.0
+Fld1  ¦  q
+1  ¦  5
+3  ¦  0
+
+#SQL[@84,N87]Result[26, 8, 8]
 select Fld1, STDDEV_POP(Fld2) from t1 group by Fld1 having STDDEV_POP(Fld2) is not null;
-Fld1	STDDEV_POP(Fld2)
-1	5.0
-3	0.0
+Fld1  ¦  STDDEV_POP(Fld2)
+1  ¦  5
+3  ¦  0
+
+#SQL[@85,N80]Result[26, 8, 8]
 select Fld1, STDDEV_POP(Fld2) from t1 group by Fld1 having avg(Fld2) is not null;
-Fld1	STDDEV_POP(Fld2)
-1	5.0
-3	0.0
+Fld1  ¦  STDDEV_POP(Fld2)
+1  ¦  5
+3  ¦  0
+
+#SQL[@86,N85]Result[26, 8, 8]
 select Fld1, STDDEV_POP(Fld2) from t1 group by Fld1 having variance(Fld2) is not null;
-Fld1	STDDEV_POP(Fld2)
-1	5.0
-3	0.0
+Fld1  ¦  STDDEV_POP(Fld2)
+1  ¦  5
+3  ¦  0
+
+#SQL[@87,N13]Result[]
 drop table t1;
+
+#SQL[@90,N34]Result[29, 5]
 SELECT STDDEV_POP(1)<STDDEV_POP(2);
-STDDEV_POP(1)<STDDEV_POP(2)
+STDDEV_POP(1) < STDDEV_POP(2)
 false
+
+#SQL[@93,N22]Result[]
 CREATE TABLE t1(i INT);
+
+#SQL[@94,N32]Result[]
 INSERT INTO t1 VALUES (NULL),(1);
+
+#SQL[@95,N66]Result[17, 14, 8]
 SELECT STDDEV_POP(i)+0 as splus0, i+0 as plain FROM t1 GROUP BY i ;
-splus0	plain
-null	null
-0.0	1
+splus0  ¦  plain
+null  ¦  null
+0  ¦  1
+
+#SQL[@96,N13]Result[]
 DROP TABLE t1;
+

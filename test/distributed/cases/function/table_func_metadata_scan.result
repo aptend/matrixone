@@ -1,130 +1,272 @@
+#SQL[@1,N77]Error[53]
 select * from metadata_scan('table_func_metadata_scan.no_exist_table', '*') g;
 no such table table_func_metadata_scan.no_exist_table
+
+#SQL[@2,N22]Result[]
 drop table if exists t;
+
+#SQL[@3,N74]Result[]
 create table t(a int, b varchar, c float, d decimal(10, 8), e float(5, 2));
+
+#SQL[@4,N43]Result[]
 insert into t values(1, null, 1.1, 1, 1.11);
+
+#SQL[@5,N44]Result[]
 insert into t values(2, "abc", 2.0, 2, 2.22);
+
+#SQL[@6,N29]Result[]
 insert into t select * from t;
+
+#SQL[@7,N29]Result[]
 insert into t select * from t;
+
+#SQL[@8,N29]Result[]
 insert into t select * from t;
+
+#SQL[@9,N29]Result[]
 insert into t select * from t;
+
+#SQL[@10,N29]Result[]
 insert into t select * from t;
+
+#SQL[@11,N29]Result[]
 insert into t select * from t;
+
+#SQL[@12,N29]Result[]
 insert into t select * from t;
+
+#SQL[@13,N29]Result[]
 insert into t select * from t;
+
+#SQL[@14,N29]Result[]
 insert into t select * from t;
+
+#SQL[@15,N29]Result[]
 insert into t select * from t;
+
+#SQL[@16,N29]Result[]
 insert into t select * from t;
+
+#SQL[@17,N29]Result[]
 insert into t select * from t;
+
+#SQL[@18,N22]Result[8, 4]
 select count(*) from t;
 count(*)
 8192
+
+#SQL[@20,N58]Result[45, 79]
 select mo_ctl('dn', 'flush', 'table_func_metadata_scan.t');
 mo_ctl(dn, flush, table_func_metadata_scan.t)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@21,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@22,N95]Result[8, 1]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where create_ts <= NOW();
 count(*)
 5
+
+#SQL[@23,N94]Result[8, 1]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where create_ts = "0-0";
 count(*)
 0
+
+#SQL[@24,N90]Result[8, 1]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where create_ts > 0;
 count(*)
 5
+
+#SQL[@25,N92]Error[72]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where create_ts > 9.9;
 invalid argument operator >, bad value [TRANSACTION TIMESTAMP DECIMAL64]
+
+#SQL[@26,N107]Error[71]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where cast(create_ts as float) > 9.9;
 invalid argument operator cast, bad value [TRANSACTION TIMESTAMP FLOAT]
+
+#SQL[@27,N114]Result[8, 1]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where cast(create_ts as TIMESTAMP) <= NOW();
 count(*)
 5
+
+#SQL[@28,N107]Result[8, 1]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where ts_to_time(create_ts) <= NOW();
 count(*)
 5
+
+#SQL[@29,N110]Result[8, 1]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where ts_to_time(create_ts, 2) <= NOW();
 count(*)
 5
+
+#SQL[@30,N99]Error[56]
 select count(*) from metadata_scan("table_func_metadata_scan.t", "*")g where ts_to_time(1) <= NOW();
 invalid argument function ts_to_time, bad value [BIGINT]
+
+#SQL[@31,N71]Result[8, 1]
 select count(*) from metadata_scan('table_func_metadata_scan.t', '*') g;
 count(*)
 5
+
+#SQL[@32,N71]Result[8, 1]
 select count(*) from metadata_scan('table_func_metadata_scan.t', 'a') g;
 count(*)
 1
+
+#SQL[@33,N71]Error[38]
 select count(*) from metadata_scan('table_func_metadata_scan.t', 'f') g;
 invalid input: bad input column name f
+
+#SQL[@34,N104]Result[53, 29]
 select col_name, rows_cnt, null_cnt, origin_size from metadata_scan('table_func_metadata_scan.t', 'a') g;
-col_name    rows_cnt    null_cnt    origin_size
-a    8192    0    32806
+col_name  ¦  rows_cnt  ¦  null_cnt  ¦  origin_size
+a  ¦  8192  ¦  0  ¦  32806
+
+#SQL[@35,N104]Result[53, 30, 30, 30, 30, 30]
 select col_name, rows_cnt, null_cnt, origin_size from metadata_scan('table_func_metadata_scan.t', '*') g;
-col_name    rows_cnt    null_cnt    origin_size
-a    8192    0    429915
-b    8192    0    429915
-c    8192    0    429915
-d    8192    0    429915
-e    8192    0    429915
+col_name  ¦  rows_cnt  ¦  null_cnt  ¦  origin_size
+a  ¦  8192  ¦  0  ¦  429915
+b  ¦  8192  ¦  0  ¦  429915
+c  ¦  8192  ¦  0  ¦  429915
+d  ¦  8192  ¦  0  ¦  429915
+e  ¦  8192  ¦  0  ¦  429915
+
+#SQL[@37,N79]Result[16, 7]
 select sum(origin_size) from metadata_scan('table_func_metadata_scan.t', '*') g;
 sum(origin_size)
 2149575
+
+#SQL[@39,N151]Result[90, 19]
 select min(bit_cast(`min` as int)), max(bit_cast(`max` as int)), sum(bit_cast(`sum` as bigint)) from metadata_scan('table_func_metadata_scan.t', 'a') g;
-min(bit_cast(min as int))    max(bit_cast(max as int))    sum(bit_cast(sum as bigint))
-1    2    12288
+min(bit_cast(min as int))  ¦  max(bit_cast(max as int))  ¦  sum(bit_cast(sum as bigint))
+1  ¦  2  ¦  12288
+
+#SQL[@40,N93]Result[28, 17]
 select sum(bit_cast(`sum` as double)) from metadata_scan('table_func_metadata_scan.t', 'c') g;
 sum(bit_cast(sum as double))
 12697.60009765625
+
+#SQL[@41,N20]Result[6, 17]
 select sum(c) from t;
 sum(c)
 12697.60009765625
+
+#SQL[@42,N101]Result[36, 14]
 select sum(bit_cast(`sum` as decimal(10, 8))) from metadata_scan('table_func_metadata_scan.t', 'd') g;
 sum(bit_cast(sum as decimal(10, 8)))
 12288.00000000
+
+#SQL[@43,N20]Result[6, 14]
 select sum(d) from t;
 sum(d)
 12288.00000000
+
+#SQL[@44,N93]Result[28, 17]
 select sum(bit_cast(`sum` as double)) from metadata_scan('table_func_metadata_scan.t', 'e') g;
 sum(bit_cast(sum as double))
 13639.68017578125
+
+#SQL[@45,N20]Result[6, 17]
 select sum(e) from t;
 sum(e)
 13639.68017578125
+
+#SQL[@47,N29]Result[15, 4]
 select approx_count(*) from t;
 approx_count(*)
 8192
+
+#SQL[@48,N29]Result[]
 insert into t select * from t;
+
+#SQL[@49,N29]Result[]
 insert into t select * from t;
+
+#SQL[@51,N58]Result[45, 79]
 select mo_ctl('dn', 'flush', 'table_func_metadata_scan.t');
 mo_ctl(dn, flush, table_func_metadata_scan.t)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@52,N29]Result[15, 5]
 select approx_count(*) from t;
 approx_count(*)
 32768
+
+#SQL[@54,N22]Result[]
 drop table if exists t;
+
+#SQL[@58,N31]Result[]
 create table t(a int, b bigint);
+
+#SQL[@59,N53]Result[]
 insert into t values(2147483647, 9223372036854775807);
+
+#SQL[@60,N26]Result[]
 insert into t values(1, 1);
+
+#SQL[@61,N22]Result[8, 1]
 select count(*) from t;
 count(*)
 2
+
+#SQL[@63,N58]Result[45, 79]
 select mo_ctl('dn', 'flush', 'table_func_metadata_scan.t');
 mo_ctl(dn, flush, table_func_metadata_scan.t)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@64,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@65,N88]Result[23, 10]
 select bit_cast(`sum` as bigint) from metadata_scan('table_func_metadata_scan.t', 'a') g;
 bit_cast(sum as bigint)
 2147483648
+
+#SQL[@66,N20]Result[6, 10]
 select sum(a) from t;
 sum(a)
 2147483648
+
+#SQL[@67,N88]Result[23, 1]
 select bit_cast(`sum` as bigint) from metadata_scan('table_func_metadata_scan.t', 'b') g;
 bit_cast(sum as bigint)
 0
+
+#SQL[@68,N20]Result[6, 20]
 select sum(b) from t;
 sum(b)
 -9223372036854775808
+
+#SQL[@70,N22]Result[]
 drop table if exists t;
+

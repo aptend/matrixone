@@ -1,258 +1,399 @@
+#SQL[@2,N22]Result[]
 set time_zone="+00:00";
+
+#SQL[@3,N49]Result[46, 8]
 SELECT IF(NULL AND 1, 1, 2), IF(1 AND NULL, 1, 2);
-IF(NULL AND 1, 1, 2)	IF(1 AND NULL, 1, 2)
-2	2
+IF(null and 1, 1, 2)  ¦  IF(1 and null, 1, 2)
+2  ¦  2
+
+#SQL[@6,N23]Result[]
 create table t1 (a int);
+
+#SQL[@7,N36]Result[]
 insert into t1 values (0),(1),(NULL);
+
+#SQL[@8,N40]Result[1, 1, 4]
 SELECT * FROM t1 WHERE IF(a AND 1, 0, 1);
 a
 0
 null
+
+#SQL[@9,N40]Result[1, 1, 4]
 SELECT * FROM t1 WHERE IF(1 AND a, 0, 1);
 a
 0
 null
+
+#SQL[@10,N13]Result[]
 drop table t1;
+
+#SQL[@12,N22]Result[]
 drop table if exists t;
+
+#SQL[@13,N51]Result[]
 CREATE TABLE t (i1 INT,
 d1 DOUBLE,
 e2 DECIMAL(5,2));
+
+#SQL[@16,N111]Result[]
 INSERT INTO t VALUES ( 6,    6.0,  10.0/3),
 ( null, 9.0,  10.0/3),
 ( 1,    null, 10.0/3),
 ( 2,    2.0,  null  );
+
+#SQL[@20,N116]Result[31, 21, 24, 21, 21]
 SELECT coalesce(e2,i1) nullif_c, IF(e2 IS NULL,i1,e2) if_c, SUM(d1) FROM t GROUP BY e2,i1 ORDER BY nullif_c, SUM(d1);
-nullif_c	if_c	SUM(d1)
-2.00	2.00	2.0
-3.33	3.33	null
-3.33	3.33	6.0
-3.33	3.33	9.0
+nullif_c  ¦  if_c  ¦  SUM(d1)
+2.00  ¦  2.00  ¦  2
+3.33  ¦  3.33  ¦  null
+3.33  ¦  3.33  ¦  6
+3.33  ¦  3.33  ¦  9
+
+#SQL[@21,N12]Result[]
 DROP TABLE t;
+
+#SQL[@23,N76]Result[]
 CREATE TABLE source(bt INTEGER, bf INTEGER, i8u BIGINT UNSIGNED, i8s BIGINT);
+
+#SQL[@24,N102]Result[]
 INSERT INTO source VALUES
 (1,0,0,-9223372036854775808), (1,0,18446744073709551615,9223372036854775807);
+
+#SQL[@26,N59]Error[64]
 SELECT IF(bt,i8u,i8s) AS u, IF(bf,i8u,i8s) AS s
 FROM source;
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@28,N17]Result[]
 DROP TABLE source;
+
+#SQL[@30,N35]Result[]
 create table t1 (num  double(12,2));
+
+#SQL[@31,N30]Result[]
 insert into t1 values (144.54);
+
+#SQL[@32,N44]Result[31, 6]
 select sum(if(num is null,0.00,num)) from t1;
-sum(if(num is null,0.00,num))
+sum(if(num is null, 0.00, num))
 144.54
+
+#SQL[@33,N13]Result[]
 drop table t1;
+
+#SQL[@35,N180]Result[16, 69]
 select if(1, cast(1111111111111111111 as unsigned), 1) i, case when 1 then cast(1111111111111111111 as unsigned) else 1 end c, coalesce(cast(1111111111111111111 as unsigned), 1) co;
-i	c	co
-1111111111111111111	1111111111111111111	1111111111111111111
+i  ¦  c  ¦  co
+1111111111111111111  ¦  1111111111111111111  ¦  1111111111111111111
+
+#SQL[@37,N35]Result[]
 create table t1 (a bigint unsigned);
+
+#SQL[@38,N53]Error[63]
 insert into t1 select (if(1, 9223372036854775808, 1));
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@39,N71]Error[63]
 insert into t1 select (case when 1 then 9223372036854775808 else 1 end);
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@40,N56]Error[63]
 insert into t1 select (coalesce(9223372036854775808, 1));
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@41,N16]Result[]
 select * from t1;
-a
+
+#SQL[@42,N13]Result[]
 drop table t1;
+
+#SQL[@44,N22]Result[]
 drop table if exists t;
+
+#SQL[@45,N51]Result[]
 CREATE TABLE t (i1 INT,
 d1 DOUBLE,
 e2 DECIMAL(5,2));
+
+#SQL[@48,N111]Result[]
 INSERT INTO t VALUES ( 6,    6.0,  10.0/3),
 ( null, 9.0,  10.0/3),
 ( 1,    null, 10.0/3),
 ( 2,    2.0,  null  );
+
+#SQL[@52,N80]Result[17, 14, 11, 11, 11]
 SELECT IF(e2 IS NULL,i1,e2) if_c,
 SUM(d1) FROM t
 GROUP BY e2,i1 ORDER BY SUM(d1);
-if_c	SUM(d1)
-3.33	null
-2.00	2.0
-3.33	6.0
-3.33	9.0
+if_c  ¦  SUM(d1)
+3.33  ¦  null
+2.00  ¦  2
+3.33  ¦  6
+3.33  ¦  9
+
+#SQL[@55,N12]Result[]
 DROP TABLE t;
+
+#SQL[@59,N32]Result[]
 create table t1 (f1 int, f2 int);
+
+#SQL[@60,N33]Result[]
 insert into t1 values (0,1),(1,2);
+
+#SQL[@61,N42]Result[29, 1]
 select count(distinct if(f1,3,f2)) from t1;
-count(distinct if(f1,3,f2))
+count(distinct if(f1, 3, f2))
 2
+
+#SQL[@62,N13]Result[]
 drop table t1;
+
+#SQL[@65,N217]Result[]
 CREATE TABLE `t2` (
-`CONCAT_WS(' ',a)` varchar(9) DEFAULT NULL,
-`IF(a,a,'')` varchar(9) DEFAULT NULL,
-`CASE WHEN a THEN a ELSE '' END` varchar(9) DEFAULT NULL,
-`COALESCE(a,'')` varchar(9) NOT NULL DEFAULT ''
+  `CONCAT_WS(' ',a)` varchar(9) DEFAULT NULL,
+  `IF(a,a,'')` varchar(9) DEFAULT NULL,
+  `CASE WHEN a THEN a ELSE '' END` varchar(9) DEFAULT NULL,
+  `COALESCE(a,'')` varchar(9) NOT NULL DEFAULT ''
 );
+
+#SQL[@71,N13]Result[]
 DROP TABLE t2;
+
+#SQL[@73,N23]Result[]
 CREATE TABLE t1 (a INT);
+
+#SQL[@74,N54]Result[]
 SELECT a FROM t1 WHERE a IN(1, (SELECT IF(1=0,1,2/1)));
-a
+
+#SQL[@75,N24]Result[]
 INSERT INTO t1 VALUES(1);
+
+#SQL[@76,N54]Result[1, 1]
 SELECT a FROM t1 WHERE a IN(1, (SELECT IF(1=0,1,2/1)));
 a
 1
+
+#SQL[@77,N28]Result[]
 INSERT INTO t1 VALUES(2),(3);
+
+#SQL[@78,N54]Result[1, 1, 1]
 SELECT a FROM t1 WHERE a IN(1, (SELECT IF(1=0,1,2/1)));
 a
 1
 2
+
+#SQL[@79,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@81,N96]Error[61]
 select IF(0,"ERROR","this"),IF(1,"is","ERROR"),IF(NULL,"ERROR","a"),IF(1,2,3)|0,IF(1,2.0,3.0)+0 ;
 invalid argument function if, bad value [ANY VARCHAR VARCHAR]
-CREATE TABLE t1 (st varchar(255) NOT NULL, u int(11) NOT NULL);
-INSERT INTO t1 VALUES ('a',1),('A',1),('aa',1),('AA',1),('a',1),('aaa',0),('BBB',0);
-select if(1,st,st) s from t1 order by s;
-s
-a
-A
-a
-aa
-AA
-aaa
-BBB
-select if(u=1,st,st) s from t1 order by s;
-s
-a
-A
-a
-aa
-AA
-aaa
-BBB
-select if(u=1,st,st) s from t1 where st like "%a%" order by s;
-s
-a
-A
-a
-aa
-AA
-aaa
-drop table t1;
+
+#SQL[@94,N35]Result[]
 create table t1 (num  double(12,2));
+
+#SQL[@95,N30]Result[]
 insert into t1 values (144.54);
+
+#SQL[@96,N44]Result[31, 6]
 select sum(if(num is null,0.00,num)) from t1;
-sum(if(num is null,0.00,num))
+sum(if(num is null, 0.00, num))
 144.54
+
+#SQL[@97,N13]Result[]
 drop table t1;
+
+#SQL[@100,N30]Result[]
 create table t1 (x int, y int);
+
+#SQL[@101,N67]Result[]
 insert into t1 values (0,6),(10,16),(20,26),(30,10),(40,46),(50,56);
+
+#SQL[@102,N66]Result[60, 9]
 select min(if(y -x > 5,y,NULL)), max(if(y - x > 5,y,NULL)) from t1;
-min(if(y -x > 5,y,NULL))	max(if(y - x > 5,y,NULL))
-6	56
+min(if(y - x > 5, y, null))  ¦  max(if(y - x > 5, y, null))
+6  ¦  56
+
+#SQL[@103,N13]Result[]
 drop table t1;
+
+#SQL[@107,N23]Result[]
 create table t1 (a int);
+
+#SQL[@108,N24]Result[]
 insert t1 values (1),(2);
+
+#SQL[@109,N31]Error[104]
 select if(1>2,a,avg(a)) from t1;
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@110,N13]Result[]
 drop table t1;
+
+#SQL[@112,N108]Result[]
 CREATE TABLE `t1` (
-`id` int(11) NOT NULL ,
-`date` int(10) default NULL,
-`text` varchar(32) NOT NULL
+  `id` int(11) NOT NULL ,
+  `date` int(10) default NULL,
+  `text` varchar(32) NOT NULL
 );
+
+#SQL[@117,N90]Result[]
 INSERT INTO t1 VALUES (1,1110000000,'Day 1'),(2,1111000000,'Day 2'),(3,1112000000,'Day 3');
+
+#SQL[@118,N113]Result[26, 28, 28, 28]
 SELECT id, IF(date IS NULL, '-', FROM_UNIXTIME(date, '%d-%m-%Y')) AS date_ord, text FROM t1 ORDER BY date_ord ASC;
-id	date_ord	text
-1	05-03-2005	Day 1
-2	16-03-2005	Day 2
-3	28-03-2005	Day 3
+id  ¦  date_ord  ¦  text
+1  ¦  05-03-2005  ¦  Day 1
+2  ¦  16-03-2005  ¦  Day 2
+3  ¦  28-03-2005  ¦  Day 3
+
+#SQL[@119,N114]Result[26, 28, 28, 28]
 SELECT id, IF(date IS NULL, '-', FROM_UNIXTIME(date, '%d-%m-%Y')) AS date_ord, text FROM t1 ORDER BY date_ord DESC;
-id	date_ord	text
-3	28-03-2005	Day 3
-2	16-03-2005	Day 2
-1	05-03-2005	Day 1
+id  ¦  date_ord  ¦  text
+3  ¦  28-03-2005  ¦  Day 3
+2  ¦  16-03-2005  ¦  Day 2
+1  ¦  05-03-2005  ¦  Day 1
+
+#SQL[@120,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@123,N32]Result[]
 create table t1 (f1 int, f2 int);
+
+#SQL[@124,N32]Result[]
 insert into t1 values(1,1),(0,0);
+
+#SQL[@125,N64]Result[45, 19, 18]
 select f1, any_value(f2), if(f1, 40.0, 5.00) from t1 group by f1;
-f1	any_value(f2)	if(f1, 40.0, 5.00)
-1	1	40.00
-0	0	5.00
+f1  ¦  any_value(f2)  ¦  if(f1, 40.0, 5.00)
+1  ¦  1  ¦  40.00
+0  ¦  0  ¦  5.00
+
+#SQL[@126,N13]Result[]
 drop table t1;
+
+#SQL[@128,N56]Result[49, 20]
 select if(0, 18446744073709551610, 18446744073709551610);
 if(0, 18446744073709551610, 18446744073709551610)
 18446744073709551610
+
+#SQL[@130,N32]Result[]
 CREATE TABLE t1(a DECIMAL(10,3));
-SELECT t1.a,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,0)))) + 1 FROM t1;
-a	IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,0)))) + 1
+
+#SQL[@138,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@141,N32]Result[]
 CREATE TABLE t1 (c varchar(255));
+
+#SQL[@142,N65]Result[]
 INSERT INTO t1 VALUES(1), (2), (3), (4), ('12345678901234567890');
+
+#SQL[@143,N71]Error[64]
 SELECT * FROM (SELECT MAX(IF(1, CAST(c AS UNSIGNED), 0)) FROM t1) AS te;
-Data truncation: data out of range: data type int64, value '12345678901234567890'
+data out of range: data type int64, value '12345678901234567890'
+
+#SQL[@144,N13]Result[]
 DROP TABLE t1;
-CREATE TABLE t1 (a int, b DOUBLE);
-INSERT INTO t1 VALUES (NULL, 0), (NULL, 1);
-SELECT IF(b, (SELECT a FROM t1 LIMIT 1), b) c FROM t1 GROUP BY c;
-c
-0.0
-null
-DROP TABLE t1;
+
+#SQL[@154,N41]Result[32, 4]
 SELECT if(0, (SELECT min('hello')), NULL);
-if(0, (SELECT min('hello')), NULL)
+if(0, (select min(hello)), null)
 null
+
+#SQL[@155,N41]Result[32, 5]
 SELECT if(1, (SELECT min('hello')), NULL);
-if(1, (SELECT min('hello')), NULL)
+if(1, (select min(hello)), null)
 hello
+
+#SQL[@156,N41]Result[32, 5]
 SELECT if(0, NULL, (SELECT min('hello')));
-if(0, NULL, (SELECT min('hello')))
+if(0, null, (select min(hello)))
 hello
+
+#SQL[@157,N41]Result[32, 4]
 SELECT if(1, NULL, (SELECT min('hello')));
-if(1, NULL, (SELECT min('hello')))
+if(1, null, (select min(hello)))
 null
+
+#SQL[@159,N23]Result[]
 CREATE TABLE t1(c1 INT);
+
+#SQL[@160,N24]Result[]
 INSERT INTO t1 VALUES(1);
+
+#SQL[@161,N75]Result[]
 UPDATE t1 SET c1 = 2 WHERE IF(true, '2015-01-01', '2015-01-01') IS NOT NULL;
+
+#SQL[@162,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@167,N94]Result[]
 CREATE TABLE test_grids_1 (
-unq_id int(11) NOT NULL DEFAULT 0,
-var_fld int(11) DEFAULT 0
+  unq_id int(11) NOT NULL DEFAULT 0,
+  var_fld int(11) DEFAULT 0
 );
+
+#SQL[@171,N54]Result[]
 INSERT INTO test_grids_1 VALUES
-(1,4500),
-(2,6000);
+  (1,4500),
+  (2,6000);
+
+#SQL[@174,N96]Result[]
 CREATE TABLE test_grid_dtl_1 (
-dtl_id int(11) NOT NULL DEFAULT 0,
-unq_id int(11) DEFAULT 0
+  dtl_id int(11) NOT NULL DEFAULT 0,
+  unq_id int(11) DEFAULT 0
 );
+
+#SQL[@178,N60]Result[]
 INSERT INTO test_grid_dtl_1 VALUES
-(1,1),
-(2,1),
-(3,2);
+  (1,1),
+  (2,1),
+  (3,2);
+
+#SQL[@182,N359]Result[34, 78, 24, 24]
 SELECT g.calc_var, g.if_var, g.case_var
 FROM
-(
-SELECT unq_id,
-IF ( var_fld  > 5000, (     1 / var_fld ) , 5000 ) calc_var,
-IF ( var_fld  > 5000, ( 00001 / var_fld ) , 5000 ) if_var,
-CASE  var_fld  > 5000 WHEN TRUE THEN ( 1 / var_fld ) ELSE 5000 END case_var
-FROM
-test_grids_1
-) g
-JOIN
-test_grid_dtl_1 d USING (unq_id)
+  (
+  SELECT unq_id,
+    IF ( var_fld  > 5000, (     1 / var_fld ) , 5000 ) calc_var,
+    IF ( var_fld  > 5000, ( 00001 / var_fld ) , 5000 ) if_var,
+    CASE  var_fld  > 5000 WHEN TRUE THEN ( 1 / var_fld ) ELSE 5000 END case_var
+  FROM
+    test_grids_1
+  ) g
+  JOIN
+    test_grid_dtl_1 d USING (unq_id)
 ORDER BY 1
 ;
-calc_var	if_var	case_var
-0.0002	0.0002	0.0002
-5000.0000	5000.0000	5000.0000
-5000.0000	5000.0000	5000.0000
+calc_var  ¦  if_var  ¦  case_var
+0.00016666666666666666  ¦  0.00016666666666666666  ¦  0.00016666666666666666
+5000  ¦  5000  ¦  5000
+5000  ¦  5000  ¦  5000
+
+#SQL[@196,N23]Result[]
 DROP TABLE test_grids_1;
+
+#SQL[@197,N26]Result[]
 drop table test_grid_dtl_1;
+
+#SQL[@199,N34]Result[]
 CREATE TABLE t1(a INT,b INT,c INT);
+
+#SQL[@200,N52]Result[]
 INSERT INTO t1 VALUES(1,0,0),(1,2,0),(1,0,3),(1,2,3);
+
+#SQL[@201,N74]Result[59, 1, 3, 18, 19]
 SELECT if(c = 0, if(b = 0, a, a / b), if(b = 0, a / c, a / b / c)) FROM t1;
 if(c = 0, if(b = 0, a, a / b), if(b = 0, a / c, a / b / c))
 1
 0.5
 0.3333333333333333
 0.16666666666666666
+
+#SQL[@202,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@205,N24]Result[]
 SET TIME_ZONE = "SYSTEM";
+

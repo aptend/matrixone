@@ -3,9 +3,9 @@ drop account if exists bvt_purge_log;
 create account bvt_purge_log admin_name 'admin' identified by '111';
 
 -- check not support
--- @session:id=2&user=bvt_purge_log:admin&password=111
-select purge_log('rawlog', '2023-06-30') a;
--- @session
+@session(id=2, user="bvt_purge_log:admin", password="111") {
+    select purge_log('rawlog', '2023-06-30') a;
+}
 
 -- check valid args
 -- replace all numeric as x, to check
@@ -30,8 +30,8 @@ set @ts=(select max(collecttime) from system_metrics.metric);
 set @metric_name=(select metric_name from system_metrics.metric where collecttime between @ts and date_add(@ts, interval 1 second) limit 1);
 set @node=(select node from system_metrics.metric where collecttime between @ts and date_add(@ts, interval 1 second) and metric_name=@metric_name limit 1);
 select purge_log('metric', DATE_ADD( @ts, interval 1 day)) a;
--- @ignore:1,2,3
 select count(1) cnt, @ts, @metric_name, @node from  system_metrics.metric where collecttime between @ts and date_add(@ts, interval 1 second) and metric_name=@metric_name and node=@node;
+| @ignore(1,2,3);
 
 -- clean
 drop account if exists bvt_purge_log;

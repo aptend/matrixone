@@ -1,26 +1,47 @@
+#SQL[@2,N83]Result[66, 11]
 select llm_chat('', '', 'echo', '', '[{"role": "user", "content": "hello world"}]');
 llm_chat(, , echo, , [{"role": "user", "content": "hello world"}])
 hello world
+
+#SQL[@3,N85]Result[70, 11]
 select llm_chat('', '', 'echo', null, '[{"role": "user", "content": "hello world"}]');
 llm_chat(, , echo, null, [{"role": "user", "content": "hello world"}])
 hello world
+
+#SQL[@4,N43]Result[30, 4]
 select llm_chat('', '', 'echo', null, null);
 llm_chat(, , echo, null, null)
 null
+
+#SQL[@7,N50]Error[52]
 select llm_chat('', '', 'echo', '', 'hello world');
 invalid character 'h' looking for beginning of value
+
+#SQL[@8,N83]Error[65]
 select llm_chat('', '', 'echo', null, '{"role": "user", "content": "hello world"}');
 json: cannot unmarshal object into Go value of type []llm.Message
+
+#SQL[@9,N31]Error[67]
 select llm_chat('', '', '', '');
 invalid argument function llm_chat, bad value [CHAR CHAR CHAR CHAR]
+
+#SQL[@10,N48]Error[48]
 select llm_chat(null, '', '', '', 'hello world');
 invalid input: llm_chat: server must not be null
+
+#SQL[@11,N47]Error[34]
 select llm_chat(123, '', '', '', 'hello world');
 invalid input: invalid server: 123
+
+#SQL[@12,N52]Error[46]
 select llm_chat('', null, 'echo', '', 'hello world');
 invalid input: llm_chat: addr must not be null
+
+#SQL[@13,N48]Error[47]
 select llm_chat('', '', null, '', 'hello world');
 invalid input: llm_chat: model must not be null
+
+#SQL[@15,N168]Result[26, 3, 3]
 select llm_chat('', '', 'echo', '', col1) from parse_jsonl_data($$["echo", [{"role":"user", "content":"foo"}]]
 ["echo", [{"role":"user", "content":"bar"}]]
 $$, 'ss'
@@ -28,30 +49,50 @@ $$, 'ss'
 llm_chat(, , echo, , col1)
 foo
 bar
+
+#SQL[@20,N108]Error[47]
 select llm_chat('', '', col0, '', col1) from parse_jsonl_data($$["echo", "foo"]
 ["echo", "bar"]
 $$, 'ss'
 ) t;
 invalid input: llm_chat: model must be constant
+
+#SQL[@26,N55]Result[38, 15]
 select llm_embedding('', '', 'echo', '', 'hello world');
 llm_embedding(, , echo, , hello world)
 [11, 502021950]
+
+#SQL[@27,N57]Result[42, 15]
 select llm_embedding('', '', 'echo', null, 'hello world');
 llm_embedding(, , echo, null, hello world)
 [11, 502021950]
+
+#SQL[@28,N48]Result[35, 4]
 select llm_embedding('', '', 'echo', null, null);
 llm_embedding(, , echo, null, null)
 null
+
+#SQL[@31,N36]Error[72]
 select llm_embedding('', '', '', '');
 invalid argument function llm_embedding, bad value [CHAR CHAR CHAR CHAR]
+
+#SQL[@32,N53]Error[48]
 select llm_embedding(null, '', '', '', 'hello world');
 invalid input: llm_chat: server must not be null
+
+#SQL[@33,N52]Error[34]
 select llm_embedding(123, '', '', '', 'hello world');
 invalid input: invalid server: 123
+
+#SQL[@34,N57]Error[46]
 select llm_embedding('', null, 'echo', '', 'hello world');
 invalid input: llm_chat: addr must not be null
+
+#SQL[@35,N53]Error[47]
 select llm_embedding('', '', null, '', 'hello world');
 invalid input: llm_chat: model must not be null
+
+#SQL[@37,N115]Result[31, 14, 14]
 select llm_embedding('', '', 'echo', '', col1) from parse_jsonl_data($$["echo", "foo"]
 ["echo", "bar"]
 $$, 'ss'
@@ -59,8 +100,11 @@ $$, 'ss'
 llm_embedding(, , echo, , col1)
 [5, 238734290]
 [5, 301440220]
+
+#SQL[@42,N113]Error[47]
 select llm_embedding('', '', col0, '', col1) from parse_jsonl_data($$["echo", "foo"]
 ["echo", "bar"]
 $$, 'ss'
 ) t;
 invalid input: llm_chat: model must be constant
+

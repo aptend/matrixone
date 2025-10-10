@@ -28,7 +28,7 @@ insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
 select bit_and(a) from t1;
 select bit_and(b) from t1;
-select bit_and(c) from t1; 
+select bit_and(c) from t1;
 select bit_and(d) from t1;
 select bit_and(e) from t1;
 
@@ -41,10 +41,10 @@ select bit_and(h) from t1;
 select bit_and(i) from t1;
 select bit_and(k) from t1;
 select bit_and(l) from t1;
--- @bvt:issue#3373
-select bit_and(m) from t1;
-select bit_and(n) from t1;
--- @bvt:issue
+@issue(no=3373) {
+    select bit_and(m) from t1;
+    select bit_and(n) from t1;
+}
 drop table t1;
 
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
@@ -67,10 +67,10 @@ select bit_or(h) from t1;
 select bit_or(i) from t1;
 select bit_or(k) from t1;
 select bit_or(l) from t1;
--- @bvt:issue#3373
-select bit_or(m) from t1;
-select bit_or(n) from t1;
--- @bvt:issue
+@issue(no=3373) {
+    select bit_or(m) from t1;
+    select bit_or(n) from t1;
+}
 drop table t1;
 
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
@@ -92,10 +92,10 @@ select bit_xor(h) from t1;
 select bit_xor(i) from t1;
 select bit_xor(k) from t1;
 select bit_xor(l) from t1;
--- @bvt:issue#3373
-select bit_xor(m) from t1;
-select bit_xor(n) from t1;
--- @bvt:issue
+@issue(no=3373) {
+    select bit_xor(m) from t1;
+    select bit_xor(n) from t1;
+}
 drop table t1;
 
 #0.5暂不支持time类型
@@ -156,5 +156,4 @@ create table t1(a varbinary(3));
 insert into t1 values(3), (4), (9), (7), (6);
 select bit_and(a), bit_or(a), bit_xor(a) from t1;
 insert into t1 values(33);
--- @pattern
 select bit_and(a) from t1;

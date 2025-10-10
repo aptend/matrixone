@@ -4,7 +4,7 @@ SELECT REGEXP_INSTR('at', '^at') Result;
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 2) Result;
 
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 2) AS 'Pos2';
-SELECT REGEXP_INSTR('Cat Cat', 'Cat', 3) AS 'Pos3'; 
+SELECT REGEXP_INSTR('Cat Cat', 'Cat', 3) AS 'Pos3';
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 5) AS 'Pos5';
 
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1) 'Pos1';

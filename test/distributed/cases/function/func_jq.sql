@@ -46,9 +46,9 @@ select jq('["a", "b", "c", "d", "e"]', '.[-2:]');
 select jq('["a", "b", "c", "d", "e"]', '.[]');
 select jq('[]', '.[]');
 select jq('{"foo": ["a", "b", "c", "d", "e"]}', '.foo[]');
-select jq('{"a":1, "b":2}', '.[]'); 
+select jq('{"a":1, "b":2}', '.[]');
 
-select jq('{"a":1, "b":2}', '.a, .b'); 
+select jq('{"a":1, "b":2}', '.a, .b');
 select jq('["a", "b", "c", "d", "e"]', '.[4,2]');
 select jq('{"a": 1, "b": [2, 3]}', '[.a, .b[]]');
 select jq('[1, 2, 3]', '[ .[] | . * 2]');
@@ -58,10 +58,10 @@ select jq('{"user":"stedolan","titles":["JQ Primer", "More JQ"]}', '{user, title
 select jq('[[{"a":1}]]', '.. | .a');
 
 -- expressions
-select jq('{"a":1, "b":2}', '.a + .b'); 
-select jq('{"a":1, "b":2}', '.a + null'); 
-select jq('{"a":1, "b":2}', '. + {c: 3}'); 
-select jq('{"a":1, "b":2}', '. + {a: 3, c: 3}'); 
+select jq('{"a":1, "b":2}', '.a + .b');
+select jq('{"a":1, "b":2}', '.a + null');
+select jq('{"a":1, "b":2}', '. + {c: 3}');
+select jq('{"a":1, "b":2}', '. + {a: 3, c: 3}');
 select jq('0', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end');
 select jq('1', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end');
 select jq('2', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end');
@@ -69,13 +69,13 @@ select jq('[{}, true, {"a":1}]', '[.[]|try .a]');
 select jq('[{}, true, {"a":1}]', '[.[]|.a?]');
 select jq('[{}, true, {"a":1}]', '[.[]|try .a catch ". is not an object"]');
 
--- advanced 
-select jq('[1, 2, 3]', 'reduce .[] as $item (0; + $item)'); 
-select jq('[1, 2, 3]', 'foreach .[] as $item(0; . + $item; [$item, . * 2])');   
+-- advanced
+select jq('[1, 2, 3]', 'reduce .[] as $item (0; + $item)');
+select jq('[1, 2, 3]', 'foreach .[] as $item(0; . + $item; [$item, . * 2])');
 
 -- enough, move on to tables.
 create table jqt(id int, data varchar(255), jq varchar(255));
-insert into jqt values 
+insert into jqt values
 (1, '{"foo": 128}', '.foo'),
 (2, '{"foo": 128}', '.foo'),
 (3, '{"a": {"b": 42}}', '.a.b'),
@@ -98,10 +98,10 @@ insert into jqt values
 (103, '{"foo": {bar: []} }', '.');
 
 insert into jqt values
-(200, '{"a":1, "b":2}', '.a + .b'), 
-(201, '{"a":1, "b":2}', '.a + null'), 
-(202, '{"a":1, "b":2}', '. + {c: 3}'), 
-(203, '{"a":1, "b":2}', '. + {a: 3, c: 3}'), 
+(200, '{"a":1, "b":2}', '.a + .b'),
+(201, '{"a":1, "b":2}', '.a + null'),
+(202, '{"a":1, "b":2}', '. + {c: 3}'),
+(203, '{"a":1, "b":2}', '. + {a: 3, c: 3}'),
 (204, '0', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end'),
 (205, '1', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end'),
 (206, '2', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end'),

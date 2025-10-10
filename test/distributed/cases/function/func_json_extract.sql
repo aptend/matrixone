@@ -146,7 +146,7 @@ select json_extract_float64('{"a":3.1415926535897e1,"b":2,"c":3}','$.a');
 
 drop table if exists jtags;
 create table jtags(id int, tags json, metrics json);
-insert into jtags values 
+insert into jtags values
 (1, '{"tag1": "xxx", "tag2": "yyy1", "tag13": "zzz"}', '{"metric1": 1, "metric2": 1.0, "metric13": 1}'),
 (2, '{"tag1": "xxx", "tag2": "yyy2", "tag23": "zzz"}', '{"metric1": 2, "metric2": 2.0, "metric23": 2}'),
 (3, '{"tag1": "xxx", "tag2": "yyy3", "tag33": "zzz"}', '{"metric1": 3, "metric2": 3.0, "metric33": 3}'),

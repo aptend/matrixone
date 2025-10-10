@@ -54,17 +54,17 @@ explain select t.*, tf.* from t cross apply generate_series(t.a, t.b) tf where t
 drop table t;
 
 create table t (id int);
-insert into t select result from generate_series(1,100.0) g; 
-insert into t select result from generate_series(1,1e2) g; 
-insert into t select result from generate_series(1,100, "step") g; 
+insert into t select result from generate_series(1,100.0) g;
+insert into t select result from generate_series(1,1e2) g;
+insert into t select result from generate_series(1,100, "step") g;
 
 -- Test generate randoms
 -- fail:
 select * from generate_random_int64() t;
 select * from generate_random_int64(10, 42, 'foo') t;
-select * from generate_random_int64(10, 42, 'exp') t; 
-select * from generate_random_float64(10, 42, 'int64n') t; 
-select * from generate_random_float64(10, 42, 'exp', 10) t; 
+select * from generate_random_int64(10, 42, 'exp') t;
+select * from generate_random_float64(10, 42, 'int64n') t;
+select * from generate_random_float64(10, 42, 'exp', 10) t;
 
 -- gen with seed so that it is stable.
 select * from generate_random_int64(10, 42) t;

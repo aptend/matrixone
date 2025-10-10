@@ -1,181 +1,326 @@
+#SQL[@7,N24]Result[15, 0]
 SELECT repeat('abc', -1);
 repeat(abc, -1)
 
+
+#SQL[@8,N23]Result[14, 0]
 SELECT repeat('abc', 0);
 repeat(abc, 0)
 
+
+#SQL[@9,N59]Result[54, 30]
 SELECT repeat('abc', 1), repeat('abc', 2), repeat('abc', 3);
-repeat(abc, 1)    repeat(abc, 2)    repeat(abc, 3)
-abc    abcabc    abcabcabc
+repeat(abc, 1)  ¦  repeat(abc, 2)  ¦  repeat(abc, 3)
+abc  ¦  abcabc  ¦  abcabcabc
+
+#SQL[@10,N26]Result[17, 4]
 SELECT repeat('abc', null);
 repeat(abc, null)
 null
+
+#SQL[@11,N34]Result[25, 4]
 select repeat('abc', 100000000000);
 repeat(abc, 100000000000)
 null
+
+#SQL[@15,N49]Result[40, 0]
 select repeat('372891uhj4r23uj4r3fv()(*)W@', -10);
 repeat(372891uhj4r23uj4r3fv()(*)W@, -10)
 
+
+#SQL[@16,N54]Result[46, 0]
 select repeat('efhwuh4ejkwn433qwieu^%^&&(*(%$%^',-100);
 repeat(efhwuh4ejkwn433qwieu^%^&&(*(%$%^, -100)
 
+
+#SQL[@20,N36]Result[28, 0]
 select repeat('database数据库',0);
 repeat(database数据库, 0)
 
+
+#SQL[@21,N75]Result[67, 0]
 select repeat('qyf783y82y489u32y49u39204i032i9589ijfiekwfjkw432r435g34f',0);
 repeat(qyf783y82y489u32y49u39204i032i9589ijfiekwfjkw432r435g34f, 0)
 
+
+#SQL[@25,N36]Result[28, 1500]
 select repeat('cjwijejnvrewvew',100);
 repeat(cjwijejnvrewvew, 100)
 cjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvewcjwijejnvrewvew
+
+#SQL[@26,N60]Result[52, 4]
 select repeat('23324{}{}|}{}{}{}|{%$#%$^&*()*("""',10000000);
 repeat(23324{}{}|}{}{}{}|{%$#%$^&*()*(""", 10000000)
 null
+
+#SQL[@30,N21]Result[13, 0]
 select repeat('',213);
 repeat(, 213)
 
+
+#SQL[@31,N25]Result[19, 4]
 select repeat(null,21893);
 repeat(null, 21893)
 null
+
+#SQL[@35,N40]Result[32, 4]
 select repeat('dwhjkvwe3w4r3wfrrw',null);
 repeat(dwhjkvwe3w4r3wfrrw, null)
 null
+
+#SQL[@36,N51]Result[43, 4]
 select repeat('euu4832ur48ei3jfojcjncj*(*())',null);
 repeat(euu4832ur48ei3jfojcjncj*(*()), null)
 null
+
+#SQL[@37,N24]Result[18, 4]
 select repeat(null,null);
 repeat(null, null)
 null
+
+#SQL[@41,N21]Result[13, 6]
 select repeat('MO',3);
 repeat(MO, 3)
 MOMOMO
+
+#SQL[@42,N23]Result[15, 90]
 select repeat('MO ',30);
 repeat(MO , 30)
 MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO 
+
+#SQL[@43,N31]Result[22, 900]
 select repeat('MO MO MO ', 100);
 repeat(MO MO MO , 100)
 MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO MO 
+
+#SQL[@44,N41]Result[33, 1100]
 select repeat('ewrfewvrefr',100.23123321);
 repeat(ewrfewvrefr, 100.23123321)
 ewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefrewrfewvrefr
+
+#SQL[@48,N43]Result[35, 4]
 select repeat('1223wer33fggfeew',100048577);
 repeat(1223wer33fggfeew, 100048577)
 null
+
+#SQL[@49,N91]Result[83, 4]
 select repeat('12321412132134321321423ewdfqwf4wevfrevdcsIOPKMKMq29389c323e32ndy',100048000);
 repeat(12321412132134321321423ewdfqwf4wevfrevdcsIOPKMKMq29389c323e32ndy, 100048000)
 null
+
+#SQL[@53,N40]Result[32, 19]
 select repeat('hej32h4rk23vrw3g534',1.3);
 repeat(hej32h4rk23vrw3g534, 1.3)
 hej32h4rk23vrw3g534
+
+#SQL[@54,N55]Result[47, 3621]
 select repeat('few84uiwjvwev rwb',213.3328948309240324);
 repeat(few84uiwjvwev rwb, 213.3328948309240324)
 few84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwbfew84uiwjvwev rwb
+
+#SQL[@55,N42]Result[34, 0]
 select repeat('38290ri432vr',0.3892432324);
 repeat(38290ri432vr, 0.3892432324)
 
+
+#SQL[@56,N78]Result[70, 0]
 select repeat('erwr43wgvrwebvrtbregterb   324423*()*^&%^$%$#@',-390213.242342);
 repeat(erwr43wgvrwebvrtbregterb   324423*()*^&%^$%$#@, -390213.242342)
 
+
+#SQL[@60,N28]Result[22, 3000]
 select repeat(oct(100),1000);
 repeat(oct(100), 1000)
 144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144144
+
+#SQL[@61,N38]Result[29, 90]
 select repeat(ltrim(' hrekjwrfv'), 10);
 repeat(ltrim( hrekjwrfv), 10)
 hrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfvhrekjwrfv
+
+#SQL[@62,N43]Result[34, 240]
 select repeat(rtrim('momomvdjehwe   '), 20);
 repeat(rtrim(momomvdjehwe   ), 20)
 momomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwemomomvdjehwe
+
+#SQL[@63,N83]Result[75, 4900]
 select repeat(trim(' ewvre  refrew wrew   wrfewre45324r32r43f22g34r3ew      '),100);
 repeat(trim( ewvre  refrew wrew   wrfewre45324r32r43f22g34r3ew      ), 100)
 ewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ewewvre  refrew wrew   wrfewre45324r32r43f22g34r3ew
+
+#SQL[@64,N79]Result[71, 4000]
 select repeat(lpad('48932493289020-f4o3fikioewjivrev',200,'11132343423232'),20);
 repeat(lpad(48932493289020-f4o3fikioewjivrev, 200, 11132343423232), 20)
 11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev11132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323211132343423232111323434232321113234342323248932493289020-f4o3fikioewjivrev
+
+#SQL[@65,N107]Result[99, 80]
 select repeat(rpad('  wqdyeuqdejwhqjfehuqhfueh432484u324i3u2jr432fr230-03-24324 rvv',80,'1234567890***'),1);
 repeat(rpad(  wqdyeuqdejwhqjfehuqhfueh432484u324i3u2jr432fr230-03-24324 rvv, 80, 1234567890***), 1)
   wqdyeuqdejwhqjfehuqhfueh432484u324i3u2jr432fr230-03-24324 rvv1234567890***1234
+
+#SQL[@66,N54]Result[48, 20]
 select repeat(substring('dqeijfqknvwerijrewf',4,10),2);
 repeat(substring(dqeijfqknvwerijrewf, 4, 10), 2)
 ijfqknvwerijfqknvwer
+
+#SQL[@67,N49]Result[41, 200]
 select repeat(reverse('today is a good day!'),10);
 repeat(reverse(today is a good day!), 10)
 !yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot!yad doog a si yadot
+
+#SQL[@68,N74]Result[68, 777]
 select repeat(group_concat('ehiuqh3214234r32432fcewvre','euiqjned3f4'),21);
 repeat(group_concat(ehiuqh3214234r32432fcewvre, euiqjned3f4, ,), 21)
 ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4ehiuqh3214234r32432fcewvreeuiqjned3f4
+
+#SQL[@69,N73]Result[65, 3674]
 select repeat(split_part('equheqwjnvcjenjrXXXXkewjefwvrwe','XXXX',2),334);
 repeat(split_part(equheqwjnvcjenjrXXXXkewjefwvrwe, XXXX, 2), 334)
 kewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwekewjefwvrwe
+
+#SQL[@73,N31]Error[40]
 select repeat('wefui2n3f2',eee);
 invalid input: column eee does not exist
+
+#SQL[@74,N36]Error[55]
 select repeat(3729743928r423r43r,10);
 invalid input: column 3729743928r423r43r does not exist
+
+#SQL[@75,N54]Error[63]
 select repeat(e28eeiowieofpwipefwerfwe32,24382048922w);
 invalid input: column e28eeiowieofpwipefwerfwe32 does not exist
+
+#SQL[@79,N29]Result[]
 drop table if exists repeat01;
+
+#SQL[@80,N59]Result[]
 create table repeat01(col1 int, col2 varchar(100) not null);
+
+#SQL[@81,N98]Result[]
 insert into repeat01 values(1, '37829743920819432fjnjk23n4j324i3f34ekkmfjk24nk32j4ei3k2fode3m24r');
+
+#SQL[@82,N69]Result[]
 insert into repeat01 values(2, '3289u4392u4r4943i249ri32oikdi2349i3');
+
+#SQL[@83,N76]Result[]
 insert into repeat01 values(null, '379281738942uj1oi423g4{}{}}|{|}"WWU*UFE');
+
+#SQL[@84,N22]Result[14, 71, 42, 49]
 select * from repeat01;
-col1    col2
-1    37829743920819432fjnjk23n4j324i3f34ekkmfjk24nk32j4ei3k2fode3m24r
-2    3289u4392u4r4943i249ri32oikdi2349i3
-null    379281738942uj1oi423g4{}{}}|{|}"WWU*UFE
+col1  ¦  col2
+1  ¦  37829743920819432fjnjk23n4j324i3f34ekkmfjk24nk32j4ei3k2fode3m24r
+2  ¦  3289u4392u4r4943i249ri32oikdi2349i3
+null  ¦  379281738942uj1oi423g4{}{}}|{|}"WWU*UFE
+
+#SQL[@85,N39]Result[18, 64, 70, 4]
 select repeat(col2, col1) from repeat01;
 repeat(col2, col1)
 37829743920819432fjnjk23n4j324i3f34ekkmfjk24nk32j4ei3k2fode3m24r
 3289u4392u4r4943i249ri32oikdi2349i33289u4392u4r4943i249ri32oikdi2349i3
 null
+
+#SQL[@86,N19]Result[]
 drop table repeat01;
+
+#SQL[@90,N29]Result[]
 drop table if exists repeat02;
+
+#SQL[@91,N59]Result[]
 create table repeat02(col1 tinytext not null, col2 tinyint);
+
+#SQL[@92,N193]Result[]
 insert into repeat02 values('!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh','20');
+
+#SQL[@93,N215]Result[]
 insert into repeat02 values('3t976dfy2hg4g43yh28r4u2of43]f\e3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,',100);
+
+#SQL[@94,N36]Error[46]
 insert into repeat02 values('1',378);
-Data truncation: data out of range: data type int8, value '378'
+data out of range: data type int8, value '378'
+
+#SQL[@95,N22]Result[14, 165, 188]
 select * from repeat02;
-col1    col2
-!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh    20
-3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,    100
+col1  ¦  col2
+!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh  ¦  20
+3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,  ¦  100
+
+#SQL[@96,N38]Result[18, 3140, 17900]
 select repeat(col1,col2) from repeat02;
 repeat(col1, col2)
 !@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh!@@@#########################$%^&*(!@#$%^&*(IOIUYGFDRTFYGUHJNBHGVFRDE#W@Q#$%6t7yuihbgtfre43we5r6t7yuhihygtfrde43w4e5r6t7yuihnygtfrde45r6t7yhujhygtr54e5rt6ygh
 3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,3t976dfy2hg4g43yh28r4u2of43]fe3yuih4r328uehdw```ui21`ju`h32ih21iojhui1rh4ufhui4hfehwnjcfehrhvbweuyreihbfcreuhwuiwhuvrnehvbrenhvjebwnhrbuefhrneuwfnrejwnfrwehjbvhrebwruehwruewnvrew,
+
+#SQL[@97,N19]Result[]
 drop table repeat02;
+
+#SQL[@101,N29]Result[]
 drop table if exists repeat03;
+
+#SQL[@102,N47]Result[]
 create table repeat03(col1 mediumtext,col2 int);
+
+#SQL[@103,N728]Result[]
 insert into repeat03 values ('MatrixOne 是一款超融合异构分布式数据库，通过云原生化和存储、计算、事务分离的架构构建 HSTAP 超融合数据引擎，实现单一数据库系统支持 OLTP、OLAP、流计算等多种业务负载，并且支持公有云、私有云、边缘云部署和使用，实现异构基础设施的兼容。MatrixOne 具备实时 HTAP，多租户，流式计算，极致扩展性，高性价比，企业级高可用及 MySQL 高度兼容等重要特性，通过为用户提供一站式超融合数据解决方案，可以将过去由多个数据库完成的工作合并到一个数据库里，从而简化开发运维，消减数据碎片，提高开发敏捷度。', null);
+
+#SQL[@104,N46]Result[]
 insert into repeat03 values (null, 1000000000);
+
+#SQL[@105,N167]Result[]
 insert into repeat03 values ('通过 Compute Node 和 Data Node 的灵活配合兼顾点查询与批处理，对于 OLTP 和 OLAP 都具备极致性能。',2147483647);
+
+#SQL[@106,N22]Result[14, 700, 20, 140]
 select * from repeat03;
-col1    col2
-MatrixOne 是一款超融合异构分布式数据库，通过云原生化和存储、计算、事务分离的架构构建 HSTAP 超融合数据引擎，实现单一数据库系统支持 OLTP、OLAP、流计算等多种业务负载，并且支持公有云、私有云、边缘云部署和使用，实现异构基础设施的兼容。MatrixOne 具备实时 HTAP，多租户，流式计算，极致扩展性，高性价比，企业级高可用及 MySQL 高度兼容等重要特性，通过为用户提供一站式超融合数据解决方案，可以将过去由多个数据库完成的工作合并到一个数据库里，从而简化开发运维，消减数据碎片，提高开发敏捷度。    null
-null    1000000000
-通过 Compute Node 和 Data Node 的灵活配合兼顾点查询与批处理，对于 OLTP 和 OLAP 都具备极致性能。    2147483647
+col1  ¦  col2
+MatrixOne 是一款超融合异构分布式数据库，通过云原生化和存储、计算、事务分离的架构构建 HSTAP 超融合数据引擎，实现单一数据库系统支持 OLTP、OLAP、流计算等多种业务负载，并且支持公有云、私有云、边缘云部署和使用，实现异构基础设施的兼容。MatrixOne 具备实时 HTAP，多租户，流式计算，极致扩展性，高性价比，企业级高可用及 MySQL 高度兼容等重要特性，通过为用户提供一站式超融合数据解决方案，可以将过去由多个数据库完成的工作合并到一个数据库里，从而简化开发运维，消减数据碎片，提高开发敏捷度。  ¦  null
+null  ¦  1000000000
+通过 Compute Node 和 Data Node 的灵活配合兼顾点查询与批处理，对于 OLTP 和 OLAP 都具备极致性能。  ¦  2147483647
+
+#SQL[@107,N38]Result[18, 4, 4, 4]
 select repeat(col1,col2) from repeat03;
 repeat(col1, col2)
 null
 null
 null
+
+#SQL[@108,N19]Result[]
 drop table repeat03;
+
+#SQL[@112,N29]Result[]
 drop table if exists repeat04;
+
+#SQL[@113,N52]Result[]
 create table repeat04(col1 float, col2 varchar(200));
+
+#SQL[@114,N115]Result[]
 insert into repeat04 values (1232.21312, 'YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432');
+
+#SQL[@115,N75]Result[]
 insert into repeat04 values (0.3243214, '4324213421v dsr3\\}{}{}Ew4rfebte');
+
+#SQL[@116,N66]Result[]
 insert into repeat04 values (-32.321342, '  321432fvewvegre5 g5 ');
+
+#SQL[@117,N60]Result[]
 insert into repeat04 values (null, 'jh   i w o  IIIO ejwqd');
+
+#SQL[@118,N34]Result[]
 insert into repeat04 values (0,'');
+
+#SQL[@119,N22]Result[14, 86, 46, 38, 32, 7]
 select * from repeat04;
-col1    col2
-1232.2131    YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432
-0.3243214    4324213421v dsr3\}{}{}Ew4rfebte
--32.321342      321432fvewvegre5 g5 
-null    jh   i w o  IIIO ejwqd
-0.0    
+col1  ¦  col2
+1232.2131  ¦  YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432
+0.3243214  ¦  4324213421v dsr3\}{}{}Ew4rfebte
+-32.321342  ¦    321432fvewvegre5 g5 
+null  ¦  jh   i w o  IIIO ejwqd
+0  ¦  
+
+#SQL[@120,N86]Result[18, 0]
 select repeat(col2,col1) from repeat04 where repeat(col2,1) = '  321432fvewvegre5 g5 ';
 repeat(col2, col1)
 
+
+#SQL[@121,N51]Result[30, 142, 0, 0, 4, 0]
 select repeat(ltrim(col2), col1 % 10) from repeat04;
 repeat(ltrim(col2), col1 % 10)
 YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432
@@ -183,6 +328,8 @@ YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJI
 
 null
 
+
+#SQL[@122,N53]Result[31, 17466, 0, 0, 4, 0]
 select repeat(rtrim(col2), col1 * 0.2) from repeat04 ;
 repeat(rtrim(col2), col1 * 0.2)
 YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432
@@ -190,6 +337,8 @@ YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJI
 
 null
 
+
+#SQL[@123,N42]Result[22, 710, 310, 190, 220, 0]
 select repeat(trim(col2),10) from repeat04;
 repeat(trim(col2), 10)
 YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432
@@ -197,6 +346,8 @@ YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh483i2verwe4r3f2432432YT^&Y*UJI
 321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5321432fvewvegre5 g5
 jh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqdjh   i w o  IIIO ejwqd
 
+
+#SQL[@124,N62]Result[42, 1000, 1000, 1000, 1000, 1000]
 select repeat(lpad(col2,50,'11132343423232'),20) from repeat04;
 repeat(lpad(col2, 50, 11132343423232), 20)
 YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjh
@@ -204,6 +355,8 @@ YT^&Y*UJIJH* ( U ( HJHFDTYUIHJFYTGUHIJueiyw8uhfwjhYT^&Y*UJIJH* ( U ( HJHFDTYUIHJ
 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 1113234342323211132343423232  321432fvewvegre5 g5 
 1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd1113234342323211132343423232jh   i w o  IIIO ejwqd
 1113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343111323434232321113234342323211132343423232111323431113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343111323434232321113234342323211132343423232111323431113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343111323434232321113234342323211132343423232111323431113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343111323434232321113234342323211132343423232111323431113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343111323434232321113234342323211132343423232111323431113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343111323434232321113234342323211132343423232111323431113234342323211132343423232111323434232321113234311132343423232111323434232321113234342323211132343
+
+#SQL[@125,N64]Result[44, 4, 0, 0, 4, 0]
 select repeat(rpad(col2,300,'1234567890***'),col1) from repeat04;
 repeat(rpad(col2, 300, 1234567890***), col1)
 null
@@ -211,6 +364,8 @@ null
 
 null
 
+
+#SQL[@126,N45]Result[25, 710, 310, 220, 220, 0]
 select repeat(reverse(col2),10) from repeat04;
 repeat(reverse(col2), 10)
 2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY2342342f3r4ewrev2i384hjwfhu8wyieuJIHUGTYFJHIUYTDFHJH ( U ( *HJIJU*Y&^TY
@@ -218,57 +373,117 @@ etbefr4wE}{}{}\3rsd v1243124234etbefr4wE}{}{}\3rsd v1243124234etbefr4wE}{}{}\3rs
  5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123   5g 5ergevwevf234123  
 dqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hjdqwje OIII  o w i   hj
 
+
+#SQL[@127,N19]Result[]
 drop table repeat04;
+
+#SQL[@131,N29]Result[]
 drop table if exists repeat05;
+
+#SQL[@132,N45]Result[]
 create table repeat05(col1 double, col2 text);
+
+#SQL[@133,N47]Result[]
 insert into repeat05 values (-10.321,324242332);
+
+#SQL[@134,N60]Result[]
 insert into repeat05 values (0,'3214243232532323afewevc432');
+
+#SQL[@135,N70]Result[]
 insert into repeat05 values (null,'423432f234{}{{}DEIUIOEKoiu9iofkle');
+
+#SQL[@136,N48]Result[]
 insert into repeat05 values (10.93243342, '123');
+
+#SQL[@137,N22]Result[14, 22, 33, 43, 20]
 select * from repeat05;
-col1    col2
--10.321    324242332
-0.0    3214243232532323afewevc432
-null    423432f234{}{{}DEIUIOEKoiu9iofkle
-10.93243342    123
+col1  ¦  col2
+-10.321  ¦  324242332
+0  ¦  3214243232532323afewevc432
+null  ¦  423432f234{}{{}DEIUIOEKoiu9iofkle
+10.93243342  ¦  123
+
+#SQL[@138,N38]Result[18, 0, 0, 4, 33]
 select repeat(col2,col1) from repeat05;
 repeat(col2, col1)
 
 
 null
 123123123123123123123123123123123
+
+#SQL[@139,N19]Result[]
 drop table repeat05;
+
+#SQL[@143,N29]Result[]
 drop table if exists repeat06;
+
+#SQL[@144,N58]Result[]
 create table repeat06(col1 decimal(10,8), col2 mediumtext);
+
+#SQL[@145,N171]Result[]
 insert into repeat06 values (-10.321232,'ehwqjcnjewn4f3236348921734uf32ryd8329uf432ih4uiwedofoqw3[2]34-=+++++++++fe[powp4l3]2v[r32]3p4l3po2kvfcir4j2i4j3f2vc23432f3f2vre2');
+
+#SQL[@146,N69]Result[]
 insert into repeat06 values (1.23412342,'3214243232532323afewevc432');
+
+#SQL[@147,N70]Result[]
 insert into repeat06 values (null,'423432f234{}{{}DEIUIOEKoiu9iofkle');
+
+#SQL[@148,N38]Result[]
 insert into repeat06 values (0, '123');
+
+#SQL[@149,N22]Result[14, 146, 42, 43, 19]
 select * from repeat06;
-col1    col2
--10.32123200    ehwqjcnjewn4f3236348921734uf32ryd8329uf432ih4uiwedofoqw3[2]34-=+++++++++fe[powp4l3]2v[r32]3p4l3po2kvfcir4j2i4j3f2vc23432f3f2vre2
-1.23412342    3214243232532323afewevc432
-null    423432f234{}{{}DEIUIOEKoiu9iofkle
-0E-8    123
+col1  ¦  col2
+-10.32123200  ¦  ehwqjcnjewn4f3236348921734uf32ryd8329uf432ih4uiwedofoqw3[2]34-=+++++++++fe[powp4l3]2v[r32]3p4l3po2kvfcir4j2i4j3f2vc23432f3f2vre2
+1.23412342  ¦  3214243232532323afewevc432
+null  ¦  423432f234{}{{}DEIUIOEKoiu9iofkle
+0.00000000  ¦  123
+
+#SQL[@150,N38]Result[18, 0, 26, 4, 0]
 select repeat(col2,col1) from repeat06;
 repeat(col2, col1)
 
 3214243232532323afewevc432
 null
 
+
+#SQL[@151,N19]Result[]
 drop table repeat06;
+
+#SQL[@155,N29]Result[]
 drop table if exists repeat07;
+
+#SQL[@156,N29]Result[]
 drop table if exists repeat08;
+
+#SQL[@157,N46]Result[]
 create table repeat07(col1 int, col2 longtext);
+
+#SQL[@158,N76]Result[]
 insert into repeat07 values (null, '324r314e2343232fcewvfewrfew{}{}|{}FDWE');
+
+#SQL[@159,N63]Result[]
 insert into repeat07 values (2114,'32421rd3e4][as][rew[e4]\32');
+
+#SQL[@160,N22]Result[14, 48, 35]
 select * from repeat07;
-col1    col2
-null    324r314e2343232fcewvfewrfew{}{}|{}FDWE
-2114    32421rd3e4][as][rew[e4]32
+col1  ¦  col2
+null  ¦  324r314e2343232fcewvfewrfew{}{}|{}FDWE
+2114  ¦  32421rd3e4][as][rew[e4]32
+
+#SQL[@161,N46]Result[]
 create table repeat08(col1 int, col2 longtext);
+
+#SQL[@162,N64]Result[]
 insert into repeat08 select col1,repeat(col2,col1) from repeat08;
+
+#SQL[@163,N22]Result[]
 select * from repeat08;
-col1    col2
+
+#SQL[@164,N19]Result[]
 drop table repeat07;
+
+#SQL[@165,N19]Result[]
 drop table repeat08;
+

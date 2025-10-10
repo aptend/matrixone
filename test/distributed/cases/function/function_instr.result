@@ -1,57 +1,104 @@
+#SQL[@6,N28]Result[18, 1]
 SELECT INSTR('ejwnqke','wn');
-instr(ejwnqke, wn)
+INSTR(ejwnqke, wn)
 3
+
+#SQL[@7,N28]Result[18, 1]
 SELECT INSTR('wn','ejwnqke');
-instr(wn, ejwnqke)
+INSTR(wn, ejwnqke)
 0
+
+#SQL[@8,N29]Result[19, 1]
 SELECT INSTR('hvjdke3qj','a');
-instr(hvjdke3qj, a)
+INSTR(hvjdke3qj, a)
 0
+
+#SQL[@9,N58]Result[48, 1]
 SELECT INSTR('今天是晴天ok.are yioeore;wmv','晴天');
-instr(今天是晴天ok.are yioeore;wmv, 晴天)
+INSTR(今天是晴天ok.are yioeore;wmv, 晴天)
 4
+
+#SQL[@10,N78]Result[68, 1]
 SELECT INSTR('ewhihjreiwhvrejw8344332￥#……@#@￥#@￥DSCSVRERGEWvefw','');
-instr(ewhihjreiwhvrejw8344332￥#……@#@￥#@￥DSCSVRERGEWvefw, )
+INSTR(ewhihjreiwhvrejw8344332￥#……@#@￥#@￥DSCSVRERGEWvefw, )
 1
+
+#SQL[@11,N35]Result[25, 1]
 SELECT INSTR('edhjw 38902&A**',' ');
-instr(edhjw 38902&A**,  )
+INSTR(edhjw 38902&A**,  )
 6
+
+#SQL[@12,N45]Result[35, 1]
 SELECT INSTR('reuwYHWJMQ781///-+++','fe3232');
-instr(reuwYHWJMQ781///-+++, fe3232)
+INSTR(reuwYHWJMQ781///-+++, fe3232)
 0
+
+#SQL[@13,N19]Result[9, 1]
 SELECT INSTR('','');
-instr(, )
+INSTR(, )
 1
+
+#SQL[@14,N25]Result[15, 1]
 SELECT INSTR('','ehwj32');
-instr(, ehwj32)
+INSTR(, ehwj32)
 0
+
+#SQL[@15,N39]Result[29, 1]
 SELECT INSTR('251625%$#@*(ejf2f32f','');
-instr(251625%$#@*(ejf2f32f, )
+INSTR(251625%$#@*(ejf2f32f, )
 1
+
+#SQL[@16,N25]Result[17, 4]
 SELECT INSTR(NULL,'ewqe');
-instr(null, ewqe)
+INSTR(null, ewqe)
 null
+
+#SQL[@17,N34]Result[26, 4]
 SELECT INSTR('24e8w7/*37289',NULL);
-instr(24e8w7/*37289, null)
+INSTR(24e8w7/*37289, null)
 null
+
+#SQL[@18,N23]Result[17, 4]
 SELECT INSTR(NULL,NULL);
-instr(null, null)
+INSTR(null, null)
 null
+
+#SQL[@23,N29]Result[]
 DROP TABLE IF EXISTS instr_01;
+
+#SQL[@24,N90]Result[]
 CREATE TABLE instr_01(id int,
-str1 CHAR,
-str2 VARCHAR(30),
-PRIMARY KEY(id));
+					str1 CHAR,
+					str2 VARCHAR(30),
+					PRIMARY KEY(id));
+
+#SQL[@30,N44]Result[]
 INSERT INTO instr_01 VALUES(1, 'a', 'dhehw');
+
+#SQL[@31,N48]Result[]
 INSERT INTO instr_01 VALUES(2, '2', '372890932');
+
+#SQL[@32,N53]Result[]
 INSERT INTO instr_01 VALUES(3, '*', 'fejkj4kl332342');
+
+#SQL[@33,N60]Result[]
 INSERT INTO instr_01 VALUES(4, '-', ' 4ej348324*&&^*&*--++');
+
+#SQL[@34,N61]Result[]
 INSERT INTO instr_01 VALUES(5, '.', '3h2h3kj2*()____  ))() ');
+
+#SQL[@35,N40]Result[]
 INSERT INTO instr_01 VALUES(6, '', NULL);
+
+#SQL[@36,N40]Result[]
 INSERT INTO instr_01 VALUES(7, NULL, '');
+
+#SQL[@37,N42]Result[]
 INSERT INTO instr_01 VALUES(8, NULL, NULL);
+
+#SQL[@40,N37]Result[17, 1, 1, 1, 2, 1, 4, 4, 4]
 SELECT INSTR(str2,str1) FROM instr_01;
-instr(str2, str1)
+INSTR(str2, str1)
 0
 3
 0
@@ -60,16 +107,20 @@ instr(str2, str1)
 null
 null
 null
+
+#SQL[@41,N58]Result[13, 1, 1, 1, 1, 1, 1]
 SELECT INSTR(str2,'') FROM instr_01 WHERE str2 IS NOT NULL;
-instr(str2, )
+INSTR(str2, )
 1
 1
 1
 1
 1
 1
+
+#SQL[@42,N35]Result[13, 1, 1, 1, 1, 1, 1, 4, 4]
 SELECT INSTR('',str1) FROM instr_01;
-instr(, str1)
+INSTR(, str1)
 0
 0
 0
@@ -78,8 +129,10 @@ instr(, str1)
 1
 null
 null
+
+#SQL[@43,N38]Result[17, 4, 4, 4, 4, 4, 4, 4, 4]
 SELECT INSTR(NULL, str2) FROM instr_01;
-instr(null, str2)
+INSTR(null, str2)
 null
 null
 null
@@ -88,8 +141,10 @@ null
 null
 null
 null
+
+#SQL[@44,N38]Result[17, 4, 4, 4, 4, 4, 4, 4, 4]
 SELECT INSTR(str1, NULL) FROM instr_01;
-instr(str1, null)
+INSTR(str1, null)
 null
 null
 null
@@ -98,26 +153,34 @@ null
 null
 null
 null
+
+#SQL[@45,N50]Result[]
 SELECT * FROM instr_01 WHERE instr(str2,'qke') = 5;
-id    str1    str2
+
+#SQL[@46,N64]Result[]
 SELECT id,str1,str2 FROM instr_01 WHERE instr(str2, '32') = NULL;
-id    str1    str2
+
+#SQL[@50,N87]Result[]
 SELECT * FROM instr_01 WHERE id = (SELECT id FROM instr_01 WHERE instr(str2,'qke') = 5);
-id    str1    str2
+
+#SQL[@51,N76]Result[60, 12, 12, 12, 12, 12, 12, 12, 12]
 SELECT(SELECT str2 FROM instr_01 WHERE instr(str1,'a') = 1),id FROM instr_01;
-(select str2 from instr_01 where instr(str1, a) = 1)    id
-dhehw    1
-dhehw    2
-dhehw    3
-dhehw    4
-dhehw    5
-dhehw    6
-dhehw    7
-dhehw    8
+(select str2 from instr_01 where instr(str1, a) = 1)  ¦  id
+dhehw  ¦  1
+dhehw  ¦  2
+dhehw  ¦  3
+dhehw  ¦  4
+dhehw  ¦  5
+dhehw  ¦  6
+dhehw  ¦  7
+dhehw  ¦  8
+
+#SQL[@52,N103]Result[]
 SELECT id ,str1, str2 FROM instr_01 WHERE id = (SELECT id FROM instr_01 WHERE instr(str2,'aaa') = NULL);
-id    str1    str2
+
+#SQL[@56,N69]Result[46, 3, 3, 3, 4, 3, 1, 1, 1]
 SELECT concat_ws('-',INSTR(str2,str1),INSTR('abc','a')) FROM instr_01;
-concat_ws(-, instr(str2, str1), instr(abc, a))
+concat_ws(-, INSTR(str2, str1), INSTR(abc, a))
 0-1
 3-1
 0-1
@@ -126,12 +189,18 @@ concat_ws(-, instr(str2, str1), instr(abc, a))
 1
 1
 1
+
+#SQL[@57,N77]Result[43, 1]
 SELECT find_in_set(INSTR(str2,str1),'hdkewqjfew-') FROM instr_01 WHERE id = 4;
-find_in_set(instr(str2, str1), hdkewqjfew-)
+find_in_set(INSTR(str2, str1), hdkewqjfew-)
 0
+
+#SQL[@58,N55]Result[22, 2]
 SELECT oct(INSTR(str2,str1)) FROM instr_01 WHERE id = 4;
-oct(instr(str2, str1))
+oct(INSTR(str2, str1))
 22
+
+#SQL[@59,N44]Result[24, 5, 5, 5, 5, 5, 4, 4, 4]
 SELECT empty(instr(str2,str1)) FROM instr_01;
 empty(instr(str2, str1))
 false
@@ -142,8 +211,10 @@ false
 null
 null
 null
+
+#SQL[@60,N45]Result[25, 1, 1, 1, 1, 1, 4, 4, 4]
 SELECT LENGTH(INSTR(str2,str1)) FROM instr_01;
-length(instr(str2, str1))
+LENGTH(INSTR(str2, str1))
 1
 1
 1
@@ -152,14 +223,20 @@ length(instr(str2, str1))
 null
 null
 null
+
+#SQL[@61,N61]Result[26, 2]
 SELECT INSTR(LTRIM(str2),'*&&^*&') FROM instr_01 WHERE id = 4;
-instr(ltrim(str2), *&&^*&)
+INSTR(LTRIM(str2), *&&^*&)
 10
+
+#SQL[@62,N68]Result[29, 2]
 SELECT INSTR(RTRIM(str2),'()____  )') FROM instr_01 WHERE str1 = '.';
-instr(rtrim(str2), ()____  ))
+INSTR(RTRIM(str2), ()____  ))
 10
+
+#SQL[@63,N53]Result[30, 10, 10, 10, 10, 10, 4, 4, 4]
 SELECT LPAD(INSTR(str2, str1), 10, '-') FROM instr_01;
-lpad(instr(str2, str1), 10, -)
+LPAD(INSTR(str2, str1), 10, -)
 ---------0
 ---------3
 ---------0
@@ -168,8 +245,10 @@ lpad(instr(str2, str1), 10, -)
 null
 null
 null
+
+#SQL[@64,N51]Result[28, 5, 5, 5, 5, 5, 4, 5, 4]
 SELECT RPAD(INSTR(str2, 3), 5, '***') FROM instr_01;
-rpad(instr(str2, 3), 5, ***)
+RPAD(INSTR(str2, 3), 5, ***)
 0****
 1****
 9****
@@ -178,6 +257,8 @@ rpad(instr(str2, 3), 5, ***)
 null
 0****
 null
+
+#SQL[@65,N56]Result[33, 0, 0, 0, 0, 0, 0, 4, 4]
 SELECT substring(instr(str1,'a'),'321421') FROM instr_01;
 substring(instr(str1, a), 321421)
 
@@ -188,8 +269,10 @@ substring(instr(str1, a), 321421)
 
 null
 null
+
+#SQL[@66,N46]Result[23, 1, 1, 1, 2, 1, 4, 1, 4]
 SELECT INSTR(REVERSE(str2), ' ') FROM instr_01;
-instr(reverse(str2),  )
+INSTR(REVERSE(str2),  )
 0
 0
 0
@@ -198,66 +281,104 @@ instr(reverse(str2),  )
 null
 0
 null
+
+#SQL[@67,N55]Result[19, 1]
 SELECT bin(INSTR(str1, 'a')) FROM instr_01 WHERE id = 1;
-bin(instr(str1, a))
+bin(INSTR(str1, a))
 1
+
+#SQL[@68,N55]Result[19, 1]
 SELECT hex(INSTR(str2, 'w')) FROM instr_01 WHERE id = 1;
-hex(instr(str2, w))
+hex(INSTR(str2, w))
 5
+
+#SQL[@73,N29]Result[]
 DROP TABLE IF EXISTS instr_02;
+
+#SQL[@74,N83]Result[]
 CREATE TABLE instr_02(id int,
-str1 mediumtext,
-str2 VARCHAR(30) NOT NULL);
+					str1 mediumtext,
+					str2 VARCHAR(30) NOT NULL);
+
+#SQL[@79,N99]Result[]
 INSERT INTO instr_02 VALUES(1, '今天是很美好的一天 Today is a wonderful day!!!', '美好');
+
+#SQL[@80,N116]Result[]
 INSERT INTO instr_02 VALUES(2, '4**-1+83982j4mfkerwvuh43oij3f42j4iuu32oi4ejf32j432YUDINWKJ<DJ>>A>欢迎使用mo','');
+
+#SQL[@81,N50]Result[]
 INSERT INTO instr_02 VALUES(3, '', 'gchjewqhedjw');
+
+#SQL[@82,N38]Result[]
 INSERT INTO instr_02 VALUES(4, '', '');
+
+#SQL[@83,N43]Result[]
 INSERT INTO instr_02 VALUES(5, NULL,'abcd');
+
+#SQL[@84,N63]Result[]
 INSERT INTO instr_02 VALUES(6, '   ewfew3324   ed_+_+  ', 'ew');
+
+#SQL[@87,N49]Result[22, 74]
 SELECT * FROM instr_02 WHERE INSTR(str1,str2) = 5;
-id    str1    str2
-1    今天是很美好的一天 Today is a wonderful day!!!    美好
+id  ¦  str1  ¦  str2
+1  ¦  今天是很美好的一天 Today is a wonderful day!!!  ¦  美好
+
+#SQL[@88,N38]Result[17, 1, 1, 1, 1, 4, 1]
 SELECT INSTR(str1, str2) FROM instr_02;
-instr(str1, str2)
+INSTR(str1, str2)
 5
 1
 0
 1
 null
 4
+
+#SQL[@89,N38]Result[17, 1, 1, 1, 1, 4, 1]
 SELECT INSTR(str2, str1) FROM instr_02;
-instr(str2, str1)
+INSTR(str2, str1)
 0
 0
 1
 1
 null
 0
+
+#SQL[@90,N86]Result[22, 92]
 SELECT * FROM instr_02 WHERE id = (SELECT id FROM instr_02 WHERE INSTR(str1,'+8') = 6);
-id    str1    str2
-2    4**-1+83982j4mfkerwvuh43oij3f42j4iuu32oi4ejf32j432YUDINWKJ<DJ>>A>欢迎使用mo    
+id  ¦  str1  ¦  str2
+2  ¦  4**-1+83982j4mfkerwvuh43oij3f42j4iuu32oi4ejf32j432YUDINWKJ<DJ>>A>欢迎使用mo  ¦  
+
+#SQL[@91,N76]Result[60, 11, 11, 11, 11, 11, 11]
 SELECT(SELECT str2 FROM instr_02 WHERE instr(str1,'a') = 1),id FROM instr_02;
-(select str2 from instr_02 where instr(str1, a) = 1)    id
-null    1
-null    2
-null    3
-null    4
-null    5
-null    6
+(select str2 from instr_02 where instr(str1, a) = 1)  ¦  id
+null  ¦  1
+null  ¦  2
+null  ¦  3
+null  ¦  4
+null  ¦  5
+null  ¦  6
+
+#SQL[@95,N69]Result[46, 3, 3, 3, 3, 1, 3]
 SELECT concat_ws('-',INSTR(str2,str1),INSTR('abc','a')) FROM instr_02;
-concat_ws(-, instr(str2, str1), instr(abc, a))
+concat_ws(-, INSTR(str2, str1), INSTR(abc, a))
 0-1
 0-1
 1-1
 1-1
 1
 0-1
+
+#SQL[@96,N77]Result[43, 1]
 SELECT find_in_set(INSTR(str2,str1),'hdkewqjfew-') FROM instr_02 WHERE id = 4;
-find_in_set(instr(str2, str1), hdkewqjfew-)
+find_in_set(INSTR(str2, str1), hdkewqjfew-)
 0
+
+#SQL[@97,N55]Result[22, 1]
 SELECT oct(INSTR(str2,str1)) FROM instr_02 WHERE id = 4;
-oct(instr(str2, str1))
+oct(INSTR(str2, str1))
 1
+
+#SQL[@98,N44]Result[24, 5, 5, 5, 5, 4, 5]
 SELECT empty(instr(str2,str1)) FROM instr_02;
 empty(instr(str2, str1))
 false
@@ -266,97 +387,154 @@ false
 false
 null
 false
+
+#SQL[@99,N45]Result[25, 1, 1, 1, 1, 4, 1]
 SELECT LENGTH(INSTR(str2,str1)) FROM instr_02;
-length(instr(str2, str1))
+LENGTH(INSTR(str2, str1))
 1
 1
 1
 1
 null
 1
+
+#SQL[@100,N61]Result[26, 2]
 SELECT INSTR(LTRIM(str1),'ed_+_+') FROM instr_02 WHERE id = 6;
-instr(ltrim(str1), ed_+_+)
+INSTR(LTRIM(str1), ed_+_+)
 13
+
+#SQL[@101,N59]Result[24, 1]
 SELECT INSTR(RTRIM(str1),'3324') FROM instr_02 WHERE id = 6;
-instr(rtrim(str1), 3324)
+INSTR(RTRIM(str1), 3324)
 9
+
+#SQL[@102,N54]Result[31, 6, 6, 6, 6, 4, 6]
 SELECT LPAD(INSTR(str2, str1), 6, 'abc') FROM instr_02;
-lpad(instr(str2, str1), 6, abc)
+LPAD(INSTR(str2, str1), 6, abc)
 abcab0
 abcab0
 abcab1
 abcab1
 null
 abcab0
+
+#SQL[@103,N48]Result[25, 0, 0, 0, 0, 0, 0]
 SELECT RPAD(INSTR(str2, 3), 5, '') FROM instr_02;
-rpad(instr(str2, 3), 5, )
+RPAD(INSTR(str2, 3), 5, )
 
 
 
 
 
 
+
+#SQL[@104,N68]Result[32, 1]
 SELECT INSTR(substring(str2, 1, 6), 'cd') FROM instr_02 WHERE id = 5;
-instr(substring(str2, 1, 6), cd)
+INSTR(substring(str2, 1, 6), cd)
 3
+
+#SQL[@105,N64]Result[28, 1]
 SELECT INSTR(REVERSE(str1), '用使') FROM instr_02 WHERE id = 2;
-instr(reverse(str1), 用使)
+INSTR(REVERSE(str1), 用使)
 3
+
+#SQL[@106,N55]Result[19, 4]
 SELECT bin(INSTR(str2, 'd')) FROM instr_02 WHERE id = 3;
-bin(instr(str2, d))
+bin(INSTR(str2, d))
 1010
+
+#SQL[@107,N56]Result[20, 2]
 SELECT hex(INSTR(str1, 'ed')) FROM instr_02 WHERE id = 6;
-hex(instr(str1, ed))
+hex(INSTR(str1, ed))
 10
+
+#SQL[@113,N29]Result[]
 DROP TABLE IF EXISTS instr_03;
+
+#SQL[@114,N29]Result[]
 DROP TABLE IF EXISTS instr_04;
+
+#SQL[@115,N88]Result[]
 CREATE TABLE instr_03(
-id int,
-d1 CHAR,
-str1 VARCHAR(50),
-primary key (id));
+	id int,
+    d1 CHAR,
+    str1 VARCHAR(50),
+    primary key (id));
+
+#SQL[@121,N83]Result[]
 CREATE TABLE instr_04(
-id int,
-str1 mediumtext NOT NULL,
-primary key (id));
+    id int,
+	str1 mediumtext NOT NULL,
+    primary key (id));
+
+#SQL[@127,N81]Result[]
 INSERT INTO instr_03 VALUES(1, 'a', 'zheshimeihaodeyitian,这是美好的一天');
+
+#SQL[@128,N76]Result[]
 INSERT INTO instr_03 VALUES(2, '*', '明天更美好ehwqknjcw*^*qk67329&&*');
+
+#SQL[@129,N58]Result[]
 INSERT INTO instr_03 VALUES(3, NULL, 'ewgu278wd-+ABNJDSK');
+
+#SQL[@130,N40]Result[]
 INSERT INTO instr_03 VALUES(4, '', NULL);
+
+#SQL[@132,N364]Result[]
 INSERT INTO instr_04 VALUES(1, '盼望着,盼望着,东风来了,春天的脚步近了。 一切都像刚睡醒的样子,欣欣然张开了眼。山朗润起来了,水涨 起来了,太阳的脸红起来了。 小草偷偷地从土里钻出来，Choose to Be Alone on Purpose Here we are, all by ourselves, all 22 million of us by recent count, alone in our rooms');
+
+#SQL[@133,N76]Result[]
 INSERT INTO instr_04 VALUES(2, 'zheshimeihaodeyitian,这是美好的一天');
+
+#SQL[@134,N52]Result[]
 INSERT INTO instr_04 VALUES(3, 'ewgu278wd-+ABNJDSK');
+
+#SQL[@135,N54]Result[]
 INSERT INTO instr_04 VALUES(4, 'hey32983..........,,');
+
+#SQL[@138,N83]Result[20, 35]
 SELECT * FROM instr_03 WHERE id = (SELECT id FROM instr_04 WHERE INSTR(str1,'u27'));
-id    d1    str1
-3    null    ewgu278wd-+ABNJDSK
+id  ¦  d1  ¦  str1
+3  ¦  null  ¦  ewgu278wd-+ABNJDSK
+
+#SQL[@139,N134]Result[14, 8, 8, 8, 8, 8, 8]
 SELECT instr_03.id AS id_3,instr_03.id AS id_4 FROM instr_03,instr_04 WHERE INSTR(instr_03.str1,'shi') = INSTR(instr_04.str1,'美好');
-id_3    id_4
-2    2
-2    2
-2    2
-3    3
-3    3
-3    3
+id_3  ¦  id_4
+2  ¦  2
+2  ¦  2
+2  ¦  2
+3  ¦  3
+3  ¦  3
+3  ¦  3
+
+#SQL[@140,N135]Result[16, 90, 80, 80, 80, 42, 42, 42]
 SELECT instr_03.str1 AS str1_3,instr_03.str1 FROM instr_03,instr_04 WHERE INSTR(instr_03.str1,'meihao') = INSTR(instr_04.str1,'meihao');
-str1_3    str1
-zheshimeihaodeyitian,这是美好的一天    zheshimeihaodeyitian,这是美好的一天
-明天更美好ehwqknjcw*^*qk67329&&*    明天更美好ehwqknjcw*^*qk67329&&*
-明天更美好ehwqknjcw*^*qk67329&&*    明天更美好ehwqknjcw*^*qk67329&&*
-明天更美好ehwqknjcw*^*qk67329&&*    明天更美好ehwqknjcw*^*qk67329&&*
-ewgu278wd-+ABNJDSK    ewgu278wd-+ABNJDSK
-ewgu278wd-+ABNJDSK    ewgu278wd-+ABNJDSK
-ewgu278wd-+ABNJDSK    ewgu278wd-+ABNJDSK
+str1_3  ¦  str1
+zheshimeihaodeyitian,这是美好的一天  ¦  zheshimeihaodeyitian,这是美好的一天
+明天更美好ehwqknjcw*^*qk67329&&*  ¦  明天更美好ehwqknjcw*^*qk67329&&*
+明天更美好ehwqknjcw*^*qk67329&&*  ¦  明天更美好ehwqknjcw*^*qk67329&&*
+明天更美好ehwqknjcw*^*qk67329&&*  ¦  明天更美好ehwqknjcw*^*qk67329&&*
+ewgu278wd-+ABNJDSK  ¦  ewgu278wd-+ABNJDSK
+ewgu278wd-+ABNJDSK  ¦  ewgu278wd-+ABNJDSK
+ewgu278wd-+ABNJDSK  ¦  ewgu278wd-+ABNJDSK
+
+#SQL[@141,N97]Result[29, 1, 2]
 SELECT INSTR(instr_03.str1, 'ABNJDSK') FROM instr_03,instr_04 WHERE instr_03.str1 = instr_04.str1;
-instr(instr_03.str1, ABNJDSK)
+INSTR(instr_03.str1, ABNJDSK)
 0
 12
+
+#SQL[@142,N96]Result[20, 35]
 SELECT * FROM instr_03 WHERE str1 = (SELECT str1 FROM instr_04 WHERE INSTR(str1,'ABNJDSK') = 12);
-id    d1    str1
-3    null    ewgu278wd-+ABNJDSK
+id  ¦  d1  ¦  str1
+3  ¦  null  ¦  ewgu278wd-+ABNJDSK
+
+#SQL[@146,N127]Result[13, 49, 25]
 SELECT INSTR(instr_03.str1, 'zheshi')AS tmp, instr_04.str1 AS temp FROM instr_03 join instr_04 ON instr_03.str1 = instr_04.str1;
-tmp    temp
-1    zheshimeihaodeyitian,这是美好的一天
-0    ewgu278wd-+ABNJDSK
+tmp  ¦  temp
+1  ¦  zheshimeihaodeyitian,这是美好的一天
+0  ¦  ewgu278wd-+ABNJDSK
+
+#SQL[@147,N91]Error[45]
 SELECT instr_03.id AS id_3,instr_04.id AS id_4 FROM instr_03 left join instr_04 ON instr_03;
 invalid input: column instr_03 does not exist
+

@@ -1,32 +1,57 @@
+#SQL[@2,N19]Error[43]
 SELECT DATE(0.0124);
-Data truncation: data out of range: data type date, '0.0124'
+data out of range: data type date, '0.0124'
+
+#SQL[@3,N22]Error[44]
 SELECT DATE("2112123");
-Data truncation: data out of range: data type date, '2112123'
+data out of range: data type date, '2112123'
+
+#SQL[@4,N25]Error[49]
 SELECT DATE(1231241.4513);
-Data truncation: data out of range: data type date, '1231241.4513'
+data out of range: data type date, '1231241.4513'
+
+#SQL[@5,N25]Result[16, 10]
 SELECT DATE("2017-06-15");
-DATE("2017-06-15")
+DATE(2017-06-15)
 2017-06-15
+
+#SQL[@8,N34]Result[25, 10]
 SELECT DATE("2017-06-15 09:34:21");
-DATE("2017-06-15 09:34:21")
+DATE(2017-06-15 09:34:21)
 2017-06-15
+
+#SQL[@9,N31]Result[22, 10]
 SELECT DATE("2023-11-08 15:38");
-DATE("2023-11-08 15:38")
+DATE(2023-11-08 15:38)
 2023-11-08
+
+#SQL[@11,N37]Error[59]
 SELECT DATE("The date is 2017-06-15");
-Data truncation: data out of range: data type date, 'The date is 2017-06-15'
+data out of range: data type date, 'The date is 2017-06-15'
+
+#SQL[@14,N51]Result[13, 10]
 SELECT DATE('2008-05-17 11:31:31') as required_DATE;
 required_DATE
 2008-05-17
+
+#SQL[@18,N57]Result[54, 14]
 select coalesce(date(NULL)), coalesce(cast(NULL as DATE));
-coalesce(date(NULL))	coalesce(cast(NULL as DATE))
-null	null
+coalesce(date(null))  ¦  coalesce(cast(null as date))
+null  ¦  null
+
+#SQL[@19,N17]Result[10, 4]
 select date(NULL);
-date(NULL)
+date(null)
 null
+
+#SQL[@24,N29]Result[]
 CREATE TABLE t1 (d1 datetime);
+
+#SQL[@25,N115]Result[]
 INSERT INTO t1(d1) VALUES ('2007-07-19 08:30:00'), (NULL),
 ('2007-07-19 08:34:00'), (NULL), ('2007-07-19 08:36:00');
+
+#SQL[@27,N39]Result[24, 5, 4, 5, 4, 5]
 SELECT cast(date(d1) as signed) FROM t1;
 cast(date(d1) as signed)
 13713
@@ -34,6 +59,8 @@ null
 13713
 null
 13713
+
+#SQL[@28,N21]Result[6, 1, 4, 1, 4, 1]
 SELECT d1 % 7 FROM t1;
 d1 % 7
 3
@@ -41,49 +68,101 @@ null
 5
 null
 6
+
+#SQL[@29,N13]Result[]
 drop table t1;
+
+#SQL[@34,N29]Result[]
 CREATE TABLE t1 (d1 datetime);
+
+#SQL[@35,N115]Result[]
 INSERT INTO t1(d1) VALUES ('2007-07-19 08:30:00'), (NULL),
 ('2007-07-19 08:34:00'), (NULL), ('2007-07-19 08:36:00');
+
+#SQL[@37,N28]Error[57]
 SELECT sum(date(d1)) FROM t1;
 invalid argument aggregate function sum, bad value [DATE]
+
+#SQL[@38,N13]Result[]
 drop table t1;
+
+#SQL[@54,N41]Result[32, 10]
 select date("1997-12-31 23:59:59.000001");
-date("1997-12-31 23:59:59.000001")
+date(1997-12-31 23:59:59.000001)
 1997-12-31
+
+#SQL[@57,N41]Error[63]
 select date("1997-13-31 23:59:59.000001");
-Data truncation: data out of range: data type date, '1997-13-31 23:59:59.000001'
+data out of range: data type date, '1997-13-31 23:59:59.000001'
+
+#SQL[@58,N35]Result[28, 10]
 SELECT DATE(20110512154559.6 + 0e0);
-date(20110512154559.6 + 0e0)
+DATE(20110512154559.6 + 0e0)
 2011-05-12
+
+#SQL[@60,N30]Error[38]
 SELECT DATE(concat_ws('a', 0));
-Data truncation: data out of range: data type date, '0'
+data out of range: data type date, '0'
+
+#SQL[@64,N29]Result[]
 CREATE TABLE t1 (a timestamp);
+
+#SQL[@65,N45]Result[]
 INSERT INTO t1 VALUES ("2020-12-31 12:01:32");
+
+#SQL[@66,N27]Result[12, 10]
 SELECT DATE(MIN(a)) FROM t1;
 DATE(MIN(a))
 2020-12-31
+
+#SQL[@67,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@72,N90]Result[]
 CREATE TABLE t1
 (first_usage DATE, last_recharge DATETIME, life_time SMALLINT(4) UNSIGNED);
+
+#SQL[@74,N47]Result[]
 INSERT INTO t1 VALUES ('2011-04-27', null, 900);
+
+#SQL[@75,N193]Result[11, 30]
 SELECT
 DATE_ADD(coalesce(last_recharge, first_usage), INTERVAL life_time DAY ) as dt,
 DATE_ADD(coalesce(last_recharge, first_usage), INTERVAL life_time DAY ) <
 DATE('2011-04-28') as exp FROM t1;
-dt	exp
-2013-10-13 00:00:00	false
+dt  ¦  exp
+2013-10-13 00:00:00  ¦  false
+
+#SQL[@79,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@84,N64]Result[61, 26]
 SELECT DATE(20110512154559.616), DATE(FLOOR(20110512154559.616));
-date(20110512154559.616)    date(floor(20110512154559.616))
-2011-05-12    2011-05-12
+DATE(20110512154559.616)  ¦  DATE(FLOOR(20110512154559.616))
+2011-05-12  ¦  2011-05-12
+
+#SQL[@87,N23]Result[]
 DROP TABLE IF EXISTS t3;
+
+#SQL[@88,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@89,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@90,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@91,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@92,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@93,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@94,N23]Result[8, 10, 10, 10, 10, 10]
 SELECT DATE(c1) FROM t3;
 DATE(c1)
 2000-01-01
@@ -91,13 +170,29 @@ DATE(c1)
 2000-01-01
 2006-12-25
 2008-02-29
+
+#SQL[@95,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@96,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@97,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@98,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@99,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@100,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@101,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@102,N23]Result[8, 10, 10, 10, 10, 10]
 SELECT DATE(c1) FROM t3;
 DATE(c1)
 2000-01-01
@@ -105,13 +200,29 @@ DATE(c1)
 2000-01-01
 2006-12-25
 2008-02-29
+
+#SQL[@103,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@104,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@105,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@106,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@107,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@108,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@109,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@110,N23]Result[8, 10, 10, 10, 10, 10]
 SELECT DATE(c1) FROM t3;
 DATE(c1)
 2000-01-01
@@ -119,13 +230,29 @@ DATE(c1)
 2000-01-01
 2006-12-25
 2008-02-29
+
+#SQL[@111,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@190,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@191,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@192,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@193,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@194,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@195,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@196,N28]Result[13, 1, 3, 1, 3, 2]
 SELECT DAYOFYEAR(c1) FROM t3;
 DAYOFYEAR(c1)
 1
@@ -133,13 +260,29 @@ DAYOFYEAR(c1)
 1
 359
 60
+
+#SQL[@197,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@199,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@200,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@201,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@202,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@203,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@204,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@205,N28]Result[13, 1, 3, 1, 3, 2]
 SELECT DAYOFYEAR(c1) FROM t3;
 DAYOFYEAR(c1)
 1
@@ -147,13 +290,29 @@ DAYOFYEAR(c1)
 1
 359
 60
+
+#SQL[@206,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@207,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@208,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@209,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@210,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@211,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@212,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@213,N28]Result[13, 1, 3, 1, 3, 2]
 SELECT DAYOFYEAR(c1) FROM t3;
 DAYOFYEAR(c1)
 1
@@ -161,13 +320,29 @@ DAYOFYEAR(c1)
 1
 359
 60
+
+#SQL[@214,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@260,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@261,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@262,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@263,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@264,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@265,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@266,N24]Result[9, 1, 2, 1, 2, 1]
 SELECT MONTH(c1) FROM t3;
 MONTH(c1)
 1
@@ -175,13 +350,29 @@ MONTH(c1)
 1
 12
 2
+
+#SQL[@267,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@268,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@269,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@270,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@271,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@272,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@273,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@274,N24]Result[9, 1, 2, 1, 2, 1]
 SELECT MONTH(c1) FROM t3;
 MONTH(c1)
 1
@@ -189,13 +380,29 @@ MONTH(c1)
 1
 12
 2
+
+#SQL[@275,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@277,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@278,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@279,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@280,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@281,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@282,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@283,N24]Result[9, 1, 2, 1, 2, 1]
 SELECT MONTH(c1) FROM t3;
 MONTH(c1)
 1
@@ -203,13 +410,29 @@ MONTH(c1)
 1
 12
 2
+
+#SQL[@284,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@411,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@412,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@413,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@414,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@415,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@416,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@417,N26]Result[11, 1, 1, 1, 1, 1]
 SELECT WEEKDAY(c1) FROM t3;
 WEEKDAY(c1)
 5
@@ -217,13 +440,29 @@ WEEKDAY(c1)
 5
 0
 4
+
+#SQL[@418,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@420,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@421,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@422,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@423,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@424,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@425,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@426,N26]Result[11, 1, 1, 1, 1, 1]
 SELECT WEEKDAY(c1) FROM t3;
 WEEKDAY(c1)
 5
@@ -231,13 +470,29 @@ WEEKDAY(c1)
 5
 0
 4
+
+#SQL[@427,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@429,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@430,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@431,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@432,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@433,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@434,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@435,N26]Result[11, 1, 1, 1, 1, 1]
 SELECT WEEKDAY(c1) FROM t3;
 WEEKDAY(c1)
 5
@@ -245,13 +500,29 @@ WEEKDAY(c1)
 5
 0
 4
+
+#SQL[@436,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@464,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@465,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@466,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@467,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@468,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@469,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@470,N23]Result[8, 4, 4, 4, 4, 4]
 SELECT YEAR(c1) FROM t3;
 YEAR(c1)
 2000
@@ -259,13 +530,29 @@ YEAR(c1)
 2000
 2006
 2008
+
+#SQL[@471,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@473,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@474,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@475,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@476,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@477,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@478,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@479,N23]Result[8, 4, 4, 4, 4, 4]
 SELECT YEAR(c1) FROM t3;
 YEAR(c1)
 2000
@@ -273,13 +560,29 @@ YEAR(c1)
 2000
 2006
 2008
+
+#SQL[@480,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@482,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@483,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@484,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@485,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@486,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@487,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@488,N23]Result[8, 4, 4, 4, 4, 4]
 SELECT YEAR(c1) FROM t3;
 YEAR(c1)
 2000
@@ -287,43 +590,96 @@ YEAR(c1)
 2000
 2006
 2008
+
+#SQL[@489,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@522,N64]Result[53, 4]
 SELECT date("2022-12-22 02:34:23") = date("2022-12-22 03:34:23");
-date("2022-12-22 02:34:23") = date("2022-12-22 03:34:23")
+date(2022-12-22 02:34:23) = date(2022-12-22 03:34:23)
 true
+
+#SQL[@527,N23]Result[]
 drop table if exists t1;
+
+#SQL[@528,N23]Result[]
 create table t1(a date);
+
+#SQL[@529,N49]Result[]
 insert into t1 SELECT DATE("2017-06-15 09:34:21");
+
+#SQL[@530,N49]Result[]
 insert into t1 SELECT DATE("2019-06-25 10:12:21");
+
+#SQL[@531,N49]Result[]
 insert into t1 SELECT DATE("2019-06-25 18:20:49");
+
+#SQL[@532,N25]Result[1, 10, 10]
 select distinct a from t1;
 a
 2017-06-15
 2019-06-25
+
+#SQL[@533,N13]Result[]
 drop table t1;
+
+#SQL[@538,N23]Result[]
 drop table if exists t1;
+
+#SQL[@539,N35]Result[]
 create table t1(a INT,  b datetime);
+
+#SQL[@540,N128]Result[]
 insert into t1 values(1, "2017-06-15 09:34:21"),(1, "2019-06-25 10:12:21"),(2, "2019-06-25 18:20:49"),(3, "2019-06-25 18:20:49");
+
+#SQL[@541,N55]Result[1, 19, 19]
 select b from t1 group by b having date(b)>"2018-01-01";
 b
 2019-06-25 10:12:21
 2019-06-25 18:20:49
+
+#SQL[@542,N13]Result[]
 drop table t1;
+
+#SQL[@547,N23]Result[]
 drop table if exists t1;
+
+#SQL[@548,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@549,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@550,N44]Result[8, 17, 17, 17]
 select * from t1 where date(b)!="2012-10-12";
-a	b
-2	2004-04-24
-3	2008-12-04
-4	2012-03-23
+a  ¦  b
+2  ¦  2004-04-24
+3  ¦  2008-12-04
+4  ¦  2012-03-23
+
+#SQL[@551,N13]Result[]
 drop table t1;
+
+#SQL[@556,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@557,N31]Result[]
 create table t2(a INT,  b date);
+
+#SQL[@558,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@559,N92]Result[]
 insert into t2 values(1, "2013-04-30"),(2, "1994-10-04"),(3, "2018-06-04"),(4, "2012-10-12");
+
+#SQL[@560,N62]Result[8, 8]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (date(t1.b) = date(t2.b));
-a	a
-1	4
+a  ¦  a
+1  ¦  4
+
+#SQL[@561,N13]Result[]
 drop table t1;
+
+#SQL[@562,N13]Result[]
 drop table t2;
+

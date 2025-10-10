@@ -1,16 +1,38 @@
+#SQL[@4,N23]Result[]
 drop table if exists t1;
+
+#SQL[@5,N43]Result[]
 create table t1(a varchar(255),b char(255));
+
+#SQL[@6,N33]Result[]
 insert into t1 values('', 'abcd');
+
+#SQL[@7,N33]Result[]
 insert into t1 values('1111', '');
+
+#SQL[@8,N32]Result[22, 15, 15]
 select empty(a),empty(b) from t1;
-empty(a)	empty(b)
-true	false
-false	true
+empty(a)  ¦  empty(b)
+true  ¦  false
+false  ¦  true
+
+#SQL[@9,N13]Result[]
 drop table t1;
+
+#SQL[@12,N23]Result[]
 drop table if exists t1;
+
+#SQL[@13,N43]Result[]
 create table t1(a varchar(255),b char(255));
+
+#SQL[@14,N33]Result[]
 insert into t1 values(NULL, NULL);
+
+#SQL[@15,N32]Result[22, 14]
 select empty(a),empty(b) from t1;
-empty(a)	empty(b)
-null	null
+empty(a)  ¦  empty(b)
+null  ¦  null
+
+#SQL[@16,N13]Result[]
 drop table t1;
+

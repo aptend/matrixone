@@ -19,7 +19,7 @@ SELECT INSTR(NULL,NULL);
 
 
 -- @suite
--- @setup 
+-- @setup
 DROP TABLE IF EXISTS instr_01;
 CREATE TABLE instr_01(id int,
 					str1 CHAR,
@@ -59,7 +59,7 @@ SELECT oct(INSTR(str2,str1)) FROM instr_01 WHERE id = 4;
 SELECT empty(instr(str2,str1)) FROM instr_01;
 SELECT LENGTH(INSTR(str2,str1)) FROM instr_01;
 SELECT INSTR(LTRIM(str2),'*&&^*&') FROM instr_01 WHERE id = 4;
-SELECT INSTR(RTRIM(str2),'()____  )') FROM instr_01 WHERE str1 = '.'; 
+SELECT INSTR(RTRIM(str2),'()____  )') FROM instr_01 WHERE str1 = '.';
 SELECT LPAD(INSTR(str2, str1), 10, '-') FROM instr_01;
 SELECT RPAD(INSTR(str2, 3), 5, '***') FROM instr_01;
 SELECT substring(instr(str1,'a'),'321421') FROM instr_01;
@@ -69,13 +69,13 @@ SELECT hex(INSTR(str2, 'w')) FROM instr_01 WHERE id = 1;
 
 
 -- @suite
--- @setup 
+-- @setup
 DROP TABLE IF EXISTS instr_02;
 CREATE TABLE instr_02(id int,
 					str1 mediumtext,
 					str2 VARCHAR(30) NOT NULL);
-	
-	
+
+
 INSERT INTO instr_02 VALUES(1, '今天是很美好的一天 Today is a wonderful day!!!', '美好');
 INSERT INTO instr_02 VALUES(2, '4**-1+83982j4mfkerwvuh43oij3f42j4iuu32oi4ejf32j432YUDINWKJ<DJ>>A>欢迎使用mo','');
 INSERT INTO instr_02 VALUES(3, '', 'gchjewqhedjw');
@@ -84,9 +84,9 @@ INSERT INTO instr_02 VALUES(5, NULL,'abcd');
 INSERT INTO instr_02 VALUES(6, '   ewfew3324   ed_+_+  ', 'ew');
 
 
-SELECT * FROM instr_02 WHERE INSTR(str1,str2) = 5;		
-SELECT INSTR(str1, str2) FROM instr_02; 	
-SELECT INSTR(str2, str1) FROM instr_02;	
+SELECT * FROM instr_02 WHERE INSTR(str1,str2) = 5;
+SELECT INSTR(str1, str2) FROM instr_02;
+SELECT INSTR(str2, str1) FROM instr_02;
 SELECT * FROM instr_02 WHERE id = (SELECT id FROM instr_02 WHERE INSTR(str1,'+8') = 6);
 SELECT(SELECT str2 FROM instr_02 WHERE instr(str1,'a') = 1),id FROM instr_02;
 
@@ -98,7 +98,7 @@ SELECT oct(INSTR(str2,str1)) FROM instr_02 WHERE id = 4;
 SELECT empty(instr(str2,str1)) FROM instr_02;
 SELECT LENGTH(INSTR(str2,str1)) FROM instr_02;
 SELECT INSTR(LTRIM(str1),'ed_+_+') FROM instr_02 WHERE id = 6;
-SELECT INSTR(RTRIM(str1),'3324') FROM instr_02 WHERE id = 6; 
+SELECT INSTR(RTRIM(str1),'3324') FROM instr_02 WHERE id = 6;
 SELECT LPAD(INSTR(str2, str1), 6, 'abc') FROM instr_02;
 SELECT RPAD(INSTR(str2, 3), 5, '') FROM instr_02;
 SELECT INSTR(substring(str2, 1, 6), 'cd') FROM instr_02 WHERE id = 5;
@@ -117,7 +117,7 @@ CREATE TABLE instr_03(
     d1 CHAR,
     str1 VARCHAR(50),
     primary key (id));
-	
+
 CREATE TABLE instr_04(
     id int,
 	str1 mediumtext NOT NULL,
@@ -142,6 +142,6 @@ SELECT INSTR(instr_03.str1, 'ABNJDSK') FROM instr_03,instr_04 WHERE instr_03.str
 SELECT * FROM instr_03 WHERE str1 = (SELECT str1 FROM instr_04 WHERE INSTR(str1,'ABNJDSK') = 12);
 
 
--- join 
+-- join
 SELECT INSTR(instr_03.str1, 'zheshi')AS tmp, instr_04.str1 AS temp FROM instr_03 join instr_04 ON instr_03.str1 = instr_04.str1;
 SELECT instr_03.id AS id_3,instr_04.id AS id_4 FROM instr_03 left join instr_04 ON instr_03;

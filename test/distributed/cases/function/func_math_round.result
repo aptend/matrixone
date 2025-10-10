@@ -1,31 +1,54 @@
+#SQL[@4,N55]Result[61, 33]
 select -(0-3),round(-(0-3)), round(9999999999999999999);
--(0-3)	round(-(0-3))	round(9999999999999999999)
-3	3	9999999999999999999
+-(0 - 3)  ¦  round(-(0 - 3))  ¦  round(9999999999999999999)
+3  ¦  3  ¦  9999999999999999999
+
+#SQL[@7,N29]Result[27, 9]
 select round(5.5),round(-5.5);
-round(5.5)	round(-5.5)
-6	-6
+round(5.5)  ¦  round(-5.5)
+6  ¦  -6
+
+#SQL[@8,N64]Result[76, 28]
 select round(5.64,1),round(5.64,2),round(5.64,-1),round(5.64,-2);
-round(5.64,1)	round(5.64,2)	round(5.64,-1)	round(5.64,-2)
-5.6	5.64	10	0
+round(5.64, 1)  ¦  round(5.64, 2)  ¦  round(5.64, -1)  ¦  round(5.64, -2)
+5.6  ¦  5.64  ¦  10  ¦  0
+
+#SQL[@17,N21]Result[15, 1]
 select round(111,-10);
-round(111,-10)
+round(111, -10)
 0
+
+#SQL[@18,N37]Result[31, 20]
 select round(-5000111000111000155,-1);
 round(-5000111000111000155, -1)
 -5000111000111000160
+
+#SQL[@21,N37]Result[31, 20]
 select round(15000111000111000155,-1);
 round(15000111000111000155, -1)
 15000111000111000160
+
+#SQL[@22,N83]Error[47]
 select round(cast(-2 as unsigned), 1), round(18446744073709551614, 1), round(-2, 1);
-Data truncation: data out of range: data type uint64, value '-2'
+data out of range: data type uint64, value '-2'
+
+#SQL[@23,N83]Error[47]
 select round(4, cast(-2 as unsigned)), round(4, 18446744073709551614), round(4, -2);
-Data truncation: data out of range: data type uint64, value '-2'
+data out of range: data type uint64, value '-2'
+
+#SQL[@25,N54]Result[51, 10]
 select round(1.5, -4294967296), round(1.5, 4294967296);
-round(1.5, -4294967296)	round(1.5, 4294967296)
-0	1.5
+round(1.5, -4294967296)  ¦  round(1.5, 4294967296)
+0  ¦  1.5
+
+#SQL[@26,N72]Error[63]
 select round(1.5, -9223372036854775808), round(1.5, 9223372036854775808);
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@30,N26]Result[]
 CREATE TABLE t1 (a DOUBLE);
+
+#SQL[@31,N168]Result[]
 INSERT INTO t1 VALUES (-1.1), (1.1),
 (-1.5), (1.5),
 (-1.9), (1.9),
@@ -34,359 +57,405 @@ INSERT INTO t1 VALUES (-1.1), (1.1),
 (-2.9), (2.9),
 (-1e16 - 0.5), (1e16 + 0.5),
 (-1e16 - 1.5), (1e16 + 1.5);
+
+#SQL[@39,N26]Result[15, 12, 10, 12, 10, 12, 10, 12, 10, 12, 10, 12, 10, 42, 40, 42, 40]
 SELECT a, ROUND(a) FROM t1;
-a	ROUND(a)
--1.1	-1.0
-1.1	1.0
--1.5	-2.0
-1.5	2.0
--1.9	-2.0
-1.9	2.0
--2.1	-2.0
-2.1	2.0
--2.5	-2.0
-2.5	2.0
--2.9	-3.0
-2.9	3.0
--1.0E16	-1.0E16
-1.0E16	1.0E16
--1.0000000000000002E16	-1.0000000000000002E16
-1.0000000000000002E16	1.0000000000000002E16
+a  ¦  ROUND(a)
+-1.1  ¦  -1
+1.1  ¦  1
+-1.5  ¦  -2
+1.5  ¦  2
+-1.9  ¦  -2
+1.9  ¦  2
+-2.1  ¦  -2
+2.1  ¦  2
+-2.5  ¦  -2
+2.5  ¦  2
+-2.9  ¦  -3
+2.9  ¦  3
+-10000000000000000  ¦  -10000000000000000
+10000000000000000  ¦  10000000000000000
+-10000000000000002  ¦  -10000000000000002
+10000000000000002  ¦  10000000000000002
+
+#SQL[@40,N13]Result[]
 DROP TABLE t1;
-CREATE TABLE t1(f1 DECIMAL(22,1));
-INSERT INTO t1 VALUES (0),(1);
-SELECT ROUND(f1, f1) FROM t1;
-ROUND(f1, f1)
-0.0
-1.0
-SELECT ROUND(f1, f1) FROM t1 GROUP BY 1;
-ROUND(f1, f1)
-0.0
-1.0
-DROP TABLE t1;
+
+#SQL[@56,N33]Result[26, 3]
 SELECT ROUND(sin(0.45), cos(0.8));
 ROUND(sin(0.45), cos(0.8))
 0.4
+
+#SQL[@61,N27]Result[20, 10]
 select round(999999999, -9);
 round(999999999, -9)
 1000000000
+
+#SQL[@62,N29]Result[22, 10]
 select round(999999999.0, -9);
 round(999999999.0, -9)
 1000000000
+
+#SQL[@63,N37]Result[30, 19]
 select round(999999999999999999, -18);
 round(999999999999999999, -18)
 1000000000000000000
+
+#SQL[@64,N39]Result[32, 19]
 select round(999999999999999999.0, -18);
 round(999999999999999999.0, -18)
 1000000000000000000
+
+#SQL[@67,N145]Result[]
 CREATE TABLE t1 (
 id           VARCHAR(80) NOT NULL PRIMARY KEY,
 sujet        VARCHAR(80),
 motsclefs    varchar(255),
 texte        varchar(255)
 );
+
+#SQL[@73,N50]Result[]
 INSERT INTO t1 VALUES('123','toto','essai','test');
+
+#SQL[@74,N53]Result[]
 INSERT INTO t1 VALUES('456','droit','penal','lawyer');
+
+#SQL[@75,N53]Result[]
 INSERT INTO t1 VALUES('789','aaaaa','bbbbb','cccccc');
+
+#SQL[@76,N86]Result[]
 CREATE TABLE t2 (
 id         VARCHAR(255) NOT NULL,
 author     VARCHAR(255) NOT NULL
 );
+
+#SQL[@80,N35]Result[]
 INSERT INTO t2 VALUES('123', 'moi');
+
+#SQL[@81,N35]Result[]
 INSERT INTO t2 VALUES('123', 'lui');
+
+#SQL[@82,N35]Result[]
 INSERT INTO t2 VALUES('456', 'lui');
+
+#SQL[@88,N103]Result[64, 1, 1, 1, 4]
 select round((length(t1.texte)+length(t1.sujet))/length(t2.author))
 from t1 left join t2 on t2.id=t1.id;
-round((length(t1.texte)+length(t1.sujet))/length(t2.author))
+round((length(t1.texte) + length(t1.sujet)) / length(t2.author))
 3
 3
 4
 null
+
+#SQL[@90,N13]Result[]
 drop table t1;
+
+#SQL[@91,N13]Result[]
 drop table t2;
+
+#SQL[@95,N83]Error[47]
 select round(cast(-2 as unsigned), 1), round(18446744073709551614, 1), round(-2, 1);
-Data truncation: data out of range: data type uint64, value '-2'
+data out of range: data type uint64, value '-2'
+
+#SQL[@96,N83]Error[47]
 select round(4, cast(-2 as unsigned)), round(4, 18446744073709551614), round(4, -2);
-Data truncation: data out of range: data type uint64, value '-2'
+data out of range: data type uint64, value '-2'
+
+#SQL[@97,N39]Result[32, 20]
 select round(10000000000000000000, -19);
 round(10000000000000000000, -19)
 10000000000000000000
+
+#SQL[@98,N23]Result[16, 1]
 select round(1e0, -309);
 round(1e0, -309)
-0.0
+0
+
+#SQL[@99,N21]Result[15, 2]
 select round(1e1,308);
-round(1e1,308)
-10.0
+round(1e1, 308)
+10
+
+#SQL[@100,N29]Result[22, 2]
 select round(1e1, 2147483648);
 round(1e1, 2147483648)
-10.0
+10
+
+#SQL[@101,N31]Result[24, 2]
 select round(1.1e1, 4294967295);
 round(1.1e1, 4294967295)
-11.0
+11
+
+#SQL[@102,N32]Result[25, 4]
 select round(1.12e1, 4294967296);
 round(1.12e1, 4294967296)
 11.2
+
+#SQL[@103,N29]Result[22, 3]
 select round(1.5, 2147483640);
 round(1.5, 2147483640)
 1.5
+
+#SQL[@104,N54]Result[51, 10]
 select round(1.5, -2147483649), round(1.5, 2147483648);
-round(1.5, -2147483649)	round(1.5, 2147483648)
-0	1.5
+round(1.5, -2147483649)  ¦  round(1.5, 2147483648)
+0  ¦  1.5
+
+#SQL[@105,N54]Result[51, 10]
 select round(1.5, -4294967296), round(1.5, 4294967296);
-round(1.5, -4294967296)	round(1.5, 4294967296)
-0	1.5
+round(1.5, -4294967296)  ¦  round(1.5, 4294967296)
+0  ¦  1.5
+
+#SQL[@106,N72]Error[63]
 select round(1.5, -9223372036854775808), round(1.5, 9223372036854775808);
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@107,N39]Error[64]
 select round(1.5, 18446744073709551615);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@108,N38]Result[31, 20]
 select round(18446744073709551614, -1);
 round(18446744073709551614, -1)
 18446744073709551610
+
+#SQL[@109,N28]Result[21, 1]
 select round(4, -4294967200);
 round(4, -4294967200)
 0
+
+#SQL[@112,N49]Result[]
 CREATE TABLE t1 (a INTEGER, b INTEGER, c INTEGER);
+
+#SQL[@113,N45]Result[]
 INSERT INTO t1 (a,b) VALUES (1,2),(1,3),(2,5);
+
+#SQL[@114,N83]Result[17, 17]
 SELECT a, 0.1*0+1 r2, SUM(1) r1 FROM t1 WHERE a = 1 GROUP BY a HAVING r1>1 AND r2=1;
-a    r2    r1
-1    1.0    2
+a  ¦  r2  ¦  r1
+1  ¦  1.0  ¦  2
+
+#SQL[@115,N61]Result[17, 16, 16]
 SELECT a, ROUND(sin(100)*10) r2, SUM(1) r1 FROM t1 GROUP BY a;
-a	r2	r1
-1	-5.0	2
-2	-5.0	1
+a  ¦  r2  ¦  r1
+1  ¦  -5  ¦  2
+2  ¦  -5  ¦  1
+
+#SQL[@116,N132]Result[17, 16, 16]
 SELECT a, ROUND(sin(100)*10) r2, SUM(1) r1 FROM t1 GROUP BY a
 HAVING SUM(1) >0 AND ROUND(sin(100)*10)<0 AND ROUND(sin(100)*10) > -10;
-a	r2	r1
-1	-5.0	2
-2	-5.0	1
+a  ¦  r2  ¦  r1
+1  ¦  -5  ¦  2
+2  ¦  -5  ¦  1
+
+#SQL[@118,N164]Result[17, 16, 16]
 SELECT a, ROUND(sin(100)*10) r2, SUM(1) r1 FROM t1 GROUP BY a
 HAVING SUM(1)>=1 AND (SELECT ROUND(sin(100)*10)>-100 AND ROUND(sin(100)*10) < 0 FROM t1 AS t2 LIMIT 1);
-a	r2	r1
-1	-5.0	2
-2	-5.0	1
+a  ¦  r2  ¦  r1
+1  ¦  -5  ¦  2
+2  ¦  -5  ¦  1
+
+#SQL[@120,N115]Result[17, 16]
 SELECT a, ROUND(sin(100)*10) r2, SUM(1) r1 FROM t1 WHERE a = 1
 GROUP BY a HAVING SUM(1)>1 AND ROUND(sin(100)*10)<=2;
-a	r2	r1
-1	-5.0	2
+a  ¦  r2  ¦  r1
+1  ¦  -5  ¦  2
+
+#SQL[@122,N132]Result[17, 16]
 SELECT a, ROUND(sin(100)*10) r2, SUM(1) r1 FROM t1 WHERE a = 1
 GROUP BY a HAVING SUM(1)>1 AND ROUND(sin(100)*10)<=2 ORDER BY a+r2+r1;
-a	r2	r1
-1	-5.0	2
+a  ¦  r2  ¦  r1
+1  ¦  -5  ¦  2
+
+#SQL[@124,N44]Error[104]
 SELECT a,SUM(b) FROM t1 WHERE a=1 GROUP BY c;
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@125,N44]Error[104]
 SELECT a*SUM(b) FROM t1 WHERE a=1 GROUP BY c;
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@126,N49]Result[15, 2]
 SELECT SUM(a)*SUM(b) FROM t1 WHERE a=1 GROUP BY c;
-sum(a) * sum(b)
+SUM(a) * SUM(b)
 10
+
+#SQL[@127,N55]Error[104]
 SELECT a,SUM(b) FROM t1 WHERE a=1 GROUP BY c HAVING a=1;
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@128,N60]Error[104]
 SELECT a AS d,SUM(b) FROM t1 WHERE a=1 GROUP BY c HAVING d=1;
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@129,N67]Result[1, 2]
 SELECT SUM(a)*SUM(b) AS d FROM t1 WHERE a=1 GROUP BY c HAVING d > 0;
 d
 10
+
+#SQL[@130,N39]Result[9, 9, 9, 9]
 SELECT a, ROUND(sin(100)*10) r2 FROM t1;
-a	r2
-1	-5.0
-1	-5.0
-2	-5.0
+a  ¦  r2
+1  ¦  -5
+1  ¦  -5
+2  ¦  -5
+
+#SQL[@131,N61]Result[20, 2]
 SELECT ROUND(sin(100)*10) FROM t1 GROUP BY ROUND(sin(100)*10);
-round(sin(100) * 10)
--5.0
+ROUND(sin(100) * 10)
+-5
+
+#SQL[@132,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@136,N57]Result[]
 CREATE TABLE t1 (i INT, d1 DECIMAL(9,2), d2 DECIMAL(9,2));
+
+#SQL[@137,N317]Result[]
 INSERT INTO t1 VALUES (1, 101.40, 21.40), (1, -80.00, 0.00),
 (2, 0.00, 0.00), (2, -13.20, 0.00), (2, 59.60, 46.40),
 (2, 30.40, 30.40), (3, 37.00, 7.40), (3, -29.60, 0.00),
 (4, 60.00, 15.40), (4, -10.60, 0.00), (4, -34.00, 0.00),
 (5, 33.00, 0.00), (5, -25.80, 0.00), (5, 0.00, 7.20),
 (6, 0.00, 0.00), (6, -51.40, 0.00);
+
+#SQL[@143,N71]Result[27, 23]
 SELECT i, SUM(d1), SUM(d2) FROM t1 GROUP BY i HAVING SUM(d1) <> SUM(d2);
-i	sum(d1)	sum(d2)
-6	-51.40	0
-SELECT i, ROUND(SUM(d1), 2), ROUND(SUM(d2), 2) FROM t1 GROUP BY i
-HAVING ROUND(SUM(d1), 2) <> ROUND(SUM(d2), 2);
-i	sum(d1)	sum(d2)
-6	-51.40	0
+i  ¦  SUM(d1)  ¦  SUM(d2)
+6  ¦  -51.40  ¦  0.00
+
+#SQL[@148,N13]Result[]
 drop table t1;
-CREATE TABLE t1 (qty decimal(16,6) default NULL, dps tinyint(3) unsigned default NULL);
-INSERT INTO t1 VALUES (1.1325,3);
-SELECT ROUND(qty,3), dps, ROUND(qty,dps) FROM t1;
-ROUND(qty,3)	dps	ROUND(qty,dps)
-1.133	3	1.133000
-DROP TABLE t1;
-CREATE TABLE t1( a DECIMAL, b INT );
-INSERT INTO t1 VALUES (123456, 40), (123456, 40);
-SELECT ROUND( a, b ) AS c FROM t1 ORDER BY c;
-c
-123456
-123456
-SELECT ROUND( a, 100 ) AS c FROM t1 ORDER BY c;
-c
-123456
-123456
-CREATE TABLE t2( a DECIMAL, b INT );
-INSERT INTO t2 VALUES (123456, 100);
-SELECT ROUND( a, b ) AS c FROM t2 ORDER BY c;
-c
-123456
-CREATE TABLE t3( a DECIMAL, b INT );
-INSERT INTO t3 VALUES (123456, 40), (123456, 40);
-SELECT ROUND( a, b ) AS c FROM t3 ORDER BY c;
-c
-123456
-123456
-SELECT ROUND( a, 100 ) AS c FROM t3 ORDER BY c;
-c
-123456
-123456
-CREATE TABLE t4( a DECIMAL, b INT );
-INSERT INTO t4 VALUES (123456, 40), (123456, 40);
-SELECT ROUND( a, b ) AS c FROM t4 ORDER BY c;
-c
-123456
-123456
-SELECT ROUND( a, 100 ) AS c FROM t4 ORDER BY c;
-c
-123456
-123456
-delete from t1;
-INSERT INTO t1 VALUES (1234567890, 20), (999.99, 5);
-select round(a,b) as c from t1 order by c;
-c
-1000
-1234567890
-drop table t1;
-drop table t2;
-drop table t3;
-drop table t4;
-CREATE TABLE t1( a DECIMAL(4, 3), b INT );
-INSERT INTO t1 VALUES ( 1, 5 ), ( 2, 4 ), ( 3, 3 ), ( 4, 2 ), ( 5, 1 );
-SELECT a, b, ROUND( a, b ) AS c FROM t1 ORDER BY c;
-a	b	c
-1.000	5	1.000
-2.000	4	2.000
-3.000	3	3.000
-4.000	2	4.000
-5.000	1	5.000
-SELECT a, b, ROUND( a, b ) AS c FROM t1 ORDER BY c DESC;
-a	b	c
-5.000	1	5.000
-4.000	2	4.000
-3.000	3	3.000
-2.000	4	2.000
-1.000	5	1.000
-CREATE TABLE t2 ( a INT, b INT, c DECIMAL(5, 4) );
-INSERT INTO t2 VALUES ( 0, 1, 1.2345 ), ( 1, 2, 1.2345 ),( 3, 3, 1.2345 ), ( 2, 4, 1.2345 );
-SELECT a, b, MAX(ROUND(c, a)) FROM t2 GROUP BY a, b ORDER BY b;
-a	b	MAX(ROUND(c, a))
-0	1	1.0000
-1	2	1.2000
-3	3	1.2350
-2	4	1.2300
-SELECT a, b, ROUND(c, a) FROM t2;
-a	b	ROUND(c, a)
-0	1	1.0000
-1	2	1.2000
-3	3	1.2350
-2	4	1.2300
-CREATE TABLE t3( a INT, b DECIMAL(6, 3) );
-INSERT INTO t3 VALUES( 0, 1.5 );
-SELECT ROUND( b, a ) FROM t3;
-ROUND( b, a )
-2.000
-CREATE TABLE t4( a INT, b DECIMAL( 12, 0) );
-INSERT INTO t4 VALUES( -9, 1.5e9 );
-SELECT ROUND( b, a ) FROM t4;
-ROUND( b, a )
-2000000000
-CREATE TABLE t5( a INT, b DECIMAL( 13, 12 ) );
-INSERT INTO t5 VALUES( 0, 1.5 );
-INSERT INTO t5 VALUES( 9, 1.5e-9 );
-SELECT ROUND( b, a ) FROM t5;
-ROUND( b, a )
-2.000000000000
-2.000E-9
-CREATE TABLE t6( a INT );
-INSERT INTO t6 VALUES( 6 / 8 );
-SELECT * FROM t6;
-a
-1
-SELECT ROUND(20061108085411.000002);
-ROUND(20061108085411.000002)
-20061108085411
-drop table t1;
-drop table t2;
-drop table t3;
-drop table t4;
-drop table t5;
-drop table t6;
-CREATE TABLE t5(c1 DECIMAL(16,6), c2 tinyint);
-INSERT INTO t5 VALUES(1.1325,3);
-SELECT ROUND(c1,c2) from t5;
-ROUND(c1,c2)
-1.133000
-DROP TABLE t5;
+
+#SQL[@232,N18]Result[11, 4]
 SELECT ROUND(NULL);
-ROUND(NULL)
+ROUND(null)
 null
+
+#SQL[@235,N34]Result[29, 1]
 select round(123.54)-round(123.03);
-round(123.54)-round(123.03)
+round(123.54) - round(123.03)
 1
+
+#SQL[@238,N23]Result[]
 drop table if exists t1;
+
+#SQL[@239,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@240,N60]Result[]
 insert into t1 values(12124, -4213.413), (12124, -42413.409);
+
+#SQL[@241,N37]Result[8, 20, 20]
 select * from t1 where round(a)=12124;
-a	b
-12124	-4213.41
-12124	-42413.4
+a  ¦  b
+12124  ¦  -4213.413
+12124  ¦  -42413.41
+
+#SQL[@242,N13]Result[]
 drop table t1;
+
+#SQL[@245,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@246,N32]Result[]
 create table t2(a INT,  b float);
+
+#SQL[@247,N56]Result[]
 insert into t1 select round(12124.413), round(-4213.413);
+
+#SQL[@248,N57]Result[]
 insert into t1 select round(12124.123), round(-42413.409);
+
+#SQL[@249,N56]Result[]
 insert into t2 select round(14124.413), round(-4213.413);
+
+#SQL[@250,N56]Result[]
 insert into t2 select round(984798.123), round(-980.409);
+
+#SQL[@251,N64]Result[8, 16]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (round(t1.b) = round(t2.b));
-a	a
-12124	14124
+a  ¦  a
+12124  ¦  14124
+
+#SQL[@252,N13]Result[]
 drop table t1;
+
+#SQL[@253,N13]Result[]
 drop table t2;
+
+#SQL[@255,N21]Result[15, 4]
 select round(1.000,2);
-round(1.000,2)
+round(1.000, 2)
 1.00
+
+#SQL[@257,N23]Result[]
 drop table if exists t1;
+
+#SQL[@258,N39]Result[]
 create table t1(a int ,b decimal(10,5));
+
+#SQL[@259,N28]Result[]
 insert into t1 values(1,0.5);
+
+#SQL[@260,N30]Result[]
 insert into t1 values(2,0.499);
+
+#SQL[@261,N30]Result[]
 insert into t1 values(3,0.501);
+
+#SQL[@262,N29]Result[]
 insert into t1 values(4,20.5);
+
+#SQL[@263,N31]Result[]
 insert into t1 values(5,20.499);
+
+#SQL[@264,N31]Result[]
 insert into t1 values(6,13.500);
+
+#SQL[@265,N31]Result[]
 insert into t1 values(7,-0.500);
+
+#SQL[@266,N31]Result[]
 insert into t1 values(8,-0.499);
+
+#SQL[@267,N31]Result[]
 insert into t1 values(9,-0.501);
+
+#SQL[@268,N33]Result[]
 insert into t1 values(10,-20.499);
+
+#SQL[@269,N33]Result[]
 insert into t1 values(11,-20.500);
+
+#SQL[@270,N33]Result[]
 insert into t1 values(12,-13.500);
+
+#SQL[@271,N36]Result[]
 insert into t1 values (13, 20.89123);
+
+#SQL[@272,N36]Result[]
 insert into t1 values (14, 23.40123);
+
+#SQL[@273,N37]Result[]
 insert into t1 values (15, 123.45678);
+
+#SQL[@274,N31]Result[25, 24, 24, 24, 26, 26, 26, 26, 26, 26, 29, 29, 29, 27, 27, 29]
 select a, b, round(b,2) from t1;
-a    b    round(b, 2)
-1    0.50000    0.50
-2    0.49900    0.50
-3    0.50100    0.50
-4    20.50000    20.50
-5    20.49900    20.50
-6    13.50000    13.50
-7    -0.50000    -0.50
-8    -0.49900    -0.50
-9    -0.50100    -0.50
-10    -20.49900    -20.50
-11    -20.50000    -20.50
-12    -13.50000    -13.50
-13    20.89123    20.89
-14    23.40123    23.40
-15    123.45678    123.46
+a  ¦  b  ¦  round(b, 2)
+1  ¦  0.50000  ¦  0.50
+2  ¦  0.49900  ¦  0.50
+3  ¦  0.50100  ¦  0.50
+4  ¦  20.50000  ¦  20.50
+5  ¦  20.49900  ¦  20.50
+6  ¦  13.50000  ¦  13.50
+7  ¦  -0.50000  ¦  -0.50
+8  ¦  -0.49900  ¦  -0.50
+9  ¦  -0.50100  ¦  -0.50
+10  ¦  -20.49900  ¦  -20.50
+11  ¦  -20.50000  ¦  -20.50
+12  ¦  -13.50000  ¦  -13.50
+13  ¦  20.89123  ¦  20.89
+14  ¦  23.40123  ¦  23.40
+15  ¦  123.45678  ¦  123.46
+

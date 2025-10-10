@@ -1,65 +1,116 @@
+#SQL[@7,N29]Result[22, 2]
 SELECT mid('zhanziziefw',1,2);
 mid(zhanziziefw, 1, 2)
 zh
+
+#SQL[@8,N44]Result[37, 21]
 SELECT mid('jdkajfkw83q9iwqjfeqw_7832',5,22);
 mid(jdkajfkw83q9iwqjfeqw_7832, 5, 22)
 jfkw83q9iwqjfeqw_7832
+
+#SQL[@9,N42]Result[35, 9]
 SELECT mid('我是一只自由的鸟',1,3);
 mid(我是一只自由的鸟, 1, 3)
 我是一
+
+#SQL[@10,N49]Result[42, 4]
 SELECT mid('好的fjewka鸭dfj00-=392*&*^$',-8,4);
 mid(好的fjewka鸭dfj00-=392*&*^$, -8, 4)
 392*
+
+#SQL[@11,N43]Result[36, 0]
 SELECT mid('好的fjewka鸭dfj00-=392',0,2);
 mid(好的fjewka鸭dfj00-=392, 0, 2)
 
+
+#SQL[@12,N80]Result[73, 40]
 SELECT mid('abchfjwabcABCvshfjdrvoiewjvkmdns mndsabcAbcueiuiwqjemkvwme000',6,40);
 mid(abchfjwabcABCvshfjdrvoiewjvkmdns mndsabcAbcueiuiwqjemkvwme000, 6, 40)
 jwabcABCvshfjdrvoiewjvkmdns mndsabcAbcue
+
+#SQL[@13,N44]Result[37, 2]
 SELECT mid('http://www.google.com.cn/',-2,6);
 mid(http://www.google.com.cn/, -2, 6)
 n/
+
+#SQL[@14,N18]Result[11, 0]
 SELECT mid('',1,3);
 mid(, 1, 3)
 
+
+#SQL[@15,N20]Result[15, 4]
 SELECT mid(NULL,1,2);
 mid(null, 1, 2)
 null
+
+#SQL[@16,N22]Result[15, 2]
 SELECT mid('hduw',3,8);
 mid(hduw, 3, 8)
 uw
+
+#SQL[@17,N19]Result[12, 0]
 SELECT mid('',-1,3);
 mid(, -1, 3)
 
+
+#SQL[@18,N32]Result[25, 4]
 SELECT mid('wfroiewjvre',NULL,3);
 mid(wfroiewjvre, null, 3)
 null
+
+#SQL[@19,N31]Result[24, 4]
 SELECT mid('vjdiejevfe',1,NULL);
 mid(vjdiejevfe, 1, null)
 null
+
+#SQL[@20,N29]Result[22, 4]
 SELECT mid('efjkw',NULL,NULL);
 mid(efjkw, null, null)
 null
+
+#SQL[@21,N18]Result[11, 0]
 SELECT mid('',2,9);
 mid(, 2, 9)
 
+
+#SQL[@26,N27]Result[]
 DROP TABLE IF EXISTS mid_01;
+
+#SQL[@27,N104]Result[]
 CREATE TABLE mid_01(id int,
-str1 CHAR,
-d1 int,
-d2 tinyint unsigned,
-PRIMARY KEY(id));
+					str1 CHAR,
+					d1 int,
+					d2 tinyint unsigned,
+					PRIMARY KEY(id));
+
+#SQL[@33,N40]Result[]
 INSERT INTO mid_01 VALUES(1, 'h', 3, 12);
+
+#SQL[@34,N40]Result[]
 INSERT INTO mid_01 VALUES(2, '', -2, 32);
+
+#SQL[@35,N39]Result[]
 INSERT INTO mid_01 VALUES(3, '2',-2, 2);
+
+#SQL[@36,N42]Result[]
 INSERT into mid_01 VALUES(4, '*', NULL, 3);
+
+#SQL[@37,N42]Result[]
 INSERT INTO mid_01 VALUES(5, 'd', 2, NULL);
+
+#SQL[@41,N54]Error[99]
 INSERT INTO mid_01 VALUES(6, 'ehiuwjqnelfkw', NULL, 3);
 internal error: Can't cast 'ehiuwjqnelfkw' to CHAR type. Src length 13 is larger than Dest length 1
+
+#SQL[@42,N48]Error[55]
 INSERT INTO mid_01 VALUES(7, '2',-2147483649, 0);
-Data truncation: data out of range: data type int32, value '-2147483649'
+data out of range: data type int32, value '-2147483649'
+
+#SQL[@43,N43]Error[47]
 INSERT INTO mid_01 VALUES(8, '1', 328, 258);
-Data truncation: data out of range: data type uint8, value '258'
+data out of range: data type uint8, value '258'
+
+#SQL[@46,N34]Result[15, 1, 0, 1, 1, 1]
 SELECT mid(str1, 1, 2) FROM mid_01;
 mid(str1, 1, 2)
 h
@@ -67,6 +118,8 @@ h
 2
 *
 d
+
+#SQL[@47,N35]Result[16, 0, 0, 0, 4, 0]
 SELECT mid(str1, d1, 3) FROM mid_01;
 mid(str1, d1, 3)
 
@@ -74,6 +127,8 @@ mid(str1, d1, 3)
 
 null
 
+
+#SQL[@48,N36]Result[17, 0, 0, 0, 4, 4]
 SELECT mid(str1, d1, d2) FROM mid_01;
 mid(str1, d1, d2)
 
@@ -81,23 +136,36 @@ mid(str1, d1, d2)
 
 null
 null
+
+#SQL[@49,N46]Result[28, 23]
 SELECT * FROM mid_01 WHERE mid(str1,1,1) = 'h';
-id    str1    d1    d2
-1    h    3    12
+id  ¦  str1  ¦  d1  ¦  d2
+1  ¦  h  ¦  3  ¦  12
+
+#SQL[@50,N68]Result[]
 SELECT * FROM mid_01 WHERE mid(str1,-1,2) IS NULL AND d1 IS NOT NULL;
-id    str1    d1    d2
+
+#SQL[@51,N91]Result[10, 11]
 SELECT d1, d2 FROM mid_01 WHERE str1 = (SELECT str1 FROM mid_01 WHERE mid(str1,-1,1) = '*');
-d1    d2
-null    3
+d1  ¦  d2
+null  ¦  3
+
+#SQL[@52,N89]Result[70, 21]
 SELECT(SELECT str1 FROM mid_01 WHERE mid(str1,2,3) = NULL),d1,d2 FROM mid_01 WHERE id = 4;
-(select str1 from mid_01 where mid(str1, 2, 3) = null)    d1    d2
-null    null    3
+(select str1 from mid_01 where mid(str1, 2, 3) = null)  ¦  d1  ¦  d2
+null  ¦  null  ¦  3
+
+#SQL[@56,N65]Result[30, 1]
 SELECT LENGTH(mid(str1, ABS(d1),d2)) FROM mid_01 WHERE str1 = '2';
-length(mid(str1, abs(d1), d2))
+LENGTH(mid(str1, ABS(d1), d2))
 0
+
+#SQL[@57,N61]Result[24, 4]
 SELECT empty(mid(str1, d1, d2)) FROM mid_01 WHERE ABS(d2) = 3;
 empty(mid(str1, d1, d2))
 null
+
+#SQL[@58,N36]Result[17, 0, 0, 0, 4, 4]
 SELECT mid(str1, d1, d2) FROM mid_01;
 mid(str1, d1, d2)
 
@@ -105,34 +173,64 @@ mid(str1, d1, d2)
 
 null
 null
+
+#SQL[@59,N57]Result[16, 0, 0, 0]
 SELECT mid(str1, d1, 2) FROM mid_01 WHERE ABS(d1) % 2 = 0;
 mid(str1, d1, 2)
 
 
 
+
+#SQL[@60,N49]Result[17, 0, 4]
 SELECT mid(str1, d1, d2) FROM mid_01 WHERE d1 > 0;
 mid(str1, d1, d2)
 
 null
+
+#SQL[@65,N27]Result[]
 DROP TABLE IF EXISTS mid_02;
+
+#SQL[@66,N121]Result[]
 CREATE TABLE mid_02(id int,
-s VARCHAR(50),
-d1 smallint,
-d2 bigint unsigned NOT NULL,
-PRIMARY KEY(id));
+					s VARCHAR(50),
+					d1 smallint,
+					d2 bigint unsigned NOT NULL,
+					PRIMARY KEY(id));
+
+#SQL[@73,N52]Result[]
 INSERT INTO mid_02 VALUES(1, 'woshishei3829', 3, 12);
+
+#SQL[@74,N42]Result[]
 INSERT INTO mid_02 VALUES(2, '', -2, 2132);
+
+#SQL[@75,N62]Result[]
 INSERT INTO mid_02 VALUES(3, ' 356284o 329&***((^%$%^&',-2, 2);
+
+#SQL[@76,N43]Result[]
 INSERT into mid_02 VALUES(4, NULL, NULL, 3);
+
+#SQL[@77,N40]Result[]
 INSERT INTO mid_02 VALUES(5, NULL, 2, 4);
+
+#SQL[@78,N54]Result[]
 INSERT INTO mid_02 VALUES(6, 'ehwqkjf8392__+ ',NULL,6);
+
+#SQL[@79,N41]Result[]
 INSERT INTO mid_02 values(7, '123', 0, 2);
+
+#SQL[@83,N98]Error[147]
 INSERT INTO mid_02 VALUES(8, 'ehiuwjey73y8213092kjfm3e#$%^WHJfne32edwfdewvvcqeveqnelfkw', NULL, 3);
 internal error: Can't cast 'ehiuwjey73y8213092kjfm3e#$%^WHJfne32edwfdewvvcqeveqnelfkw' to VARCHAR type. Src length 57 is larger than Dest length 50
+
+#SQL[@84,N42]Error[49]
 INSERT INTO mid_02 VALUES(9, '2',32769, 0);
-Data truncation: data out of range: data type int16, value '32769'
+data out of range: data type int16, value '32769'
+
+#SQL[@85,N61]Error[65]
 INSERT INTO mid_02 VALUES(10, '1', 328, 18446744073709551618);
-Data truncation: data out of range: data type uint64, value '18446744073709551618'
+data out of range: data type uint64, value '18446744073709551618'
+
+#SQL[@88,N37]Result[18, 4, 4, 4, 4, 4, 4, 4]
 SELECT mid(s, NULL, NULL) FROM mid_02;
 mid(s, null, null)
 null
@@ -142,6 +240,8 @@ null
 null
 null
 null
+
+#SQL[@89,N34]Result[15, 4, 4, 4, 4, 4, 4, 4]
 SELECT mid(s, NULL, 2) FROM mid_02;
 mid(s, null, 2)
 null
@@ -151,6 +251,8 @@ null
 null
 null
 null
+
+#SQL[@90,N34]Result[15, 4, 4, 4, 4, 4, 4, 4]
 SELECT mid(s, 1, NULL) FROM mid_02;
 mid(s, 1, null)
 null
@@ -160,9 +262,13 @@ null
 null
 null
 null
+
+#SQL[@91,N57]Result[12, 9]
 SELECT mid(s, 1, 9) FROM mid_02 WHERE mid(s, 1, 2) = 'eh';
 mid(s, 1, 9)
 ehwqkjf83
+
+#SQL[@92,N33]Result[14, 11, 0, 2, 4, 4, 4, 0]
 SELECT mid(s, d1, d2) FROM mid_02;
 mid(s, d1, d2)
 shishei3829
@@ -172,17 +278,25 @@ null
 null
 null
 
+
+#SQL[@93,N46]Result[14, 0, 0]
 SELECT mid(s, d1, -3) FROM mid_02 WHERE d2 = 2;
 mid(s, d1, -3)
 
 
+
+#SQL[@97,N80]Result[40, 1, 6]
 SELECT concat_ws('-',mid(s,2,3),mid(s,1,2)) FROM mid_02 WHERE id BETWEEN 2 AND 3;
 concat_ws(-, mid(s, 2, 3), mid(s, 1, 2))
 -
 356- 3
+
+#SQL[@98,N71]Result[40, 1]
 SELECT find_in_set(mid(s,1 + 2,9),'woshishei') FROM mid_02 WHERE id = 1;
 find_in_set(mid(s, 1 + 2, 9), woshishei)
 0
+
+#SQL[@99,N36]Result[19, 5, 4, 5, 4, 4, 5, 5]
 SELECT empty(mid(s,1,2)) FROM mid_02;
 empty(mid(s, 1, 2))
 false
@@ -192,8 +306,10 @@ null
 null
 false
 false
+
+#SQL[@100,N50]Result[31, 1, 1, 1, 4, 4, 1, 1]
 SELECT LENGTH(mid(s, -1, 7281979 % 2)) FROM mid_02;
-length(mid(s, -1, 7281979 % 2))
+LENGTH(mid(s, -1, 7281979 % 2))
 1
 0
 1
@@ -201,6 +317,8 @@ null
 null
 1
 1
+
+#SQL[@101,N44]Result[25, 1, 1, 1, 4, 4, 1, 1]
 SELECT lengthutf8(mid(s, -1, 3)) FROM mid_02;
 lengthutf8(mid(s, -1, 3))
 1
@@ -210,8 +328,10 @@ null
 null
 1
 1
+
+#SQL[@102,N44]Result[25, 5, 0, 4, 4, 4, 5, 3]
 SELECT LTRIM(mid(s, 1, 16 - 11)) FROM mid_02;
-ltrim(mid(s, 1, 16 - 11))
+LTRIM(mid(s, 1, 16 - 11))
 woshi
 
 3562
@@ -219,11 +339,15 @@ null
 null
 ehwqk
 123
+
+#SQL[@103,N52]Result[20, 2]
 SELECT RTRIM(mid(s, -3, 2)) FROM mid_02 WHERE id = 6;
-rtrim(mid(s, -3, 2))
+RTRIM(mid(s, -3, 2))
 _+
+
+#SQL[@104,N44]Result[25, 20, 20, 20, 4, 4, 20, 20]
 SELECT LPAD(mid(s, 1, 2),20,'*') FROM mid_02;
-lpad(mid(s, 1, 2), 20, *)
+LPAD(mid(s, 1, 2), 20, *)
 ******************wo
 ********************
 ****************** 3
@@ -231,19 +355,28 @@ null
 null
 ******************eh
 ******************12
+
+#SQL[@105,N64]Result[25, 5]
 SELECT RPAD(mid(s, -8, 4), 5, '-') FROM mid_02 WHERE ABS(d1) = 0;
-rpad(mid(s, -8, 4), 5, -)
+RPAD(mid(s, -8, 4), 5, -)
 -----
+
+#SQL[@106,N67]Result[]
 SELECT startswith(mid(s, 1, 6), 'ehwq') FROM mid_02 WHERE d2 = NULL;
-startswith(mid(s, 1, 6), ehwq)
+
+#SQL[@107,N57]Result[26, 4]
 SELECT endswith(mid(s,-1,1),' ') FROM mid_02 WHERE id = 6;
 endswith(mid(s, -1, 1),  )
 true
+
+#SQL[@108,N66]Result[31, 10]
 SELECT substring(mid(s, 3, 19),3, 10) FROM mid_02 WHERE id + 1 = 4;
 substring(mid(s, 3, 19), 3, 10)
 284o 329&*
+
+#SQL[@109,N41]Result[22, 1, 0, 1, 4, 4, 1, 1]
 SELECT REVERSE(mid(s, -1, 2)) FROM mid_02;
-reverse(mid(s, -1, 2))
+REVERSE(mid(s, -1, 2))
 9
 
 &
@@ -251,64 +384,110 @@ null
 null
  
 3
+
+#SQL[@110,N49]Result[17, 4]
 SELECT hex(mid(s, 1, 2)) FROM mid_02 WHERE id = 7;
 hex(mid(s, 1, 2))
 3132
+
+#SQL[@114,N77]Result[25, 35]
 SELECT * FROM mid_02 WHERE s = (SELECT s FROM mid_02 WHERE mid(s,1,2) = 'wo');
-id    s    d1    d2
-1    woshishei3829    3    12
+id  ¦  s  ¦  d1  ¦  d2
+1  ¦  woshishei3829  ¦  3  ¦  12
+
+#SQL[@115,N84]Result[63, 32]
 SELECT(SELECT s FROM mid_02 WHERE mid(s,1,3) = 'ehw'),d1,d2 FROM mid_02 WHERE id = 6;
-(select s from mid_02 where mid(s, 1, 3) = ehw)    d1    d2
-ehwqkjf8392__+     null    6
+(select s from mid_02 where mid(s, 1, 3) = ehw)  ¦  d1  ¦  d2
+ehwqkjf8392__+   ¦  null  ¦  6
+
+#SQL[@116,N78]Result[]
 SELECT * FROM mid_02 WHERE s = (SELECT s FROM mid_02 WHERE mid(s,1,10) = NULL);
-id    s    d1    d2
+
+#SQL[@121,N27]Result[]
 DROP TABLE IF EXISTS mid_03;
+
+#SQL[@122,N27]Result[]
 DROP TABLE IF EXISTS mid_04;
+
+#SQL[@123,N98]Result[]
 CREATE TABLE mid_03(
-id int,
-d1 tinyint unsigned,
-str1 VARCHAR(50),
-primary key (id));
+	id int,
+    d1 tinyint unsigned,
+    str1 VARCHAR(50),
+    primary key (id));
+
+#SQL[@129,N96]Result[]
 CREATE TABLE mid_04(
-id int,
-d2 bigint,
-str1 mediumtext NOT NULL,
-primary key (id));
+    id int,
+    d2 bigint,
+	str1 mediumtext NOT NULL,
+    primary key (id));
+
+#SQL[@136,N79]Result[]
 INSERT INTO mid_03 VALUES(1, 255, 'zheshimeihaodeyitian,这是美好的一天');
+
+#SQL[@137,N73]Result[]
 INSERT INTO mid_03 VALUES(2, 10, '明天更美好ehwqknjcw*^*qk67329&&*');
+
+#SQL[@138,N56]Result[]
 INSERT INTO mid_03 VALUES(3, NULL, 'ewgu278wd-+ABNJDSK');
+
+#SQL[@139,N37]Result[]
 INSERT INTO mid_03 VALUES(4, 1, NULL);
+
+#SQL[@141,N365]Result[]
 INSERT INTO mid_04 VALUES(1, 0, '盼望着,盼望着,东风来了,春天的脚步近了。 一切都像刚睡醒的样子,欣欣然张开了眼。山朗润起来了,水涨 起来了,太阳的脸红起来了。 小草偷偷地从土里钻出来，Choose to Be Alone on Purpose Here we are, all by ourselves, all 22 million of us by recent count, alone in our rooms');
+
+#SQL[@142,N79]Result[]
 INSERT INTO mid_04 VALUES(2, -34, 'zheshimeihaodeyitian,这是美好的一天');
+
+#SQL[@143,N60]Result[]
 INSERT INTO mid_04 VALUES(3, 35267192, 'ewgu278wd-+ABNJDSK');
+
+#SQL[@144,N58]Result[]
 INSERT INTO mid_04 VALUES(4, NULL, 'hey32983..........,,');
+
+#SQL[@148,N111]Result[14, 8, 8]
 SELECT mid_03.id AS id_3,mid_04.id AS id_4 FROM mid_03,mid_04 WHERE mid(mid_03.str1,1,4) = mid(mid_04.str1,1,4);
-id_3    id_4
-1    2
-3    3
+id_3  ¦  id_4
+1  ¦  2
+3  ¦  3
+
+#SQL[@149,N110]Result[16, 85]
 SELECT mid_03.str1 AS str1_3,mid_04.str1 FROM mid_03,mid_04 WHERE mid(mid_03.str1,2,1) = mid(mid_04.str1,-1,1);
-str1_3    str1
-明天更美好ehwqknjcw*^*qk67329&&*    zheshimeihaodeyitian,这是美好的一天
+str1_3  ¦  str1
+明天更美好ehwqknjcw*^*qk67329&&*  ¦  zheshimeihaodeyitian,这是美好的一天
+
+#SQL[@150,N82]Result[24, 9, 5]
 SELECT mid(mid_03.str1, -10, 5) FROM mid_03,mid_04 WHERE mid_03.str1 = mid_04.str1;
 mid(mid_03.str1, -10, 5)
 an,这是
 d-+AB
+
+#SQL[@151,N105]Result[20, 35]
 SELECT * FROM mid_03 WHERE str1 = (SELECT str1 FROM mid_04 WHERE mid(str1, 1, 19) = 'ewgu278wd-+ABNJDSK');
-id    d1    str1
-3    null    ewgu278wd-+ABNJDSK
+id  ¦  d1  ¦  str1
+3  ¦  null  ¦  ewgu278wd-+ABNJDSK
+
+#SQL[@152,N111]Result[13, 57, 29]
 SELECT mid(mid_03.str1, -10, 5)AS tmp, mid_04.str1 AS temp FROM mid_03 join mid_04 ON mid_03.str1 = mid_04.str1;
-tmp    temp
-an,这是    zheshimeihaodeyitian,这是美好的一天
-d-+AB    ewgu278wd-+ABNJDSK
+tmp  ¦  temp
+an,这是  ¦  zheshimeihaodeyitian,这是美好的一天
+d-+AB  ¦  ewgu278wd-+ABNJDSK
+
+#SQL[@153,N118]Result[14, 8, 11, 8, 11]
 SELECT mid_03.id AS id_3,mid_04.id AS id_4 FROM mid_03 left join mid_04 ON mid(mid_03.str1,1,4) = mid(mid_04.str1,1,4);
-id_3    id_4
-1    2
-2    null
-3    3
-4    null
+id_3  ¦  id_4
+1  ¦  2
+2  ¦  null
+3  ¦  3
+4  ¦  null
+
+#SQL[@154,N119]Result[14, 11, 12, 18, 14]
 SELECT mid_03.d1 AS d1_3,mid_04.d2 AS d2_4 FROM mid_03 right join mid_04 ON mid(mid_03.str1,1,4) = mid(mid_04.str1,1,4);
-d1_3    d2_4
-null    0
-255    -34
-null    35267192
-null    null
+d1_3  ¦  d2_4
+null  ¦  0
+255  ¦  -34
+null  ¦  35267192
+null  ¦  null
+

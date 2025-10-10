@@ -53,7 +53,7 @@ select * from parse_jsonl_data($$[1, 2, 3]
 $$, 'six'
 ) t;
 
--- error, invalid short format 
+-- error, invalid short format
 select * from parse_jsonl_data($$[1, 2, 3]
 [4, 5, 6]
 [1.1,2.2, {"foo":2,"bar":"zoo"}]

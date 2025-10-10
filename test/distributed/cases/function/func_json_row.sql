@@ -3,14 +3,14 @@ drop table if exists jrt;
 -- create a table t for test json, with various data types.
 create table jrt (
     id int,
-    b bool, i int, bi bigint, f float, d double, 
+    b bool, i int, bi bigint, f float, d double,
     d64 decimal(10, 3), d128 decimal(30, 10),
     c1 char(1), c2 char(10), vc varchar(100), t text,
     td date, tt time, tdt datetime,
     js json
 );
 
-insert into jrt values 
+insert into jrt values
 (1, true, 1, 11111111111111, 0.1, 0.2222222, 3.14, 3.14159265359, 'a', 'aaa', 'vvvv', 'tttttttt', '2021-02-01', '11:11:11', '2021-02-01 11:11:11', '{"foo": "bar", "zoo": [1, 2, 3]}'),
 (2, false, 1, 11111111111111, 0.1, 0.2222222, 3.14, 3.14159265359, 'a', 'aaa', 'v\vvv', 'ttt"ttttt', '2021-02-01', '11:11:11', '2021-02-01 11:11:11', '{"foo": "bar", "zoo": [1, 2, 3]}'),
 (3, true, 1, 11111111111111, 0.1, 0.2222222, 3.14, 3.14159265359, 'a', 'aaa', 'v\\vvv', 'tttt""tttt', '2021-02-01', '11:11:11', '2021-02-01 11:11:11', '{"foo": "bar", "zoo": [1, 2, 3]}'),
@@ -53,7 +53,7 @@ select b, '[' || json_row(id, bi, d, d128, t, js) || ']' as js from jrt where b 
 select b, count(*), '[' || group_concat(json_row(id, bi, d, d128, t, js)) || ']' as js from jrt group by b;
 
 -- esp, this one.
-select b, '[' || group_concat(t, t, t, t, t) || ']' as js from jrt group by b; 
+select b, '[' || group_concat(t, t, t, t, t) || ']' as js from jrt group by b;
 
 --
 -- failure

@@ -1,156 +1,266 @@
+#SQL[@5,N33]Result[22, 3]
 select jq('{"foo": 128}', '.foo');
 jq({"foo": 128}, .foo)
 128
+
+#SQL[@6,N37]Result[26, 3]
 select try_jq('{"foo": 128}', '.foo');
 try_jq({"foo": 128}, .foo)
 128
+
+#SQL[@7,N37]Result[26, 2]
 select jq('{"a": {"b": 42}}', '.a.b');
 jq({"a": {"b": 42}}, .a.b)
 42
+
+#SQL[@8,N41]Result[30, 2]
 select try_jq('{"a": {"b": 42}}', '.a.b');
 try_jq({"a": {"b": 42}}, .a.b)
 42
+
+#SQL[@10,N23]Result[14, 4]
 select jq(null, '.foo');
 jq(null, .foo)
 null
+
+#SQL[@11,N27]Result[18, 4]
 select try_jq(null, '.foo');
 try_jq(null, .foo)
 null
+
+#SQL[@12,N35]Result[26, 4]
 select jq('{"a": {"b": 42}}', null);
 jq({"a": {"b": 42}}, null)
 null
+
+#SQL[@13,N39]Result[30, 4]
 select try_jq('{"a": {"b": 42}}', null);
 try_jq({"a": {"b": 42}}, null)
 null
+
+#SQL[@15,N68]Result[57, 13]
 select jq('{"id": "sample", "10": {"b": 42}}', '{(.id): .["10"].b}');
 jq({"id": "sample", "10": {"b": 42}}, {(.id): .["10"].b})
 {"sample":42}
+
+#SQL[@16,N54]Result[43, 3]
 select jq('[{"id":1},{"id":2},{"id":3}]', '.[] | .id');
 jq([{"id":1},{"id":2},{"id":3}], .[] | .id)
 123
+
+#SQL[@17,N48]Result[37, 13]
 select jq('{"a":1, "b":2}', '.a += 1 | .b *= 2');
 jq({"a":1, "b":2}, .a += 1 | .b *= 2)
 {"a":2,"b":4}
+
+#SQL[@18,N60]Error[43]
 select jq('{"a":1} [2] 3', '. as {$a} ?// [$a] ?// $a | $a');
 invalid character '[' after top-level value
+
+#SQL[@19,N52]Result[41, 21]
 select jq('{"foo": 4722366482869645213696}', '.foo');
 jq({"foo": 4722366482869645213696}, .foo)
 4.722366482869645e+21
+
+#SQL[@20,N85]Result[74, 65]
 select jq('1', 'def fact($n): if $n < 1 then 1 else $n * fact($n - 1) end; fact(50)');
 jq(1, def fact($n): if $n < 1 then 1 else $n * fact($n - 1) end; fact(50))
 30414093201713378043612608166064768844377641568960512000000000000
+
+#SQL[@22,N37]Error[22]
 select jq('[1, 2, 3]', '.foo & .bar');
-unexpected token "&"
+unexpected token \"&\"
+
+#SQL[@23,N41]Result[30, 4]
 select try_jq('[1, 2, 3]', '.foo & .bar');
 try_jq([1, 2, 3], .foo & .bar)
 null
+
+#SQL[@25,N37]Error[64]
 select jq('{"foo": {bar: []} }', '.');
 invalid character 'b' looking for beginning of object key string
+
+#SQL[@26,N41]Result[30, 4]
 select try_jq('{"foo": {bar: []} }', '.');
 try_jq({"foo": {bar: []} }, .)
 null
+
+#SQL[@28,N48]Result[35, 1]
 select jq($$
-{
-"a": 2
-}$$, '.a');
-jq(\n{\n"a": 2\n}, .a)
+    {
+        "a": 2
+    }$$, '.a');
+jq(
+    {
+        "a": 2
+    }, .a)
 2
+
+#SQL[@33,N18]Error[28]
 select jq('', '.');
 unexpected end of JSON input
+
+#SQL[@34,N22]Result[11, 4]
 select try_jq('', '.');
 try_jq(, .)
 null
+
+#SQL[@35,N18]Error[25]
 select jq('1', '');
-missing query (try ".")
+missing query (try \".\")
+
+#SQL[@36,N22]Result[11, 4]
 select try_jq('1', '');
 try_jq(1, )
 null
+
+#SQL[@38,N49]Result[38, 5]
 select jq('{"foo::bar": "zoo"}', '.["foo::bar"]');
 jq({"foo::bar": "zoo"}, .["foo::bar"])
 "zoo"
+
+#SQL[@39,N45]Error[22]
 select jq('{"foo::bar": "zoo"}', '.foo::bar');
-unexpected token ":"
+unexpected token \":\"
+
+#SQL[@40,N49]Result[38, 4]
 select try_jq('{"foo::bar": "zoo"}', '.foo::bar');
 try_jq({"foo::bar": "zoo"}, .foo::bar)
 null
+
+#SQL[@42,N48]Result[37, 9]
 select jq('["a", "b", "c", "d", "e"]', '.[2:4]');
 jq(["a", "b", "c", "d", "e"], .[2:4])
 ["c","d"]
+
+#SQL[@43,N47]Result[36, 13]
 select jq('["a", "b", "c", "d", "e"]', '.[:3]');
 jq(["a", "b", "c", "d", "e"], .[:3])
 ["a","b","c"]
+
+#SQL[@44,N48]Result[37, 9]
 select jq('["a", "b", "c", "d", "e"]', '.[-2:]');
 jq(["a", "b", "c", "d", "e"], .[-2:])
 ["d","e"]
+
+#SQL[@46,N45]Result[34, 15]
 select jq('["a", "b", "c", "d", "e"]', '.[]');
 jq(["a", "b", "c", "d", "e"], .[])
 "a""b""c""d""e"
+
+#SQL[@47,N22]Result[11, 0]
 select jq('[]', '.[]');
 jq([], .[])
 
+
+#SQL[@48,N57]Result[46, 15]
 select jq('{"foo": ["a", "b", "c", "d", "e"]}', '.foo[]');
 jq({"foo": ["a", "b", "c", "d", "e"]}, .foo[])
 "a""b""c""d""e"
+
+#SQL[@49,N34]Result[23, 2]
 select jq('{"a":1, "b":2}', '.[]');
 jq({"a":1, "b":2}, .[])
 12
+
+#SQL[@51,N37]Result[26, 2]
 select jq('{"a":1, "b":2}', '.a, .b');
 jq({"a":1, "b":2}, .a, .b)
 12
+
+#SQL[@52,N48]Result[37, 6]
 select jq('["a", "b", "c", "d", "e"]', '.[4,2]');
 jq(["a", "b", "c", "d", "e"], .[4,2])
 "e""c"
+
+#SQL[@53,N48]Result[37, 7]
 select jq('{"a": 1, "b": [2, 3]}', '[.a, .b[]]');
 jq({"a": 1, "b": [2, 3]}, [.a, .b[]])
 [1,2,3]
+
+#SQL[@54,N40]Result[29, 7]
 select jq('[1, 2, 3]', '[ .[] | . * 2]');
 jq([1, 2, 3], [ .[] | . * 2])
 [2,4,6]
+
+#SQL[@56,N47]Result[36, 15]
 select jq('{"a":1, "b":2}', '{aa: .a, bb: .b}');
 jq({"a":1, "b":2}, {aa: .a, bb: .b})
 {"aa":1,"bb":2}
+
+#SQL[@57,N94]Result[83, 76]
 select jq('{"user":"stedolan","titles":["JQ Primer", "More JQ"]}', '{user, title: .titles[]}');
 jq({"user":"stedolan","titles":["JQ Primer", "More JQ"]}, {user, title: .titles[]})
 {"title":"JQ Primer","user":"stedolan"}{"title":"More JQ","user":"stedolan"}
+
+#SQL[@58,N35]Error[49]
 select jq('[[{"a":1}]]', '.. | .a');
-expected an object but got: array ([[{"a":1}]])
+expected an object but got: array ([[{\"a\":1}]])
+
+#SQL[@61,N38]Result[27, 1]
 select jq('{"a":1, "b":2}', '.a + .b');
 jq({"a":1, "b":2}, .a + .b)
 3
+
+#SQL[@62,N40]Result[29, 1]
 select jq('{"a":1, "b":2}', '.a + null');
 jq({"a":1, "b":2}, .a + null)
 1
+
+#SQL[@63,N41]Result[30, 19]
 select jq('{"a":1, "b":2}', '. + {c: 3}');
 jq({"a":1, "b":2}, . + {c: 3})
 {"a":1,"b":2,"c":3}
+
+#SQL[@64,N47]Result[36, 19]
 select jq('{"a":1, "b":2}', '. + {a: 3, c: 3}');
 jq({"a":1, "b":2}, . + {a: 3, c: 3})
 {"a":3,"b":2,"c":3}
+
+#SQL[@65,N78]Result[67, 6]
 select jq('0', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end');
 jq(0, if . == 0 then "zero" elif . == 1 then "one" else "many" end)
 "zero"
+
+#SQL[@66,N78]Result[67, 5]
 select jq('1', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end');
 jq(1, if . == 0 then "zero" elif . == 1 then "one" else "many" end)
 "one"
+
+#SQL[@67,N78]Result[67, 6]
 select jq('2', 'if . == 0 then "zero" elif . == 1 then "one" else "many" end');
 jq(2, if . == 0 then "zero" elif . == 1 then "one" else "many" end)
 "many"
+
+#SQL[@68,N48]Result[37, 8]
 select jq('[{}, true, {"a":1}]', '[.[]|try .a]');
 jq([{}, true, {"a":1}], [.[]|try .a])
 [null,1]
+
+#SQL[@69,N45]Result[34, 8]
 select jq('[{}, true, {"a":1}]', '[.[]|.a?]');
 jq([{}, true, {"a":1}], [.[]|.a?])
 [null,1]
+
+#SQL[@70,N75]Result[64, 29]
 select jq('[{}, true, {"a":1}]', '[.[]|try .a catch ". is not an object"]');
 jq([{}, true, {"a":1}], [.[]|try .a catch ". is not an object"])
 [null,". is not an object",1]
+
+#SQL[@73,N58]Result[47, 1]
 select jq('[1, 2, 3]', 'reduce .[] as $item (0; + $item)');
 jq([1, 2, 3], reduce .[] as $item (0; + $item))
 3
+
+#SQL[@74,N76]Result[65, 16]
 select jq('[1, 2, 3]', 'foreach .[] as $item(0; . + $item; [$item, . * 2])');
 jq([1, 2, 3], foreach .[] as $item(0; . + $item; [$item, . * 2]))
 [1,2][2,6][3,12]
+
+#SQL[@77,N60]Result[]
 create table jqt(id int, data varchar(255), jq varchar(255));
+
+#SQL[@78,N542]Result[]
 insert into jqt values
 (1, '{"foo": 128}', '.foo'),
 (2, '{"foo": 128}', '.foo'),
@@ -165,11 +275,15 @@ insert into jqt values
 (11, '{"foo": 4722366482869645213696}', '.foo'),
 (12, '1', 'def fact($n): if $n < 1 then 1 else $n * fact($n - 1) end; fact(50)')
 ;
+
+#SQL[@94,N161]Result[]
 insert into jqt values
 (100, '[1, 2, 3]', '.foo & .bar'),
 (101, '[1, 2, 3]', '.foo & .bar'),
 (102, '{"foo": {bar: []} }', '.'),
 (103, '{"foo": {bar: []} }', '.');
+
+#SQL[@100,N570]Result[]
 insert into jqt values
 (200, '{"a":1, "b":2}', '.a + .b'),
 (201, '{"a":1, "b":2}', '.a + null'),
@@ -182,125 +296,144 @@ insert into jqt values
 (208, '[{}, true, {"a":1}]', '[.[]|.a?]'),
 (209, '[{}, true, {"a":1}]', '[.[]|try .a catch ". is not an object"]')
 ;
+
+#SQL[@113,N24]Result[8, 2]
 select count(*) from jqt;
 count(*)
 26
+
+#SQL[@114,N33]Error[43]
 select id, jq(data, '.') from jqt;
 invalid character '[' after top-level value
+
+#SQL[@115,N48]Error[43]
 select id, jq(data, '.') from jqt where id < 100;
 invalid character '[' after top-level value
+
+#SQL[@116,N37]Result[23, 18, 18, 21, 21, 11, 21, 36, 35, 20, 12, 37, 9, 16, 16, 13, 13, 22, 22, 22, 22, 10, 10, 10, 26, 26, 26]
 select id, try_jq(data, '.') from jqt;
-id    try_jq(data, .)
-1    {"foo":128}
-2    {"foo":128}
-3    {"a":{"b":42}}
-4    {"a":{"b":42}}
-5    null
-6    {"a":{"b":42}}
-7    {"10":{"b":42},"id":"sample"}
-8    [{"id":1},{"id":2},{"id":3}]
-9    {"a":1,"b":2}
-10    null
-11    {"foo":4.722366482869645e+21}
-12    1
-100    [1,2,3]
-101    [1,2,3]
-102    null
-103    null
-200    {"a":1,"b":2}
-201    {"a":1,"b":2}
-202    {"a":1,"b":2}
-203    {"a":1,"b":2}
-204    0
-205    1
-206    2
-207    [{},true,{"a":1}]
-208    [{},true,{"a":1}]
-209    [{},true,{"a":1}]
+id  ¦  try_jq(data, .)
+1  ¦  {"foo":128}
+2  ¦  {"foo":128}
+3  ¦  {"a":{"b":42}}
+4  ¦  {"a":{"b":42}}
+5  ¦  null
+6  ¦  {"a":{"b":42}}
+7  ¦  {"10":{"b":42},"id":"sample"}
+8  ¦  [{"id":1},{"id":2},{"id":3}]
+9  ¦  {"a":1,"b":2}
+10  ¦  null
+11  ¦  {"foo":4.722366482869645e+21}
+12  ¦  1
+100  ¦  [1,2,3]
+101  ¦  [1,2,3]
+102  ¦  null
+103  ¦  null
+200  ¦  {"a":1,"b":2}
+201  ¦  {"a":1,"b":2}
+202  ¦  {"a":1,"b":2}
+203  ¦  {"a":1,"b":2}
+204  ¦  0
+205  ¦  1
+206  ¦  2
+207  ¦  [{},true,{"a":1}]
+208  ¦  [{},true,{"a":1}]
+209  ¦  [{},true,{"a":1}]
+
+#SQL[@118,N32]Result[20, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13]
 select id, jq(null, jq) from jqt;
-id    jq(null, jq)
-1    null
-2    null
-3    null
-4    null
-5    null
-6    null
-7    null
-8    null
-9    null
-10    null
-11    null
-12    null
-100    null
-101    null
-102    null
-103    null
-200    null
-201    null
-202    null
-203    null
-204    null
-205    null
-206    null
-207    null
-208    null
-209    null
+id  ¦  jq(null, jq)
+1  ¦  null
+2  ¦  null
+3  ¦  null
+4  ¦  null
+5  ¦  null
+6  ¦  null
+7  ¦  null
+8  ¦  null
+9  ¦  null
+10  ¦  null
+11  ¦  null
+12  ¦  null
+100  ¦  null
+101  ¦  null
+102  ¦  null
+103  ¦  null
+200  ¦  null
+201  ¦  null
+202  ¦  null
+203  ¦  null
+204  ¦  null
+205  ¦  null
+206  ¦  null
+207  ¦  null
+208  ¦  null
+209  ¦  null
+
+#SQL[@119,N34]Result[22, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13]
 select id, jq(data, null) from jqt;
-id    jq(data, null)
-1    null
-2    null
-3    null
-4    null
-5    null
-6    null
-7    null
-8    null
-9    null
-10    null
-11    null
-12    null
-100    null
-101    null
-102    null
-103    null
-200    null
-201    null
-202    null
-203    null
-204    null
-205    null
-206    null
-207    null
-208    null
-209    null
+id  ¦  jq(data, null)
+1  ¦  null
+2  ¦  null
+3  ¦  null
+4  ¦  null
+5  ¦  null
+6  ¦  null
+7  ¦  null
+8  ¦  null
+9  ¦  null
+10  ¦  null
+11  ¦  null
+12  ¦  null
+100  ¦  null
+101  ¦  null
+102  ¦  null
+103  ¦  null
+200  ¦  null
+201  ¦  null
+202  ¦  null
+203  ¦  null
+204  ¦  null
+205  ¦  null
+206  ¦  null
+207  ¦  null
+208  ¦  null
+209  ¦  null
+
+#SQL[@121,N32]Error[43]
 select id, jq(data, jq) from jqt;
 invalid character '[' after top-level value
+
+#SQL[@122,N36]Result[24, 10, 10, 9, 9, 11, 11, 20, 10, 20, 12, 29, 73, 13, 13, 13, 13, 10, 10, 28, 28, 15, 14, 15, 17, 17, 38]
 select id, try_jq(data, jq) from jqt;
-id    try_jq(data, jq)
-1    128
-2    128
-3    42
-4    42
-5    null
-6    null
-7    {"sample":42}
-8    123
-9    {"a":2,"b":4}
-10    null
-11    4.722366482869645e+21
-12    30414093201713378043612608166064768844377641568960512000000000000
-100    null
-101    null
-102    null
-103    null
-200    3
-201    1
-202    {"a":1,"b":2,"c":3}
-203    {"a":3,"b":2,"c":3}
-204    "zero"
-205    "one"
-206    "many"
-207    [null,1]
-208    [null,1]
-209    [null,". is not an object",1]
+id  ¦  try_jq(data, jq)
+1  ¦  128
+2  ¦  128
+3  ¦  42
+4  ¦  42
+5  ¦  null
+6  ¦  null
+7  ¦  {"sample":42}
+8  ¦  123
+9  ¦  {"a":2,"b":4}
+10  ¦  null
+11  ¦  4.722366482869645e+21
+12  ¦  30414093201713378043612608166064768844377641568960512000000000000
+100  ¦  null
+101  ¦  null
+102  ¦  null
+103  ¦  null
+200  ¦  3
+201  ¦  1
+202  ¦  {"a":1,"b":2,"c":3}
+203  ¦  {"a":3,"b":2,"c":3}
+204  ¦  "zero"
+205  ¦  "one"
+206  ¦  "many"
+207  ¦  [null,1]
+208  ¦  [null,1]
+209  ¦  [null,". is not an object",1]
+
+#SQL[@124,N14]Result[]
 drop table jqt;
+

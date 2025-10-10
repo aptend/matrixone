@@ -1,221 +1,370 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@4,N28]Result[]
 create table t1 (d datetime);
+
+#SQL[@6,N83]Result[]
 insert into t1 values ('2004-07-14 08:19:30.333333'),('2005-08-15 22:50:59.999999');
+
+#SQL[@7,N34]Result[18, 3, 3]
 select date_format(d,'%a') from t1;
-date_format(d,'%a')
+date_format(d, %a)
 Wed
 Mon
+
+#SQL[@8,N34]Result[18, 3, 3]
 select date_format(d,'%b') from t1;
-date_format(d,'%b')
+date_format(d, %b)
 Jul
 Aug
+
+#SQL[@9,N34]Result[18, 1, 1]
 select date_format(d,'%c') from t1;
-date_format(d,'%c')
+date_format(d, %c)
 7
 8
+
+#SQL[@10,N34]Result[18, 4, 4]
 select date_format(d,'%D') from t1;
-date_format(d,'%D')
+date_format(d, %D)
 14th
 15th
+
+#SQL[@11,N34]Result[18, 2, 2]
 select date_format(d,'%d') from t1;
-date_format(d,'%d')
+date_format(d, %d)
 14
 15
+
+#SQL[@12,N34]Result[18, 2, 2]
 select date_format(d,'%e') from t1;
-date_format(d,'%e')
+date_format(d, %e)
 14
 15
+
+#SQL[@13,N34]Result[18, 6, 6]
 select date_format(d,'%f') from t1;
-date_format(d,'%f')
+date_format(d, %f)
 000000
 000000
+
+#SQL[@14,N34]Result[18, 2, 2]
 select date_format(d,'%H') from t1;
-date_format(d,'%H')
+date_format(d, %H)
 08
 22
+
+#SQL[@15,N34]Result[18, 2, 2]
 select date_format(d,'%h') from t1;
-date_format(d,'%h')
+date_format(d, %h)
 08
 10
+
+#SQL[@16,N34]Result[18, 2, 2]
 select date_format(d,'%I') from t1;
-date_format(d,'%I')
+date_format(d, %I)
 08
 10
+
+#SQL[@17,N34]Result[18, 2, 2]
 select date_format(d,'%i') from t1;
-date_format(d,'%i')
+date_format(d, %i)
 19
 51
+
+#SQL[@18,N34]Result[18, 3, 3]
 select date_format(d,'%j') from t1;
-date_format(d,'%j')
+date_format(d, %j)
 196
 227
+
+#SQL[@19,N34]Result[18, 1, 2]
 select date_format(d,'%k') from t1;
-date_format(d,'%k')
+date_format(d, %k)
 8
 22
+
+#SQL[@20,N34]Result[18, 1, 2]
 select date_format(d,'%l') from t1;
-date_format(d,'%l')
+date_format(d, %l)
 8
 10
+
+#SQL[@21,N34]Result[18, 4, 6]
 select date_format(d,'%M') from t1;
-date_format(d,'%M')
+date_format(d, %M)
 July
 August
+
+#SQL[@22,N34]Result[18, 2, 2]
 select date_format(d,'%m') from t1;
-date_format(d,'%m')
+date_format(d, %m)
 07
 08
+
+#SQL[@23,N34]Result[18, 2, 2]
 select date_format(d,'%p') from t1;
-date_format(d,'%p')
+date_format(d, %p)
 AM
 PM
+
+#SQL[@24,N34]Result[18, 11, 11]
 select date_format(d,'%r') from t1;
-date_format(d,'%r')
+date_format(d, %r)
 08:19:30 AM
 10:51:00 PM
+
+#SQL[@25,N34]Result[18, 2, 2]
 select date_format(d,'%S') from t1;
-date_format(d,'%S')
+date_format(d, %S)
 30
 00
+
+#SQL[@26,N34]Result[18, 2, 2]
 select date_format(d,'%s') from t1;
-date_format(d,'%s')
+date_format(d, %s)
 30
 00
+
+#SQL[@27,N34]Result[18, 8, 8]
 select date_format(d,'%T') from t1;
-date_format(d,'%T')
+date_format(d, %T)
 08:19:30
 22:51:00
+
+#SQL[@28,N34]Result[18, 2, 2]
 select date_format(d,'%U') from t1;
-date_format(d,'%U')
+date_format(d, %U)
 28
 33
+
+#SQL[@29,N34]Result[18, 2, 2]
 select date_format(d,'%u') from t1;
-date_format(d,'%u')
+date_format(d, %u)
 29
 33
+
+#SQL[@30,N34]Result[18, 2, 2]
 select date_format(d,'%V') from t1;
-date_format(d,'%V')
+date_format(d, %V)
 28
 33
+
+#SQL[@31,N34]Result[18, 2, 2]
 select date_format(d,'%v') from t1;
-date_format(d,'%v')
+date_format(d, %v)
 29
 33
+
+#SQL[@32,N34]Result[18, 9, 6]
 select date_format(d,'%W') from t1;
-date_format(d,'%W')
+date_format(d, %W)
 Wednesday
 Monday
+
+#SQL[@33,N34]Result[18, 1, 1]
 select date_format(d,'%w') from t1;
-date_format(d,'%w')
+date_format(d, %w)
 3
 1
+
+#SQL[@34,N34]Result[18, 4, 4]
 select date_format(d,'%X') from t1;
-date_format(d,'%X')
+date_format(d, %X)
 2004
 2005
+
+#SQL[@35,N34]Result[18, 4, 4]
 select date_format(d,'%x') from t1;
-date_format(d,'%x')
+date_format(d, %x)
 2004
 2005
+
+#SQL[@36,N34]Result[18, 4, 4]
 select date_format(d,'%Y') from t1;
-date_format(d,'%Y')
+date_format(d, %Y)
 2004
 2005
+
+#SQL[@37,N34]Result[18, 2, 2]
 select date_format(d,'%y') from t1;
-date_format(d,'%y')
+date_format(d, %y)
 04
 05
+
+#SQL[@39,N13]Result[]
 drop table t1;
+
+#SQL[@42,N23]Result[]
 drop table if exists t2;
+
+#SQL[@43,N29]Result[]
 create table t2 (f1 datetime);
+
+#SQL[@44,N41]Result[]
 insert into t2 (f1) values ('2005-01-01');
+
+#SQL[@45,N41]Result[]
 insert into t2 (f1) values ('2005-02-01');
+
+#SQL[@46,N102]Result[10, 16, 15]
 select date_format(f1, "%m") as d1, date_format(f1, "%M") as d2 from t2 order by date_format(f1, "%M");
-d1    d2
-02    February
-01    January
+d1  ¦  d2
+02  ¦  February
+01  ¦  January
+
+#SQL[@47,N13]Result[]
 drop table t2;
+
+#SQL[@51,N23]Result[]
 drop table if exists t3;
+
+#SQL[@52,N24]Result[]
 create table t3 (d date);
+
+#SQL[@53,N59]Result[]
 insert into t3 values (date_format('20221214', '%Y-%m-%d'));
+
+#SQL[@54,N13]Result[]
 drop table t3;
+
+#SQL[@58,N23]Result[]
 drop table if exists t4;
+
+#SQL[@59,N31]Result[]
 create table t4 (a int, d date);
+
+#SQL[@60,N39]Result[]
 insert into t4 values (1, '2002-02-20');
+
+#SQL[@61,N61]Result[]
 update t4 set d=date_format('20221214', '%Y-%m-%d') where a=1;
+
+#SQL[@62,N58]Result[]
 delete from t4 where d=date_format('20221214', '%Y-%m-%d');
+
+#SQL[@63,N16]Result[]
 select * from t4;
-a    d
+
+#SQL[@64,N13]Result[]
 drop table t4;
+
+#SQL[@68,N23]Result[]
 drop table if exists t5;
+
+#SQL[@69,N31]Result[]
 create table t5 (a int, b date);
+
+#SQL[@70,N106]Result[]
 insert into t5 values
 (1,'2000-02-05'),(2,'2000-10-08'),(3,'2005-01-03'),(4,'2007-09-01'),(5,'2022-01-01');
+
+#SQL[@73,N60]Result[8, 17]
 select * from t5 where b=date_format('20000205', '%Y-%m-%d');
-a    b
-1    2000-02-05
+a  ¦  b
+1  ¦  2000-02-05
+
+#SQL[@74,N61]Result[8, 17, 17, 17, 17]
 select * from t5 where b!=date_format('20000205', '%Y-%m-%d');
-a    b
-2    2000-10-08
-3    2005-01-03
-4    2007-09-01
-5    2022-01-01
+a  ¦  b
+2  ¦  2000-10-08
+3  ¦  2005-01-03
+4  ¦  2007-09-01
+5  ¦  2022-01-01
+
+#SQL[@75,N61]Result[8, 17, 17, 17, 17]
 select * from t5 where b<>date_format('20000205', '%Y-%m-%d');
-a    b
-2    2000-10-08
-3    2005-01-03
-4    2007-09-01
-5    2022-01-01
+a  ¦  b
+2  ¦  2000-10-08
+3  ¦  2005-01-03
+4  ¦  2007-09-01
+5  ¦  2022-01-01
+
+#SQL[@76,N60]Result[8, 17, 17, 17, 17]
 select * from t5 where b>date_format('20000205', '%Y-%m-%d');
-a    b
-2    2000-10-08
-3    2005-01-03
-4    2007-09-01
-5    2022-01-01
+a  ¦  b
+2  ¦  2000-10-08
+3  ¦  2005-01-03
+4  ¦  2007-09-01
+5  ¦  2022-01-01
+
+#SQL[@77,N60]Result[]
 select * from t5 where b<date_format('20000205', '%Y-%m-%d');
-a    b
+
+#SQL[@78,N61]Result[8, 17]
 select * from t5 where b<=date_format('20000205', '%Y-%m-%d');
-a    b
-1    2000-02-05
+a  ¦  b
+1  ¦  2000-02-05
+
+#SQL[@79,N108]Result[8, 17, 17, 17, 17, 17]
 select * from t5 where b between date_format('20000205', '%Y-%m-%d') and date_format('20220101', '%Y-%m-%d');
-a    b
-1    2000-02-05
-2    2000-10-08
-3    2005-01-03
-4    2007-09-01
-5    2022-01-01
+a  ¦  b
+1  ¦  2000-02-05
+2  ¦  2000-10-08
+3  ¦  2005-01-03
+4  ¦  2007-09-01
+5  ¦  2022-01-01
+
+#SQL[@80,N112]Result[]
 select * from t5 where b not between date_format('20000205', '%Y-%m-%d') and date_format('20220101', '%Y-%m-%d');
-a    b
+
+#SQL[@82,N13]Result[]
 drop table t5;
+
+#SQL[@85,N60]Result[10, 24]
 SELECT DATE_FORMAT("2009-01-01",'%W %d %M %Y') as valid_date;
 valid_date
 Thursday 01 January 2009
+
+#SQL[@86,N60]Error[48]
 SELECT DATE_FORMAT('0000-01-01','%W %d %M %Y') as valid_date;
 invalid input: invalid datetime value 0000-01-01
+
+#SQL[@87,N60]Error[48]
 SELECT DATE_FORMAT('0000-02-28','%W %d %M %Y') as valid_date;
 invalid input: invalid datetime value 0000-02-28
+
+#SQL[@88,N60]Result[10, 23]
 SELECT DATE_FORMAT('9999-02-28','%W %d %M %Y') as valid_date;
 valid_date
 Sunday 28 February 9999
+
+#SQL[@90,N77]Result[66, 45]
 select date_format('1997-01-02 03:04:05', '%M %W %D %Y %y %m %d %h %i %s %w');
-date_format('1997-01-02 03:04:05', '%M %W %D %Y %y %m %d %h %i %s %w')
+date_format(1997-01-02 03:04:05, %M %W %D %Y %y %m %d %h %i %s %w)
 January Thursday 2nd 1997 97 01 02 03 04 05 4
+
+#SQL[@91,N74]Result[63, 43]
 select date_format('1998-01-02 03:04', '%M %W %D %Y %y %m %d %h %i %s %w');
-date_format('1998-01-02 03:04', %M %W %D %Y %y %m %d %h %i %s %w)
+date_format(1998-01-02 03:04, %M %W %D %Y %y %m %d %h %i %s %w)
 January Friday 2nd 1998 98 01 02 03 04 00 5
+
+#SQL[@92,N78]Result[66, 44]
 select date_format('1997-01-02', concat('%M %W %D','%Y %y %m %d %h %i %s %w'));
-date_format('1997-01-02', concat('%M %W %D','%Y %y %m %d %h %i %s %w'))
+date_format(1997-01-02, concat(%M %W %D, %Y %y %m %d %h %i %s %w))
 January Thursday 2nd1997 97 01 02 12 00 00 4
+
+#SQL[@94,N74]Result[66, 20]
 select date_format('1998-12-31','%x-%v'),date_format('1999-01-01','%x-%v');
-date_format('1998-12-31','%x-%v')    date_format('1999-01-01','%x-%v')
-1998-53    1998-53
+date_format(1998-12-31, %x-%v)  ¦  date_format(1999-01-01, %x-%v)
+1998-53  ¦  1998-53
+
+#SQL[@95,N74]Result[66, 20]
 select date_format('1999-12-31','%x-%v'),date_format('2000-01-01','%x-%v');
-date_format('1999-12-31','%x-%v')    date_format('2000-01-01','%x-%v')
-1999-52    1999-52
+date_format(1999-12-31, %x-%v)  ¦  date_format(2000-01-01, %x-%v)
+1999-52  ¦  1999-52
+
+#SQL[@97,N114]Result[105, 97]
 select date_format(concat('19980131',131415),'%H|%I|%k|%l|%i|%p|%r|%S|%T| %M|%W|%D|%Y|%y|%a|%b|%j|%m|%d|%h|%s|%w');
-date_format(concat('19980131',131415),'%H|%I|%k|%l|%i|%p|%r|%S|%T| %M|%W|%D|%Y|%y|%a|%b|%j|%m|%d|%h|%s|%w')
+date_format(concat(19980131, 131415), %H|%I|%k|%l|%i|%p|%r|%S|%T| %M|%W|%D|%Y|%y|%a|%b|%j|%m|%d|%h|%s|%w)
 13|01|13|1|14|PM|01:14:15 PM|15|13:14:15| January|Saturday|31st|1998|98|Sat|Jan|031|01|31|01|15|6
+
+#SQL[@100,N103]Error[65]
 select date_format(19980021000000,'%H|%I|%k|%l|%i|%p|%r|%S|%T| %M|%W|%D|%Y|%y|%a|%b|%j|%m|%d|%h|%s|%w');
 invalid argument function date_format, bad value [BIGINT VARCHAR]
+
+#SQL[@103,N105]Error[52]
 select date_format('19980021000000','%H|%I|%k|%l|%i|%p|%r|%S|%T| %M|%W|%D|%Y|%y|%a|%b|%j|%m|%d|%h|%s|%w');
 invalid input: invalid datetime value 19980021000000
+

@@ -1,12 +1,30 @@
+#SQL[@2,N22]Result[15, 4]
 SELECT load_file(NULL);
 load_file(null)
 null
+
+#SQL[@5,N74]Result[97, 96]
 SELECT load_file('$resources/auto_increment_columns/auto_increment_1.csv');
-load_file(/home/yjw/blob/matrixone/test/resources/auto_increment_columns/auto_increment_1.csv)
-1,1,'你好'\n2,3,'hello'\n4,,'world'\n\N,,','\n\N,\N,'\N'\n,,',,,'\n,,'###'\n,,,\n,,,\n100,100,'100'\n,,,
+load_file(/root/matrixone/test/distributed/resources/auto_increment_columns/auto_increment_1.csv)
+1,1,'你好'
+2,3,'hello'
+4,,'world'
+\N,,','
+\N,\N,'\N'
+,,',,,'
+,,'###'
+,,,
+,,,
+100,100,'100'
+,,,
+
+#SQL[@6,N51]Result[74, 12]
 SELECT load_file('$resources/file_test/normal.txt');
-load_file(/home/yjw/blob/matrixone/test/resources/file_test/normal.txt)
+load_file(/root/matrixone/test/distributed/resources/file_test/normal.txt)
 Hello world!
+
+#SQL[@7,N50]Result[73, 4]
 SELECT load_file('$resources/file_test/empty.txt');
-load_file(/home/yjw/blob/matrixone/test/resources/file_test/empty.txt)
+load_file(/root/matrixone/test/distributed/resources/file_test/empty.txt)
 null
+

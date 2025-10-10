@@ -1,157 +1,283 @@
+#SQL[@1,N14]Error[45]
 select sleep();
 invalid argument function sleep, bad value []
+
+#SQL[@2,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@3,N17]Result[10, 1]
 select sleep(1.5);
 sleep(1.5)
 0
+
+#SQL[@4,N18]Error[53]
 select sleep(null);
 invalid argument sleep, bad value input contains null
+
+#SQL[@5,N16]Error[57]
 select sleep(-1);
 invalid argument sleep, bad value input contains negative
+
+#SQL[@6,N18]Error[57]
 select sleep(-1.5);
 invalid argument sleep, bad value input contains negative
+
+#SQL[@8,N29]Result[]
 create table t1 (a int,b int);
+
+#SQL[@9,N36]Result[]
 insert into t1 values (1,1),(1,null);
+
+#SQL[@10,N23]Result[8, 1, 1]
 select sleep(a) from t1;
 sleep(a)
 0
 0
+
+#SQL[@11,N23]Error[53]
 select sleep(b) from t1;
 invalid argument sleep, bad value input contains null
+
+#SQL[@18,N15]Result[8, 1]
 SELECT sleep(0);
 sleep(0)
 0
+
+#SQL[@19,N15]Result[8, 1]
 SELECT sleep(1);
 sleep(1)
 0
+
+#SQL[@20,N18]Result[11, 1]
 SELECT sleep(0.33);
 sleep(0.33)
 0
+
+#SQL[@23,N16]Error[57]
 SELECT sleep(-2);
 invalid argument sleep, bad value input contains negative
+
+#SQL[@24,N19]Error[57]
 SELECT sleep(-23.1);
 invalid argument sleep, bad value input contains negative
+
+#SQL[@28,N29]Result[]
 DROP TABLE IF EXISTS sleep_01;
+
+#SQL[@29,N30]Result[]
 CREATE TABLE sleep_01 (id int);
+
+#SQL[@32,N34]Result[]
 SELECT * ,sleep(0.2) from sleep_01;
-id    sleep(0.2)
+
+#SQL[@35,N32]Result[]
 INSERT INTO sleep_01 VALUES(273);
+
+#SQL[@36,N34]Result[18, 10]
 SELECT *, sleep(1.2) FROM sleep_01;
-id    sleep(1.2)
-273    0
+id  ¦  sleep(1.2)
+273  ¦  0
+
+#SQL[@37,N32]Result[16, 10]
 SELECT *, sleep(0) FROM sleep_01;
-id    sleep(0)
-273    0
+id  ¦  sleep(0)
+273  ¦  0
+
+#SQL[@40,N35]Result[]
 INSERT INTO sleep_01 VALUES(-32783);
+
+#SQL[@42,N33]Result[18, 10, 13]
 SELECT *,sleep(0.2) FROM sleep_01;
-id    sleep(0.2)
-273    0
--32783    0
+id  ¦  sleep(0.2)
+273  ¦  0
+-32783  ¦  0
+
+#SQL[@43,N31]Result[16, 10, 13]
 SELECT *,sleep(0) FROM sleep_01;
-id    sleep(0)
-273    0
--32783    0
+id  ¦  sleep(0)
+273  ¦  0
+-32783  ¦  0
+
+#SQL[@46,N30]Result[]
 INSERT INTO sleep_01 VALUES(0);
+
+#SQL[@48,N34]Result[18, 10, 13, 8]
 SELECT * ,sleep(0.2) FROM sleep_01;
-id    sleep(0.2)
-273    0
--32783    0
-0    0
+id  ¦  sleep(0.2)
+273  ¦  0
+-32783  ¦  0
+0  ¦  0
+
+#SQL[@50,N32]Result[16, 10, 13, 8]
 SELECT *, sleep(0) FROM sleep_01;
-id    sleep(0)
-273    0
--32783    0
-0    0
+id  ¦  sleep(0)
+273  ¦  0
+-32783  ¦  0
+0  ¦  0
+
+#SQL[@54,N29]Result[]
 DROP TABLE IF EXISTS sleep_02;
+
+#SQL[@55,N102]Result[]
 CREATE TABLE sleep_02 (id int, name VARCHAR(10), province VARCHAR(100) NOT NULL, address VARCHAR(100));
+
+#SQL[@56,N69]Result[]
 INSERT INTO sleep_02 VALUES(1, '张三', '陕西', '大头村二组');
+
+#SQL[@57,N69]Result[]
 INSERT INTO sleep_02 VALUES(2, '李四', '北京', '快乐村三组');
+
+#SQL[@58,N69]Result[]
 INSERT INTO sleep_02 VALUES(3, '王五', '陕西', '美丽村四组');
+
+#SQL[@61,N70]Result[35, 34]
 SELECT province, address, sleep(2) FROM sleep_02 WHERE name = '张三';
-province    address    sleep(2)
-陕西    大头村二组    0
+province  ¦  address  ¦  sleep(2)
+陕西  ¦  大头村二组  ¦  0
+
+#SQL[@62,N95]Result[20, 13]
 SELECT name, sleep(0.3) FROM sleep_02 WHERE address = '大头村二组' AND province = '陕西';
-name    sleep(0.3)
-张三    0
+name  ¦  sleep(0.3)
+张三  ¦  0
+
+#SQL[@63,N62]Result[]
 SELECT *, sleep(0.2) FROM sleep_02 WHERE id = COS(0) + TAN(45);
-id    name    province    address    sleep(0.2)
+
+#SQL[@65,N47]Result[34, 25, 25, 25]
 SELECT name, province, sleep(0.2) FROM sleep_02;
-name    province    sleep(0.2)
-张三    陕西    0
-李四    北京    0
-王五    陕西    0
+name  ¦  province  ¦  sleep(0.2)
+张三  ¦  陕西  ¦  0
+李四  ¦  北京  ¦  0
+王五  ¦  陕西  ¦  0
+
+#SQL[@70,N29]Result[]
 DROP TABLE IF EXISTS sleep_03;
+
+#SQL[@71,N29]Result[]
 DROP TABLE IF EXISTS sleep_04;
+
+#SQL[@72,N70]Result[]
 CREATE TABLE sleep_03(d INT,d1 VARCHAR(20), d2 BIGINT,PRIMARY KEY (d));
+
+#SQL[@73,N65]Result[]
 CREATE TABLE sleep_04( d INT,d1 CHAR(20),d2 DATE,PRIMARY KEY (d));
+
+#SQL[@74,N55]Result[]
 INSERT INTO sleep_03 VALUES (1,'lijklnfdsalj',19290988);
+
+#SQL[@75,N55]Result[]
 INSERT INTO sleep_03 VALUES (2,'xlziblkfdi',1949100132);
+
+#SQL[@76,N56]Result[]
 INSERT INTO sleep_03 VALUES (3,'ixioklakmaria',69456486);
+
+#SQL[@77,N55]Result[]
 INSERT INTO sleep_03 VALUES (4,'brzilaiusd',6448781575);
+
+#SQL[@79,N60]Result[]
 INSERT INTO sleep_04 VALUES (1,'usaisagoodnat','1970-01-02');
+
+#SQL[@80,N61]Result[]
 INSERT INTO sleep_04 VALUES (2,'chanialfakbjap','1971-11-12');
+
+#SQL[@81,N59]Result[]
 INSERT INTO sleep_04 VALUES (3,'indiaisashit','1972-09-09');
+
+#SQL[@82,N59]Result[]
 INSERT INTO sleep_04 VALUES (4,'xingoporelka','1973-12-07');
+
+#SQL[@84,N80]Result[15, 8, 8, 8, 8]
 SELECT sleep_03.d, sleep(0) FROM sleep_03,sleep_04 WHERE sleep_03.d = sleep_04.d;
-d    sleep(0)
-1    0
-2    0
-3    0
-4    0
+d  ¦  sleep(0)
+1  ¦  0
+2  ¦  0
+3  ¦  0
+4  ¦  0
+
+#SQL[@86,N43]Result[17, 8, 8, 8, 8]
 SELECT sleep_03.d, sleep(0.1) FROM sleep_03;
-d    sleep(0.1)
-1    0
-2    0
-3    0
-4    0
+d  ¦  sleep(0.1)
+1  ¦  0
+2  ¦  0
+3  ¦  0
+4  ¦  0
+
+#SQL[@87,N97]Result[25, 26, 24, 27, 24]
 SELECT sleep_03.d, sleep_03.d1, sleep(0.4) FROM sleep_03 JOIN sleep_04 ON sleep_03.d = sleep_04.d;
-d    d1    sleep(0.4)
-1    lijklnfdsalj    0
-2    xlziblkfdi    0
-3    ixioklakmaria    0
-4    brzilaiusd    0
+d  ¦  d1  ¦  sleep(0.4)
+1  ¦  lijklnfdsalj  ¦  0
+2  ¦  xlziblkfdi  ¦  0
+3  ¦  ixioklakmaria  ¦  0
+4  ¦  brzilaiusd  ¦  0
+
+#SQL[@88,N80]Result[15, 8, 8, 8, 8]
 SELECT sleep_03.d, sleep(1) FROM sleep_03 join sleep_04 on sleep_03.d=sleep_04.d;
-d    sleep(1)
-1    0
-2    0
-3    0
-4    0
+d  ¦  sleep(1)
+1  ¦  0
+2  ¦  0
+3  ¦  0
+4  ¦  0
+
+#SQL[@89,N89]Result[19, 8, 8, 8, 8]
 SELECT sleep_03.d, sleep(0.432)FROM sleep_03 right join sleep_04 on sleep_03.d=sleep_04.d;
-d    sleep(0.432)
-1    0
-2    0
-3    0
-4    0
+d  ¦  sleep(0.432)
+1  ¦  0
+2  ¦  0
+3  ¦  0
+4  ¦  0
+
+#SQL[@90,N51]Result[17, 8, 8, 8, 8]
 SELECT d, sleep(0.5) FROM sleep_03 ORDER BY d2 desc;
-d    sleep(0.5)
-4    0
-2    0
-3    0
-1    0
+d  ¦  sleep(0.5)
+4  ¦  0
+2  ¦  0
+3  ¦  0
+1  ¦  0
+
+#SQL[@94,N14]Error[45]
 select sleep();
 invalid argument function sleep, bad value []
+
+#SQL[@95,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@96,N17]Result[10, 1]
 select sleep(1.5);
 sleep(1.5)
 0
+
+#SQL[@97,N18]Error[53]
 select sleep(null);
 invalid argument sleep, bad value input contains null
+
+#SQL[@98,N16]Error[57]
 select sleep(-1);
 invalid argument sleep, bad value input contains negative
+
+#SQL[@99,N18]Error[57]
 select sleep(-1.5);
 invalid argument sleep, bad value input contains negative
+
+#SQL[@101,N29]Error[23]
 create table t1 (a int,b int);
 table t1 already exists
+
+#SQL[@102,N36]Result[]
 insert into t1 values (1,1),(1,null);
+
+#SQL[@103,N23]Result[8, 1, 1, 1, 1]
 select sleep(a) from t1;
 sleep(a)
 0
 0
 0
 0
+
+#SQL[@104,N23]Error[53]
 select sleep(b) from t1;
 invalid argument sleep, bad value input contains null
+

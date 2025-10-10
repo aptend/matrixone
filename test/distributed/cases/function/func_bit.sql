@@ -51,9 +51,9 @@ SELECT BIT_AND(tiny + SIN(0)), BIT_XOR(int_t + TAN(0)) FROM t;
 SELECT BIT_OR(tiny + small), BIT_XOR(int_t + big) FROM t;
 SELECT BIT_XOR(tiny + SIN(0)), BIT_OR(int_t + big) FROM t;
 
--- @bvt:issue#5638
-SELECT BIT_AND(tiny + 1), BIT_OR(small - 1), BIT_XOR(int_t / 0) FROM t;
--- @bvt:issue
+@issue(no=5638) {
+    SELECT BIT_AND(tiny + 1), BIT_OR(small - 1), BIT_XOR(int_t / 0) FROM t;
+}
 
 -- JOIN
 DROP TABLE IF EXISTS t;

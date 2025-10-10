@@ -1,83 +1,162 @@
+#SQL[@2,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@3,N63]Result[]
 CREATE TABLE t1 ( number INT NOT NULL, alpha CHAR(6) NOT NULL );
+
+#SQL[@4,N98]Result[]
 INSERT INTO t1 VALUES (1413006,'idlfmv'),
 (1413065,'smpsfz'),(1413127,'sljrhx'),(1413304,'qerfnd');
+
+#SQL[@7,N107]Result[37, 44, 44, 44, 44]
 SELECT number, any_value(alpha), CONCAT_WS('<---->',number,any_value(alpha)) AS new
 FROM t1 GROUP BY number;
-number	any_value(alpha)	new
-1413006	idlfmv	1413006<---->idlfmv
-1413065	smpsfz	1413065<---->smpsfz
-1413127	sljrhx	1413127<---->sljrhx
-1413304	qerfnd	1413304<---->qerfnd
+number  ¦  any_value(alpha)  ¦  new
+1413006  ¦  idlfmv  ¦  1413006<---->idlfmv
+1413065  ¦  smpsfz  ¦  1413065<---->smpsfz
+1413127  ¦  sljrhx  ¦  1413127<---->sljrhx
+1413304  ¦  qerfnd  ¦  1413304<---->qerfnd
+
+#SQL[@9,N104]Result[3, 19]
 SELECT CONCAT_WS('<---->',number,alpha) AS new
 FROM t1 GROUP BY CONCAT_WS('<---->',number,alpha) LIMIT 1;
 new
 1413006<---->idlfmv
+
+#SQL[@12,N131]Error[65]
 SELECT any_value(number), any_value(alpha), CONCAT_WS('<->',any_value(number),any_value(alpha)) AS new
 FROM t1 GROUP BY new LIMIT 1;
 invalid input: GROUP BY clause cannot contain aggregate functions
+
+#SQL[@14,N231]Error[65]
 SELECT any_value(number), any_value(alpha), CONCAT_WS('-',any_value(number),any_value(alpha),any_value(alpha),any_value(alpha),any_value(alpha),any_value(alpha),any_value(alpha),any_value(alpha)) AS new
 FROM t1 GROUP BY new LIMIT 1;
 invalid input: GROUP BY clause cannot contain aggregate functions
+
+#SQL[@16,N206]Error[65]
 SELECT any_value(number), any_value(alpha), CONCAT_WS('<------------------>',any_value(number),any_value(alpha))
 FROM t1 GROUP BY CONCAT_WS('<------------------>',any_value(number),any_value(alpha)) LIMIT 1;
 invalid input: GROUP BY clause cannot contain aggregate functions
+
+#SQL[@18,N13]Result[]
 drop table t1;
+
+#SQL[@21,N49]Result[37, 22]
 select concat_ws(', ','monty','was here','again');
-concat_ws(', ','monty','was here','again')
+concat_ws(, , monty, was here, again)
 monty, was here, again
+
+#SQL[@22,N33]Result[23, 2]
 select concat_ws(',','',NULL,'a');
-concat_ws(',','',NULL,'a')
+concat_ws(,, , null, a)
 ,a
+
+#SQL[@24,N84]Result[76, 291]
 SELECT CONCAT_WS('"',CONCAT_WS('";"',space(60),space(60),space(60),space(100)), '"');
-CONCAT_WS('"',CONCAT_WS('";"',space(60),space(60),space(60),space(100)), '"')
+CONCAT_WS(", CONCAT_WS(";", space(60), space(60), space(60), space(100)), ")
                                                             ";"                                                            ";"                                                            ";"                                                                                                    ""
+
+#SQL[@28,N114]Result[]
 CREATE TABLE t1(id int(11) NOT NULL,pc int(11) NOT NULL default 0,title varchar(20) default NULL,PRIMARY KEY (id));
+
+#SQL[@29,N66]Result[]
 INSERT INTO t1 VALUES(1, 0, 'Main'),(2, 1, 'Toys'),(3, 1, 'Games');
+
+#SQL[@30,N143]Result[12, 11, 17, 18]
 SELECT t1.id, CONCAT_WS('->', t3.title, t2.title, t1.title) as col1 FROM t1 LEFT JOIN t1 AS t2 ON t1.pc=t2.id LEFT JOIN t1 AS t3 ON t2.pc=t3.id;
-id	col1
-1	Main
-2	Main->Toys
-3	Main->Games
+id  ¦  col1
+1  ¦  Main
+2  ¦  Main->Toys
+3  ¦  Main->Games
+
+#SQL[@31,N209]Result[12, 17]
 SELECT t1.id, CONCAT_WS('->', t3.title, t2.title, t1.title) as col1 FROM t1 LEFT JOIN t1 AS t2 ON t1.pc=t2.id LEFT JOIN t1 AS t3 ON t2.pc=t3.id WHERE CONCAT_WS('->', t3.title, t2.title, t1.title) LIKE '%Toys%';
-id	col1
-2	Main->Toys
+id  ¦  col1
+2  ¦  Main->Toys
+
+#SQL[@32,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@35,N121]Result[]
 CREATE TABLE t1(trackid     int(10) unsigned NOT NULL,trackname   varchar(100) NOT NULL default '',PRIMARY KEY (trackid));
+
+#SQL[@36,N122]Result[]
 CREATE TABLE t2(artistid    int(10) unsigned NOT NULL,artistname  varchar(100) NOT NULL default '',PRIMARY KEY (artistid));
+
+#SQL[@37,N114]Result[]
 CREATE TABLE t3(trackid     int(10) unsigned NOT NULL,artistid    int(10) unsigned NOT NULL,PRIMARY KEY (trackid));
+
+#SQL[@38,N70]Result[]
 INSERT INTO t1 VALUES (1, 'April In Paris'), (2, 'Autumn In New York');
+
+#SQL[@39,N40]Result[]
 INSERT INTO t2 VALUES (1, 'Vernon Duke');
+
+#SQL[@40,N27]Result[]
 INSERT INTO t3 VALUES (1,1);
+
+#SQL[@41,N208]Result[25, 43, 28]
 SELECT CONCAT_WS(' ', trackname, artistname) trackname, artistname FROM t1 LEFT JOIN t3 ON t1.trackid=t3.trackid LEFT JOIN t2 ON t2.artistid=t3.artistid WHERE CONCAT_WS(' ', trackname, artistname) LIKE '%In%';
-trackname	artistname
-April In Paris Vernon Duke	Vernon Duke
-Autumn In New York	null
+trackname  ¦  artistname
+April In Paris Vernon Duke  ¦  Vernon Duke
+Autumn In New York  ¦  null
+
+#SQL[@42,N13]Result[]
 drop table t1;
+
+#SQL[@43,N13]Result[]
 drop table t2;
+
+#SQL[@44,N13]Result[]
 drop table t3;
+
+#SQL[@49,N32]Result[]
 CREATE TABLE t1 (f2 VARCHAR(20));
+
+#SQL[@50,N32]Result[]
 CREATE TABLE t2 (f2 VARCHAR(20));
+
+#SQL[@51,N37]Result[]
 INSERT INTO t1 VALUES ('MIN'),('MAX');
+
+#SQL[@52,N30]Result[]
 INSERT INTO t2 VALUES ('LOAD');
+
+#SQL[@53,N75]Result[11, 8, 8]
 SELECT CONCAT_WS('_', (SELECT t2.f2 FROM t2), t1.f2) AS concat_name FROM t1;
 concat_name
 LOAD_MIN
 LOAD_MAX
+
+#SQL[@54,N13]Result[]
 drop table t1;
+
+#SQL[@55,N13]Result[]
 drop table t2;
+
+#SQL[@59,N30]Result[]
 create table t1 (a int, b int);
+
+#SQL[@60,N92]Result[]
 insert into t1 values (1, 4),(10, 40),(1, 4),(10, 43),(1, 4),(10, 41),(1, 4),(10, 43),(1, 4);
+
+#SQL[@61,N70]Result[46, 20, 24]
 select a, MAX(b), CONCAT_WS(MAX(b), '43', '4', '5') from t1 group by a;
-a	MAX(b)	CONCAT_WS(MAX(b), '43', '4', '5')
-1	4	434445
-10	43	43434435
+a  ¦  MAX(b)  ¦  CONCAT_WS(MAX(b), 43, 4, 5)
+1  ¦  4  ¦  434445
+10  ¦  43  ¦  43434435
+
+#SQL[@62,N13]Result[]
 drop table t1;
+
+#SQL[@79,N151]Result[]
 CREATE TABLE t1 (
 col_datetime_2_not_null_key datetime(2) NOT NULL,
 col_datetime_5 datetime(5) DEFAULT NULL,
 pk datetime(5) NOT NULL,
 PRIMARY KEY (pk));
+
+#SQL[@84,N814]Result[]
 INSERT INTO t1 VALUES
 ('2001-10-20 00:00:00.00','2001-09-20 11:18:18.03630','2011-07-19 17:37:06.26725'),
 ('0001-01-01 00:00:00.00','0001-01-01 00:00:00.00000','2011-07-19 17:37:07.26725'),
@@ -89,6 +168,8 @@ INSERT INTO t1 VALUES
 ('0001-01-01 00:00:00.00','0001-01-01 00:00:00.00000','2011-07-19 17:37:13.26725'),
 ('0001-01-01 00:00:00.00','2008-06-04 23:05:50.03642','2011-07-19 17:37:14.26725'),
 ('2000-10-22 23:52:09.01',NULL,'2011-07-19 17:37:15.26725');
+
+#SQL[@95,N209]Error[57]
 SELECT col_datetime_2_not_null_key AS c1, col_datetime_5 AS c2
 FROM t1
 WHERE
@@ -97,24 +178,49 @@ OR
 year(col_datetime_5) < year(utc_timestamp())
 ORDER BY 1;
 invalid input: invalid datetime value %I:%m%y-%H-%V-%k-%k
+
+#SQL[@102,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@107,N76]Result[69, 36]
 SELECT CONCAT_WS(1471290948102948112341241204312904-23412412-4141, "a", "b");
-CONCAT_WS(1471290948102948112341241204312904-23412412-4141, "a", "b")
+CONCAT_WS(1471290948102948112341241204312904 - 23412412 - 4141, a, b)
 a1471290948102948112341241180896351b
+
+#SQL[@109,N77]Result[62, 69]
 SELECT CONCAT_WS("147129094810294812983120", "@^%#&*@^$@(*&#()!@*", "a", "b");
-CONCAT_WS("147129094810294812983120", "@^%#&*@^$@(*&#()!@*", "a", "b")
+CONCAT_WS(147129094810294812983120, @^%#&*@^$@(*&#()!@*, a, b)
 @^%#&*@^$@(*&#()!@*147129094810294812983120a147129094810294812983120b
+
+#SQL[@110,N62]Result[47, 33]
 SELECT CONCAT_WS("123", "你好", "français", "にほんご");
-CONCAT_WS("123", "你好", "français", "にほんご")
+CONCAT_WS(123, 你好, français, にほんご)
 你好123français123にほんご
+
+#SQL[@114,N72]Result[61, 38]
 SELECT CONCAT_WS(1, 0.213, 213.4131, "abc", "2012-03-21 03:03:02", NULL);
-CONCAT_WS(1, 0.213, 213.4131, "abc", "2012-03-21 03:03:02", NULL)
+CONCAT_WS(1, 0.213, 213.4131, abc, 2012-03-21 03:03:02, null)
 0.2131213.41311abc12012-03-21 03:03:02
+
+#SQL[@119,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@120,N31]Result[]
 create table t2(a INT,  b date);
+
+#SQL[@121,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@122,N92]Result[]
 insert into t2 values(1, "2012-10-12"),(2, "1994-10-04"),(3, "2018-06-04"),(4, "2012-10-12");
+
+#SQL[@123,N142]Error[104]
 SELECT t1.a,t1.b, t2.a,t2.b FROM t1 JOIN t2 ON (concat_ws(t1.a, t1.b) = concat_ws(t2.a, t2.b)) HAVING substring(concat_ws(t1.a, t1.b),1,1)='2';
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@124,N13]Result[]
 drop table t1;
+
+#SQL[@125,N13]Result[]
 drop table t2;
+

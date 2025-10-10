@@ -1,28 +1,51 @@
+#SQL[@5,N53]Result[]
 create stage mystage URL='file:///$resources/plugin/';
+
+#SQL[@7,N70]Result[57, 12]
 select moplugin('stage://mystage/hello.wasm', 'mowasm_hello', 'world');
 moplugin(stage://mystage/hello.wasm, mowasm_hello, world)
 Hello world!
+
+#SQL[@9,N70]Result[57, 12]
 select moplugin('stage://mystage/hello.wasm', 'mowasm_hello', 'world');
 moplugin(stage://mystage/hello.wasm, mowasm_hello, world)
 Hello world!
+
+#SQL[@10,N69]Result[56, 1]
 select moplugin('stage://mystage/hello.wasm', 'mowasm_add', '[3, 5]');
 moplugin(stage://mystage/hello.wasm, mowasm_add, [3, 5])
 8
+
+#SQL[@15,N72]Error[31]
 select moplugin('stage://mystage/notexist.wasm', 'mowasm_add', '[3, 5]');
 file notexist.wasm is not found
+
+#SQL[@16,N76]Error[31]
 select try_moplugin('stage://mystage/notexist.wasm', 'mowasm_add', '[3, 5]');
 file notexist.wasm is not found
+
+#SQL[@18,N70]Error[29]
 select moplugin('stage://mystage/hello.wasm', 'mowasm_add2', '[3, 5]');
 unknown function: mowasm_add2
+
+#SQL[@19,N74]Result[61, 4]
 select try_moplugin('stage://mystage/hello.wasm', 'mowasm_add2', '[3, 5]');
 try_moplugin(stage://mystage/hello.wasm, mowasm_add2, [3, 5])
 null
+
+#SQL[@21,N72]Error[29]
 select moplugin('stage://mystage/hello.wasm', 'mowasm_add', '[1, 3, 5]');
 add takes two float arguments
+
+#SQL[@22,N76]Result[63, 4]
 select try_moplugin('stage://mystage/hello.wasm', 'mowasm_add', '[1, 3, 5]');
 try_moplugin(stage://mystage/hello.wasm, mowasm_add, [1, 3, 5])
 null
+
+#SQL[@24,N65]Result[]
 create table moplugint(id int, fn varchar(255), arg varchar(255));
+
+#SQL[@25,N329]Result[]
 insert into moplugint values
 (1, 'mowasm_hello', '[1, 2]'),
 (2, 'mowasm_add', '[1, 2]'),
@@ -35,34 +58,45 @@ insert into moplugint values
 (9, 'mowasm_hello', '[1, 2]'),
 (10, 'mowasm_add', '[1, 2]')
 ;
+
+#SQL[@38,N30]Result[8, 2]
 select count(*) from moplugint;
 count(*)
 10
+
+#SQL[@39,N73]Result[53, 20, 8, 20, 8, 20, 8, 20, 8, 20, 9]
 select id, moplugin('stage://mystage/hello.wasm', fn, arg)
 from moplugint;
-id    moplugin(stage://mystage/hello.wasm, fn, arg)
-1    Hello [1, 2]!
-2    3
-3    Hello [1, 2]!
-4    3
-5    Hello [1, 2]!
-6    3
-7    Hello [1, 2]!
-8    3
-9    Hello [1, 2]!
-10    3
+id  ¦  moplugin(stage://mystage/hello.wasm, fn, arg)
+1  ¦  Hello [1, 2]!
+2  ¦  3
+3  ¦  Hello [1, 2]!
+4  ¦  3
+5  ¦  Hello [1, 2]!
+6  ¦  3
+7  ¦  Hello [1, 2]!
+8  ¦  3
+9  ¦  Hello [1, 2]!
+10  ¦  3
+
+#SQL[@41,N77]Result[57, 20, 8, 20, 8, 20, 8, 20, 8, 20, 9]
 select id, try_moplugin('stage://mystage/hello.wasm', fn, arg)
 from moplugint;
-id    try_moplugin(stage://mystage/hello.wasm, fn, arg)
-1    Hello [1, 2]!
-2    3
-3    Hello [1, 2]!
-4    3
-5    Hello [1, 2]!
-6    3
-7    Hello [1, 2]!
-8    3
-9    Hello [1, 2]!
-10    3
+id  ¦  try_moplugin(stage://mystage/hello.wasm, fn, arg)
+1  ¦  Hello [1, 2]!
+2  ¦  3
+3  ¦  Hello [1, 2]!
+4  ¦  3
+5  ¦  Hello [1, 2]!
+6  ¦  3
+7  ¦  Hello [1, 2]!
+8  ¦  3
+9  ¦  Hello [1, 2]!
+10  ¦  3
+
+#SQL[@44,N20]Result[]
 drop table moplugint;
+
+#SQL[@46,N18]Result[]
 drop stage mystage;
+

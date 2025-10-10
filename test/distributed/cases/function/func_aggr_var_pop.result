@@ -1,158 +1,311 @@
+#SQL[@2,N20]Result[13, 4]
 SELECT var_pop(null);
 var_pop(null)
 null
+
+#SQL[@5,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c BIGINT, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,10), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@6,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@7,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@8,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@9,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@10,N25]Result[10, 6]
 select var_pop(a) from t1;
 var_pop(a)
 918.75
+
+#SQL[@11,N25]Result[10, 6]
 select var_pop(b) from t1;
 var_pop(b)
 918.75
+
+#SQL[@12,N25]Result[10, 7]
 select var_pop(c) from t1;
 var_pop(c)
 67.6875
+
+#SQL[@13,N25]Result[10, 8]
 select var_pop(d) from t1;
 var_pop(d)
 217.6875
+
+#SQL[@14,N25]Result[10, 8]
 select var_pop(e) from t1;
 var_pop(e)
 450.1875
+
+#SQL[@15,N25]Result[10, 6]
 select var_pop(f) from t1;
 var_pop(f)
 420.75
+
+#SQL[@16,N25]Result[10, 18]
 select var_pop(g) from t1;
 var_pop(g)
 32502.248712250002
+
+#SQL[@18,N25]Result[10, 17]
 select var_pop(h) from t1;
 var_pop(h)
 2254.078700000000
+
+#SQL[@19,N25]Error[61]
 select var_pop(i) from t1;
 invalid argument aggregate function var_pop, bad value [DATE]
+
+#SQL[@20,N25]Error[65]
 select var_pop(k) from t1;
 invalid argument aggregate function var_pop, bad value [DATETIME]
+
+#SQL[@21,N25]Error[66]
 select var_pop(l) from t1;
 invalid argument aggregate function var_pop, bad value [TIMESTAMP]
+
+#SQL[@22,N25]Error[61]
 select var_pop(m) from t1;
 invalid argument aggregate function var_pop, bad value [CHAR]
+
+#SQL[@23,N25]Error[64]
 select var_pop(n) from t1;
 invalid argument aggregate function var_pop, bad value [VARCHAR]
+
+#SQL[@24,N13]Result[]
 drop table t1;
+
+#SQL[@27,N39]Result[32, 14]
 select var_pop(99999999999999999.99999);
 var_pop(99999999999999999.99999)
-0E-12
+0.000000000000
+
+#SQL[@28,N46]Result[39, 14]
 select var_pop(999999999999999933193939.99999);
 var_pop(999999999999999933193939.99999)
-0E-12
+0.000000000000
+
+#SQL[@29,N64]Result[57, 14]
 select var_pop(9999999999999999999999999999999999.9999999999999);
 var_pop(9999999999999999999999999999999999.9999999999999)
-0E-12
+0.000000000000
+
+#SQL[@30,N40]Result[33, 14]
 select var_pop(-99999999999999999.99999);
 var_pop(-99999999999999999.99999)
-0E-12
+0.000000000000
+
+#SQL[@31,N47]Result[40, 14]
 select var_pop(-999999999999999933193939.99999);
 var_pop(-999999999999999933193939.99999)
-0E-12
+0.000000000000
+
+#SQL[@32,N65]Result[58, 14]
 select var_pop(-9999999999999999999999999999999999.9999999999999);
 var_pop(-9999999999999999999999999999999999.9999999999999)
-0E-12
+0.000000000000
+
+#SQL[@33,N25]Result[]
 create table t1(a bigint);
+
+#SQL[@34,N25]Result[10, 4]
 select var_pop(a) from t1;
 var_pop(a)
 null
+
+#SQL[@35,N48]Result[]
 insert into t1 values(null),(null),(null),(null);
+
+#SQL[@36,N25]Result[10, 4]
 select var_pop(a) from t1;
 var_pop(a)
 null
+
+#SQL[@37,N89]Result[]
 insert into t1 values(12417249128419),(124124125124151),(5124125151415),(124125152651515);
+
+#SQL[@38,N25]Result[10, 28]
 select var_pop(a) from t1;
 var_pop(a)
-3.3332822532651034E27
+3333282253265103400000000000
+
+#SQL[@39,N13]Result[]
 drop table t1;
+
+#SQL[@40,N56]Result[]
 create table t1 ( a int not null default 1, big bigint );
+
+#SQL[@41,N85]Result[]
 insert into t1 (big) values (-1),(1234567890167),(92233720368547),(18446744073709515);
+
+#SQL[@42,N16]Result[10, 9, 20, 21, 24]
 select * from t1;
-a    big
-1    -1
-1    1234567890167
-1    92233720368547
-1    18446744073709515
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+
+#SQL[@43,N60]Result[48, 93]
 select distinct var_pop(big),max(big),var_pop(big)-1 from t1;
-var_pop(big)    max(big)    var_pop(big) - 1
-6.358900172438704E31    18446744073709515    6.358900172438704E31
+var_pop(big)  ¦  max(big)  ¦  var_pop(big) - 1
+63589001724387040000000000000000  ¦  18446744073709515  ¦  63589001724387040000000000000000
+
+#SQL[@44,N62]Result[48, 93]
 select var_pop(big),max(big),var_pop(big)-1 from t1 group by a;
-var_pop(big)    max(big)    var_pop(big) - 1
-6.358900172438704E31    18446744073709515    6.358900172438704E31
+var_pop(big)  ¦  max(big)  ¦  var_pop(big) - 1
+63589001724387040000000000000000  ¦  18446744073709515  ¦  63589001724387040000000000000000
+
+#SQL[@45,N45]Result[]
 insert into t1 (big) values (184467440737615);
+
+#SQL[@46,N16]Result[10, 9, 20, 21, 24, 22]
 select * from t1;
-a    big
-1    -1
-1    1234567890167
-1    92233720368547
-1    18446744073709515
-1    184467440737615
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+1  ¦  184467440737615
+
+#SQL[@47,N51]Result[48, 93]
 select var_pop(big),max(big),var_pop(big)-1 from t1;
-var_pop(big)    max(big)    var_pop(big) - 1
-5.404043539963766E31    18446744073709515    5.404043539963766E31
+var_pop(big)  ¦  max(big)  ¦  var_pop(big) - 1
+54040435399637660000000000000000  ¦  18446744073709515  ¦  54040435399637660000000000000000
+
+#SQL[@48,N62]Result[48, 93]
 select var_pop(big),max(big),var_pop(big)-1 from t1 group by a;
-var_pop(big)    max(big)    var_pop(big) - 1
-5.404043539963766E31    18446744073709515    5.404043539963766E31
+var_pop(big)  ¦  max(big)  ¦  var_pop(big) - 1
+54040435399637660000000000000000  ¦  18446744073709515  ¦  54040435399637660000000000000000
+
+#SQL[@49,N13]Result[]
 drop table t1;
+
+#SQL[@52,N69]Result[]
 CREATE TABLE t1 (Fld1 int(11) default NULL,Fld2 int(11) default NULL);
+
+#SQL[@53,N60]Result[]
 INSERT INTO t1 VALUES (1,10),(1,20),(2,NULL),(2,NULL),(3,50);
+
+#SQL[@54,N74]Result[11, 9, 8]
 select Fld1, var_pop(Fld2) as q from t1 group by Fld1 having q is not null;
-fld1    q
-1    25.0
-3    0.0
+Fld1  ¦  q
+1  ¦  25
+3  ¦  0
+
+#SQL[@55,N81]Result[23, 9, 8]
 select Fld1, var_pop(Fld2) from t1 group by Fld1 having var_pop(Fld2) is not null;
-fld1    var_pop(fld2)
-1    25.0
-3    0.0
+Fld1  ¦  var_pop(Fld2)
+1  ¦  25
+3  ¦  0
+
+#SQL[@56,N77]Result[23, 9, 8]
 select Fld1, var_pop(Fld2) from t1 group by Fld1 having avg(Fld2) is not null;
-fld1    var_pop(fld2)
-1    25.0
-3    0.0
+Fld1  ¦  var_pop(Fld2)
+1  ¦  25
+3  ¦  0
+
+#SQL[@57,N81]Result[23, 9, 8]
 select Fld1, var_pop(Fld2) from t1 group by Fld1 having var_pop(Fld2) is not null;
-fld1    var_pop(fld2)
-1    25.0
-3    0.0
+Fld1  ¦  var_pop(Fld2)
+1  ¦  25
+3  ¦  0
+
+#SQL[@58,N13]Result[]
 drop table t1;
+
+#SQL[@61,N28]Result[23, 5]
 SELECT var_pop(1)<var_pop(2);
 var_pop(1) < var_pop(2)
 false
+
+#SQL[@64,N22]Result[]
 CREATE TABLE t1(i INT);
+
+#SQL[@65,N32]Result[]
 INSERT INTO t1 VALUES (NULL),(1);
+
+#SQL[@66,N63]Result[17, 14, 8]
 SELECT var_pop(i)+0 as splus0, i+0 as plain FROM t1 GROUP BY i ;
-splus0    plain
-null    null
-0.0    1
+splus0  ¦  plain
+null  ¦  null
+0  ¦  1
+
+#SQL[@67,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@69,N28]Result[]
 drop database if exists test;
+
+#SQL[@70,N20]Result[]
 create database test;
+
+#SQL[@71,N8]Result[]
 use test;
+
+#SQL[@74,N30]Result[]
 drop table if exists decimal01;
+
+#SQL[@75,N42]Result[]
 create table decimal01(col1 decimal(10,1));
+
+#SQL[@76,N48]Result[]
 insert into decimal01 values(1234124.2134324321);
+
+#SQL[@77,N44]Result[]
 insert into decimal01 values(23413432.32423);
+
+#SQL[@78,N31]Result[]
 insert into decimal01 values(0);
+
+#SQL[@79,N42]Result[]
 insert into decimal01 values(-13421.34234);
+
+#SQL[@80,N35]Result[13, 27]
 select var_pop(col1) from decimal01;
 var_pop(col1)
 99500475119008.215000000000
+
+#SQL[@81,N20]Result[]
 drop table decimal01;
+
+#SQL[@83,N30]Result[]
 drop table if exists decimal02;
+
+#SQL[@84,N42]Result[]
 create table decimal02(col1 decimal(38,0));
+
+#SQL[@85,N68]Result[]
 insert into decimal02 values(12312312312314565789874569874512456879);
+
+#SQL[@86,N68]Result[]
 insert into decimal02 values(99999999999999999999999999999999999999);
+
+#SQL[@87,N68]Result[]
 insert into decimal02 values(10000000000000000000000000000000000000);
+
+#SQL[@88,N68]Result[]
 insert into decimal02 values(32482438247328742831193201993219039203);
+
+#SQL[@89,N77]Result[]
 insert into decimal02 values(99999999999999999999999999999999999999.73289342);
+
+#SQL[@90,N67]Result[]
 insert into decimal02 values(-298432432433242412313123321231321313);
+
+#SQL[@91,N76]Result[]
 insert into decimal02 values(-34243214324324342321313321321342342343.123143);
+
+#SQL[@92,N68]Result[]
 insert into decimal02 values(-0.12813218391321939921391929391293912);
+
+#SQL[@93,N23]Result[4, 38, 38, 38, 38, 38, 37, 39, 1]
 select * from decimal02;
 col1
 12312312312314565789874569874512456879
@@ -163,16 +316,36 @@ col1
 -298432432433242412313123321231321313
 -34243214324324342321313321321342342343
 0
+
+#SQL[@94,N35]Error[37]
 select var_pop(col1) from decimal02;
 internal error: Decimal128 overflowed
+
+#SQL[@95,N20]Result[]
 drop table decimal02;
+
+#SQL[@97,N27]Result[]
 drop table if exists test02;
+
+#SQL[@98,N37]Result[]
 create table test02(col1 decimal(37));
+
+#SQL[@99,N71]Result[]
 insert into test02 values(9999999999999999999999999999999999999.123141);
+
+#SQL[@100,N66]Result[]
 insert into test02 values(1122312131421321313131314356569876544.9);
+
+#SQL[@101,N68]Result[]
 insert into test02 values(-2121313214325334213213257654323234324.90);
+
+#SQL[@102,N45]Result[]
 insert into test02 values(-123.2314123412321);
+
+#SQL[@103,N66]Result[]
 insert into test02 values(9932129321093029302930290439029432423.5);
+
+#SQL[@104,N20]Result[4, 37, 37, 38, 4, 37]
 select * from test02;
 col1
 9999999999999999999999999999999999999
@@ -180,64 +353,141 @@ col1
 -2121313214325334213213257654323234325
 -123
 9932129321093029302930290439029432424
+
+#SQL[@105,N32]Error[37]
 select var_pop(col1) from test02;
 internal error: Decimal128 overflowed
+
+#SQL[@106,N17]Result[]
 drop table test02;
+
+#SQL[@108,N27]Result[]
 drop table if exists test03;
+
+#SQL[@109,N36]Result[]
 create table test03(a decimal(38,2));
+
+#SQL[@110,N60]Result[]
 insert into test03 values(9999999999999999999999999999999.1);
+
+#SQL[@111,N35]Result[]
 insert into test03 values(-0.00001);
+
+#SQL[@112,N31]Result[]
 insert into test03 values(NULL);
+
+#SQL[@113,N29]Error[37]
 select var_pop(a) from test03;
 internal error: Decimal128 overflowed
+
+#SQL[@114,N17]Result[]
 drop table test03;
+
+#SQL[@117,N27]Result[]
 drop table if exists test04;
+
+#SQL[@118,N37]Result[]
 create table test04(a decimal(38,20));
+
+#SQL[@119,N66]Result[]
 insert into test04 values(123123242399999900.22231134568909999999);
+
+#SQL[@120,N66]Result[]
 insert into test04 values(999999999999999999.11111111111112222222);
+
+#SQL[@121,N66]Result[]
 insert into test04 values(100000000000000000.00000000000000000001);
+
+#SQL[@122,N48]Result[]
 insert into test04 values(-999999999999999999.9);
+
+#SQL[@123,N50]Result[]
 insert into test04 values(-0.00000000000000000001);
+
+#SQL[@124,N20]Result[1, 39, 39, 39, 40, 23]
 select * from test04;
 a
 123123242399999900.22231134568909999999
 999999999999999999.11111111111112222222
 100000000000000000.00000000000000000001
 -999999999999999999.90000000000000000000
--1E-20
+-0.00000000000000000001
+
+#SQL[@125,N29]Error[37]
 select var_pop(a) from test04;
 internal error: Decimal128 overflowed
+
+#SQL[@126,N17]Result[]
 drop table test04;
+
+#SQL[@128,N27]Result[]
 drop table if exists test05;
+
+#SQL[@129,N37]Result[]
 create table test05(a decimal(20,10));
+
+#SQL[@130,N45]Result[]
 insert into test05 values(-9999999999.192012);
+
+#SQL[@131,N48]Result[]
 insert into test05 values(9999999999.9102938129);
+
+#SQL[@132,N48]Result[]
 insert into test05 values(7382184932.3892039843);
+
+#SQL[@133,N39]Result[]
 insert into test05 values(0.3029302394);
+
+#SQL[@134,N20]Result[1, 22, 21, 21, 12]
 select * from test05;
 a
 -9999999999.1920120000
 9999999999.9102938129
 7382184932.3892039843
 0.3029302394
+
+#SQL[@135,N29]Result[10, 33]
 select var_pop(a) from test05;
 var_pop(a)
 60218122690068093824.133657202503
+
+#SQL[@136,N17]Result[]
 drop table test05;
+
+#SQL[@138,N27]Result[]
 drop table if exists test06;
+
+#SQL[@139,N37]Result[]
 create table test06(a decimal(20,10));
+
+#SQL[@140,N45]Result[]
 insert into test06 values(-9999999999.192012);
+
+#SQL[@141,N48]Result[]
 insert into test06 values(9999999999.9102938129);
+
+#SQL[@142,N31]Result[]
 insert into test06 values(NULL);
+
+#SQL[@143,N39]Result[]
 insert into test06 values(0.3029302394);
+
+#SQL[@144,N20]Result[1, 22, 21, 4, 12]
 select * from test06;
 a
 -9999999999.1920120000
 9999999999.9102938129
 null
 0.3029302394
+
+#SQL[@145,N29]Result[10, 33]
 select var_pop(a) from test06;
 var_pop(a)
 66666666660682038752.801677950945
+
+#SQL[@146,N17]Result[]
 drop table test06;
+
+#SQL[@148,N18]Result[]
 drop database test;
+

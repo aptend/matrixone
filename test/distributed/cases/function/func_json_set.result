@@ -1,162 +1,268 @@
+#SQL[@1,N95]Result[6, 41]
 SELECT JSON_SET('{"fruits": ["apple", "banana", "cherry"]}', '$.fruits[1]', 'orange') AS result;
 result
 {"fruits": ["apple", "orange", "cherry"]}
+
+#SQL[@2,N85]Result[6, 41]
 SELECT JSON_SET('{"fruits": ["apple", "banana"]}', '$.fruits[2]', 'cherry') AS result;
 result
 {"fruits": ["apple", "banana", "cherry"]}
+
+#SQL[@3,N111]Result[6, 70]
 SELECT JSON_SET('{"fruits": [{"name": "apple"}, {"name": "banana"}]}', '$.fruits[1].color', 'yellow') AS result;
 result
 {"fruits": [{"name": "apple"}, {"color": "yellow", "name": "banana"}]}
+
+#SQL[@4,N111]Result[6, 57]
 SELECT JSON_SET('{"user": {"name": "John", "age": 30}}', '$.user.age', 31, '$.user.city', 'New York') AS result;
 result
 {"user": {"age": 31, "city": "New York", "name": "John"}}
+
+#SQL[@5,N220]Result[6, 129]
 SELECT JSON_SET('{"company": {"name": "Moonshot AI", "employees": [{"id": 1, "name": "John"}, {"id": 2, "name": "Jane"}]}}', '$.company.employees[0].name', 'John Doe', '$.company.employees[1].department', 'HR') AS result;
 result
 {"company": {"employees": [{"id": 1, "name": "John Doe"}, {"department": "HR", "id": 2, "name": "Jane"}], "name": "Moonshot AI"}}
+
+#SQL[@6,N70]Error[55]
 SELECT JSON_SET('{"fruits": ["apple", "banana", "cherry"]}') AS result;
 invalid argument function json_set, bad value [VARCHAR]
+
+#SQL[@7,N99]Error[63]
 SELECT JSON_SET('{"user": {"name": "John", "age": 30}}', '$.user.age', 31, '$.user.city') AS result;
 invalid input: pathList and valList should have the same length
+
+#SQL[@8,N56]Result[6, 4]
 SELECT JSON_SET(null, '$.fruits[1]', 'orange') AS result;
 result
 null
+
+#SQL[@9,N86]Result[6, 4]
 SELECT JSON_SET('{"fruits": ["apple", "banana", "cherry"]}', null, 'orange') AS result;
 result
 null
+
+#SQL[@10,N91]Result[6, 37]
 SELECT JSON_SET('{"fruits": ["apple", "banana", "cherry"]}', '$.fruits[1]', null) AS result;
 result
 {"fruits": ["apple", null, "cherry"]}
+
+#SQL[@12,N26]Result[]
 drop table if exists users;
+
+#SQL[@13,N60]Result[]
 CREATE TABLE users (
-id INT PRIMARY KEY,
-info JSON
+    id INT PRIMARY KEY,
+    info JSON
 );
+
+#SQL[@18,N71]Result[]
 INSERT INTO users (id, info) VALUES (1, '{"name": "Alice", "age": 30}');
+
+#SQL[@19,N69]Result[]
 INSERT INTO users (id, info) VALUES (2, '{"name": "Bob", "age": 25}');
+
+#SQL[@21,N19]Result[12, 35, 33]
 SELECT * FROM users;
-id    info
-1    {"age": 30, "name": "Alice"}
-2    {"age": 25, "name": "Bob"}
+id  ¦  info
+1  ¦  {"age": 30, "name": "Alice"}
+2  ¦  {"age": 25, "name": "Bob"}
+
+#SQL[@23,N64]Result[]
 UPDATE users SET info = JSON_SET(info, '$.age', 31) WHERE id = 1;
+
+#SQL[@24,N19]Result[12, 33, 35]
 SELECT * FROM users;
-id    info
-2    {"age": 25, "name": "Bob"}
-1    {"age": 31, "name": "Alice"}
+id  ¦  info
+2  ¦  {"age": 25, "name": "Bob"}
+1  ¦  {"age": 31, "name": "Alice"}
+
+#SQL[@26,N78]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.phone', '123-456-7890')
 WHERE id = 2;
+
+#SQL[@29,N19]Result[12, 35, 58]
 SELECT * FROM users;
-id    info
-1    {"age": 31, "name": "Alice"}
-2    {"age": 25, "name": "Bob", "phone": "123-456-7890"}
+id  ¦  info
+1  ¦  {"age": 31, "name": "Alice"}
+2  ¦  {"age": 25, "name": "Bob", "phone": "123-456-7890"}
+
+#SQL[@31,N92]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.age', 32, '$.address', '123 Main St')
 WHERE id = 1;
+
+#SQL[@34,N19]Result[12, 58, 61]
 SELECT * FROM users;
-id    info
-2    {"age": 25, "name": "Bob", "phone": "123-456-7890"}
-1    {"address": "123 Main St", "age": 32, "name": "Alice"}
+id  ¦  info
+2  ¦  {"age": 25, "name": "Bob", "phone": "123-456-7890"}
+1  ¦  {"address": "123 Main St", "age": 32, "name": "Alice"}
+
+#SQL[@36,N16]Result[]
 drop table users;
+
+#SQL[@38,N26]Result[]
 drop table if exists users;
+
+#SQL[@39,N60]Result[]
 CREATE TABLE users (
-id INT PRIMARY KEY,
-info JSON
+    id INT PRIMARY KEY,
+    info JSON
 );
+
+#SQL[@44,N414]Result[]
 INSERT INTO users (id, info) VALUES
 (1, '{"name": "Alice", "age": 30, "email": "alice@example.com", "address": {"city": "New York", "zip": "10001"}}'),
 (2, '{"name": "Bob", "age": 25, "email": "bob@example.com", "address": {"city": "Los Angeles", "zip": "90001"}}'),
 (3, '{"name": "Charlie", "age": 28, "email": "charlie@example.com", "address": {"city": "Chicago", "zip": "60601"}, "skills": ["Java", "Python"]}');
+
+#SQL[@49,N19]Result[12, 114, 113, 147]
 SELECT * FROM users;
-id    info
-1    {"address": {"city": "New York", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
-2    {"address": {"city": "Los Angeles", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
-3    {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["Java", "Python"]}
+id  ¦  info
+1  ¦  {"address": {"city": "New York", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
+2  ¦  {"address": {"city": "Los Angeles", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+3  ¦  {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["Java", "Python"]}
+
+#SQL[@51,N86]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.address.city', 'San Francisco')
 WHERE id = 1;
+
+#SQL[@54,N19]Result[12, 113, 147, 119]
 SELECT * FROM users;
-id    info
-2    {"address": {"city": "Los Angeles", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
-3    {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["Java", "Python"]}
-1    {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
+id  ¦  info
+2  ¦  {"address": {"city": "Los Angeles", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+3  ¦  {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["Java", "Python"]}
+1  ¦  {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
+
+#SQL[@56,N76]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.address.state', 'CA')
 WHERE id = 2;
+
+#SQL[@59,N19]Result[12, 147, 119, 128]
 SELECT * FROM users;
-id    info
-3    {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["Java", "Python"]}
-1    {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
-2    {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+id  ¦  info
+3  ¦  {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["Java", "Python"]}
+1  ¦  {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
+2  ¦  {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+
+#SQL[@61,N80]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.skills[0]', 'JavaScript')
 WHERE id = 3;
+
+#SQL[@64,N19]Result[12, 119, 128, 153]
 SELECT * FROM users;
-id    info
-1    {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
-2    {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
-3    {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["JavaScript", "Python"]}
+id  ¦  info
+1  ¦  {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
+2  ¦  {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+3  ¦  {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["JavaScript", "Python"]}
+
+#SQL[@66,N73]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.skills[2]', 'SQL')
 WHERE id = 3;
+
+#SQL[@69,N19]Result[12, 119, 128, 160]
 SELECT * FROM users;
-id    info
-1    {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
-2    {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
-3    {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["JavaScript", "Python", "SQL"]}
+id  ¦  info
+1  ¦  {"address": {"city": "San Francisco", "zip": "10001"}, "age": 30, "email": "alice@example.com", "name": "Alice"}
+2  ¦  {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+3  ¦  {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["JavaScript", "Python", "SQL"]}
+
+#SQL[@71,N111]Result[]
 UPDATE users
 SET info = JSON_SET(info, '$.age', 32, '$.address.state', 'NY', '$.skills[3]', 'k8s')
 WHERE id = 1;
+
+#SQL[@74,N19]Result[12, 128, 160, 134]
 SELECT * FROM users;
-id    info
-2    {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
-3    {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["JavaScript", "Python", "SQL"]}
-1    {"address": {"city": "San Francisco", "state": "NY", "zip": "10001"}, "age": 32, "email": "alice@example.com", "name": "Alice"}
+id  ¦  info
+2  ¦  {"address": {"city": "Los Angeles", "state": "CA", "zip": "90001"}, "age": 25, "email": "bob@example.com", "name": "Bob"}
+3  ¦  {"address": {"city": "Chicago", "zip": "60601"}, "age": 28, "email": "charlie@example.com", "name": "Charlie", "skills": ["JavaScript", "Python", "SQL"]}
+1  ¦  {"address": {"city": "San Francisco", "state": "NY", "zip": "10001"}, "age": 32, "email": "alice@example.com", "name": "Alice"}
+
+#SQL[@76,N16]Result[]
 drop table users;
+
+#SQL[@78,N30]Result[]
 drop table if exists employees;
+
+#SQL[@79,N79]Result[]
 CREATE TABLE employees (
-id INT AUTO_INCREMENT PRIMARY KEY,
-info JSON
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    info JSON
 );
+
+#SQL[@84,N29]Result[]
 drop table if exists projects;
+
+#SQL[@85,N104]Result[]
 CREATE TABLE projects (
-id INT AUTO_INCREMENT PRIMARY KEY,
-name VARCHAR(255),
-members JSON
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255),
+    members JSON
 );
+
+#SQL[@91,N257]Result[]
 INSERT INTO employees (info) VALUES
 ('{"name": "John Doe", "age": 30, "department": "Engineering", "skills": ["Java", "Python", "SQL"]}'),
 ('{"name": "Jane Smith", "age": 25, "department": "Marketing", "skills": ["Social Media", "SEO", "Content Writing"]}');
+
+#SQL[@95,N89]Result[]
 INSERT INTO projects (name, members) VALUES
 ('Project A', '[1, 2]'),
 ('Project B', '[1]');
+
+#SQL[@100,N23]Result[12, 104, 121]
 SELECT * FROM employees;
-id    info
-1    {"age": 30, "department": "Engineering", "name": "John Doe", "skills": ["Java", "Python", "SQL"]}
-2    {"age": 25, "department": "Marketing", "name": "Jane Smith", "skills": ["Social Media", "SEO", "Content Writing"]}
+id  ¦  info
+1  ¦  {"age": 30, "department": "Engineering", "name": "John Doe", "skills": ["Java", "Python", "SQL"]}
+2  ¦  {"age": 25, "department": "Marketing", "name": "Jane Smith", "skills": ["Social Media", "SEO", "Content Writing"]}
+
+#SQL[@101,N22]Result[25, 28, 25]
 SELECT * FROM projects;
-id    name    members
-1    Project A    [1, 2]
-2    Project B    [1]
+id  ¦  name  ¦  members
+1  ¦  Project A  ¦  [1, 2]
+2  ¦  Project B  ¦  [1]
+
+#SQL[@103,N84]Result[]
 UPDATE employees
 SET info = JSON_SET(info, '$.skills[3]', 'JavaScript')
 WHERE id = 1;
+
+#SQL[@106,N23]Result[12, 121, 118]
 SELECT * FROM employees;
-id    info
-2    {"age": 25, "department": "Marketing", "name": "Jane Smith", "skills": ["Social Media", "SEO", "Content Writing"]}
-1    {"age": 30, "department": "Engineering", "name": "John Doe", "skills": ["Java", "Python", "SQL", "JavaScript"]}
+id  ¦  info
+2  ¦  {"age": 25, "department": "Marketing", "name": "Jane Smith", "skills": ["Social Media", "SEO", "Content Writing"]}
+1  ¦  {"age": 30, "department": "Engineering", "name": "John Doe", "skills": ["Java", "Python", "SQL", "JavaScript"]}
+
+#SQL[@108,N71]Result[]
 UPDATE projects
 SET members = JSON_SET(members, '$[2]', 3)
 WHERE id = 1;
+
+#SQL[@111,N22]Result[25, 25, 31]
 SELECT * FROM projects;
-id    name    members
-2    Project B    [1]
-1    Project A    [1, 2, 3]
+id  ¦  name  ¦  members
+2  ¦  Project B  ¦  [1]
+1  ¦  Project A  ¦  [1, 2, 3]
+
+#SQL[@113,N96]Result[]
 UPDATE employees
 SET info = JSON_SET(info, '$.department.manager', 'Alice Johnson')
 WHERE id = 2;
+
+#SQL[@116,N23]Result[12, 118, 121]
 SELECT * FROM employees;
-id    info
-1    {"age": 30, "department": "Engineering", "name": "John Doe", "skills": ["Java", "Python", "SQL", "JavaScript"]}
-2    {"age": 25, "department": "Marketing", "name": "Jane Smith", "skills": ["Social Media", "SEO", "Content Writing"]}
+id  ¦  info
+1  ¦  {"age": 30, "department": "Engineering", "name": "John Doe", "skills": ["Java", "Python", "SQL", "JavaScript"]}
+2  ¦  {"age": 25, "department": "Marketing", "name": "Jane Smith", "skills": ["Social Media", "SEO", "Content Writing"]}
+
+#SQL[@118,N20]Result[]
 drop table employees;
+
+#SQL[@119,N19]Result[]
 drop table projects;
+

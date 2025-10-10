@@ -1,40 +1,76 @@
+#SQL[@1,N29]Result[22, 3]
 select current_account_name();
 current_account_name()
 sys
+
+#SQL[@2,N27]Result[20, 1]
 select current_account_id();
 current_account_id()
 0
+
+#SQL[@3,N26]Result[19, 4]
 select current_user_name();
 current_user_name()
 dump
+
+#SQL[@4,N24]Result[17, 1]
 select current_user_id();
 current_user_id()
 1
+
+#SQL[@5,N26]Result[19, 7]
 select current_role_name();
 current_role_name()
 moadmin
+
+#SQL[@6,N24]Result[17, 1]
 select current_role_id();
 current_role_id()
 0
+
+#SQL[@7,N36]Result[84, 47]
 select * from current_account() as t;
-account_name    account_id    user_name    user_id    role_name    role_id
-sys    0    dump    1    moadmin    0
+account_name  ¦  account_id  ¦  user_name  ¦  user_id  ¦  role_name  ¦  role_id
+sys  ¦  0  ¦  dump  ¦  1  ¦  moadmin  ¦  0
+
+#SQL[@9,N26]Result[]
 drop account if exists abc;
+
+#SQL[@10,N60]Result[]
 create account abc ADMIN_NAME 'admin' IDENTIFIED BY '123456';
+
+#SQL[@12,N29]Result[]
 drop role if exists test_role;
+
+#SQL[@13,N21]Result[]
 create role test_role;
+
+#SQL[@14,N24]Result[]
 grant test_role to admin;
+
+#SQL[@15,N18]Result[]
 set role test_role;
+
+#SQL[@17,N29]Result[22, 3]
 select current_account_name();
 current_account_name()
 abc
+
+#SQL[@20,N26]Result[19, 5]
 select current_user_name();
 current_user_name()
 admin
+
+#SQL[@21,N24]Result[17, 1]
 select current_user_id();
 current_user_id()
 2
+
+#SQL[@22,N26]Result[19, 9]
 select current_role_name();
 current_role_name()
 test_role
+
+#SQL[@25,N26]Result[]
 drop account if exists abc;
+

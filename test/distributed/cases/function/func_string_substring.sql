@@ -72,7 +72,6 @@ SELECT SUBSTR('w3resource',4,3);
 
 #嵌套
 select substring('abc', cast(2 as unsigned int));
--- @bvt:issue
 #数据类型
 create table t1(f1 varchar(255));
 insert into t1 values ("123"),("456");
@@ -150,7 +149,7 @@ drop table t1;
 #NULL
 select substring(null, 1, 1);
 
-#WHERE 
+#WHERE
 create table t1 (b varchar(5));
 insert t1 values ('ab'), ('abc'), ('abcd'), ('abcde');
 select * from t1 where substring(b,1,1) = 'a';

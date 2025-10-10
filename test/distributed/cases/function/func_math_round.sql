@@ -40,15 +40,15 @@ SELECT a, ROUND(a) FROM t1;
 DROP TABLE t1;
 
 #data type
--- @bvt:issue#2302
-CREATE TABLE t1(f1 DECIMAL(22,1));
-INSERT INTO t1 VALUES (0),(1);
-SELECT ROUND(f1, f1) FROM t1;
-SELECT ROUND(f1, f1) FROM t1 GROUP BY 1;
-DROP TABLE t1;
--- @bvt:issue
+@issue(no=2302) {
+    CREATE TABLE t1(f1 DECIMAL(22,1));
+    INSERT INTO t1 VALUES (0),(1);
+    SELECT ROUND(f1, f1) FROM t1;
+    SELECT ROUND(f1, f1) FROM t1 GROUP BY 1;
+    DROP TABLE t1;
+}
 
-#嵌套 
+#嵌套
 #LEAST函数0.5MO暂时不支持
 #SELECT ROUND(LEAST(15, -4939092, 0.2704), STDDEV('a'));
 
@@ -62,9 +62,8 @@ select round(999999999, -9);
 select round(999999999.0, -9);
 select round(999999999999999999, -18);
 select round(999999999999999999.0, -18);
--- @bvt:issue
 
-#嵌套，join 
+#嵌套，join
 CREATE TABLE t1 (
 id           VARCHAR(80) NOT NULL PRIMARY KEY,
 sujet        VARCHAR(80),
@@ -142,94 +141,94 @@ INSERT INTO t1 VALUES (1, 101.40, 21.40), (1, -80.00, 0.00),
 (5, 33.00, 0.00), (5, -25.80, 0.00), (5, 0.00, 7.20),
 (6, 0.00, 0.00), (6, -51.40, 0.00);
 SELECT i, SUM(d1), SUM(d2) FROM t1 GROUP BY i HAVING SUM(d1) <> SUM(d2);
--- @bvt:issue#2302
-SELECT i, ROUND(SUM(d1), 2), ROUND(SUM(d2), 2) FROM t1 GROUP BY i
-HAVING ROUND(SUM(d1), 2) <> ROUND(SUM(d2), 2);
--- @bvt:issue
+@issue(no=2302) {
+    SELECT i, ROUND(SUM(d1), 2), ROUND(SUM(d2), 2) FROM t1 GROUP BY i
+    HAVING ROUND(SUM(d1), 2) <> ROUND(SUM(d2), 2);
+}
 drop table t1;
 
 
 #DATA TYPE
 #0.5 MO的TRUNCATE函数暂不支持
--- @bvt:issue#2302
-CREATE TABLE t1 (qty decimal(16,6) default NULL, dps tinyint(3) unsigned default NULL);
-INSERT INTO t1 VALUES (1.1325,3);
-SELECT ROUND(qty,3), dps, ROUND(qty,dps) FROM t1;
-DROP TABLE t1;
--- @bvt:issue
+@issue(no=2302) {
+    CREATE TABLE t1 (qty decimal(16,6) default NULL, dps tinyint(3) unsigned default NULL);
+    INSERT INTO t1 VALUES (1.1325,3);
+    SELECT ROUND(qty,3), dps, ROUND(qty,dps) FROM t1;
+    DROP TABLE t1;
+}
 
--- @bvt:issue#2302
-CREATE TABLE t1( a DECIMAL, b INT );
-INSERT INTO t1 VALUES (123456, 40), (123456, 40);
-#SELECT TRUNCATE( a, b ) AS c FROM t1 ORDER BY c;
-SELECT ROUND( a, b ) AS c FROM t1 ORDER BY c;
-SELECT ROUND( a, 100 ) AS c FROM t1 ORDER BY c;
-CREATE TABLE t2( a DECIMAL, b INT );
-INSERT INTO t2 VALUES (123456, 100);
-#SELECT TRUNCATE( a, b ) AS c FROM t2 ORDER BY c;
-SELECT ROUND( a, b ) AS c FROM t2 ORDER BY c;
-CREATE TABLE t3( a DECIMAL, b INT );
-INSERT INTO t3 VALUES (123456, 40), (123456, 40);
-#SELECT TRUNCATE( a, b ) AS c FROM t3 ORDER BY c;
-SELECT ROUND( a, b ) AS c FROM t3 ORDER BY c;
-SELECT ROUND( a, 100 ) AS c FROM t3 ORDER BY c;
-CREATE TABLE t4( a DECIMAL, b INT );
-INSERT INTO t4 VALUES (123456, 40), (123456, 40);
-#SELECT TRUNCATE( a, b ) AS c FROM t4 ORDER BY c;
-SELECT ROUND( a, b ) AS c FROM t4 ORDER BY c;
-SELECT ROUND( a, 100 ) AS c FROM t4 ORDER BY c;
--- @ignore{
-delete from t1;
-INSERT INTO t1 VALUES (1234567890, 20), (999.99, 5);
-select round(a,b) as c from t1 order by c;
--- @ignore}
-drop table t1;
-drop table t2;
-drop table t3;
-drop table t4;
+@issue(no=2302) {
+    CREATE TABLE t1( a DECIMAL, b INT );
+    INSERT INTO t1 VALUES (123456, 40), (123456, 40);
+    #SELECT TRUNCATE( a, b ) AS c FROM t1 ORDER BY c;
+    SELECT ROUND( a, b ) AS c FROM t1 ORDER BY c;
+    SELECT ROUND( a, 100 ) AS c FROM t1 ORDER BY c;
+    CREATE TABLE t2( a DECIMAL, b INT );
+    INSERT INTO t2 VALUES (123456, 100);
+    #SELECT TRUNCATE( a, b ) AS c FROM t2 ORDER BY c;
+    SELECT ROUND( a, b ) AS c FROM t2 ORDER BY c;
+    CREATE TABLE t3( a DECIMAL, b INT );
+    INSERT INTO t3 VALUES (123456, 40), (123456, 40);
+    #SELECT TRUNCATE( a, b ) AS c FROM t3 ORDER BY c;
+    SELECT ROUND( a, b ) AS c FROM t3 ORDER BY c;
+    SELECT ROUND( a, 100 ) AS c FROM t3 ORDER BY c;
+    CREATE TABLE t4( a DECIMAL, b INT );
+    INSERT INTO t4 VALUES (123456, 40), (123456, 40);
+    #SELECT TRUNCATE( a, b ) AS c FROM t4 ORDER BY c;
+    SELECT ROUND( a, b ) AS c FROM t4 ORDER BY c;
+    SELECT ROUND( a, 100 ) AS c FROM t4 ORDER BY c;
+    -- @ignore{
+    delete from t1;
+    INSERT INTO t1 VALUES (1234567890, 20), (999.99, 5);
+    select round(a,b) as c from t1 order by c;
+    -- @ignore}
+    drop table t1;
+    drop table t2;
+    drop table t3;
+    drop table t4;
 
--- @bvt:issue
+}
 
--- @bvt:issue#2302
-CREATE TABLE t1( a DECIMAL(4, 3), b INT );
-INSERT INTO t1 VALUES ( 1, 5 ), ( 2, 4 ), ( 3, 3 ), ( 4, 2 ), ( 5, 1 );
-SELECT a, b, ROUND( a, b ) AS c FROM t1 ORDER BY c;
-SELECT a, b, ROUND( a, b ) AS c FROM t1 ORDER BY c DESC;
-CREATE TABLE t2 ( a INT, b INT, c DECIMAL(5, 4) );
-INSERT INTO t2 VALUES ( 0, 1, 1.2345 ), ( 1, 2, 1.2345 ),( 3, 3, 1.2345 ), ( 2, 4, 1.2345 );
-SELECT a, b, MAX(ROUND(c, a)) FROM t2 GROUP BY a, b ORDER BY b;
-SELECT a, b, ROUND(c, a) FROM t2;
-CREATE TABLE t3( a INT, b DECIMAL(6, 3) );
-INSERT INTO t3 VALUES( 0, 1.5 );
-SELECT ROUND( b, a ) FROM t3;
-CREATE TABLE t4( a INT, b DECIMAL( 12, 0) );
-INSERT INTO t4 VALUES( -9, 1.5e9 );
-SELECT ROUND( b, a ) FROM t4;
-CREATE TABLE t5( a INT, b DECIMAL( 13, 12 ) );
-INSERT INTO t5 VALUES( 0, 1.5 );
-INSERT INTO t5 VALUES( 9, 1.5e-9 );
-SELECT ROUND( b, a ) FROM t5;
-CREATE TABLE t6( a INT );
-INSERT INTO t6 VALUES( 6 / 8 );
-SELECT * FROM t6;
-SELECT ROUND(20061108085411.000002);
-drop table t1;
-drop table t2;
-drop table t3;
-drop table t4;
-drop table t5;
-drop table t6;
--- @bvt:issue
+@issue(no=2302) {
+    CREATE TABLE t1( a DECIMAL(4, 3), b INT );
+    INSERT INTO t1 VALUES ( 1, 5 ), ( 2, 4 ), ( 3, 3 ), ( 4, 2 ), ( 5, 1 );
+    SELECT a, b, ROUND( a, b ) AS c FROM t1 ORDER BY c;
+    SELECT a, b, ROUND( a, b ) AS c FROM t1 ORDER BY c DESC;
+    CREATE TABLE t2 ( a INT, b INT, c DECIMAL(5, 4) );
+    INSERT INTO t2 VALUES ( 0, 1, 1.2345 ), ( 1, 2, 1.2345 ),( 3, 3, 1.2345 ), ( 2, 4, 1.2345 );
+    SELECT a, b, MAX(ROUND(c, a)) FROM t2 GROUP BY a, b ORDER BY b;
+    SELECT a, b, ROUND(c, a) FROM t2;
+    CREATE TABLE t3( a INT, b DECIMAL(6, 3) );
+    INSERT INTO t3 VALUES( 0, 1.5 );
+    SELECT ROUND( b, a ) FROM t3;
+    CREATE TABLE t4( a INT, b DECIMAL( 12, 0) );
+    INSERT INTO t4 VALUES( -9, 1.5e9 );
+    SELECT ROUND( b, a ) FROM t4;
+    CREATE TABLE t5( a INT, b DECIMAL( 13, 12 ) );
+    INSERT INTO t5 VALUES( 0, 1.5 );
+    INSERT INTO t5 VALUES( 9, 1.5e-9 );
+    SELECT ROUND( b, a ) FROM t5;
+    CREATE TABLE t6( a INT );
+    INSERT INTO t6 VALUES( 6 / 8 );
+    SELECT * FROM t6;
+    SELECT ROUND(20061108085411.000002);
+    drop table t1;
+    drop table t2;
+    drop table t3;
+    drop table t4;
+    drop table t5;
+    drop table t6;
+}
 
--- @bvt:issue#2302
-CREATE TABLE t5(c1 DECIMAL(16,6), c2 tinyint);
-INSERT INTO t5 VALUES(1.1325,3);
-SELECT ROUND(c1,c2) from t5;
-#select TRUNCATE(c1,c2) FROM t5;
-DROP TABLE t5;
--- @bvt:issue
+@issue(no=2302) {
+    CREATE TABLE t5(c1 DECIMAL(16,6), c2 tinyint);
+    INSERT INTO t5 VALUES(1.1325,3);
+    SELECT ROUND(c1,c2) from t5;
+    #select TRUNCATE(c1,c2) FROM t5;
+    DROP TABLE t5;
+}
 
-#null 
+#null
 SELECT ROUND(NULL);
 
 #算术操作

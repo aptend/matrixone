@@ -1,300 +1,476 @@
+#SQL[@1,N23]Result[]
 drop table if exists t1;
+
+#SQL[@2,N78]Result[]
 create table t1(
 cdate varchar(20),
 ctime varchar(20),
 cdatetime varchar(20)
 );
+
+#SQL[@7,N69]Result[]
 insert into t1 values('04/31/2004','09:30:17', '2022-05-27 11:30:00');
+
+#SQL[@8,N69]Result[]
 insert into t1 values('05/31/2012','11:30:17', '2012-05-26 12:30:00');
+
+#SQL[@9,N69]Result[]
 insert into t1 values('04/23/2009','01:30:17', '2002-07-26 02:30:01');
+
+#SQL[@10,N69]Result[]
 insert into t1 values('01/31/2004','12:30:17', '2001-03-26 08:10:01');
+
+#SQL[@11,N69]Result[]
 insert into t1 values('07/03/2018','05:30:17', '2011-08-26 07:15:01');
+
+#SQL[@12,N69]Result[]
 insert into t1 values('08/25/2014','09:30:17', '2011-11-26 06:15:01');
+
+#SQL[@13,N69]Result[]
 insert into t1 values('06/30/2022','04:30:17', '2011-12-26 06:15:01');
+
+#SQL[@14,N50]Result[39, 20, 26, 26, 26, 26, 26, 26]
 SELECT cdate,STR_TO_DATE(cdate,'%m/%d/%Y') from t1;
-cdate    str_to_date(cdate, %m/%d/%Y)
-04/31/2004    null
-05/31/2012    2012-05-31
-04/23/2009    2009-04-23
-01/31/2004    2004-01-31
-07/03/2018    2018-07-03
-08/25/2014    2014-08-25
-06/30/2022    2022-06-30
+cdate  ¦  STR_TO_DATE(cdate, %m/%d/%Y)
+04/31/2004  ¦  null
+05/31/2012  ¦  2012-05-31
+04/23/2009  ¦  2009-04-23
+01/31/2004  ¦  2004-01-31
+07/03/2018  ¦  2018-07-03
+08/25/2014  ¦  2014-08-25
+06/30/2022  ¦  2022-06-30
+
+#SQL[@15,N51]Result[39, 22, 22, 22, 22, 22, 22, 22]
 SELECT ctime,STR_TO_DATE(ctime,'%h:%i:%s')  from t1;
-ctime    str_to_date(ctime, %h:%i:%s)
-09:30:17    09:30:17
-11:30:17    11:30:17
-01:30:17    01:30:17
-12:30:17    00:30:17
-05:30:17    05:30:17
-09:30:17    09:30:17
-04:30:17    04:30:17
+ctime  ¦  STR_TO_DATE(ctime, %h:%i:%s)
+09:30:17  ¦  09:30:17
+11:30:17  ¦  11:30:17
+01:30:17  ¦  01:30:17
+12:30:17  ¦  00:30:17
+05:30:17  ¦  05:30:17
+09:30:17  ¦  09:30:17
+04:30:17  ¦  04:30:17
+
+#SQL[@16,N67]Result[56, 44, 44, 44, 44, 44, 44, 44]
 SELECT cdatetime,STR_TO_DATE(cdatetime,'%Y-%m-%d %H:%i:%s') from t1;
-cdatetime    str_to_date(cdatetime, %Y-%m-%d %H:%i:%s)
-2022-05-27 11:30:00    2022-05-27 11:30:00
-2012-05-26 12:30:00    2012-05-26 12:30:00
-2002-07-26 02:30:01    2002-07-26 02:30:01
-2001-03-26 08:10:01    2001-03-26 08:10:01
-2011-08-26 07:15:01    2011-08-26 07:15:01
-2011-11-26 06:15:01    2011-11-26 06:15:01
-2011-12-26 06:15:01    2011-12-26 06:15:01
+cdatetime  ¦  STR_TO_DATE(cdatetime, %Y-%m-%d %H:%i:%s)
+2022-05-27 11:30:00  ¦  2022-05-27 11:30:00
+2012-05-26 12:30:00  ¦  2012-05-26 12:30:00
+2002-07-26 02:30:01  ¦  2002-07-26 02:30:01
+2001-03-26 08:10:01  ¦  2001-03-26 08:10:01
+2011-08-26 07:15:01  ¦  2011-08-26 07:15:01
+2011-11-26 06:15:01  ¦  2011-11-26 06:15:01
+2011-12-26 06:15:01  ¦  2011-12-26 06:15:01
+
+#SQL[@18,N46]Result[35, 20, 26, 26, 26, 26, 26, 26]
 SELECT cdate,TO_DATE(cdate,'%m/%d/%Y') from t1;
-cdate    to_date(cdate, %m/%d/%Y)
-04/31/2004    null
-05/31/2012    2012-05-31
-04/23/2009    2009-04-23
-01/31/2004    2004-01-31
-07/03/2018    2018-07-03
-08/25/2014    2014-08-25
-06/30/2022    2022-06-30
+cdate  ¦  TO_DATE(cdate, %m/%d/%Y)
+04/31/2004  ¦  null
+05/31/2012  ¦  2012-05-31
+04/23/2009  ¦  2009-04-23
+01/31/2004  ¦  2004-01-31
+07/03/2018  ¦  2018-07-03
+08/25/2014  ¦  2014-08-25
+06/30/2022  ¦  2022-06-30
+
+#SQL[@19,N47]Result[35, 22, 22, 22, 22, 22, 22, 22]
 SELECT ctime,TO_DATE(ctime,'%h:%i:%s')  from t1;
-ctime    to_date(ctime, %h:%i:%s)
-09:30:17    09:30:17
-11:30:17    11:30:17
-01:30:17    01:30:17
-12:30:17    00:30:17
-05:30:17    05:30:17
-09:30:17    09:30:17
-04:30:17    04:30:17
+ctime  ¦  TO_DATE(ctime, %h:%i:%s)
+09:30:17  ¦  09:30:17
+11:30:17  ¦  11:30:17
+01:30:17  ¦  01:30:17
+12:30:17  ¦  00:30:17
+05:30:17  ¦  05:30:17
+09:30:17  ¦  09:30:17
+04:30:17  ¦  04:30:17
+
+#SQL[@20,N63]Result[52, 44, 44, 44, 44, 44, 44, 44]
 SELECT cdatetime,TO_DATE(cdatetime,'%Y-%m-%d %H:%i:%s') from t1;
-cdatetime    to_date(cdatetime, %Y-%m-%d %H:%i:%s)
-2022-05-27 11:30:00    2022-05-27 11:30:00
-2012-05-26 12:30:00    2012-05-26 12:30:00
-2002-07-26 02:30:01    2002-07-26 02:30:01
-2001-03-26 08:10:01    2001-03-26 08:10:01
-2011-08-26 07:15:01    2011-08-26 07:15:01
-2011-11-26 06:15:01    2011-11-26 06:15:01
-2011-12-26 06:15:01    2011-12-26 06:15:01
+cdatetime  ¦  TO_DATE(cdatetime, %Y-%m-%d %H:%i:%s)
+2022-05-27 11:30:00  ¦  2022-05-27 11:30:00
+2012-05-26 12:30:00  ¦  2012-05-26 12:30:00
+2002-07-26 02:30:01  ¦  2002-07-26 02:30:01
+2001-03-26 08:10:01  ¦  2001-03-26 08:10:01
+2011-08-26 07:15:01  ¦  2011-08-26 07:15:01
+2011-11-26 06:15:01  ¦  2011-11-26 06:15:01
+2011-12-26 06:15:01  ¦  2011-12-26 06:15:01
+
+#SQL[@21,N13]Result[]
 drop table t1;
+
+#SQL[@23,N23]Result[]
 drop table if exists t2;
+
+#SQL[@24,N78]Result[]
 create table t2(
 cdate varchar(20),
 ctime varchar(20),
 cdatetime varchar(30)
 );
+
+#SQL[@29,N72]Result[]
 insert into t2 values('May 1, 2013','11:13:56','8:10:2.123456 13-01-02');
+
+#SQL[@30,N74]Result[]
 insert into t2 values('Feb 28, 2022','12:33:51','12:19:2.123456 06-01-02');
+
+#SQL[@31,N74]Result[]
 insert into t2 values('Jul 20, 2022','03:23:36','15:21:2.123456 22-01-02');
+
+#SQL[@32,N73]Result[]
 insert into t2 values('Aug 1, 2013','01:43:46','11:11:2.123456 25-01-02');
+
+#SQL[@33,N74]Result[]
 insert into t2 values('Nov 28, 2022','10:53:41','19:31:2.123456 11-01-02');
+
+#SQL[@34,N73]Result[]
 insert into t2 values('Dec 20, 2022','09:23:46','1:41:2.123456 02-01-02');
+
+#SQL[@35,N50]Result[39, 27, 28, 28, 27, 28, 28]
 SELECT cdate,STR_TO_DATE(cdate,'%b %d,%Y') from t2;
-cdate    str_to_date(cdate, %b %d,%Y)
-May 1, 2013    2013-05-01
-Feb 28, 2022    2022-02-28
-Jul 20, 2022    2022-07-20
-Aug 1, 2013    2013-08-01
-Nov 28, 2022    2022-11-28
-Dec 20, 2022    2022-12-20
+cdate  ¦  STR_TO_DATE(cdate, %b %d,%Y)
+May 1, 2013  ¦  2013-05-01
+Feb 28, 2022  ¦  2022-02-28
+Jul 20, 2022  ¦  2022-07-20
+Aug 1, 2013  ¦  2013-08-01
+Nov 28, 2022  ¦  2022-11-28
+Dec 20, 2022  ¦  2022-12-20
+
+#SQL[@36,N45]Result[33, 22, 22, 22, 22, 22, 22]
 SELECT ctime,STR_TO_DATE(ctime,'%r')  from t2;
-ctime    str_to_date(ctime, %r)
-11:13:56    11:13:56
-12:33:51    00:33:51
-03:23:36    03:23:36
-01:43:46    01:43:46
-10:53:41    10:53:41
-09:23:46    09:23:46
+ctime  ¦  STR_TO_DATE(ctime, %r)
+11:13:56  ¦  11:13:56
+12:33:51  ¦  00:33:51
+03:23:36  ¦  03:23:36
+01:43:46  ¦  01:43:46
+10:53:41  ¦  10:53:41
+09:23:46  ¦  09:23:46
+
+#SQL[@37,N70]Result[59, 47, 48, 48, 48, 48, 47]
 SELECT cdatetime,STR_TO_DATE(cdatetime,'%H:%i:%S.%f %y-%m-%d') from t2;
-cdatetime    str_to_date(cdatetime, %H:%i:%S.%f %y-%m-%d)
-8:10:2.123456 13-01-02    2013-01-02 08:10:02
-12:19:2.123456 06-01-02    2006-01-02 12:19:02
-15:21:2.123456 22-01-02    2022-01-02 15:21:02
-11:11:2.123456 25-01-02    2025-01-02 11:11:02
-19:31:2.123456 11-01-02    2011-01-02 19:31:02
-1:41:2.123456 02-01-02    2002-01-02 01:41:02
+cdatetime  ¦  STR_TO_DATE(cdatetime, %H:%i:%S.%f %y-%m-%d)
+8:10:2.123456 13-01-02  ¦  2013-01-02 08:10:02
+12:19:2.123456 06-01-02  ¦  2006-01-02 12:19:02
+15:21:2.123456 22-01-02  ¦  2022-01-02 15:21:02
+11:11:2.123456 25-01-02  ¦  2025-01-02 11:11:02
+19:31:2.123456 11-01-02  ¦  2011-01-02 19:31:02
+1:41:2.123456 02-01-02  ¦  2002-01-02 01:41:02
+
+#SQL[@38,N46]Result[35, 27, 28, 28, 27, 28, 28]
 SELECT cdate,TO_DATE(cdate,'%b %d,%Y') from t2;
-cdate    to_date(cdate, %b %d,%Y)
-May 1, 2013    2013-05-01
-Feb 28, 2022    2022-02-28
-Jul 20, 2022    2022-07-20
-Aug 1, 2013    2013-08-01
-Nov 28, 2022    2022-11-28
-Dec 20, 2022    2022-12-20
+cdate  ¦  TO_DATE(cdate, %b %d,%Y)
+May 1, 2013  ¦  2013-05-01
+Feb 28, 2022  ¦  2022-02-28
+Jul 20, 2022  ¦  2022-07-20
+Aug 1, 2013  ¦  2013-08-01
+Nov 28, 2022  ¦  2022-11-28
+Dec 20, 2022  ¦  2022-12-20
+
+#SQL[@39,N41]Result[29, 22, 22, 22, 22, 22, 22]
 SELECT ctime,TO_DATE(ctime,'%r')  from t2;
-ctime    to_date(ctime, %r)
-11:13:56    11:13:56
-12:33:51    00:33:51
-03:23:36    03:23:36
-01:43:46    01:43:46
-10:53:41    10:53:41
-09:23:46    09:23:46
+ctime  ¦  TO_DATE(ctime, %r)
+11:13:56  ¦  11:13:56
+12:33:51  ¦  00:33:51
+03:23:36  ¦  03:23:36
+01:43:46  ¦  01:43:46
+10:53:41  ¦  10:53:41
+09:23:46  ¦  09:23:46
+
+#SQL[@40,N66]Result[55, 47, 48, 48, 48, 48, 47]
 SELECT cdatetime,TO_DATE(cdatetime,'%H:%i:%S.%f %y-%m-%d') from t2;
-cdatetime    to_date(cdatetime, %H:%i:%S.%f %y-%m-%d)
-8:10:2.123456 13-01-02    2013-01-02 08:10:02
-12:19:2.123456 06-01-02    2006-01-02 12:19:02
-15:21:2.123456 22-01-02    2022-01-02 15:21:02
-11:11:2.123456 25-01-02    2025-01-02 11:11:02
-19:31:2.123456 11-01-02    2011-01-02 19:31:02
-1:41:2.123456 02-01-02    2002-01-02 01:41:02
+cdatetime  ¦  TO_DATE(cdatetime, %H:%i:%S.%f %y-%m-%d)
+8:10:2.123456 13-01-02  ¦  2013-01-02 08:10:02
+12:19:2.123456 06-01-02  ¦  2006-01-02 12:19:02
+15:21:2.123456 22-01-02  ¦  2022-01-02 15:21:02
+11:11:2.123456 25-01-02  ¦  2025-01-02 11:11:02
+19:31:2.123456 11-01-02  ¦  2011-01-02 19:31:02
+1:41:2.123456 02-01-02  ¦  2002-01-02 01:41:02
+
+#SQL[@42,N13]Result[]
 drop table t2;
+
+#SQL[@44,N44]Result[33, 4]
 SELECT STR_TO_DATE('04/31/2004', '%m/%d/%Y');
-str_to_date(04/31/2004, %m/%d/%Y)
+STR_TO_DATE(04/31/2004, %m/%d/%Y)
 null
+
+#SQL[@45,N44]Result[34, 10]
 SELECT str_to_date('May 1, 2013','%M %d,%Y');
 str_to_date(May 1, 2013, %M %d,%Y)
 2013-05-01
+
+#SQL[@46,N50]Result[40, 10]
 SELECT str_to_date('February 28, 2022','%M %d,%Y');
 str_to_date(February 28, 2022, %M %d,%Y)
 2022-02-28
+
+#SQL[@47,N67]Result[57, 19]
 select str_to_date('8:10:2.123456 13-01-02','%H:%i:%S.%f %y-%m-%d');
 str_to_date(8:10:2.123456 13-01-02, %H:%i:%S.%f %y-%m-%d)
 2013-01-02 08:10:02
+
+#SQL[@48,N36]Result[25, 8]
 select str_to_date('11:13:56', '%r');
 str_to_date(11:13:56, %r)
 11:13:56
+
+#SQL[@49,N90]Result[82, 19]
 SELECT DATE_ADD(str_to_date('9999-12-30 23:59:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
-date_add(str_to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), interval(1, minute))
+DATE_ADD(str_to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), INTERVAL(1, minute))
 9999-12-31 00:00:00
+
+#SQL[@50,N42]Result[32, 10]
 SELECT str_to_date('01,5,2013','%d,%m,%Y');
 str_to_date(01,5,2013, %d,%m,%Y)
 2013-05-01
+
+#SQL[@51,N44]Result[34, 10]
 SELECT str_to_date('May 1, 2013','%M %d,%Y');
 str_to_date(May 1, 2013, %M %d,%Y)
 2013-05-01
+
+#SQL[@52,N43]Result[33, 8]
 SELECT str_to_date('a09:30:17','a%h:%i:%s');
 str_to_date(a09:30:17, a%h:%i:%s)
 09:30:17
+
+#SQL[@53,N42]Result[32, 4]
 SELECT str_to_date('a09:30:17','%h:%i:%s');
 str_to_date(a09:30:17, %h:%i:%s)
 null
+
+#SQL[@54,N42]Result[32, 8]
 SELECT str_to_date('09:30:17a','%h:%i:%s');
 str_to_date(09:30:17a, %h:%i:%s)
 09:30:17
+
+#SQL[@55,N31]Result[21, 4]
 SELECT str_to_date('abc','abc');
 str_to_date(abc, abc)
 null
+
+#SQL[@56,N28]Result[18, 4]
 SELECT str_to_date('9','%m');
 str_to_date(9, %m)
 null
+
+#SQL[@57,N28]Result[18, 8]
 SELECT str_to_date('9','%s');
 str_to_date(9, %s)
 00:00:09
+
+#SQL[@58,N44]Result[33, 4]
 SELECT str_to_date('00/00/0000', '%m/%d/%Y');
 str_to_date(00/00/0000, %m/%d/%Y)
 null
+
+#SQL[@59,N44]Result[33, 4]
 SELECT str_to_date('04/31/2004', '%m/%d/%Y');
 str_to_date(04/31/2004, %m/%d/%Y)
 null
+
+#SQL[@60,N44]Result[33, 4]
 SELECT str_to_date('00/00/0000', '%m/%d/%Y');
 str_to_date(00/00/0000, %m/%d/%Y)
 null
+
+#SQL[@61,N46]Result[35, 4]
 SELECT str_to_date('200442 Monday', '%X%V %W');
 str_to_date(200442 Monday, %X%V %W)
 null
+
+#SQL[@62,N63]Result[51, 4]
 select str_to_date(concat_ws(' ','15-01-2001'), ' 2:59:58.999');
 str_to_date(concat_ws( , 15-01-2001),  2:59:58.999)
 null
+
+#SQL[@63,N81]Result[70, 19]
 select concat_ws('',str_to_date('8:11:2.123456 03-01-02','%H:%i:%S.%f %y-%m-%d'));
 concat_ws(, str_to_date(8:11:2.123456 03-01-02, %H:%i:%S.%f %y-%m-%d))
 2003-01-02 08:11:02
+
+#SQL[@64,N46]Result[35, 10]
 select str_to_date('04 /30/2004', '%m /%d/%Y');
 str_to_date(04 /30/2004, %m /%d/%Y)
 2004-04-30
+
+#SQL[@65,N47]Result[36, 10]
 select str_to_date('04/30 /2004', '%m /%d /%Y');
 str_to_date(04/30 /2004, %m /%d /%Y)
 2004-04-30
+
+#SQL[@66,N46]Result[35, 10]
 select str_to_date('04/30/2004 ', '%m/%d/%Y ');
 str_to_date(04/30/2004 , %m/%d/%Y )
 2004-04-30
+
+#SQL[@67,N90]Result[82, 19]
 SELECT DATE_SUB(str_to_date('9999-12-31 00:01:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
-date_sub(str_to_date(9999-12-31 00:01:00, %Y-%m-%d %H:%i:%s), interval(1, minute))
+DATE_SUB(str_to_date(9999-12-31 00:01:00, %Y-%m-%d %H:%i:%s), INTERVAL(1, minute))
 9999-12-31 00:00:00
+
+#SQL[@68,N90]Result[82, 19]
 SELECT DATE_ADD(str_to_date('9999-12-30 23:59:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
-date_add(str_to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), interval(1, minute))
+DATE_ADD(str_to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), INTERVAL(1, minute))
 9999-12-31 00:00:00
+
+#SQL[@69,N36]Result[25, 8]
 SELECT str_to_date('09:22', '%H:%i');
 str_to_date(09:22, %H:%i)
 09:22:00
+
+#SQL[@70,N48]Result[37, 8]
 SELECT str_to_date('09:22:23.33', '%H:%i:%s.%f');
 str_to_date(09:22:23.33, %H:%i:%s.%f)
 09:22:23
+
+#SQL[@71,N36]Result[25, 8]
 SELECT str_to_date('09:22', '%H:%i');
 str_to_date(09:22, %H:%i)
 09:22:00
+
+#SQL[@72,N179]Result[155, 10]
 SELECT str_to_date('2008-01-01',replace(replace(replace(replace(replace(replace(replace('yyyy-MM-dd','a','%p'),'ss','%s'),'mm','%i'),'HH','%H'),'yyyy','%Y'),'dd','%d'),'MM','%m'));
 str_to_date(2008-01-01, replace(replace(replace(replace(replace(replace(replace(yyyy-MM-dd, a, %p), ss, %s), mm, %i), HH, %H), yyyy, %Y), dd, %d), MM, %m))
 2008-01-01
+
+#SQL[@74,N40]Result[29, 4]
 SELECT TO_DATE('04/31/2004', '%m/%d/%Y');
-to_date(04/31/2004, %m/%d/%Y)
+TO_DATE(04/31/2004, %m/%d/%Y)
 null
+
+#SQL[@75,N40]Result[30, 10]
 SELECT to_date('May 1, 2013','%M %d,%Y');
 to_date(May 1, 2013, %M %d,%Y)
 2013-05-01
+
+#SQL[@76,N46]Result[36, 10]
 SELECT to_date('February 28, 2022','%M %d,%Y');
 to_date(February 28, 2022, %M %d,%Y)
 2022-02-28
+
+#SQL[@77,N63]Result[53, 19]
 select to_date('8:10:2.123456 13-01-02','%H:%i:%S.%f %y-%m-%d');
 to_date(8:10:2.123456 13-01-02, %H:%i:%S.%f %y-%m-%d)
 2013-01-02 08:10:02
+
+#SQL[@78,N32]Result[21, 8]
 select to_date('11:13:56', '%r');
 to_date(11:13:56, %r)
 11:13:56
+
+#SQL[@79,N86]Result[78, 19]
 SELECT DATE_ADD(to_date('9999-12-30 23:59:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
-date_add(to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), interval(1, minute))
+DATE_ADD(to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), INTERVAL(1, minute))
 9999-12-31 00:00:00
+
+#SQL[@80,N38]Result[28, 10]
 SELECT to_date('01,5,2013','%d,%m,%Y');
 to_date(01,5,2013, %d,%m,%Y)
 2013-05-01
+
+#SQL[@81,N40]Result[30, 10]
 SELECT to_date('May 1, 2013','%M %d,%Y');
 to_date(May 1, 2013, %M %d,%Y)
 2013-05-01
+
+#SQL[@82,N39]Result[29, 8]
 SELECT to_date('a09:30:17','a%h:%i:%s');
 to_date(a09:30:17, a%h:%i:%s)
 09:30:17
+
+#SQL[@83,N38]Result[28, 4]
 SELECT to_date('a09:30:17','%h:%i:%s');
 to_date(a09:30:17, %h:%i:%s)
 null
+
+#SQL[@84,N38]Result[28, 8]
 SELECT to_date('09:30:17a','%h:%i:%s');
 to_date(09:30:17a, %h:%i:%s)
 09:30:17
+
+#SQL[@85,N27]Result[17, 4]
 SELECT to_date('abc','abc');
 to_date(abc, abc)
 null
+
+#SQL[@86,N24]Result[14, 4]
 SELECT to_date('9','%m');
 to_date(9, %m)
 null
+
+#SQL[@87,N24]Result[14, 8]
 SELECT to_date('9','%s');
 to_date(9, %s)
 00:00:09
+
+#SQL[@88,N40]Result[29, 4]
 SELECT to_date('00/00/0000', '%m/%d/%Y');
 to_date(00/00/0000, %m/%d/%Y)
 null
+
+#SQL[@89,N40]Result[29, 4]
 SELECT to_date('04/31/2004', '%m/%d/%Y');
 to_date(04/31/2004, %m/%d/%Y)
 null
+
+#SQL[@90,N40]Result[29, 4]
 SELECT to_date('00/00/0000', '%m/%d/%Y');
 to_date(00/00/0000, %m/%d/%Y)
 null
+
+#SQL[@91,N42]Result[31, 4]
 SELECT to_date('200442 Monday', '%X%V %W');
 to_date(200442 Monday, %X%V %W)
 null
+
+#SQL[@92,N59]Result[47, 4]
 select to_date(concat_ws(' ','15-01-2001'), ' 2:59:58.999');
 to_date(concat_ws( , 15-01-2001),  2:59:58.999)
 null
+
+#SQL[@93,N77]Result[66, 19]
 select concat_ws('',to_date('8:11:2.123456 03-01-02','%H:%i:%S.%f %y-%m-%d'));
 concat_ws(, to_date(8:11:2.123456 03-01-02, %H:%i:%S.%f %y-%m-%d))
 2003-01-02 08:11:02
+
+#SQL[@94,N42]Result[31, 10]
 select to_date('04 /30/2004', '%m /%d/%Y');
 to_date(04 /30/2004, %m /%d/%Y)
 2004-04-30
+
+#SQL[@95,N43]Result[32, 10]
 select to_date('04/30 /2004', '%m /%d /%Y');
 to_date(04/30 /2004, %m /%d /%Y)
 2004-04-30
+
+#SQL[@96,N42]Result[31, 10]
 select to_date('04/30/2004 ', '%m/%d/%Y ');
 to_date(04/30/2004 , %m/%d/%Y )
 2004-04-30
+
+#SQL[@97,N86]Result[78, 19]
 SELECT DATE_SUB(to_date('9999-12-31 00:01:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
-date_sub(to_date(9999-12-31 00:01:00, %Y-%m-%d %H:%i:%s), interval(1, minute))
+DATE_SUB(to_date(9999-12-31 00:01:00, %Y-%m-%d %H:%i:%s), INTERVAL(1, minute))
 9999-12-31 00:00:00
+
+#SQL[@98,N86]Result[78, 19]
 SELECT DATE_ADD(to_date('9999-12-30 23:59:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
-date_add(to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), interval(1, minute))
+DATE_ADD(to_date(9999-12-30 23:59:00, %Y-%m-%d %H:%i:%s), INTERVAL(1, minute))
 9999-12-31 00:00:00
+
+#SQL[@99,N32]Result[21, 8]
 SELECT to_date('09:22', '%H:%i');
 to_date(09:22, %H:%i)
 09:22:00
+
+#SQL[@100,N44]Result[33, 8]
 SELECT to_date('09:22:23.33', '%H:%i:%s.%f');
 to_date(09:22:23.33, %H:%i:%s.%f)
 09:22:23
+
+#SQL[@101,N32]Result[21, 8]
 SELECT to_date('09:22', '%H:%i');
 to_date(09:22, %H:%i)
 09:22:00
+

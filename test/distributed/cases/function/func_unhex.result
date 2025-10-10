@@ -1,21 +1,35 @@
+#SQL[@1,N22]Result[13, 3]
 SELECT unhex('616263');
 unhex(616263)
 abc
+
+#SQL[@2,N26]Result[17, 5]
 SELECT unhex('68656c6c6f');
 unhex(68656c6c6f)
 hello
+
+#SQL[@3,N16]Result[7, 0]
 SELECT unhex('');
 unhex()
 
+
+#SQL[@4,N18]Result[11, 4]
 SELECT unhex(NULL);
 unhex(null)
 null
+
+#SQL[@5,N23]Result[14, 4]
 SELECT unhex('invalid');
 unhex(invalid)
 null
+
+#SQL[@6,N27]Result[18, 6]
 SELECT hex(unhex('616263'));
 hex(unhex(616263))
 616263
+
+#SQL[@7,N24]Result[15, 3]
 SELECT unhex(hex('abc'));
 unhex(hex(abc))
 abc
+

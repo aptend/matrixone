@@ -1,131 +1,182 @@
+#SQL[@1,N34]Result[]
 create database if not exists test;
+
+#SQL[@2,N8]Result[]
 use test;
+
+#SQL[@4,N27]Result[]
 drop table if exists t_json;
+
+#SQL[@5,N37]Result[]
 create table t_json (c1 int, c2 json);
+
+#SQL[@7,N62]Result[]
 insert into t_json values (1, '{"panel_no": 1, "area": "A1"}');
+
+#SQL[@8,N62]Result[]
 insert into t_json values (2, '{"panel_no": 2, "area": "A2"}');
+
+#SQL[@9,N63]Result[]
 insert into t_json values (3, '{"panel_no": "", "area": "A3"}');
+
+#SQL[@10,N47]Result[]
 insert into t_json values (4, '{"area": "A2"}');
+
+#SQL[@11,N47]Result[]
 insert into t_json values (5, '{"area": "A3"}');
+
+#SQL[@12,N45]Result[]
 insert into t_json values (6, '{"area": ""}');
+
+#SQL[@13,N35]Result[]
 insert into t_json values (7, '{}');
+
+#SQL[@14,N48]Result[]
 insert into t_json values (8, '{"panel_no": 2}');
+
+#SQL[@15,N48]Result[]
 insert into t_json values (9, '{"panel_no": 3}');
+
+#SQL[@16,N50]Result[]
 insert into t_json values (10, '{"panel_no": ""}');
+
+#SQL[@17,N36]Result[]
 insert into t_json values (11, NULL);
+
+#SQL[@19,N36]Result[10, 36, 36, 37, 21, 21, 19, 9, 22, 22, 24, 12]
 select * from t_json order by c1 asc;
-c1    c2
-1    {"area": "A1", "panel_no": 1}
-2    {"area": "A2", "panel_no": 2}
-3    {"area": "A3", "panel_no": ""}
-4    {"area": "A2"}
-5    {"area": "A3"}
-6    {"area": ""}
-7    {}
-8    {"panel_no": 2}
-9    {"panel_no": 3}
-10    {"panel_no": ""}
-11    null
+c1  ¦  c2
+1  ¦  {"area": "A1", "panel_no": 1}
+2  ¦  {"area": "A2", "panel_no": 2}
+3  ¦  {"area": "A3", "panel_no": ""}
+4  ¦  {"area": "A2"}
+5  ¦  {"area": "A3"}
+6  ¦  {"area": ""}
+7  ¦  {}
+8  ¦  {"panel_no": 2}
+9  ¦  {"panel_no": 3}
+10  ¦  {"panel_no": ""}
+11  ¦  null
+
+#SQL[@22,N60]Result[10, 9, 22, 22, 24, 12, 19, 36, 36, 21, 37, 21]
 select * from t_json order by json_extract(c2, '$.area') asc;
-c1    c2
-7    {}
-8    {"panel_no": 2}
-9    {"panel_no": 3}
-10    {"panel_no": ""}
-11    null
-6    {"area": ""}
-1    {"area": "A1", "panel_no": 1}
-2    {"area": "A2", "panel_no": 2}
-4    {"area": "A2"}
-3    {"area": "A3", "panel_no": ""}
-5    {"area": "A3"}
+c1  ¦  c2
+7  ¦  {}
+8  ¦  {"panel_no": 2}
+9  ¦  {"panel_no": 3}
+10  ¦  {"panel_no": ""}
+11  ¦  null
+6  ¦  {"area": ""}
+1  ¦  {"area": "A1", "panel_no": 1}
+2  ¦  {"area": "A2", "panel_no": 2}
+4  ¦  {"area": "A2"}
+3  ¦  {"area": "A3", "panel_no": ""}
+5  ¦  {"area": "A3"}
+
+#SQL[@24,N61]Result[10, 37, 21, 36, 21, 36, 19, 9, 22, 22, 24, 12]
 select * from t_json order by json_extract(c2, '$.area') desc;
-c1    c2
-3    {"area": "A3", "panel_no": ""}
-5    {"area": "A3"}
-2    {"area": "A2", "panel_no": 2}
-4    {"area": "A2"}
-1    {"area": "A1", "panel_no": 1}
-6    {"area": ""}
-7    {}
-8    {"panel_no": 2}
-9    {"panel_no": 3}
-10    {"panel_no": ""}
-11    null
+c1  ¦  c2
+3  ¦  {"area": "A3", "panel_no": ""}
+5  ¦  {"area": "A3"}
+2  ¦  {"area": "A2", "panel_no": 2}
+4  ¦  {"area": "A2"}
+1  ¦  {"area": "A1", "panel_no": 1}
+6  ¦  {"area": ""}
+7  ¦  {}
+8  ¦  {"panel_no": 2}
+9  ¦  {"panel_no": 3}
+10  ¦  {"panel_no": ""}
+11  ¦  null
+
+#SQL[@26,N64]Result[10, 21, 21, 19, 9, 12, 36, 22, 36, 22, 37, 24]
 select * from t_json order by json_extract(c2, '$.panel_no') asc;
-c1    c2
-4    {"area": "A2"}
-5    {"area": "A3"}
-6    {"area": ""}
-7    {}
-11    null
-1    {"area": "A1", "panel_no": 1}
-8    {"panel_no": 2}
-2    {"area": "A2", "panel_no": 2}
-9    {"panel_no": 3}
-3    {"area": "A3", "panel_no": ""}
-10    {"panel_no": ""}
+c1  ¦  c2
+4  ¦  {"area": "A2"}
+5  ¦  {"area": "A3"}
+6  ¦  {"area": ""}
+7  ¦  {}
+11  ¦  null
+1  ¦  {"area": "A1", "panel_no": 1}
+8  ¦  {"panel_no": 2}
+2  ¦  {"area": "A2", "panel_no": 2}
+9  ¦  {"panel_no": 3}
+3  ¦  {"area": "A3", "panel_no": ""}
+10  ¦  {"panel_no": ""}
+
+#SQL[@28,N65]Result[10, 37, 24, 22, 36, 22, 36, 9, 21, 21, 19, 12]
 select * from t_json order by json_extract(c2, '$.panel_no') desc;
-c1    c2
-3    {"area": "A3", "panel_no": ""}
-10    {"panel_no": ""}
-9    {"panel_no": 3}
-2    {"area": "A2", "panel_no": 2}
-8    {"panel_no": 2}
-1    {"area": "A1", "panel_no": 1}
-7    {}
-4    {"area": "A2"}
-5    {"area": "A3"}
-6    {"area": ""}
-11    null
+c1  ¦  c2
+3  ¦  {"area": "A3", "panel_no": ""}
+10  ¦  {"panel_no": ""}
+9  ¦  {"panel_no": 3}
+2  ¦  {"area": "A2", "panel_no": 2}
+8  ¦  {"panel_no": 2}
+1  ¦  {"area": "A1", "panel_no": 1}
+7  ¦  {}
+4  ¦  {"area": "A2"}
+5  ¦  {"area": "A3"}
+6  ¦  {"area": ""}
+11  ¦  null
+
+#SQL[@30,N93]Result[10, 9, 12, 19, 21, 21, 36, 22, 36, 22, 24, 37]
 select * from t_json order by json_extract(c2, '$.panel_no') , json_extract(c2, '$.area') asc;
-c1    c2
-7    {}
-11    null
-6    {"area": ""}
-4    {"area": "A2"}
-5    {"area": "A3"}
-1    {"area": "A1", "panel_no": 1}
-8    {"panel_no": 2}
-2    {"area": "A2", "panel_no": 2}
-9    {"panel_no": 3}
-10    {"panel_no": ""}
-3    {"area": "A3", "panel_no": ""}
+c1  ¦  c2
+7  ¦  {}
+11  ¦  null
+6  ¦  {"area": ""}
+4  ¦  {"area": "A2"}
+5  ¦  {"area": "A3"}
+1  ¦  {"area": "A1", "panel_no": 1}
+8  ¦  {"panel_no": 2}
+2  ¦  {"area": "A2", "panel_no": 2}
+9  ¦  {"panel_no": 3}
+10  ¦  {"panel_no": ""}
+3  ¦  {"area": "A3", "panel_no": ""}
+
+#SQL[@32,N94]Result[10, 21, 21, 19, 9, 12, 36, 36, 22, 22, 37, 24]
 select * from t_json order by json_extract(c2, '$.panel_no') , json_extract(c2, '$.area') desc;
-c1    c2
-5    {"area": "A3"}
-4    {"area": "A2"}
-6    {"area": ""}
-7    {}
-11    null
-1    {"area": "A1", "panel_no": 1}
-2    {"area": "A2", "panel_no": 2}
-8    {"panel_no": 2}
-9    {"panel_no": 3}
-3    {"area": "A3", "panel_no": ""}
-10    {"panel_no": ""}
+c1  ¦  c2
+5  ¦  {"area": "A3"}
+4  ¦  {"area": "A2"}
+6  ¦  {"area": ""}
+7  ¦  {}
+11  ¦  null
+1  ¦  {"area": "A1", "panel_no": 1}
+2  ¦  {"area": "A2", "panel_no": 2}
+8  ¦  {"panel_no": 2}
+9  ¦  {"panel_no": 3}
+3  ¦  {"area": "A3", "panel_no": ""}
+10  ¦  {"panel_no": ""}
+
+#SQL[@35,N90]Result[]
 CREATE TABLE data_table (
-id INT AUTO_INCREMENT PRIMARY KEY,
-json_data JSON NOT NULL
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  json_data JSON NOT NULL
 );
+
+#SQL[@40,N196]Result[]
 INSERT INTO data_table (json_data)
 VALUES
-('{"value": 100}'),
-('{"value": -200}'),
-('{"value": 150.5}'),
-('{"value": 0}'),
-('{"value": -99.9}'),
-('{"value": 50}'),
-('{"value": 300}');
+  ('{"value": 100}'),
+  ('{"value": -200}'),
+  ('{"value": 150.5}'),
+  ('{"value": 0}'),
+  ('{"value": -99.9}'),
+  ('{"value": 50}'),
+  ('{"value": 300}');
+
+#SQL[@50,N256]Result[]
 INSERT INTO data_table (json_data)
 VALUES
-('{"value": 1000000000000}'),
-('{"value": -2000000000000}'),
-('{"value": 1500000000000.5}'),
-('{"value": 0}'),
-('{"value": -999999999999.9}'),
-('{"value": 500000000000}'),
-('{"value": 3000000000000}');
+  ('{"value": 1000000000000}'),
+  ('{"value": -2000000000000}'),
+  ('{"value": 1500000000000.5}'),
+  ('{"value": 0}'),
+  ('{"value": -999999999999.9}'),
+  ('{"value": 500000000000}'),
+  ('{"value": 3000000000000}');
+
+#SQL[@60,N57]Result[32, 3, 4, 5, 1, 5, 2, 3, 13, 14, 15, 1, 15, 12, 13]
 select JSON_EXTRACT(json_data, '$.value') from data_table;
 JSON_EXTRACT(json_data, $.value)
 100
@@ -142,56 +193,64 @@ JSON_EXTRACT(json_data, $.value)
 -999999999999.9
 500000000000
 3000000000000
+
+#SQL[@62,N84]Result[17, 32, 34, 22, 23, 20, 19, 20, 21, 23, 21, 31, 31, 34, 32]
 SELECT id, json_data
 FROM data_table
 ORDER BY JSON_EXTRACT(json_data, '$.value') ASC;
-id    json_data
-9    {"value": -2000000000000}
-12    {"value": -999999999999.9}
-2    {"value": -200}
-5    {"value": -99.9}
-11    {"value": 0}
-4    {"value": 0}
-6    {"value": 50}
-1    {"value": 100}
-3    {"value": 150.5}
-7    {"value": 300}
-13    {"value": 500000000000}
-8    {"value": 1000000000000}
-10    {"value": 1500000000000.5}
-14    {"value": 3000000000000}
+id  ¦  json_data
+9  ¦  {"value": -2000000000000}
+12  ¦  {"value": -999999999999.9}
+2  ¦  {"value": -200}
+5  ¦  {"value": -99.9}
+11  ¦  {"value": 0}
+4  ¦  {"value": 0}
+6  ¦  {"value": 50}
+1  ¦  {"value": 100}
+3  ¦  {"value": 150.5}
+7  ¦  {"value": 300}
+13  ¦  {"value": 500000000000}
+8  ¦  {"value": 1000000000000}
+10  ¦  {"value": 1500000000000.5}
+14  ¦  {"value": 3000000000000}
+
+#SQL[@66,N85]Result[17, 32, 34, 31, 31, 21, 23, 21, 20, 19, 20, 23, 22, 34, 32]
 SELECT id, json_data
 FROM data_table
 ORDER BY JSON_EXTRACT(json_data, '$.value') DESC;
-id    json_data
-14    {"value": 3000000000000}
-10    {"value": 1500000000000.5}
-8    {"value": 1000000000000}
-13    {"value": 500000000000}
-7    {"value": 300}
-3    {"value": 150.5}
-1    {"value": 100}
-6    {"value": 50}
-4    {"value": 0}
-11    {"value": 0}
-5    {"value": -99.9}
-2    {"value": -200}
-12    {"value": -999999999999.9}
-9    {"value": -2000000000000}
+id  ¦  json_data
+14  ¦  {"value": 3000000000000}
+10  ¦  {"value": 1500000000000.5}
+8  ¦  {"value": 1000000000000}
+13  ¦  {"value": 500000000000}
+7  ¦  {"value": 300}
+3  ¦  {"value": 150.5}
+1  ¦  {"value": 100}
+6  ¦  {"value": 50}
+4  ¦  {"value": 0}
+11  ¦  {"value": 0}
+5  ¦  {"value": -99.9}
+2  ¦  {"value": -200}
+12  ¦  {"value": -999999999999.9}
+9  ¦  {"value": -2000000000000}
+
+#SQL[@70,N378]Result[]
 INSERT INTO data_table (json_data)
 VALUES
-('{"value": "1000000000000"}'),
-('{"value": "-2000000000000"}'),
-('{"value": "1500000000000.5"}'),
-('{"value": "0"}'),
-('{"value": "-999999999999.9"}'),
-('{"value": "500000000000"}'),
-('{"value": "3000000000000"}'),
-('{"value":"A2"}'),
-('{"value":"A1"}'),
-('{"value":"A3"}'),
-('{"value":""}'),
-('{"value":null}');
+  ('{"value": "1000000000000"}'),
+  ('{"value": "-2000000000000"}'),
+  ('{"value": "1500000000000.5"}'),
+  ('{"value": "0"}'),
+  ('{"value": "-999999999999.9"}'),
+  ('{"value": "500000000000"}'),
+  ('{"value": "3000000000000"}'),
+  ('{"value":"A2"}'),
+  ('{"value":"A1"}'),
+  ('{"value":"A3"}'),
+  ('{"value":""}'),
+  ('{"value":null}');
+
+#SQL[@85,N57]Result[32, 3, 4, 5, 1, 5, 2, 3, 13, 14, 15, 1, 15, 12, 13, 15, 16, 17, 3, 17, 14, 15, 4, 4, 4, 2, 4]
 select JSON_EXTRACT(json_data, '$.value') from data_table;
 JSON_EXTRACT(json_data, $.value)
 100
@@ -220,64 +279,71 @@ JSON_EXTRACT(json_data, $.value)
 "A3"
 ""
 null
+
+#SQL[@87,N84]Result[17, 23, 32, 34, 22, 23, 20, 19, 20, 21, 23, 21, 31, 31, 34, 32, 21, 35, 36, 22, 34, 36, 34, 33, 23, 23, 23]
 SELECT id, json_data
 FROM data_table
 ORDER BY JSON_EXTRACT(json_data, '$.value') ASC;
-id    json_data
-26    {"value": null}
-9    {"value": -2000000000000}
-12    {"value": -999999999999.9}
-2    {"value": -200}
-5    {"value": -99.9}
-11    {"value": 0}
-4    {"value": 0}
-6    {"value": 50}
-1    {"value": 100}
-3    {"value": 150.5}
-7    {"value": 300}
-13    {"value": 500000000000}
-8    {"value": 1000000000000}
-10    {"value": 1500000000000.5}
-14    {"value": 3000000000000}
-25    {"value": ""}
-16    {"value": "-2000000000000"}
-19    {"value": "-999999999999.9"}
-18    {"value": "0"}
-15    {"value": "1000000000000"}
-17    {"value": "1500000000000.5"}
-21    {"value": "3000000000000"}
-20    {"value": "500000000000"}
-23    {"value": "A1"}
-22    {"value": "A2"}
-24    {"value": "A3"}
+id  ¦  json_data
+26  ¦  {"value": null}
+9  ¦  {"value": -2000000000000}
+12  ¦  {"value": -999999999999.9}
+2  ¦  {"value": -200}
+5  ¦  {"value": -99.9}
+11  ¦  {"value": 0}
+4  ¦  {"value": 0}
+6  ¦  {"value": 50}
+1  ¦  {"value": 100}
+3  ¦  {"value": 150.5}
+7  ¦  {"value": 300}
+13  ¦  {"value": 500000000000}
+8  ¦  {"value": 1000000000000}
+10  ¦  {"value": 1500000000000.5}
+14  ¦  {"value": 3000000000000}
+25  ¦  {"value": ""}
+16  ¦  {"value": "-2000000000000"}
+19  ¦  {"value": "-999999999999.9"}
+18  ¦  {"value": "0"}
+15  ¦  {"value": "1000000000000"}
+17  ¦  {"value": "1500000000000.5"}
+21  ¦  {"value": "3000000000000"}
+20  ¦  {"value": "500000000000"}
+23  ¦  {"value": "A1"}
+22  ¦  {"value": "A2"}
+24  ¦  {"value": "A3"}
+
+#SQL[@91,N85]Result[17, 23, 23, 23, 33, 34, 36, 34, 22, 36, 35, 21, 32, 34, 31, 31, 21, 23, 21, 20, 20, 19, 23, 22, 34, 32, 23]
 SELECT id, json_data
 FROM data_table
 ORDER BY JSON_EXTRACT(json_data, '$.value') DESC;
-id    json_data
-24    {"value": "A3"}
-22    {"value": "A2"}
-23    {"value": "A1"}
-20    {"value": "500000000000"}
-21    {"value": "3000000000000"}
-17    {"value": "1500000000000.5"}
-15    {"value": "1000000000000"}
-18    {"value": "0"}
-19    {"value": "-999999999999.9"}
-16    {"value": "-2000000000000"}
-25    {"value": ""}
-14    {"value": 3000000000000}
-10    {"value": 1500000000000.5}
-8    {"value": 1000000000000}
-13    {"value": 500000000000}
-7    {"value": 300}
-3    {"value": 150.5}
-1    {"value": 100}
-6    {"value": 50}
-11    {"value": 0}
-4    {"value": 0}
-5    {"value": -99.9}
-2    {"value": -200}
-12    {"value": -999999999999.9}
-9    {"value": -2000000000000}
-26    {"value": null}
+id  ¦  json_data
+24  ¦  {"value": "A3"}
+22  ¦  {"value": "A2"}
+23  ¦  {"value": "A1"}
+20  ¦  {"value": "500000000000"}
+21  ¦  {"value": "3000000000000"}
+17  ¦  {"value": "1500000000000.5"}
+15  ¦  {"value": "1000000000000"}
+18  ¦  {"value": "0"}
+19  ¦  {"value": "-999999999999.9"}
+16  ¦  {"value": "-2000000000000"}
+25  ¦  {"value": ""}
+14  ¦  {"value": 3000000000000}
+10  ¦  {"value": 1500000000000.5}
+8  ¦  {"value": 1000000000000}
+13  ¦  {"value": 500000000000}
+7  ¦  {"value": 300}
+3  ¦  {"value": 150.5}
+1  ¦  {"value": 100}
+6  ¦  {"value": 50}
+11  ¦  {"value": 0}
+4  ¦  {"value": 0}
+5  ¦  {"value": -99.9}
+2  ¦  {"value": -200}
+12  ¦  {"value": -999999999999.9}
+9  ¦  {"value": -2000000000000}
+26  ¦  {"value": null}
+
+#SQL[@95,N28]Result[]
 drop database if exists test;
+

@@ -1,72 +1,144 @@
+#SQL[@79,N18]Result[13, 4]
 select now()=now();
 now() = now()
 true
+
+#SQL[@80,N49]Result[]
 create table t1(a timestamp,b int auto_increment);
+
+#SQL[@81,N48]Result[]
 prepare s1 from 'insert into t1(a) select now()';
+
+#SQL[@82,N10]Result[]
 execute s1;
+
+#SQL[@83,N10]Result[]
 execute s1;
+
+#SQL[@84,N69]Result[11, 5]
 select t1.a=t2.a from t1,(select a from t1  where b=2)as t2 where b=1;
 t1.a = t2.a
 false
+
+#SQL[@86,N14]Result[]
 delete from t1;
+
+#SQL[@87,N21]Result[]
 deallocate prepare s1;
+
+#SQL[@88,N53]Result[]
 prepare s1 from 'insert into t1(a,b) values(now(),?)';
+
+#SQL[@89,N8]Result[]
 set @b=1;
+
+#SQL[@90,N19]Result[]
 execute s1 using @b;
+
+#SQL[@91,N8]Result[]
 set @b=2;
+
+#SQL[@92,N19]Result[]
 execute s1 using @b;
+
+#SQL[@93,N69]Result[11, 5]
 select t1.a=t2.a from t1,(select a from t1  where b=2)as t2 where b=1;
 t1.a = t2.a
 false
+
+#SQL[@95,N71]Result[12, 11]
 select a=b,c from  (select now(6) as a,  sleep(1) as c, now(6) as b) t1;
-a = b    c
-true    0
+a = b  ¦  c
+true  ¦  0
+
+#SQL[@98,N13]Result[]
 set @ts=now();
+
+#SQL[@99,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@100,N19]Result[]
 set @ts_after=now();
+
+#SQL[@101,N67]Result[7, 4]
 select timestampdiff(microsecond, @ts, @ts_after) > 1000000 checked;
 checked
 true
+
+#SQL[@104,N23]Result[]
 drop table if exists t1;
+
+#SQL[@105,N49]Result[]
 create table t1(a timestamp,b int auto_increment);
+
+#SQL[@106,N81]Result[]
 insert into t1(a) select current_timestamp () from mo_catalog.mo_sessions limit 1;
+
+#SQL[@107,N15]Result[8, 1]
 select sleep(1);
 sleep(1)
 0
+
+#SQL[@108,N81]Result[]
 insert into t1(a) select current_timestamp () from mo_catalog.mo_sessions limit 1;
+
+#SQL[@109,N69]Result[11, 5]
 select t1.a=t2.a from t1,(select a from t1  where b=2)as t2 where b=1;
 t1.a = t2.a
 false
+
+#SQL[@110,N13]Result[]
 drop table t1;
+
+#SQL[@112,N101]Result[36, 8]
 select timestampdiff(second, t1, t2), a from (select sysdate() as t1, sleep(2) as a, sysdate() as t2);
-timestampdiff(second, t1, t2)    a
-2    0
+timestampdiff(second, t1, t2)  ¦  a
+2  ¦  0
+
+#SQL[@114,N18]Result[11, 8]
 select time(now());
 time(now())
-09:55:57
+14:39:59
+
+#SQL[@116,N18]Result[11, 10]
 select date(now());
 date(now())
-2024-10-08
+2025-10-10
+
+#SQL[@118,N23]Result[16, 19]
 select timestamp(now());
 timestamp(now())
-2024-10-08 09:55:57
+2025-10-10 06:39:59
+
+#SQL[@120,N18]Result[11, 4]
 select year(now());
 year(now())
-2024
+2025
+
+#SQL[@122,N19]Result[12, 2]
 select month(now());
 month(now())
 10
+
+#SQL[@124,N17]Result[10, 2]
 select day(now());
 day(now())
-8
+10
+
+#SQL[@126,N18]Result[11, 1]
 select hour(now());
 hour(now())
-9
+6
+
+#SQL[@128,N20]Result[13, 2]
 select minute(now());
 minute(now())
-55
+39
+
+#SQL[@130,N20]Result[13, 2]
 select second(now());
 second(now())
-57
+59
+

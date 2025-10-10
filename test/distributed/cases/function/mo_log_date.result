@@ -1,433 +1,671 @@
+#SQL[@7,N32]Result[23, 10]
 select mo_log_date('2021/01/01');
 mo_log_date(2021/01/01)
 2021-01-01
+
+#SQL[@8,N32]Result[23, 10]
 select mo_log_date('1997/01/13');
 mo_log_date(1997/01/13)
 1997-01-13
+
+#SQL[@9,N32]Result[23, 10]
 select mo_log_date('1969/01/01');
 mo_log_date(1969/01/01)
 1969-01-01
+
+#SQL[@10,N30]Result[21, 10]
 select mo_log_date('1988/1/3');
 mo_log_date(1988/1/3)
 1988-01-03
+
+#SQL[@11,N31]Result[22, 10]
 select mo_log_date('1970/01/3');
 mo_log_date(1970/01/3)
 1970-01-03
+
+#SQL[@12,N31]Result[22, 10]
 select mo_log_date('1970/9/29');
 mo_log_date(1970/9/29)
 1970-09-29
+
+#SQL[@13,N30]Result[21, 10]
 select mo_log_date('20/12/12');
 mo_log_date(20/12/12)
 2020-12-12
+
+#SQL[@14,N29]Result[20, 10]
 select mo_log_date('9/10/13');
 mo_log_date(9/10/13)
 2009-10-13
+
+#SQL[@15,N30]Result[21, 10]
 select mo_log_date('00/12/13');
 mo_log_date(00/12/13)
 2000-12-13
+
+#SQL[@16,N28]Result[19, 10]
 select mo_log_date('1/02/3');
 mo_log_date(1/02/3)
 2001-02-03
+
+#SQL[@17,N24]Result[17, 4]
 select mo_log_date(null);
 mo_log_date(null)
 null
+
+#SQL[@20,N32]Result[23, 4]
 select mo_log_date('1000/12/89');
 mo_log_date(1000/12/89)
 null
+
+#SQL[@21,N32]Result[23, 4]
 select mo_log_date('2023/13/19');
 mo_log_date(2023/13/19)
 null
+
+#SQL[@22,N33]Result[24, 4]
 select mo_log_date('12345/19/01');
 mo_log_date(12345/19/01)
 null
+
+#SQL[@25,N32]Result[23, 4]
 select mo_log_date('2020-01-01');
 mo_log_date(2020-01-01)
 null
+
+#SQL[@26,N32]Result[23, 4]
 select mo_log_date('1997-01-13');
 mo_log_date(1997-01-13)
 null
+
+#SQL[@27,N32]Result[23, 4]
 select mo_log_date('1000/02/(*');
 mo_log_date(1000/02/(*)
 null
+
+#SQL[@28,N32]Result[23, 4]
 select mo_log_date('1997-&*-10');
 mo_log_date(1997-&*-10)
 null
+
+#SQL[@29,N32]Result[23, 4]
 select mo_log_date('&&()-01-13');
 mo_log_date(&&()-01-13)
 null
+
+#SQL[@30,N32]Result[23, 4]
 select mo_log_date('2022-12-{}');
 mo_log_date(2022-12-{})
 null
+
+#SQL[@33,N77]Result[3, 4]
 select mo_log_date('2021/01/01') between '2021-01-01' and '2021-01-02' as val;
 val
 true
+
+#SQL[@34,N77]Result[3, 5]
 select mo_log_date('1998/01/01') between '2021-01-01' and '2021-01-02' as val;
 val
 false
+
+#SQL[@35,N77]Result[3, 4]
 select mo_log_date('1999/01/13') between '1970-01-01' and '2020-12-13' as val;
 val
 true
+
+#SQL[@36,N76]Result[3, 4]
 select mo_log_date('2023/1/13') between '2023-01-13' and '2023-12-13' as val;
 val
 true
+
+#SQL[@37,N74]Result[3, 4]
 select mo_log_date('2023/11/9') between '2023-1-9' and '2025-12-19' as val;
 val
 true
+
+#SQL[@40,N54]Result[3, 4]
 select mo_log_date('2023/01/03') > '2023-01-01' as val;
 val
 true
+
+#SQL[@41,N54]Result[3, 4]
 select mo_log_date('1997/12/12') < '2023-12-12' as val;
 val
 true
+
+#SQL[@42,N54]Result[3, 5]
 select mo_log_date('1995/12/30') > '1996-12-30' as val;
 val
 false
+
+#SQL[@43,N54]Result[3, 5]
 select mo_log_date('2001/05/06') < '1997-07-03' as val;
 val
 false
+
+#SQL[@44,N92]Result[77, 4]
 select mo_log_date('2020/01/06') > '2020-01-05' and mo_log_date('2020/01/06') < '2021-01-05';
 mo_log_date(2020/01/06) > 2020-01-05 and mo_log_date(2020/01/06) < 2021-01-05
 true
+
+#SQL[@47,N70]Result[57, 4]
 select mo_log_date('2021-01-13') between '2020-01-13' and '2022-11-12';
 mo_log_date(2021-01-13) between 2020-01-13 and 2022-11-12
 null
+
+#SQL[@48,N70]Result[57, 4]
 select mo_log_date('1997-01-13') between '1970-01-01' and '2023-04-24';
 mo_log_date(1997-01-13) between 1970-01-01 and 2023-04-24
 null
+
+#SQL[@51,N63]Result[54, 10]
 select mo_log_date('数据库Database/table/2022/03/04/^&(*)(');
 mo_log_date(数据库Database/table/2022/03/04/^&(*)()
 2022-03-04
+
+#SQL[@52,N53]Result[44, 10]
 select mo_log_date('hienrvkew/&*?/1970/01/01/uf893I');
 mo_log_date(hienrvkew/&*?/1970/01/01/uf893I)
 1970-01-01
+
+#SQL[@53,N87]Result[78, 10]
 select mo_log_date('gyekucwheu3p2u4oi3k2if3u9i0ikvoi43kvk43io5juti4o3m48651/2023/2/28');
 mo_log_date(gyekucwheu3p2u4oi3k2if3u9i0ikvoi43kvk43io5juti4o3m48651/2023/2/28)
 2023-02-28
+
+#SQL[@54,N78]Result[69, 10]
 select mo_log_date('yufiehw4&*(*)()_/1997/12/9/78weufiwhruewoijvriejbvrewkbe');
 mo_log_date(yufiehw4&*(*)()_/1997/12/9/78weufiwhruewoijvriejbvrewkbe)
 1997-12-09
+
+#SQL[@55,N75]Result[66, 10]
 select mo_log_date('dhiuwnjdksnfv/2023/2025/2029/04/05/hiuewhrijvewoke&**');
 mo_log_date(dhiuwnjdksnfv/2023/2025/2029/04/05/hiuewhrijvewoke&**)
 2029-04-05
+
+#SQL[@56,N68]Result[59, 10]
 select mo_log_date('dhiuwnjdksnfv/2023/04/05/09/hiuewhrijvewoke&**');
 mo_log_date(dhiuwnjdksnfv/2023/04/05/09/hiuewhrijvewoke&**)
 2023-04-05
+
+#SQL[@57,N40]Result[31, 4]
 select mo_log_date('abc/def/github/com');
 mo_log_date(abc/def/github/com)
 null
+
+#SQL[@58,N64]Result[55, 4]
 select mo_log_date('cuankjvar3242/ewhiuhj32i4jl3f/com/72989432');
 mo_log_date(cuankjvar3242/ewhiuhj32i4jl3f/com/72989432)
 null
+
+#SQL[@60,N72]Result[63, 10]
 select mo_log_date('数据库Database/table/2022/chuiwne/03/04/6^&(*)(');
 mo_log_date(数据库Database/table/2022/chuiwne/03/04/6^&(*)()
 2003-04-06
+
+#SQL[@61,N66]Result[57, 4]
 select mo_log_date('hvjwejkv/1970/3823/djkvmfeve/12/24/vckjwrvew');
 mo_log_date(hvjwejkv/1970/3823/djkvmfeve/12/24/vckjwrvew)
 null
+
+#SQL[@64,N27]Result[]
 drop table if exists date01;
+
+#SQL[@65,N52]Result[]
 create table date01(col1 char(10),col2 varchar(100));
+
+#SQL[@66,N82]Result[]
 insert into date01 values('1990/1/02','数据库Database/table/2022/03/04/^&(*)(');
+
+#SQL[@67,N106]Result[]
 insert into date01 values('2020/11/6','gyekucwheu3p2u4oi3k2if3u9i0ikvoi43kvk43io5juti4o3m48651/2023/2/28');
+
+#SQL[@68,N90]Result[]
 insert into date01 values(NULL,'yufiehw4&*(*)()_/1997/12/9/78weufiwhruewoijvriejbvrewkbe');
+
+#SQL[@69,N60]Result[]
 insert into date01 values('2023/04/24','abc/def/github/com');
+
+#SQL[@70,N20]Result[14, 56, 80, 66, 34]
 select * from date01;
-col1    col2
-1990/1/02    数据库Database/table/2022/03/04/^&(*)(
-2020/11/6    gyekucwheu3p2u4oi3k2if3u9i0ikvoi43kvk43io5juti4o3m48651/2023/2/28
-null    yufiehw4&*(*)()_/1997/12/9/78weufiwhruewoijvriejbvrewkbe
-2023/04/24    abc/def/github/com
+col1  ¦  col2
+1990/1/02  ¦  数据库Database/table/2022/03/04/^&(*)(
+2020/11/6  ¦  gyekucwheu3p2u4oi3k2if3u9i0ikvoi43kvk43io5juti4o3m48651/2023/2/28
+null  ¦  yufiehw4&*(*)()_/1997/12/9/78weufiwhruewoijvriejbvrewkbe
+2023/04/24  ¦  abc/def/github/com
+
+#SQL[@72,N36]Result[17, 10, 10, 4, 10]
 select mo_log_date(col1) from date01;
 mo_log_date(col1)
 1990-01-02
 2020-11-06
 null
 2023-04-24
+
+#SQL[@73,N36]Result[17, 10, 10, 10, 4]
 select mo_log_date(col2) from date01;
 mo_log_date(col2)
 2022-03-04
 2023-02-28
 1997-12-09
 null
+
+#SQL[@75,N84]Result[16, 26, 26, 20, 20]
 select date(mo_log_date(col1)) as date1,date(mo_log_date(col2)) as date2 from date01;
-date1    date2
-1990-01-02    2022-03-04
-2020-11-06    2023-02-28
-null    1997-12-09
-2023-04-24    null
+date1  ¦  date2
+1990-01-02  ¦  2022-03-04
+2020-11-06  ¦  2023-02-28
+null  ¦  1997-12-09
+2023-04-24  ¦  null
+
+#SQL[@76,N71]Result[5, 10, 10, 4, 10]
 select date_add(mo_log_date(col1),interval 45 day) as date1 from date01;
 date1
 1990-02-16
 2020-12-21
 null
 2023-06-08
+
+#SQL[@77,N72]Result[5, 10, 10, 10, 4]
 select date_add(mo_log_date(col2), interval 30 day) as date2 from date01;
 date2
 2022-04-03
 2023-03-30
 1998-01-08
 null
+
+#SQL[@78,N61]Result[40, 20, 20, 4, 17]
 select date_format(mo_log_date(col1), '%W %M %Y') from date01;
 date_format(mo_log_date(col1), %W %M %Y)
 Tuesday January 1990
 Friday November 2020
 null
 Monday April 2023
+
+#SQL[@79,N73]Result[52, 24, 25, 24, 4]
 select date_format(mo_log_date(col2), '%D %y %a %d %m %b %j') from date01;
 date_format(mo_log_date(col2), %D %y %a %d %m %b %j)
 4th 22 Fri 04 03 Mar 063
 28th 23 Tue 28 02 Feb 059
 9th 97 Tue 09 12 Dec 343
 null
+
+#SQL[@80,N128]Result[16, 26, 26, 20, 20]
 select date_sub(mo_log_date(col1), interval 2 year) as date1, date_sub(mo_log_date(col2), interval 2 month) as date2 from date01;
-date1    date2
-1988-01-02    2022-01-04
-2018-11-06    2022-12-28
-null    1997-10-09
-2021-04-24    null
+date1  ¦  date2
+1988-01-02  ¦  2022-01-04
+2018-11-06  ¦  2022-12-28
+null  ¦  1997-10-09
+2021-04-24  ¦  null
+
+#SQL[@81,N64]Result[46, 6, 4, 4, 4]
 select datediff(mo_log_date(col1),mo_log_date(col2)) from date01;
 datediff(mo_log_date(col1), mo_log_date(col2))
 -11749
 -844
 null
 null
+
+#SQL[@82,N64]Result[50, 8, 9, 11, 12]
 select day(mo_log_date(col1)),day(mo_log_date(col2)) from date01;
-day(mo_log_date(col1))    day(mo_log_date(col2))
-2    4
-6    28
-null    9
-24    null
+day(mo_log_date(col1))  ¦  day(mo_log_date(col2))
+2  ¦  4
+6  ¦  28
+null  ¦  9
+24  ¦  null
+
+#SQL[@83,N76]Result[62, 9, 11, 13, 13]
 select dayofyear(mo_log_date(col1)),dayofyear(mo_log_date(col2)) from date01;
-dayofyear(mo_log_date(col1))    dayofyear(mo_log_date(col2))
-2    63
-311    59
-null    343
-114    null
+dayofyear(mo_log_date(col1))  ¦  dayofyear(mo_log_date(col2))
+2  ¦  63
+311  ¦  59
+null  ¦  343
+114  ¦  null
+
+#SQL[@84,N64]Result[5, 4, 4, 4, 4]
 select extract(year from mo_log_date(col1)) as year1 from date01;
 year1
 1990
 2020
 null
 2023
+
+#SQL[@85,N64]Result[5, 4, 4, 4, 4]
 select extract(year from mo_log_date(col2)) as year2 from date01;
 year2
 2022
 2023
 1997
 null
+
+#SQL[@86,N65]Result[5, 1, 2, 4, 1]
 select extract(month from mo_log_date(col1)) as month from date01;
 month
 1
 11
 null
 4
+
+#SQL[@87,N58]Result[37, 7, 7, 4, 7]
 select date_format(mo_log_date(col1), '%X %V') from date01;
 date_format(mo_log_date(col1), %X %V)
 1989 53
 2020 44
 null
 2023 17
+
+#SQL[@88,N58]Result[37, 7, 7, 7, 4]
 select date_format(mo_log_date(col2), '%X %V') from date01;
 date_format(mo_log_date(col2), %X %V)
 2022 09
 2023 09
 1997 49
 null
+
+#SQL[@89,N68]Result[54, 8, 9, 12, 11]
 select month(mo_log_date(col1)),month(mo_log_date(col2)) from date01;
-month(mo_log_date(col1))    month(mo_log_date(col2))
-1    3
-11    2
-null    12
-4    null
+month(mo_log_date(col1))  ¦  month(mo_log_date(col2))
+1  ¦  3
+11  ¦  2
+null  ¦  12
+4  ¦  null
+
+#SQL[@90,N72]Result[58, 8, 8, 11, 11]
 select weekday(mo_log_date(col1)),weekday(mo_log_date(col2)) from date01;
-weekday(mo_log_date(col1))    weekday(mo_log_date(col2))
-1    4
-4    1
-null    1
-0    null
+weekday(mo_log_date(col1))  ¦  weekday(mo_log_date(col2))
+1  ¦  4
+4  ¦  1
+null  ¦  1
+0  ¦  null
+
+#SQL[@91,N66]Result[52, 14, 14, 14, 14]
 select year(mo_log_date(col1)),year(mo_log_date(col2)) from date01;
-year(mo_log_date(col1))    year(mo_log_date(col2))
-1990    2022
-2020    2023
-null    1997
-2023    null
+year(mo_log_date(col1))  ¦  year(mo_log_date(col2))
+1990  ¦  2022
+2020  ¦  2023
+null  ¦  1997
+2023  ¦  null
+
+#SQL[@92,N17]Result[]
 drop table date01;
+
+#SQL[@95,N27]Result[]
 drop table if exists text01;
+
+#SQL[@96,N88]Result[]
 create table text01(col1 tinytext not null, col2 mediumtext default null, col3 longtext);
+
+#SQL[@97,N207]Result[]
 insert into text01 values('1878/02/23','euiwq32/2019/8d29f/03/04','tdyuh3n1iuhfiu4h2fiu432gig432jfcurenvu4hiu32hmvcke4mvn439809328093284092432/1990/38209483298432042/03/04/4328932094820941032fkiwjvklwegvre');
+
+#SQL[@98,N104]Result[]
 insert into text01 values('1989/1/25',null,'789798888888888444451<>>?<></2020/12/13/14/89954454]\[\[]0');
+
+#SQL[@99,N120]Result[]
 insert into text01 values('23/01/15','deuwiqjiq/20/12/12','897e7fwqefi38928749208492*(&^(&**)(*/199/11/25/ewpqorpewoeq');
+
+#SQL[@100,N20]Result[24, 184, 81, 97]
 select * from text01;
-col1    col2    col3
-1878/02/23    euiwq32/2019/8d29f/03/04    tdyuh3n1iuhfiu4h2fiu432gig432jfcurenvu4hiu32hmvcke4mvn439809328093284092432/1990/38209483298432042/03/04/4328932094820941032fkiwjvklwegvre
-1989/1/25    null    789798888888888444451<>>?<></2020/12/13/14/89954454][[]0
-23/01/15    deuwiqjiq/20/12/12    897e7fwqefi38928749208492*(&^(&**)(*/199/11/25/ewpqorpewoeq
+col1  ¦  col2  ¦  col3
+1878/02/23  ¦  euiwq32/2019/8d29f/03/04  ¦  tdyuh3n1iuhfiu4h2fiu432gig432jfcurenvu4hiu32hmvcke4mvn439809328093284092432/1990/38209483298432042/03/04/4328932094820941032fkiwjvklwegvre
+1989/1/25  ¦  null  ¦  789798888888888444451<>>?<></2020/12/13/14/89954454][[]0
+23/01/15  ¦  deuwiqjiq/20/12/12  ¦  897e7fwqefi38928749208492*(&^(&**)(*/199/11/25/ewpqorpewoeq
+
+#SQL[@102,N36]Result[17, 10, 10, 10]
 select mo_log_date(col1) from text01;
 mo_log_date(col1)
 1878-02-23
 1989-01-25
 2023-01-15
+
+#SQL[@103,N36]Result[17, 4, 4, 10]
 select mo_log_date(col2) from text01;
 mo_log_date(col2)
 null
 null
 2020-12-12
+
+#SQL[@104,N36]Result[17, 10, 10, 10]
 select mo_log_date(col3) from text01;
 mo_log_date(col3)
 2042-03-04
 2020-12-13
 0199-11-25
+
+#SQL[@107,N118]Result[27, 36, 36, 42]
 select date(mo_log_date(col1)) as date1,date(mo_log_date(col2)) as date2, date(mo_log_date(col3)) as date3 from text01;
-date1    date2    date3
-1878-02-23    null    2042-03-04
-1989-01-25    null    2020-12-13
-2023-01-15    2020-12-12    0199-11-25
+date1  ¦  date2  ¦  date3
+1878-02-23  ¦  null  ¦  2042-03-04
+1989-01-25  ¦  null  ¦  2020-12-13
+2023-01-15  ¦  2020-12-12  ¦  0199-11-25
+
+#SQL[@108,N71]Result[5, 10, 10, 10]
 select date_add(mo_log_date(col1),interval 45 day) as date1 from text01;
 date1
 1878-04-09
 1989-03-11
 2023-03-01
+
+#SQL[@109,N72]Result[5, 4, 4, 10]
 select date_add(mo_log_date(col2), interval 30 day) as date2 from text01;
 date2
 null
 null
 2021-01-11
+
+#SQL[@110,N72]Result[5, 10, 10, 10]
 select date_add(mo_log_date(col3), interval 30 day) as date3 from text01;
 date3
 2042-04-03
 2021-01-12
 0199-12-25
+
+#SQL[@111,N61]Result[40, 22, 22, 19]
 select date_format(mo_log_date(col1), '%W %M %Y') from text01;
 date_format(mo_log_date(col1), %W %M %Y)
 Saturday February 1878
 Wednesday January 1989
 Sunday January 2023
+
+#SQL[@112,N73]Result[52, 4, 4, 25]
 select date_format(mo_log_date(col2), '%D %y %a %d %m %b %j') from text01;
 date_format(mo_log_date(col2), %D %y %a %d %m %b %j)
 null
 null
 12th 20 Sat 12 12 Dec 347
+
+#SQL[@113,N73]Result[52, 24, 25, 25]
 select date_format(mo_log_date(col3), '%D %y %a %d %m %b %j') from text01;
 date_format(mo_log_date(col3), %D %y %a %d %m %b %j)
 4th 42 Tue 04 03 Mar 063
 13th 20 Sun 13 12 Dec 348
 25th 99 Mon 25 11 Nov 329
+
+#SQL[@114,N181]Result[27, 36, 36, 42]
 select date_sub(mo_log_date(col1), interval 2 year) as date1, date_sub(mo_log_date(col2), interval 2 month) as date2,date_sub(mo_log_date(col3), interval 2 day) as date3 from text01;
-date1    date2    date3
-1876-02-23    null    2042-03-02
-1987-01-25    null    2020-12-11
-2021-01-15    2020-10-12    0199-11-23
+date1  ¦  date2  ¦  date3
+1876-02-23  ¦  null  ¦  2042-03-02
+1987-01-25  ¦  null  ¦  2020-12-11
+2021-01-15  ¦  2020-10-12  ¦  0199-11-23
+
+#SQL[@115,N64]Result[46, 4, 4, 3]
 select datediff(mo_log_date(col1),mo_log_date(col2)) from text01;
 datediff(mo_log_date(col1), mo_log_date(col2))
 null
 null
 764
+
+#SQL[@116,N87]Result[78, 19, 20, 18]
 select day(mo_log_date(col1)),day(mo_log_date(col2)),day(mo_log_date(col3)) from text01;
-day(mo_log_date(col1))    day(mo_log_date(col2))    day(mo_log_date(col3))
-23    null    4
-25    null    13
-15    12    25
+day(mo_log_date(col1))  ¦  day(mo_log_date(col2))  ¦  day(mo_log_date(col3))
+23  ¦  null  ¦  4
+25  ¦  null  ¦  13
+15  ¦  12  ¦  25
+
+#SQL[@117,N105]Result[96, 20, 21, 20]
 select dayofyear(mo_log_date(col1)),dayofyear(mo_log_date(col2)),dayofyear(mo_log_date(col3)) from text01;
-dayofyear(mo_log_date(col1))    dayofyear(mo_log_date(col2))    dayofyear(mo_log_date(col3))
-54    null    63
-25    null    348
-15    347    329
+dayofyear(mo_log_date(col1))  ¦  dayofyear(mo_log_date(col2))  ¦  dayofyear(mo_log_date(col3))
+54  ¦  null  ¦  63
+25  ¦  null  ¦  348
+15  ¦  347  ¦  329
+
+#SQL[@118,N64]Result[5, 4, 4, 4]
 select extract(year from mo_log_date(col1)) as year1 from text01;
 year1
 1878
 1989
 2023
+
+#SQL[@119,N64]Result[5, 4, 4, 4]
 select extract(year from mo_log_date(col2)) as year2 from text01;
 year2
 null
 null
 2020
+
+#SQL[@120,N65]Result[5, 1, 1, 1]
 select extract(month from mo_log_date(col1)) as month from text01;
 month
 2
 1
 1
+
+#SQL[@121,N63]Result[4, 4, 4, 4]
 select extract(year from mo_log_date(col2)) as year from text01;
 year
 null
 null
 2020
+
+#SQL[@122,N58]Result[37, 7, 7, 7]
 select date_format(mo_log_date(col1), '%X %V') from text01;
 date_format(mo_log_date(col1), %X %V)
 1878 07
 1989 04
 2023 03
+
+#SQL[@123,N58]Result[37, 4, 4, 7]
 select date_format(mo_log_date(col2), '%X %V') from text01;
 date_format(mo_log_date(col2), %X %V)
 null
 null
 2020 49
+
+#SQL[@124,N58]Result[37, 7, 7, 7]
 select date_format(mo_log_date(col3), '%X %V') from text01;
 date_format(mo_log_date(col3), %X %V)
 2042 09
 2020 50
 0199 47
+
+#SQL[@125,N93]Result[84, 18, 19, 17]
 select month(mo_log_date(col1)),month(mo_log_date(col2)),month(mo_log_date(col3)) from text01;
-month(mo_log_date(col1))    month(mo_log_date(col2))    month(mo_log_date(col3))
-2    null    3
-1    null    12
-1    12    11
+month(mo_log_date(col1))  ¦  month(mo_log_date(col2))  ¦  month(mo_log_date(col3))
+2  ¦  null  ¦  3
+1  ¦  null  ¦  12
+1  ¦  12  ¦  11
+
+#SQL[@126,N99]Result[90, 18, 18, 15]
 select weekday(mo_log_date(col1)),weekday(mo_log_date(col2)),weekday(mo_log_date(col3)) from text01;
-weekday(mo_log_date(col1))    weekday(mo_log_date(col2))    weekday(mo_log_date(col3))
-5    null    1
-2    null    6
-6    5    0
+weekday(mo_log_date(col1))  ¦  weekday(mo_log_date(col2))  ¦  weekday(mo_log_date(col3))
+5  ¦  null  ¦  1
+2  ¦  null  ¦  6
+6  ¦  5  ¦  0
+
+#SQL[@127,N90]Result[81, 24, 24, 23]
 select year(mo_log_date(col1)),year(mo_log_date(col2)),year(mo_log_date(col3)) from text01;
-year(mo_log_date(col1))    year(mo_log_date(col2))    year(mo_log_date(col3))
-1878    null    2042
-1989    null    2020
-2023    2020    199
+year(mo_log_date(col1))  ¦  year(mo_log_date(col2))  ¦  year(mo_log_date(col3))
+1878  ¦  null  ¦  2042
+1989  ¦  null  ¦  2020
+2023  ¦  2020  ¦  199
+
+#SQL[@128,N17]Result[]
 drop table text01;
+
+#SQL[@131,N59]Result[50, 10]
 select date(mo_log_date('hienrvkew/&*?/1970/01/01/uf893I'));
 date(mo_log_date(hienrvkew/&*?/1970/01/01/uf893I))
 1970-01-01
+
+#SQL[@132,N81]Result[75, 10]
 select date_add(mo_log_date('数据库/2021/01/01/guanli系统'),interval 45 day);
 date_add(mo_log_date(数据库/2021/01/01/guanli系统), interval(45, day))
 2021-02-15
+
+#SQL[@133,N100]Result[89, 19]
 select date_format(mo_log_date('dhiuwnjdksnfv/2023/2025/2029/04/05/hiuewhrijvewoke&**'), '%W %M %Y');
 date_format(mo_log_date(dhiuwnjdksnfv/2023/2025/2029/04/05/hiuewhrijvewoke&**), %W %M %Y)
 Thursday April 2029
+
+#SQL[@134,N100]Result[89, 24]
 select date_format(mo_log_date('数据库Database/table/2022/03/04/^&(*)('), '%D %y %a %d %m %b %j');
 date_format(mo_log_date(数据库Database/table/2022/03/04/^&(*)(), %D %y %a %d %m %b %j)
 4th 22 Fri 04 03 Mar 063
+
+#SQL[@135,N59]Result[52, 10]
 select date_sub(mo_log_date('2021/01/01'), interval 2 year);
 date_sub(mo_log_date(2021/01/01), interval(2, year))
 2019-01-01
+
+#SQL[@136,N68]Result[58, 4]
 select datediff(mo_log_date('2023/04/25'),mo_log_date('2024/04/25'));
 datediff(mo_log_date(2023/04/25), mo_log_date(2024/04/25))
 -366
+
+#SQL[@137,N75]Result[66, 2]
 select day(mo_log_date('新版本下个月发布/2045/1998/12/29/78/&**('));
 day(mo_log_date(新版本下个月发布/2045/1998/12/29/78/&**())
 29
+
+#SQL[@138,N43]Result[34, 3]
 select dayofyear(mo_log_date('1996/12/29'));
 dayofyear(mo_log_date(1996/12/29))
 364
+
+#SQL[@139,N59]Result[4, 4]
 select extract(year from mo_log_date('2029/01/14')) as year;
 year
 2029
+
+#SQL[@140,N61]Result[5, 1]
 select extract(month from mo_log_date('2029/01/14')) as month;
 month
 1
+
+#SQL[@141,N54]Result[43, 7]
 select date_format(mo_log_date('2029/01/14'), '%X %V');
 date_format(mo_log_date(2029/01/14), %X %V)
 2029 02
+
+#SQL[@142,N38]Result[29, 1]
 select month(mo_log_date('1990/1/25'));
 month(mo_log_date(1990/1/25))
 1
+
+#SQL[@143,N52]Result[43, 1]
 select weekday(mo_log_date('1258/2026/4/27/88ijmm'));
 weekday(mo_log_date(1258/2026/4/27/88ijmm))
 0
+
+#SQL[@144,N38]Result[29, 4]
 select year(mo_log_date('1212/01/03'));
 year(mo_log_date(1212/01/03))
 1212
+
+#SQL[@147,N27]Result[]
 drop table if exists date02;
+
+#SQL[@148,N30]Result[]
 create table date02(col1 text);
+
+#SQL[@149,N60]Result[]
 insert into date02 values('sfiuenhfwu8793u2r43r/2020/02/02');
+
+#SQL[@150,N36]Result[17, 10]
 select mo_log_date(col1) from date02;
 mo_log_date(col1)
 2020-02-02
+
+#SQL[@151,N17]Result[]
 drop table date02;
+

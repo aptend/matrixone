@@ -1,79 +1,146 @@
+#SQL[@6,N43]Result[34, 3]
 SELECT substring_index('abc^123^ioo','^',1);
 substring_index(abc^123^ioo, ^, 1)
 abc
+
+#SQL[@7,N51]Result[42, 6]
 SELECT substring_index('efjq34','4r832r432094-3',2);
 substring_index(efjq34, 4r832r432094-3, 2)
 efjq34
+
+#SQL[@8,N103]Result[94, 69]
 SELECT substring_index('床前明月光，疑是地上霜，举头望明月，低头思故乡','，',4);
 substring_index(床前明月光，疑是地上霜，举头望明月，低头思故乡, ，, 4)
 床前明月光，疑是地上霜，举头望明月，低头思故乡
+
+#SQL[@9,N93]Result[82, 46]
 SELECT substring_index('jewkrje的jdksvfe32893**(的——++））（）（  的', '的', -3);
 substring_index(jewkrje的jdksvfe32893**(的——++））（）（  的, 的, -3)
 jdksvfe32893**(的——++））（）（  的
+
+#SQL[@10,N81]Result[72, 25]
 SELECT substring_index('fhew嗯嗯圣诞节chejwk嗯嗯__++__w嗯嗯','嗯嗯',2);
 substring_index(fhew嗯嗯圣诞节chejwk嗯嗯__++__w嗯嗯, 嗯嗯, 2)
 fhew嗯嗯圣诞节chejwk
+
+#SQL[@11,N129]Result[120, 93]
 SELECT substring_index('v23dnnr###ewjrfkjewm#vrewnvrenjvnewmvrdjvrnjerewmvrjenjwvewmvrrnenjvrenjvrejnvewvrevrjewvrnew','ewmvr',8);
 substring_index(v23dnnr###ewjrfkjewm#vrewnvrenjvnewmvrdjvrnjerewmvrjenjwvewmvrrnenjvrenjvrejnvewvrevrjewvrnew, ewmvr, 8)
 v23dnnr###ewjrfkjewm#vrewnvrenjvnewmvrdjvrnjerewmvrjenjwvewmvrrnenjvrenjvrejnvewvrevrjewvrnew
+
+#SQL[@12,N46]Result[37, 3]
 SELECT substring_index('www.baidu.com','.',-1);
 substring_index(www.baidu.com, ., -1)
 com
+
+#SQL[@13,N60]Result[51, 26]
 SELECT substring_index('hdjwkrfew*(dehw382*(vnejw4','*(',-5);
 substring_index(hdjwkrfew*(dehw382*(vnejw4, *(, -5)
 hdjwkrfew*(dehw382*(vnejw4
+
+#SQL[@14,N65]Result[56, 13]
 SELECT substring_index('43728943902493-24fjk43nmfjkwek432','3',3);
 substring_index(43728943902493-24fjk43nmfjkwek432, 3, 3)
 4372894390249
+
+#SQL[@15,N43]Result[34, 0]
 SELECT substring_index('dfjwkfrewfr','r',0);
 substring_index(dfjwkfrewfr, r, 0)
 
+
+#SQL[@16,N43]Result[34, 7]
 SELECT substring_index('ABC*123*()(','*',2);
 substring_index(ABC*123*()(, *, 2)
 ABC*123
+
+#SQL[@17,N55]Result[46, 11]
 SELECT substring_index('12345*&+789*&dhejwfew2','*&',2);
 substring_index(12345*&+789*&dhejwfew2, *&, 2)
 12345*&+789
+
+#SQL[@18,N42]Result[33, 0]
 SELECT substring_index('.+0___=+. ','.',1);
 substring_index(.+0___=+. , ., 1)
 
+
+#SQL[@19,N34]Result[25, 0]
 SELECT substring_index('..','.',1);
 substring_index(.., ., 1)
 
+
+#SQL[@20,N37]Result[28, 0]
 SELECT substring_index('','327832',1);
 substring_index(, 327832, 1)
 
+
+#SQL[@21,N34]Result[27, 4]
 SELECT substring_index(NULL,'.',6);
 substring_index(null, ., 6)
 null
+
+#SQL[@22,N55]Result[48, 4]
 SELECT substring_index('-+0988   &^88?/7!@~~~~',NULL,3);
 substring_index(-+0988   &^88?/7!@~~~~, null, 3)
 null
+
+#SQL[@23,N53]Result[44, 4]
 SELECT substring_index('efwjkfe&*&**(*))))','*',NULL);
 substring_index(efwjkfe&*&**(*)))), *, null)
 null
+
+#SQL[@28,N39]Result[]
 DROP TABLE IF EXISTS substring_index_01;
+
+#SQL[@29,N237]Result[]
 CREATE TABLE substring_index_01(id int,
-s1 VARCHAR(100),
-delim VARCHAR(20),
-count1 smallint,
-PRIMARY KEY(id));
+                                s1 VARCHAR(100),
+                                delim VARCHAR(20),
+                                count1 smallint,
+                                PRIMARY KEY(id));
+
+#SQL[@36,N60]Result[]
 INSERT INTO substring_index_01 VALUES(1, 'abc.com.cn','.',2);
+
+#SQL[@37,N93]Result[]
 INSERT INTO substring_index_01 VALUES(2, '新年快乐，身体健康，万事如意', ',',3);
+
+#SQL[@38,N100]Result[]
 INSERT INTO substring_index_01 VALUES(3, 'ehjwkvnrkew哈哈哈&9832哈哈哈,84321093,','哈哈',-6);
+
+#SQL[@39,N77]Result[]
 INSERT INTO substring_index_01 VALUES(4, '123abc&*.jjkmm&*.73290302','&*.',3);
+
+#SQL[@40,N82]Result[]
 INSERT INTO substring_index_01 VALUES(5, '  78829,.327hjfew.;,32oi  cekw', ',',-2);
+
+#SQL[@41,N88]Result[]
 INSERT INTO substring_index_01 VALUES(6, 'efwu3nkjr3w3;;  9099032c45dc3s// *  ',' ', -4);
+
+#SQL[@42,N49]Result[]
 INSERT INTO substring_index_01 VALUES(7, '','',0);
+
+#SQL[@43,N89]Result[]
 INSERT INTO substring_index_01 VALUES(8, '83092i3f2o.dkwec<>dhwkjv<>789392-3<>', NULL, 3);
+
+#SQL[@44,N54]Result[]
 INSERT INTO substring_index_01 VALUES(9, NULL, '.',11);
+
+#SQL[@45,N84]Result[]
 INSERT INTO substring_index_01 VALUES(10, '442+562++++——----吃饭了',',',NULL);
+
+#SQL[@49,N64]Error[47]
 INSERT INTO substring_index_01 VALUES(1, 'ewjj32..3,l43/.43', 0);
 Column count doesn't match value count at row 1
+
+#SQL[@50,N164]Error[195]
 INSERT INTO substring_index_01 VALUES(11, 'vhjdwewj3902i302o302($#$%^&*()_POJHFTY&(*UIOPL:<DQ87*q8JIFWJLWKMDXKLSMDXKSLMKCw54545484154444489897897o8u8&92)(','few',4);
 internal error: Can't cast 'vhjdwewj3902i302o302($#$%^&*()_POJHFTY&(*UIOPL:<DQ87*q8JIFWJLWKMDXKLSMDXKSLMKCw545454841544444898978...' to VARCHAR type. Src length 111 is larger than Dest length 100
+
+#SQL[@51,N67]Error[49]
 INSERT INTO substring_index_01 VALUES(12, '', 'vjdkelwvrew', 32769);
-Data truncation: data out of range: data type int16, value '32769'
+data out of range: data type int16, value '32769'
+
+#SQL[@54,N63]Result[34, 7, 42, 44, 25, 22, 20, 0, 4, 4, 4]
 SELECT substring_index(s1,delim,count1) FROM substring_index_01;
 substring_index(s1, delim, count1)
 abc.com
@@ -86,6 +153,8 @@ ehjwkvnrkew哈哈哈&9832哈哈哈,84321093,
 null
 null
 null
+
+#SQL[@55,N81]Result[34, 7, 42, 25, 4, 4]
 SELECT substring_index(s1,delim,count1) FROM substring_index_01 WHERE count1 >= 2;
 substring_index(s1, delim, count1)
 abc.com
@@ -93,11 +162,15 @@ abc.com
 123abc&*.jjkmm&*.73290302
 null
 null
+
+#SQL[@56,N84]Result[38, 44, 7, 0]
 SELECT substring_index(s1,delim,count1 + 3) FROM substring_index_01 WHERE count1 < 0;
 substring_index(s1, delim, count1 + 3)
 ehjwkvnrkew哈哈哈&9832哈哈哈,84321093,
   78829
 
+
+#SQL[@57,N88]Result[38, 0, 0, 0, 0, 0]
 SELECT substring_index(s1,delim,count1 % 2) FROM substring_index_01 WHERE count1 % 2 = 0;
 substring_index(s1, delim, count1 % 2)
 
@@ -105,38 +178,61 @@ substring_index(s1, delim, count1 % 2)
 
 
 
+
+#SQL[@58,N76]Result[33, 31]
 SELECT * FROM substring_index_01 WHERE substring_index(s1,'.',2) = 'abc.com';
-id    s1    delim    count1
-1    abc.com.cn    .    2
+id  ¦  s1  ¦  delim  ¦  count1
+1  ¦  abc.com.cn  ¦  .  ¦  2
+
+#SQL[@59,N73]Result[33, 58]
 SELECT * FROM substring_index_01 WHERE substring_index(s1,' ',-3) = '*  ';
-id    s1    delim    count1
-6    efwu3nkjr3w3;;  9099032c45dc3s// *           -4
+id  ¦  s1  ¦  delim  ¦  count1
+6  ¦  efwu3nkjr3w3;;  9099032c45dc3s// *    ¦     ¦  -4
+
+#SQL[@60,N71]Result[27, 36]
 SELECT substring_index(s1,' ',-10) FROM substring_index_01 WHERE id = 6;
 substring_index(s1,  , -10)
 efwu3nkjr3w3;;  9099032c45dc3s// *  
+
+#SQL[@61,N76]Result[32, 15]
 SELECT substring_index(s1,'*.',ABS(-2)) FROM substring_index_01 WHERE id = 4;
-substring_index(s1, *., abs(-2))
+substring_index(s1, *., ABS(-2))
 123abc&*.jjkmm&
+
+#SQL[@62,N81]Result[33, 31]
 SELECT * FROM substring_index_01 WHERE substring_index(s1, '.', 1 - 3) = 'com.cn';
-id    s1    delim    count1
-1    abc.com.cn    .    2
+id  ¦  s1  ¦  delim  ¦  count1
+1  ¦  abc.com.cn  ¦  .  ¦  2
+
+#SQL[@63,N93]Result[49, 3]
 SELECT substring_index(substring_index(s1,'.',-2),'.',1) FROM substring_index_01 WHERE id = 1;
 substring_index(substring_index(s1, ., -2), ., 1)
 com
+
+#SQL[@67,N78]Result[33, 48]
 SELECT * FROM substring_index_01 WHERE LENGTH(substring_index(s1,'*.',2)) = 15;
-id    s1    delim    count1
-4    123abc&*.jjkmm&*.73290302    &*.    3
+id  ¦  s1  ¦  delim  ¦  count1
+4  ¦  123abc&*.jjkmm&*.73290302  ¦  &*.  ¦  3
+
+#SQL[@68,N91]Result[33, 52]
 SELECT * FROM substring_index_01 WHERE substring_index(LTRIM(s1),'.',2) = '78829,.327hjfew';
-id    s1    delim    count1
-5      78829,.327hjfew.;,32oi  cekw    ,    -2
+id  ¦  s1  ¦  delim  ¦  count1
+5  ¦    78829,.327hjfew.;,32oi  cekw  ¦  ,  ¦  -2
+
+#SQL[@69,N104]Result[17, 11]
 SELECT delim,count1 FROM substring_index_01 WHERE substring_index(RTRIM(s1),'<>',1) = '83092i3f2o.dkwec';
-delim    count1
-null    3
+delim  ¦  count1
+null  ¦  3
+
+#SQL[@70,N109]Result[]
 SELECT * FROM substring_index_01 WHERE LPAD(substring_index(LTRIM(s1),'.',2),20,'*') = '83092i3f2o.dkwec****';
-id    s1    delim    count1
+
+#SQL[@71,N83]Result[39, 20]
 SELECT RPAD(substring_index(s1,'*.',3),20,'*') FROM substring_index_01 WHERE id = 4;
-rpad(substring_index(s1, *., 3), 20, *)
+RPAD(substring_index(s1, *., 3), 20, *)
 123abc&*.jjkmm&*.732
+
+#SQL[@72,N75]Result[43, 5, 5, 5, 4, 5, 5, 5, 5, 4, 5]
 SELECT startswith(substring_index(s1,'*.',3),'123') FROM substring_index_01;
 startswith(substring_index(s1, *., 3), 123)
 false
@@ -149,6 +245,8 @@ false
 false
 null
 false
+
+#SQL[@73,N71]Result[39, 5, 5, 5, 5, 5, 5, 5, 5, 4, 4]
 SELECT endswith(substring_index(s1,'+',2),'62') FROM substring_index_01;
 endswith(substring_index(s1, +, 2), 62)
 false
@@ -161,11 +259,16 @@ false
 false
 null
 true
+
+#SQL[@74,N96]Result[]
 SELECT * FROM substring_index_01 WHERE find_in_set(substring_index(s1,delim,count1),NULL) = NULL;
-id    s1    delim    count1
+
+#SQL[@75,N111]Result[67, 60]
 SELECT CONCAT_WS(substring_index(s1,delim,count1),'hehaha32789','ABCNSLK') FROM substring_index_01 WHERE id = 2;
-concat_ws(substring_index(s1, delim, count1), hehaha32789, ABCNSLK)
+CONCAT_WS(substring_index(s1, delim, count1), hehaha32789, ABCNSLK)
 hehaha32789新年快乐，身体健康，万事如意ABCNSLK
+
+#SQL[@76,N70]Result[41, 5, 5, 5, 5, 5, 5, 4, 4, 4, 4]
 SELECT empty(substring_index(s1,delim,count1)) FROM substring_index_01;
 empty(substring_index(s1, delim, count1))
 false
@@ -178,6 +281,8 @@ true
 null
 null
 null
+
+#SQL[@77,N78]Result[51, 5, 15, 5, 5, 5, 5, 0, 4, 4, 4]
 SELECT substring(substring_index(s1,delim,count1),1,5) FROM substring_index_01;
 substring(substring_index(s1, delim, count1), 1, 5)
 abc.c
@@ -190,8 +295,10 @@ ehjwk
 null
 null
 null
+
+#SQL[@78,N67]Result[38, 10, 42, 44, 25, 30, 32, 0, 4, 4, 30]
 SELECT REVERSE(substring_index(s1,delim,3)) FROM substring_index_01;
-reverse(substring_index(s1, delim, 3))
+REVERSE(substring_index(s1, delim, 3))
 nc.moc.cba
 意如事万，康健体身，乐快年新
 ,39012348,哈哈哈2389&哈哈哈wekrnvkwjhe
@@ -202,26 +309,47 @@ wkec  io23,;.wefjh723.,92887
 null
 null
 了饭吃----——++++265+244
+
+#SQL[@82,N138]Result[33, 52]
 SELECT * FROM substring_index_01 WHERE s1 = (SELECT s1 FROM substring_index_01 WHERE substring_index(LTRIM(s1),'.',2) = '78829,.327hjfew');
-id    s1    delim    count1
-5      78829,.327hjfew.;,32oi  cekw    ,    -2
+id  ¦  s1  ¦  delim  ¦  count1
+5  ¦    78829,.327hjfew.;,32oi  cekw  ¦  ,  ¦  -2
+
+#SQL[@83,N102]Result[94, 36]
 SELECT(SELECT s1 FROM substring_index_01 WHERE substring_index(RTRIM(s1),'<>',1) = '83092i3f2o.dkwec');
-(select s1 from substring_index_01 where substring_index(rtrim(s1), <>, 1) = 83092i3f2o.dkwec)
+(select s1 from substring_index_01 where substring_index(RTRIM(s1), <>, 1) = 83092i3f2o.dkwec)
 83092i3f2o.dkwec<>dhwkjv<>789392-3<>
+
+#SQL[@84,N137]Result[]
 SELECT id ,s1, delim FROM substring_index_01 WHERE s1 = (SELECT s1 FROM substring_index_01 WHERE substring_index(LTRIM(s1),'.',0) = NULL);
-id    s1    delim
+
+#SQL[@89,N39]Result[]
 DROP TABLE IF EXISTS substring_index_02;
+
+#SQL[@90,N286]Result[]
 CREATE TABLE substring_index_02(id int,
-s1 longtext,
-delim CHAR,
-count1 int NOT NULL,
-count2 bigint unsigned,
-PRIMARY KEY(id));
+                                s1 longtext,
+                                delim CHAR,
+                                count1 int NOT NULL,
+                                count2 bigint unsigned,
+                                PRIMARY KEY(id));
+
+#SQL[@98,N206]Result[]
 INSERT INTO substring_index_02 VALUES(1, 'SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)','a',-1231,548494515);
+
+#SQL[@99,N132]Result[]
 INSERT INTO substring_index_02 VALUES(2, 'dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&','j',0,123);
+
+#SQL[@100,N58]Result[]
 INSERT INTO substring_index_02 VALUES(3, '', NULL, -3, 45);
+
+#SQL[@101,N60]Result[]
 INSERT INTO substring_index_02 VALUES(4, NULL, '*', 5, NULL);
+
+#SQL[@102,N116]Result[]
 INSERT INTO substring_index_02 VALUES(5, '  dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(  ','*', 6, 83092302);
+
+#SQL[@105,N63]Result[34, 142, 0, 4, 4, 39]
 SELECT substring_index(s1,delim,count1) FROM substring_index_02;
 substring_index(s1, delim, count1)
 SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)
@@ -229,31 +357,46 @@ SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长�
 null
 null
   dhewjvrew  er&&***&&n e89__+&&**+=--=
+
+#SQL[@106,N117]Result[78, 290, 14]
 SELECT substring_index(s1,delim,count1 + 3),substring_index(s1,delim,count2) FROM substring_index_02 WHERE count1 < 0;
-substring_index(s1, delim, count1 + 3)    substring_index(s1, delim, count2)
-SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)    SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)
-null    null
+substring_index(s1, delim, count1 + 3)  ¦  substring_index(s1, delim, count2)
+SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)  ¦  SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)
+null  ¦  null
+
+#SQL[@107,N92]Result[38, 130, 12, 4, 0]
 SELECT substring_index(s1,delim,count2 % 2) FROM substring_index_02 WHERE count2 IS NOT NULL;
 substring_index(s1, delim, count2 % 2)
 SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, st
 dvuewinviecf
 null
 
+
+#SQL[@108,N114]Result[45, 182]
 SELECT * FROM substring_index_02 WHERE substring_index(s1,'的',2) = 'SUBSTRING函数的功能:用于从字符串';
-id    s1    delim    count1    count2
-1    SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)    a    -1231    548494515
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+1  ¦  SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length)  ¦  a  ¦  -1231  ¦  548494515
+
+#SQL[@109,N83]Result[]
 SELECT * FROM substring_index_02 WHERE substring_index(s1, 'iii', 1 - 3) = 'com.cn';
-id    s1    delim    count1    count2
+
+#SQL[@113,N79]Result[45, 108]
 SELECT * FROM substring_index_02 WHERE LENGTH(substring_index(s1,delim,2)) = 27;
-id    s1    delim    count1    count2
-2    dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&    j    0    123
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+2  ¦  dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&  ¦  j  ¦  0  ¦  123
+
+#SQL[@114,N120]Result[45, 90]
 SELECT * FROM substring_index_02 WHERE substring_index(LTRIM(s1),delim,count1) = 'dhewjvrew  er&&***&&n e89__+&&**+=--=';
-id    s1    delim    count1    count2
-5      dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(      *    6    83092302
+id  ¦  s1  ¦  delim  ¦  count1  ¦  count2
+5  ¦    dhewjvrew  er&&***&&n e89__+&&**+=--=*(&&***&(&^*)(    ¦  *  ¦  6  ¦  83092302
+
+#SQL[@115,N103]Result[]
 SELECT delim,count1 FROM substring_index_02 WHERE substring_index(RTRIM(s1),delim,3) = '&&***&(&^*)(  ';
-delim    count1
+
+#SQL[@116,N109]Result[]
 SELECT * FROM substring_index_02 WHERE LPAD(substring_index(LTRIM(s1),'e',3),20,'*') = 'dhewjvrew  *********';
-id    s1    delim    count1    count2
+
+#SQL[@117,N76]Result[46, 4, 5, 4, 4, 5]
 SELECT startswith(substring_index(s1,delim,3),'SUB') FROM substring_index_02;
 startswith(substring_index(s1, delim, 3), SUB)
 true
@@ -261,6 +404,8 @@ false
 null
 null
 false
+
+#SQL[@118,N74]Result[44, 4, 5, 4, 4, 5]
 SELECT endswith(substring_index(s1,delim,-2),'h)') FROM substring_index_02;
 endswith(substring_index(s1, delim, -2), h))
 true
@@ -268,6 +413,8 @@ false
 null
 null
 false
+
+#SQL[@119,N300]Result[270, 1, 1, 4, 4, 1]
 SELECT find_in_set(substring_index(s1,delim,count1),'SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length),dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&') FROM substring_index_02;
 find_in_set(substring_index(s1, delim, count1), SUBSTRING函数的功能:用于从字符串的指定位置开始截取指定长度的字符串substring语法:SUBSTRING(string, start, length),dvuewinviecfjds439432094ie3jiHHDIUWH*&*(UIJCSijfje3iu2j9032^&(*&()(*)I)A&^%^*&)
 0
@@ -275,9 +422,13 @@ find_in_set(substring_index(s1, delim, count1), SUBSTRING函数的功能:用于�
 null
 null
 0
+
+#SQL[@120,N111]Result[67, 18]
 SELECT CONCAT_WS(substring_index(s1,delim,count1),'hehaha32789','ABCNSLK') FROM substring_index_02 WHERE id = 2;
-concat_ws(substring_index(s1, delim, count1), hehaha32789, ABCNSLK)
+CONCAT_WS(substring_index(s1, delim, count1), hehaha32789, ABCNSLK)
 hehaha32789ABCNSLK
+
+#SQL[@121,N79]Result[52, 0, 0, 4, 4, 0]
 SELECT substring(substring_index(s1,delim,count2),0,10) FROM substring_index_02;
 substring(substring_index(s1, delim, count2), 0, 10)
 
@@ -285,49 +436,85 @@ substring(substring_index(s1, delim, count2), 0, 10)
 null
 null
 
+
+#SQL[@122,N67]Result[38, 142, 46, 4, 4, 19]
 SELECT REVERSE(substring_index(s1,delim,3)) FROM substring_index_02;
-reverse(substring_index(s1, delim, 3))
+REVERSE(substring_index(s1, delim, 3))
 )htgnel ,trats ,gnirts(GNIRTSBUS:法语gnirtsbus串符字的度长定指取截始开置位定指的串符字从于用:能功的数函GNIRTSBUS
 iSCJIU(*&*HWUIDHHij3ei490234934sdjfceivniweuvd
 null
 null
 **&&re  wervjwehd  
+
+#SQL[@127,N39]Result[]
 DROP TABLE IF EXISTS substring_index_03;
+
+#SQL[@128,N39]Result[]
 DROP TABLE IF EXISTS substring_index_04;
+
+#SQL[@129,N225]Result[]
 CREATE TABLE substring_index_03(
-id int,
-d1 CHAR,
-str1 VARCHAR(50),
-primary key (id));
+                                   id int,
+                                   d1 CHAR,
+                                   str1 VARCHAR(50),
+                                   primary key (id));
+
+#SQL[@135,N237]Result[]
 CREATE TABLE substring_index_04(
-id int,
-d2 smallint,
-str1 mediumtext NOT NULL,
-primary key (id));
+                                   id int,
+                                   d2 smallint,
+                                   str1 mediumtext NOT NULL,
+                                   primary key (id));
+
+#SQL[@142,N70]Result[]
 INSERT INTO substring_index_03 VALUES(1, ')', '78213)jji)JIJSC_)dhej');
+
+#SQL[@143,N59]Result[]
 INSERT INTO substring_index_03 VALUES(2, '', '***((((()))');
+
+#SQL[@144,N51]Result[]
 INSERT INTO substring_index_03 VALUES(3, ' ', NULL);
+
+#SQL[@145,N76]Result[]
 INSERT INTO substring_index_03 VALUES(4, NULL, '  hciuwejw^&*((*&*^GGHJjqm');
+
+#SQL[@146,N81]Result[]
 INSERT INTO substring_index_03 VALUES(5, '*',' fjewlk*(&^de jw*(&^wuio*(&^,,,, ');
+
+#SQL[@148,N73]Result[]
 INSERT INTO substring_index_04 VALUES(1, 0, '78213)jji)JIJSC_  )dhej   ');
+
+#SQL[@149,N93]Result[]
 INSERT INTO substring_index_04 VALUES(2, 90, 'jewjeioqjeio3j4729u3ewqiu(U)(JOIWJ***((((()))');
+
+#SQL[@150,N66]Result[]
 INSERT INTO substring_index_04 VALUES(3, NULL,'  hciuwejw^&*((*&');
+
+#SQL[@151,N78]Result[]
 INSERT INTO substring_index_04 VALUES(4, -6, '  hciuwejw^&*(*^GGHJjqmmqjJHGG');
+
+#SQL[@155,N149]Result[]
 SELECT * FROM substring_index_03 WHERE str1 = (SELECT str1 FROM substring_index_04 WHERE substring_index(substring_index_04.str1, '(', 4) = '***(((');
-id    d1    str1
+
+#SQL[@156,N157]Result[46, 81]
 SELECT * FROM substring_index_03,substring_index_04 WHERE substring_index(substring_index_03.str1, ')', 2) = substring_index(substring_index_04.str1, ')', 2);
-id    d1    str1    id    d2    str1
-1    )    78213)jji)JIJSC_)dhej    1    0    78213)jji)JIJSC_  )dhej   
+id  ¦  d1  ¦  str1  ¦  id  ¦  d2  ¦  str1
+1  ¦  )  ¦  78213)jji)JIJSC_)dhej  ¦  1  ¦  0  ¦  78213)jji)JIJSC_  )dhej   
+
+#SQL[@157,N225]Result[13, 53, 21, 14, 36, 43]
 SELECT substring_index_03.str1 AS tmp,substring_index_04.str1 AS temp FROM substring_index_03 left join substring_index_04 ON substring_index(substring_index_03.str1, '2', 1) = substring_index(substring_index_04.str1, '2', 1);
-tmp    temp
-78213)jji)JIJSC_)dhej    78213)jji)JIJSC_  )dhej   
-***((((()))    null
-null    null
-  hciuwejw^&*((*&*^GGHJjqm    null
- fjewlk*(&^de jw*(&^wuio*(&^,,,,     null
+tmp  ¦  temp
+78213)jji)JIJSC_)dhej  ¦  78213)jji)JIJSC_  )dhej   
+***((((()))  ¦  null
+null  ¦  null
+  hciuwejw^&*((*&*^GGHJjqm  ¦  null
+ fjewlk*(&^de jw*(&^wuio*(&^,,,,   ¦  null
+
+#SQL[@158,N223]Result[14, 8, 12, 14, 12]
 SELECT substring_index_03.d1 AS d1_3,substring_index_04.d2 AS d2_4 FROM substring_index_03 right join substring_index_04 ON substring_index(substring_index_03.str1, '2', 1) = substring_index(substring_index_04.str1, '2', 1);
-d1_3    d2_4
-)    0
-null    90
-null    null
-null    -6
+d1_3  ¦  d2_4
+)  ¦  0
+null  ¦  90
+null  ¦  null
+null  ¦  -6
+

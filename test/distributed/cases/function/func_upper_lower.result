@@ -1,76 +1,132 @@
+#SQL[@2,N36]Result[29, 12]
 select to_upper('abc'), upper('abc');
-to_upper(abc)    upper(abc)
-ABC    ABC
+to_upper(abc)  ¦  upper(abc)
+ABC  ¦  ABC
+
+#SQL[@3,N44]Result[37, 20]
 select to_upper('abc 123'), upper('abc 123');
-to_upper(abc 123)    upper(abc 123)
-ABC 123    ABC 123
+to_upper(abc 123)  ¦  upper(abc 123)
+ABC 123  ¦  ABC 123
+
+#SQL[@4,N21]Result[14, 4]
 select to_upper(null);
 to_upper(null)
 null
+
+#SQL[@6,N44]Result[]
 create table up_t(a varchar(10), b char(10));
+
+#SQL[@7,N37]Result[]
 insert into up_t values('abc', 'abc');
+
+#SQL[@8,N35]Result[]
 insert into up_t values(null, null);
+
+#SQL[@9,N45]Result[]
 insert into up_t values('abc 123', 'abc 123');
+
+#SQL[@10,N38]Result[25, 12, 14, 20]
 select to_upper(a), upper(a) from up_t;
-to_upper(a)    upper(a)
-ABC    ABC
-null    null
-ABC 123    ABC 123
+to_upper(a)  ¦  upper(a)
+ABC  ¦  ABC
+null  ¦  null
+ABC 123  ¦  ABC 123
+
+#SQL[@11,N38]Result[25, 12, 14, 20]
 select to_upper(b), upper(b) from up_t;
-to_upper(b)    upper(b)
-ABC    ABC
-null    null
-ABC 123    ABC 123
+to_upper(b)  ¦  upper(b)
+ABC  ¦  ABC
+null  ¦  null
+ABC 123  ¦  ABC 123
+
+#SQL[@15,N36]Result[29, 12]
 select to_lower('ABC'), lower('ABC');
-to_lower(ABC)    lower(ABC)
-abc    abc
+to_lower(ABC)  ¦  lower(ABC)
+abc  ¦  abc
+
+#SQL[@16,N44]Result[37, 20]
 select to_lower('AbC 123'), lower('AbC 123');
-to_lower(AbC 123)    lower(AbC 123)
-abc 123    abc 123
+to_lower(AbC 123)  ¦  lower(AbC 123)
+abc 123  ¦  abc 123
+
+#SQL[@17,N21]Result[14, 4]
 select to_lower(null);
 to_lower(null)
 null
+
+#SQL[@19,N45]Result[]
 create table low_t(a varchar(10), b char(10));
+
+#SQL[@20,N38]Result[]
 insert into low_t values('ABC', 'ABC');
+
+#SQL[@21,N36]Result[]
 insert into low_t values(null, null);
+
+#SQL[@22,N46]Result[]
 insert into low_t values('AbC 123', 'AbC 123');
+
+#SQL[@23,N39]Result[25, 12, 14, 20]
 select to_lower(a), lower(a) from low_t;
-to_lower(a)    lower(a)
-abc    abc
-null    null
-abc 123    abc 123
+to_lower(a)  ¦  lower(a)
+abc  ¦  abc
+null  ¦  null
+abc 123  ¦  abc 123
+
+#SQL[@24,N39]Result[25, 12, 14, 20]
 select to_lower(b), lower(b) from low_t;
-to_lower(b)    lower(b)
-abc    abc
-null    null
-abc 123    abc 123
+to_lower(b)  ¦  lower(b)
+abc  ¦  abc
+null  ¦  null
+abc 123  ¦  abc 123
+
+#SQL[@28,N42]Result[33, 13]
 select to_upper(ltrim('   ueenjfwabc123'));
 to_upper(ltrim(   ueenjfwabc123))
 UEENJFWABC123
+
+#SQL[@29,N46]Result[37, 20]
 select upper(rtrim('  3782dfw23123123123   '));
 upper(rtrim(  3782dfw23123123123   ))
   3782DFW23123123123
+
+#SQL[@30,N58]Result[49, 28]
 select to_upper(trim('  32431 %^ 3829  3huicn2432g23   '));
 to_upper(trim(  32431 %^ 3829  3huicn2432g23   ))
 32431 %^ 3829  3HUICN2432G23
+
+#SQL[@31,N45]Result[38, 11]
 select upper(substring('21214avewwe12',3,20));
 upper(substring(21214avewwe12, 3, 20))
 214AVEWWE12
+
+#SQL[@32,N51]Result[6, 16]
 select upper(reverse('sjkdakjevenjwvev')) as result;
 result
 VEVWJNEVEJKADKJS
+
+#SQL[@36,N39]Result[30, 13]
 select lower(ltrim('   uEENjfwabc123'));
 lower(ltrim(   uEENjfwabc123))
 ueenjfwabc123
+
+#SQL[@37,N52]Result[43, 23]
 select to_lower(rtrim('  3782dfWWWW23123123123   '));
 to_lower(rtrim(  3782dfWWWW23123123123   ))
   3782dfwwww23123123123
+
+#SQL[@38,N55]Result[46, 28]
 select lower(trim('  32431 %^ 3829  3huICN2432g23   '));
 lower(trim(  32431 %^ 3829  3huICN2432g23   ))
 32431 %^ 3829  3huicn2432g23
+
+#SQL[@39,N47]Result[40, 10]
 select to_lower(substring('21214AewWE12',3,20));
 to_lower(substring(21214AewWE12, 3, 20))
 214aewwe12
+
+#SQL[@40,N51]Result[6, 16]
 select lower(reverse('sjkDAKjeveBJwvev')) as result;
 result
 vevwjbevejkadkjs
+

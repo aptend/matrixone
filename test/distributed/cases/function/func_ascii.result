@@ -1,125 +1,207 @@
+#SQL[@1,N15]Result[8, 2]
 select ascii(0);
 ascii(0)
 48
+
+#SQL[@2,N16]Result[9, 2]
 select ascii(-1);
 ascii(-1)
 45
+
+#SQL[@3,N15]Result[8, 2]
 select ascii(1);
 ascii(1)
 49
+
+#SQL[@4,N15]Result[8, 2]
 select ascii(2);
 ascii(2)
 50
+
+#SQL[@5,N17]Result[10, 2]
 select ascii(127);
 ascii(127)
 49
+
+#SQL[@6,N18]Result[11, 2]
 select ascii(-128);
 ascii(-128)
 45
+
+#SQL[@7,N17]Result[10, 2]
 select ascii(128);
 ascii(128)
 49
+
+#SQL[@8,N19]Result[12, 2]
 select ascii(32767);
 ascii(32767)
 51
+
+#SQL[@9,N20]Result[13, 2]
 select ascii(-32768);
 ascii(-32768)
 45
+
+#SQL[@10,N19]Result[12, 2]
 select ascii(32768);
 ascii(32768)
 51
+
+#SQL[@11,N24]Result[17, 2]
 select ascii(2147483647);
 ascii(2147483647)
 50
+
+#SQL[@12,N25]Result[18, 2]
 select ascii(-2147483648);
 ascii(-2147483648)
 45
+
+#SQL[@13,N24]Result[17, 2]
 select ascii(2147483648);
 ascii(2147483648)
 50
+
+#SQL[@14,N33]Result[26, 2]
 select ascii(9223372036854775807);
 ascii(9223372036854775807)
 57
+
+#SQL[@15,N34]Result[27, 2]
 select ascii(-9223372036854775808);
 ascii(-9223372036854775808)
 45
+
+#SQL[@16,N33]Result[26, 2]
 select ascii(9223372036854775808);
 ascii(9223372036854775808)
 57
+
+#SQL[@17,N34]Result[27, 2]
 select ascii(18446744073709551615);
 ascii(18446744073709551615)
 49
+
+#SQL[@18,N35]Result[28, 2]
 select ascii(-18446744073709551616);
 ascii(-18446744073709551616)
 45
+
+#SQL[@19,N34]Result[27, 2]
 select ascii(18446744073709551616);
 ascii(18446744073709551616)
 49
+
+#SQL[@20,N18]Result[11, 4]
 select ascii(null);
 ascii(null)
 null
+
+#SQL[@21,N17]Result[8, 2]
 select ascii('a');
 ascii(a)
 97
+
+#SQL[@22,N18]Result[9, 2]
 select ascii('ab');
 ascii(ab)
 97
+
+#SQL[@23,N19]Result[10, 3]
 select ascii('qaq');
 ascii(qaq)
 113
+
+#SQL[@24,N22]Result[13, 3]
 select ascii('啊咋');
 ascii(啊咋)
 229
+
+#SQL[@25,N22]Result[13, 2]
 select ascii('1.2121');
 ascii(1.2121)
 49
+
+#SQL[@26,N23]Result[14, 2]
 select ascii('1.2121a');
 ascii(1.2121a)
 49
+
+#SQL[@27,N16]Result[7, 1]
 select ascii('');
 ascii()
 0
+
+#SQL[@28,N17]Result[8, 2]
 select ascii(' ');
 ascii( )
 32
+
+#SQL[@29,N17]Result[10, 2]
 select ascii(1.1);
 ascii(1.1)
 49
+
+#SQL[@30,N17]Result[10, 2]
 select ascii(0.9);
 ascii(0.9)
 48
+
+#SQL[@31,N18]Result[11, 2]
 select ascii(-0.5);
 ascii(-0.5)
 45
+
+#SQL[@32,N33]Result[26, 2]
 select ascii(34567876534567.4321);
 ascii(34567876534567.4321)
 51
+
+#SQL[@33,N38]Result[31, 2]
 select ascii(-3.45678765345674321e-10);
 ascii(-3.45678765345674321e-10)
 45
+
+#SQL[@34,N55]Result[48, 2]
 select ascii(3.402823466385288598117041834516925440e38);
 ascii(3.402823466385288598117041834516925440e38)
 51
+
+#SQL[@35,N59]Result[52, 2]
 select ascii(1.401298464324817070923729583289916131280e-45);
 ascii(1.401298464324817070923729583289916131280e-45)
 49
+
+#SQL[@36,N59]Result[52, 2]
 select ascii(1.797693134862315708145274237317043567981e308);
 ascii(1.797693134862315708145274237317043567981e308)
 49
+
+#SQL[@37,N60]Result[53, 2]
 select ascii(4.940656458412465441765687928682213723651e-324);
 ascii(4.940656458412465441765687928682213723651e-324)
 53
+
+#SQL[@38,N24]Result[]
 create table t1 (c1 int);
+
+#SQL[@39,N42]Result[]
 insert into t1 values (1), (2), (3),(null);
+
+#SQL[@40,N24]Result[9, 2, 2, 2, 4]
 select ascii(c1) from t1;
 ascii(c1)
 49
 50
 51
 null
+
+#SQL[@41,N26]Result[11, 4, 4, 4, 4]
 select ascii(null) from t1;
 ascii(null)
 null
 null
 null
 null
+

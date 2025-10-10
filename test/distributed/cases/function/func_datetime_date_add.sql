@@ -7,7 +7,7 @@ SELECT CAST('2006-09-26' AS DATE) + INTERVAL 1 WEEK;
 
 
 create table t1 (a int, b varchar(10));
-insert into t1 values (1, '2001-01-01'),(2, '2002-02-02'); 
+insert into t1 values (1, '2001-01-01'),(2, '2002-02-02');
 select '2007-01-01' + interval a day from t1;
 select b + interval a day from t1;
 drop table t1;
@@ -83,9 +83,9 @@ select date_add("1997-12-31",INTERVAL 1 SECOND);
 select date_add("1997-12-31",INTERVAL "1 1" YEAR_MONTH);
 
 #函数嵌套
--- @bvt:issue#3203
-SELECT DATE_ADD(to_date('9999-12-30 23:59:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
--- @bvt:issue
+@issue(no=3203) {
+    SELECT DATE_ADD(to_date('9999-12-30 23:59:00','%Y-%m-%d %H:%i:%s'), INTERVAL 1 MINUTE);
+}
 
 
 SELECT extract(week from DATE_ADD('2020-12-30 23:59:00', INTERVAL 1 year));
@@ -257,10 +257,10 @@ select date_sub("0200-01-01 00:00:01",INTERVAL 1 SECOND);
 select date_sub("0200-01-01 00:00:01",INTERVAL 2 SECOND);
 select date_add("2001-01-01 23:59:59",INTERVAL -2000 YEAR);
 
--- @bvt:issue#3319
-select date_sub("50-01-01 00:00:01",INTERVAL 2 SECOND);
-select date_sub("90-01-01 00:00:01",INTERVAL 2 SECOND);
--- @bvt:issue
+@issue(no=3319) {
+    select date_sub("50-01-01 00:00:01",INTERVAL 2 SECOND);
+    select date_sub("90-01-01 00:00:01",INTERVAL 2 SECOND);
+}
 
 select date_sub("0069-01-01 00:00:01",INTERVAL 2 SECOND);
 select date_sub("0169-01-01 00:00:01",INTERVAL 2 SECOND);

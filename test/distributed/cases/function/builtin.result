@@ -1,106 +1,181 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@4,N28]Result[]
 create table t1(a int,b int);
+
+#SQL[@5,N55]Result[]
 insert into t1 values(5,-2),(10,3),(100,0),(4,3),(6,-3);
+
+#SQL[@9,N25]Result[11, 4, 4, 1, 2, 20]
 select power(a,b) from t1;
 power(a, b)
 0.04
-1000.0
-1.0
-64.0
+1000
+1
+64
 0.004629629629629629
+
+#SQL[@14,N95]Result[10, 9, 9, 9, 10, 12]
 select power(a,2) as a1, power(b,2) as b1 from t1 where power(a,2) > power(b,2) order by a1 asc;
-a1    b1
-16.0    9.0
-25.0    4.0
-36.0    9.0
-100.0    9.0
-10000.0    0.0
+a1  ¦  b1
+16  ¦  9
+25  ¦  4
+36  ¦  9
+100  ¦  9
+10000  ¦  0
+
+#SQL[@18,N23]Result[]
 drop table if exists t1;
+
+#SQL[@19,N34]Result[]
 create table t1(a date,b datetime);
+
+#SQL[@20,N57]Result[]
 insert into t1 values("2022-06-01","2022-07-01 00:00:00");
+
+#SQL[@21,N57]Result[]
 insert into t1 values("2022-12-31","2011-01-31 12:00:00");
+
+#SQL[@25,N32]Result[22, 8, 9]
 select month(a),month(b) from t1;
-month(a)    month(b)
-6    7
-12    1
+month(a)  ¦  month(b)
+6  ¦  7
+12  ¦  1
+
+#SQL[@26,N40]Result[8, 35]
 select * from t1 where month(a)>month(b);
-a    b
-2022-12-31    2011-01-31 12:00:00
+a  ¦  b
+2022-12-31  ¦  2011-01-31 12:00:00
+
+#SQL[@27,N47]Result[8, 35]
 select * from t1 where month(a) between 1 and 6;
-a    b
-2022-06-01    2022-07-01 00:00:00
+a  ¦  b
+2022-06-01  ¦  2022-07-01 00:00:00
+
+#SQL[@29,N23]Result[]
 drop table if exists t1;
+
+#SQL[@33,N41]Result[]
 create table t1(a varchar(12),c char(30));
+
+#SQL[@35,N54]Result[]
 insert into t1 values('sdfad  ','2022-02-02 22:22:22');
+
+#SQL[@36,N56]Result[]
 insert into t1 values('  sdfad  ','2022-02-02 22:22:22');
+
+#SQL[@37,N58]Result[]
 insert into t1 values('adsf  sdfad','2022-02-02 22:22:22');
+
+#SQL[@38,N56]Result[]
 insert into t1 values('    sdfad','2022-02-02 22:22:22');
+
+#SQL[@42,N36]Result[26, 32, 34, 36, 34]
 select reverse(a),reverse(c) from t1;
-reverse(a)	reverse(c)
-  dafds	22:22:22 20-20-2202
-  dafds  	22:22:22 20-20-2202
-dafds  fsda	22:22:22 20-20-2202
-dafds    	22:22:22 20-20-2202
+reverse(a)  ¦  reverse(c)
+  dafds  ¦  22:22:22 20-20-2202
+  dafds    ¦  22:22:22 20-20-2202
+dafds  fsda  ¦  22:22:22 20-20-2202
+dafds      ¦  22:22:22 20-20-2202
+
+#SQL[@44,N45]Result[1, 11, 9]
 select a from t1 where reverse(a) like 'daf%';
 a
 adsf  sdfad
     sdfad
+
+#SQL[@46,N62]Result[21, 20, 24, 28, 24]
 select reverse(a) reversea,reverse(reverse(a)) normala from t1;
-reversea	normala
-  dafds	sdfad  
-  dafds  	  sdfad  
-dafds  fsda	adsf  sdfad
-dafds    	    sdfad
+reversea  ¦  normala
+  dafds  ¦  sdfad  
+  dafds    ¦    sdfad  
+dafds  fsda  ¦  adsf  sdfad
+dafds      ¦      sdfad
+
+#SQL[@51,N23]Result[]
 drop table if exists t1;
+
+#SQL[@52,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@53,N48]Result[]
 insert into t1 values(0,0),(-15,-20),(-22,-12.5);
+
+#SQL[@54,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@57,N63]Error[51]
 select acos(a*pi()/180) as acosa,acos(b*pi()/180) acosb from t1;
 invalid argument acos, bad value 1.5707963267948966
+
+#SQL[@58,N86]Error[51]
 select acos(a*pi()/180)*acos(b*pi()/180) as acosab,acos(acos(a*pi()/180)) as c from t1;
 invalid argument acos, bad value 1.5707963267948966
+
+#SQL[@59,N69]Error[51]
 select b from t1 where acos(a*pi()/180)<=acos(b*pi()/180)  order by a;
 invalid argument acos, bad value 1.5707963267948966
+
+#SQL[@63,N23]Result[]
 drop table if exists t1;
+
+#SQL[@64,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@65,N48]Result[]
 insert into t1 values(0,0),(-15,-20),(-22,-12.5);
+
+#SQL[@66,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@70,N63]Result[16, 8, 45, 45, 25, 43, 42, 42, 42]
 select atan(a*pi()/180) as atana,atan(b*pi()/180) atanb from t1;
-atana    atanb
-0.0    0.0
--0.25605276998075555    -0.33584237256640787
--0.3666136182932664    -0.2148004503403853
-0.0    1.4129651365067377
-0.48234790710102493    1.4249275378445119
-1.0038848218538872    1.4441537892065186
-1.2626272556789115    1.3616916829711634
-1.2626272556789115    1.2626272556789115
+atana  ¦  atanb
+0  ¦  0
+-0.25605276998075555  ¦  -0.3358423725664079
+-0.36661361829326644  ¦  -0.2148004503403853
+0  ¦  1.4129651365067377
+0.48234790710102493  ¦  1.4249275378445119
+1.0038848218538872  ¦  1.4441537892065186
+1.2626272556789115  ¦  1.3616916829711634
+1.2626272556789115  ¦  1.2626272556789115
+
+#SQL[@71,N86]Result[13, 8, 45, 45, 8, 43, 41, 41, 41]
 select atan(a*pi()/180)*atan(b*pi()/180) as atanab,atan(atan(a*pi()/180)) as c from t1;
-atanab    c
-0.0    0.0
-0.08599336977253765    -0.25066722482387166
-0.07874877031031174    -0.3513980316581596
-0.0    0.0
-0.6873108156499168    0.44942647356532794
-1.449764069407202    0.7873368062499201
-1.7193090327506784    0.900952887864509
-1.5942275867832594    0.900952887864509
+atanab  ¦  c
+0  ¦  0
+0.08599336977253766  ¦  -0.25066722482387166
+0.07874877031031176  ¦  -0.35139803165815964
+0  ¦  0
+0.6873108156499168  ¦  0.44942647356532794
+1.449764069407202  ¦  0.7873368062499201
+1.7193090327506784  ¦  0.900952887864509
+1.5942275867832594  ¦  0.900952887864509
+
+#SQL[@72,N69]Result[1, 5, 1, 3, 3, 3, 3, 3]
 select b from t1 where atan(a*pi()/180)<=atan(b*pi()/180)  order by a;
 b
 -12.5
-0.0
-360.0
-390.0
-450.0
-270.0
-180.0
+0
+360
+390
+450
+270
+180
+
+#SQL[@76,N23]Result[]
 drop table if exists t1;
+
+#SQL[@77,N180]Result[]
 CREATE TABLE t1(
 Employee_Name VARCHAR(100) NOT NULL,
 Working_At VARCHAR(20) NOT NULL,
 Work_Location  VARCHAR(20) NOT NULL,
 Joining_Date DATE NOT NULL,
 Annual_Income INT  NOT NULL);
+
+#SQL[@83,N656]Result[]
 INSERT INTO t1
 VALUES
 ('Amit Khan', 'XYZ Digital', 'Kolkata', '2019-10-06', 350000),
@@ -113,22 +188,32 @@ VALUES
 ('Sujata Samanta', 'PQR Soln.', 'Kolkata', '2020-10-06', 350000),
 ('Sudip Majhi', 'ABC Corp.', 'Delhi', '2018-10-30', 600000),
 ('Sanjoy Kohli', 'XYZ Digital', 'Delhi', '2019-04-18', 450000);
+
+#SQL[@98,N84]Result[27, 23, 20, 19]
 SELECT Working_At, BIT_AND(Annual_Income) AS BITORINCOME FROM t1 group by Working_At;
-working_at    bitorincome
-XYZ Digital    262144
-ABC Corp.    65792
-PQR Soln.    4096
+Working_At  ¦  BITORINCOME
+XYZ Digital  ¦  262144
+ABC Corp.  ¦  65792
+PQR Soln.  ¦  4096
+
+#SQL[@99,N90]Result[30, 19, 12]
 SELECT Work_Location, BIT_AND(Annual_Income) AS BITORINCOME FROM t1 Group By Work_Location;
-work_location    bitorincome
-Kolkata    262144
-Delhi    0
+Work_Location  ¦  BITORINCOME
+Kolkata  ¦  262144
+Delhi  ¦  0
+
+#SQL[@103,N23]Result[]
 drop table if exists t1;
+
+#SQL[@104,N180]Result[]
 CREATE TABLE t1(
 Employee_Name VARCHAR(100) NOT NULL,
 Working_At VARCHAR(20) NOT NULL,
 Work_Location  VARCHAR(20) NOT NULL,
 Joining_Date DATE NOT NULL,
 Annual_Income INT  NOT NULL);
+
+#SQL[@110,N656]Result[]
 INSERT INTO t1
 VALUES
 ('Amit Khan', 'XYZ Digital', 'Kolkata', '2019-10-06', 350000),
@@ -141,22 +226,32 @@ VALUES
 ('Sujata Samanta', 'PQR Soln.', 'Kolkata', '2020-10-06', 350000),
 ('Sudip Majhi', 'ABC Corp.', 'Delhi', '2018-10-30', 600000),
 ('Sanjoy Kohli', 'XYZ Digital', 'Delhi', '2019-04-18', 450000);
+
+#SQL[@125,N90]Result[30, 19, 12]
 SELECT Work_Location, BIT_AND(Annual_Income) AS BITORINCOME FROM t1 Group By Work_Location;
-work_location    bitorincome
-Kolkata    262144
-Delhi    0
+Work_Location  ¦  BITORINCOME
+Kolkata  ¦  262144
+Delhi  ¦  0
+
+#SQL[@126,N84]Result[27, 23, 20, 19]
 SELECT Working_At, BIT_AND(Annual_Income) AS BITORINCOME FROM t1 group by Working_At;
-working_at    bitorincome
-XYZ Digital    262144
-ABC Corp.    65792
-PQR Soln.    4096
+Working_At  ¦  BITORINCOME
+XYZ Digital  ¦  262144
+ABC Corp.  ¦  65792
+PQR Soln.  ¦  4096
+
+#SQL[@130,N23]Result[]
 drop table if exists t1;
+
+#SQL[@131,N180]Result[]
 CREATE TABLE t1(
 Employee_Name VARCHAR(100) NOT NULL,
 Working_At VARCHAR(20) NOT NULL,
 Work_Location  VARCHAR(20) NOT NULL,
 Joining_Date DATE NOT NULL,
 Annual_Income INT  NOT NULL);
+
+#SQL[@137,N656]Result[]
 INSERT INTO t1
 VALUES
 ('Amit Khan', 'XYZ Digital', 'Kolkata', '2019-10-06', 350000),
@@ -169,81 +264,147 @@ VALUES
 ('Sujata Samanta', 'PQR Soln.', 'Kolkata', '2020-10-06', 350000),
 ('Sudip Majhi', 'ABC Corp.', 'Delhi', '2018-10-30', 600000),
 ('Sanjoy Kohli', 'XYZ Digital', 'Delhi', '2019-04-18', 450000);
+
+#SQL[@152,N90]Result[30, 19, 17]
 SELECT Work_Location, BIT_XOR(Annual_Income) AS BITORINCOME FROM t1 Group By Work_Location;
-work_location    bitorincome
-Kolkata    350624
-Delhi    912976
+Work_Location  ¦  BITORINCOME
+Kolkata  ¦  350624
+Delhi  ¦  912976
+
+#SQL[@153,N84]Result[27, 22, 21, 21]
 SELECT Working_At, BIT_XOR(Annual_Income) AS BITORINCOME FROM t1 group by Working_At;
-working_at    bitorincome
-XYZ Digital    94816
-ABC Corp.    774608
-PQR Soln.    136256
+Working_At  ¦  BITORINCOME
+XYZ Digital  ¦  94816
+ABC Corp.  ¦  774608
+PQR Soln.  ¦  136256
+
+#SQL[@157,N23]Result[]
 drop table if exists t1;
+
+#SQL[@158,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@159,N26]Result[]
 insert into t1 values(0,0);
+
+#SQL[@160,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@163,N28]Result[18, 8, 26, 43, 44, 43, 44]
 select cos(a),cos(b) from t1;
-cos(a)    cos(b)
-1.0    1.0
-1.0    -0.2836910914865273
-0.15425144988758405    0.9036792973912307
--0.4480736161291701    -0.7301529641805058
--0.5984600690578581    0.9843819506325049
--0.5984600690578581    -0.5984600690578581
+cos(a)  ¦  cos(b)
+1  ¦  1
+1  ¦  -0.2836910914865273
+0.15425144988758405  ¦  0.9036792973912307
+-0.4480736161291701  ¦  -0.7301529641805058
+-0.5984600690578581  ¦  0.9843819506325049
+-0.5984600690578581  ¦  -0.5984600690578581
+
+#SQL[@164,N45]Result[22, 25, 43, 43, 43, 43, 43]
 select cos(a)*cos(b),cos(cos(a)) as c from t1;
-cos(a) * cos(b)    c
-1.0    0.5403023058681398
--0.2836910914865273    0.5403023058681398
-0.13939384185599057    0.9881268151992377
-0.32716227898779165    0.9012833416649748
--0.5891132901548379    0.8262041463870422
-0.35815445425673625    0.8262041463870422
+cos(a) * cos(b)  ¦  c
+1  ¦  0.5403023058681398
+-0.2836910914865273  ¦  0.5403023058681398
+0.13939384185599057  ¦  0.9881268151992377
+0.32716227898779165  ¦  0.9012833416649748
+-0.5891132901548379  ¦  0.8262041463870422
+0.35815445425673625  ¦  0.8262041463870422
+
+#SQL[@165,N62]Result[1, 3, 2, 1]
 select distinct a from t1 where cos(a)<=cos(b) order by a desc;
 a
 180
 30
 0
+
+#SQL[@169,N23]Result[]
 drop table if exists t1;
+
+#SQL[@170,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@171,N48]Result[]
 insert into t1 values(0,0),(-15,-20),(-22,-12.5);
+
+#SQL[@172,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@175,N59]Error[33]
 select cot(a*pi()/180) as cota,cot(b*pi()/180) cotb from t1;
 invalid argument cot, bad value 0
+
+#SQL[@176,N81]Error[33]
 select cot(a*pi()/180)*cot(b*pi()/180) as cotab,cot(cot(a*pi()/180)) as c from t1;
 invalid argument cot, bad value 0
+
+#SQL[@177,N66]Error[33]
 select b from t1 where cot(a*pi()/180)<=cot(b*pi()/180) order by a;
 invalid argument cot, bad value 0
+
+#SQL[@179,N23]Result[]
 drop table if exists t1;
+
+#SQL[@180,N49]Result[]
 create table t1(a date, b datetime,c varchar(30));
+
+#SQL[@181,N77]Result[]
 insert into t1 values('20220101','2022-01-01 01:01:01','2022-13-13 01:01:01');
+
+#SQL[@182,N16]Result[15, 60]
 select * from t1;
-a    b    c
-2022-01-01    2022-01-01 01:01:01    2022-13-13 01:01:01
+a  ¦  b  ¦  c
+2022-01-01  ¦  2022-01-01 01:01:01  ¦  2022-13-13 01:01:01
+
+#SQL[@187,N23]Result[]
 drop table if exists t1;
+
+#SQL[@188,N49]Result[]
 create table t1(a date, b datetime,c varchar(30));
+
+#SQL[@189,N79]Result[]
 insert into t1 values('2022-01-01','2022-01-01 01:01:01','2022-01-01 01:01:01');
+
+#SQL[@190,N79]Result[]
 insert into t1 values('2022-01-01','2022-01-01 01:01:01','2022-01-01 01:01:01');
+
+#SQL[@191,N79]Result[]
 insert into t1 values('2022-01-02','2022-01-02 23:01:01','2022-01-01 23:01:01');
+
+#SQL[@192,N79]Result[]
 insert into t1 values('2021-12-31','2021-12-30 23:59:59','2021-12-30 23:59:59');
+
+#SQL[@193,N79]Result[]
 insert into t1 values('2022-06-30','2021-12-30 23:59:59','2021-12-30 23:59:59');
+
+#SQL[@197,N43]Result[3, 1, 1, 3, 3]
 select distinct dayofyear(a) as dya from t1;
 dya
 1
 2
 365
 181
+
+#SQL[@198,N39]Result[15, 60, 60]
 select * from t1 where dayofyear(a)>120;
-a    b    c
-2021-12-31    2021-12-30 23:59:59    2021-12-30 23:59:59
-2022-06-30    2021-12-30 23:59:59    2021-12-30 23:59:59
+a  ¦  b  ¦  c
+2021-12-31  ¦  2021-12-30 23:59:59  ¦  2021-12-30 23:59:59
+2022-06-30  ¦  2021-12-30 23:59:59  ¦  2021-12-30 23:59:59
+
+#SQL[@199,N53]Result[15, 60, 60, 60, 60]
 select * from t1 where dayofyear(a) between 1 and 184;
-a    b    c
-2022-01-01    2022-01-01 01:01:01    2022-01-01 01:01:01
-2022-01-01    2022-01-01 01:01:01    2022-01-01 01:01:01
-2022-01-02    2022-01-02 23:01:01    2022-01-01 23:01:01
-2022-06-30    2021-12-30 23:59:59    2021-12-30 23:59:59
+a  ¦  b  ¦  c
+2022-01-01  ¦  2022-01-01 01:01:01  ¦  2022-01-01 01:01:01
+2022-01-01  ¦  2022-01-01 01:01:01  ¦  2022-01-01 01:01:01
+2022-01-02  ¦  2022-01-02 23:01:01  ¦  2022-01-01 23:01:01
+2022-06-30  ¦  2021-12-30 23:59:59  ¦  2021-12-30 23:59:59
+
+#SQL[@203,N23]Result[]
 drop table if exists t1;
+
+#SQL[@204,N48]Result[]
 CREATE TABLE t1(a INT,b VARCHAR(100),c CHAR(20));
+
+#SQL[@205,N175]Result[]
 INSERT INTO t1
 VALUES
 (1,'Ananya Majumdar', 'XI'),
@@ -252,20 +413,30 @@ VALUES
 (4,'Anik Das', 'X'),
 (5,'Riya Jain', 'IX'),
 (6,'Tapan Samanta', 'XI');
+
+#SQL[@216,N32]Result[21, 12, 11, 11, 12, 12, 11]
 select a,endswith(b,'a') from t1;
-a    endswith(b, a)
-1    false
-2    true
-3    true
-4    false
-5    false
-6    true
+a  ¦  endswith(b, a)
+1  ¦  false
+2  ¦  true
+3  ¦  true
+4  ¦  false
+5  ¦  false
+6  ¦  true
+
+#SQL[@217,N62]Result[15, 28, 28]
 select a,b,c from t1 where endswith(b,'a') and endswith(c,'I');
-a    b    c
-3    Aniket Sharma    XI
-6    Tapan Samanta    XI
+a  ¦  b  ¦  c
+3  ¦  Aniket Sharma  ¦  XI
+6  ¦  Tapan Samanta  ¦  XI
+
+#SQL[@221,N23]Result[]
 drop table if exists t1;
+
+#SQL[@222,N80]Result[]
 CREATE TABLE t1(Student_id INT,Student_name VARCHAR(100),Student_Class CHAR(20));
+
+#SQL[@223,N174]Result[]
 INSERT INTO t1
 VALUES
 (1,'Ananya Majumdar', 'IX'),
@@ -274,40 +445,54 @@ VALUES
 (4,'Anik Das', 'X'),
 (5,'Riya Jain', 'IX'),
 (6,'Tapan Samanta', 'X');
+
+#SQL[@234,N89]Result[50, 38, 38, 36, 31, 32, 36]
 SELECT Student_id, Student_name,LPAD(Student_Class, 10, ' _') AS LeftPaddedString FROM t1;
-student_id    student_name    leftpaddedstring
-1    Ananya Majumdar     _ _ _ _IX
-2    Anushka Samanta     _ _ _ _ X
-3    Aniket Sharma     _ _ _ _XI
-4    Anik Das     _ _ _ _ X
-5    Riya Jain     _ _ _ _IX
-6    Tapan Samanta     _ _ _ _ X
+Student_id  ¦  Student_name  ¦  LeftPaddedString
+1  ¦  Ananya Majumdar  ¦   _ _ _ _IX
+2  ¦  Anushka Samanta  ¦   _ _ _ _ X
+3  ¦  Aniket Sharma  ¦   _ _ _ _XI
+4  ¦  Anik Das  ¦   _ _ _ _ X
+5  ¦  Riya Jain  ¦   _ _ _ _IX
+6  ¦  Tapan Samanta  ¦   _ _ _ _ X
+
+#SQL[@235,N73]Result[32, 11, 11, 11, 11, 11, 11]
 SELECT Student_id, lpad(Student_name,4,'new') AS LeftPaddedString FROM t1;
-student_id    leftpaddedstring
-1    Anan
-2    Anus
-3    Anik
-4    Anik
-5    Riya
-6    Tapa
+Student_id  ¦  LeftPaddedString
+1  ¦  Anan
+2  ¦  Anus
+3  ¦  Anik
+4  ¦  Anik
+5  ¦  Riya
+6  ¦  Tapa
+
+#SQL[@236,N74]Result[32, 11, 11, 11, 11, 11, 11]
 SELECT Student_id, lpad(Student_name,-4,'new') AS LeftPaddedString FROM t1;
-student_id    leftpaddedstring
-1    null
-2    null
-3    null
-4    null
-5    null
-6    null
+Student_id  ¦  LeftPaddedString
+1  ¦  null
+2  ¦  null
+3  ¦  null
+4  ¦  null
+5  ¦  null
+6  ¦  null
+
+#SQL[@237,N73]Result[32, 7, 7, 7, 7, 7, 7]
 SELECT Student_id, lpad(Student_name,0,'new') AS LeftPaddedString FROM t1;
-student_id    leftpaddedstring
-1    
-2    
-3    
-4    
-5    
-6    
+Student_id  ¦  LeftPaddedString
+1  ¦  
+2  ¦  
+3  ¦  
+4  ¦  
+5  ¦  
+6  ¦  
+
+#SQL[@241,N23]Result[]
 drop table if exists t1;
+
+#SQL[@242,N80]Result[]
 CREATE TABLE t1(Student_id INT,Student_name VARCHAR(100),Student_Class CHAR(20));
+
+#SQL[@243,N174]Result[]
 INSERT INTO t1
 VALUES
 (1,'Ananya Majumdar', 'IX'),
@@ -316,44 +501,58 @@ VALUES
 (4,'Anik Das', 'X'),
 (5,'Riya Jain', 'IX'),
 (6,'Tapan Samanta', 'X');
+
+#SQL[@254,N89]Result[50, 38, 38, 36, 31, 32, 36]
 SELECT Student_id, Student_name,RPAD(Student_Class, 10, ' _') AS LeftPaddedString FROM t1;
-student_id    student_name    leftpaddedstring
-1    Ananya Majumdar    IX _ _ _ _
-2    Anushka Samanta    X _ _ _ _ 
-3    Aniket Sharma    XI _ _ _ _
-4    Anik Das    X _ _ _ _ 
-5    Riya Jain    IX _ _ _ _
-6    Tapan Samanta    X _ _ _ _ 
+Student_id  ¦  Student_name  ¦  LeftPaddedString
+1  ¦  Ananya Majumdar  ¦  IX _ _ _ _
+2  ¦  Anushka Samanta  ¦  X _ _ _ _ 
+3  ¦  Aniket Sharma  ¦  XI _ _ _ _
+4  ¦  Anik Das  ¦  X _ _ _ _ 
+5  ¦  Riya Jain  ¦  IX _ _ _ _
+6  ¦  Tapan Samanta  ¦  X _ _ _ _ 
+
+#SQL[@255,N73]Result[32, 11, 11, 11, 11, 11, 11]
 SELECT Student_id, rpad(Student_name,4,'new') AS LeftPaddedString FROM t1;
-student_id    leftpaddedstring
-1    Anan
-2    Anus
-3    Anik
-4    Anik
-5    Riya
-6    Tapa
+Student_id  ¦  LeftPaddedString
+1  ¦  Anan
+2  ¦  Anus
+3  ¦  Anik
+4  ¦  Anik
+5  ¦  Riya
+6  ¦  Tapa
+
+#SQL[@256,N74]Result[32, 11, 11, 11, 11, 11, 11]
 SELECT Student_id, rpad(Student_name,-4,'new') AS LeftPaddedString FROM t1;
-student_id    leftpaddedstring
-1    null
-2    null
-3    null
-4    null
-5    null
-6    null
+Student_id  ¦  LeftPaddedString
+1  ¦  null
+2  ¦  null
+3  ¦  null
+4  ¦  null
+5  ¦  null
+6  ¦  null
+
+#SQL[@257,N73]Result[32, 7, 7, 7, 7, 7, 7]
 SELECT Student_id, rpad(Student_name,0,'new') AS LeftPaddedString FROM t1;
-student_id    leftpaddedstring
-1    
-2    
-3    
-4    
-5    
-6    
+Student_id  ¦  LeftPaddedString
+1  ¦  
+2  ¦  
+3  ¦  
+4  ¦  
+5  ¦  
+6  ¦  
+
+#SQL[@261,N23]Result[]
 drop table if exists t1;
+
+#SQL[@262,N83]Result[]
 CREATE TABLE t1
 (
 Employee_name VARCHAR(100) NOT NULL,
 Joining_Date DATE NOT NULL
 );
+
+#SQL[@267,N378]Result[]
 INSERT INTO t1
 (Employee_name, Joining_Date )
 VALUES
@@ -366,85 +565,123 @@ VALUES
 ('   Deepak Sharma', '2014-12-01'  ),
 ('   Ankana Jana', '2018-08-17'),
 ('  Shreya Ghosh', '2020-09-10') ;
+
+#SQL[@284,N105]Result[24, 32, 26, 35, 39, 31, 36, 25, 36, 41]
 SELECT LTRIM( Employee_name) LTrimName,RTRIM(Employee_name) AS RTrimName FROM t1 order by  RTrimName desc;
-ltrimname	rtrimname
-Shreya Ghosh	  Shreya Ghosh
-Riya Jain	  Riya Jain
-Deepak Sharma	   Deepak Sharma
-Anushka Samanta	   Anushka Samanta
-Ankana Jana	   Ankana Jana
-Aniket Sharma 	   Aniket Sharma
-Anik Das	   Anik Das
-Tapan Samanta	    Tapan Samanta
-Ananya Majumdar	     Ananya Majumdar
+LTrimName  ¦  RTrimName
+Shreya Ghosh  ¦    Shreya Ghosh
+Riya Jain  ¦    Riya Jain
+Deepak Sharma  ¦     Deepak Sharma
+Anushka Samanta  ¦     Anushka Samanta
+Ankana Jana  ¦     Ankana Jana
+Aniket Sharma   ¦     Aniket Sharma
+Anik Das  ¦     Anik Das
+Tapan Samanta  ¦      Tapan Samanta
+Ananya Majumdar  ¦       Ananya Majumdar
+
+#SQL[@285,N109]Result[8, 8, 13]
 SELECT LTRIM(RTRIM(Employee_name)) as TrimName from t1 where Employee_name like '%Ani%' order by TrimName asc;
-trimname
+TrimName
 Anik Das
 Aniket Sharma
+
+#SQL[@286,N23]Result[]
 drop table if exists t1;
+
+#SQL[@287,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@288,N26]Result[]
 insert into t1 values(0,0);
+
+#SQL[@289,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@290,N28]Result[18, 8, 25, 44, 42, 45, 44]
 select sin(a),sin(b) from t1;
-sin(a)    sin(b)
-0.0    0.0
-0.0    0.9589157234143065
--0.9880316240928618    0.4282099105187685
-0.893996663600558    -0.6832837250355235
--0.8011526357338306    -0.17604594647121138
--0.8011526357338306    -0.8011526357338306
+sin(a)  ¦  sin(b)
+0  ¦  0
+0  ¦  0.9589157234143065
+-0.9880316240928618  ¦  0.42820991051876856
+0.893996663600558  ¦  -0.6832837250355235
+-0.8011526357338306  ¦  -0.17604594647121138
+-0.8011526357338306  ¦  -0.8011526357338306
+
+#SQL[@291,N45]Result[22, 8, 8, 45, 40, 44, 43]
 select sin(a)*sin(b),sin(sin(a)) as c from t1;
-sin(a) * sin(b)    c
-0.0    0.0
-0.0    0.0
--0.4230849333425179    -0.8349443318035336
--0.610853370474319    0.77958108276669
-0.14103967402566783    -0.7181586632423703
-0.6418455457432638    -0.7181586632423703
+sin(a) * sin(b)  ¦  c
+0  ¦  0
+0  ¦  0
+-0.42308493334251795  ¦  -0.8349443318035336
+-0.610853370474319  ¦  0.77958108276669
+0.14103967402566783  ¦  -0.7181586632423703
+0.6418455457432638  ¦  -0.7181586632423703
+
+#SQL[@292,N62]Result[1, 3, 2, 1]
 select distinct a from t1 where sin(a)<=sin(b) order by a desc;
 a
 180
 30
 0
+
+#SQL[@296,N23]Result[]
 drop table if exists t1;
+
+#SQL[@297,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@298,N48]Result[]
 insert into t1 values(0,0),(-15,-20),(-22,-12.5);
+
+#SQL[@299,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@303,N63]Result[16, 8, 44, 43, 25, 41, 41, 41, 42]
 select sinh(a*pi()/180) as sinha,sinh(b*pi()/180) sinhb from t1;
-sinha    sinhb
-0.0    0.0
--0.2648002276022707    -0.3561979324000117
--0.3934773854637668    -0.219900936381245
-0.0    267.74489404101644
-0.5478534738880397    451.9789818592585
-2.3012989023072947    1287.985054197183
-11.548739357257748    55.65439759941754
-11.548739357257748    11.548739357257748
+sinha  ¦  sinhb
+0  ¦  0
+-0.2648002276022707  ¦  -0.3561979324000117
+-0.3934773854637668  ¦  -0.219900936381245
+0  ¦  267.74489404101644
+0.5478534738880397  ¦  451.9789818592585
+2.3012989023072947  ¦  1287.985054197183
+11.548739357257748  ¦  55.65439759941754
+11.548739357257748  ¦  11.548739357257748
+
+#SQL[@304,N86]Result[13, 8, 45, 44, 8, 40, 40, 41, 42]
 select sinh(a*pi()/180)*sinh(b*pi()/180) as sinhab,sinh(sinh(a*pi()/180)) as c from t1;
-sinhab    c
-0.0    0.0
-0.09432129357098132    -0.26790569019819105
-0.0865260455083264    -0.40370959509281085
-0.0    0.0
-247.61825533597406    0.57567347843079
-2964.038591412179    4.943508829600678
-642.7381319608645    51823.146734897804
-133.37338074187412    51823.146734897804
+sinhab  ¦  c
+0  ¦  0
+0.09432129357098132  ¦  -0.26790569019819105
+0.0865260455083264  ¦  -0.40370959509281085
+0  ¦  0
+247.61825533597406  ¦  0.57567347843079
+2964.038591412179  ¦  4.943508829600678
+642.7381319608645  ¦  51823.146734897804
+133.37338074187412  ¦  51823.146734897804
+
+#SQL[@305,N69]Result[1, 5, 1, 3, 3, 3, 3, 3]
 select b from t1 where sinh(a*pi()/180)<=sinh(b*pi()/180)  order by a;
 b
 -12.5
-0.0
-360.0
-390.0
-450.0
-270.0
-180.0
+0
+360
+390
+450
+270
+180
+
+#SQL[@309,N23]Result[]
 drop table if exists t1;
+
+#SQL[@310,N83]Result[]
 CREATE TABLE t1
 (
 Employee_name VARCHAR(100) NOT NULL,
 Joining_Date DATE NOT NULL
 );
+
+#SQL[@315,N378]Result[]
 INSERT INTO t1
 (Employee_name, Joining_Date )
 VALUES
@@ -457,13 +694,23 @@ VALUES
 ('   Deepak Sharma', '2014-12-01'  ),
 ('   Ankana Jana', '2018-08-17'),
 ('  Shreya Ghosh', '2020-09-10') ;
+
+#SQL[@327,N74]Result[]
 INSERT INTO t1
 (Employee_name, Joining_Date ) values('     ','2014-12-01');
+
+#SQL[@330,N45]Result[31, 21]
 select * from t1 where Employee_name=space(5);
-employee_name	joining_date
-     	2014-12-01
+employee_name  ¦  joining_date
+       ¦  2014-12-01
+
+#SQL[@331,N23]Result[]
 drop table if exists t1;
+
+#SQL[@332,N48]Result[]
 CREATE TABLE t1(a INT,b VARCHAR(100),c CHAR(20));
+
+#SQL[@333,N174]Result[]
 INSERT INTO t1
 VALUES
 (1,'Ananya Majumdar', 'IX'),
@@ -472,230 +719,426 @@ VALUES
 (4,'Anik Das', 'X'),
 (5,'Riya Jain', 'IX'),
 (6,'Tapan Samanta', 'X');
+
+#SQL[@343,N35]Result[24, 11, 11, 11, 11, 12, 12]
 select a,startswith(b,'An') from t1;
-a    startswith(b, An)
-1    true
-2    true
-3    true
-4    true
-5    false
-6    false
+a  ¦  startswith(b, An)
+1  ¦  true
+2  ¦  true
+3  ¦  true
+4  ¦  true
+5  ¦  false
+6  ¦  false
+
+#SQL[@344,N67]Result[15, 30]
 select a,b,c from t1 where startswith(b,'An') and startswith(c,'I');
-a    b    c
-1    Ananya Majumdar    IX
+a  ¦  b  ¦  c
+1  ¦  Ananya Majumdar  ¦  IX
+
+#SQL[@348,N23]Result[]
 drop table if exists t1;
+
+#SQL[@349,N98]Result[]
 CREATE TABLE t1(PlayerName VARCHAR(100) NOT NULL,RunScored INT NOT NULL,WicketsTaken INT NOT NULL);
+
+#SQL[@350,N172]Result[]
 INSERT INTO t1 VALUES('KL Rahul', 52, 0 ),('Hardik Pandya', 30, 1 ),('Ravindra Jadeja', 18, 2 ),('Washington Sundar', 10, 1),('D Chahar', 11, 2 ),  ('Mitchell Starc', 0, 3);
+
+#SQL[@353,N62]Result[22, 18]
 SELECT STDDEV_POP(RunScored) as Pop_Standard_Deviation FROM t1;
-pop_standard_deviation
+Pop_Standard_Deviation
 16.876183086099637
+
+#SQL[@354,N63]Result[19, 17]
 SELECT  STDDEV_POP(WicketsTaken) as Pop_Std_Dev_Wickets FROM t1;
-pop_std_dev_wickets
+Pop_Std_Dev_Wickets
 0.957427107756338
+
+#SQL[@358,N23]Result[]
 drop table if exists t1;
+
+#SQL[@359,N30]Result[]
 create table t1(a int,b float);
+
+#SQL[@360,N48]Result[]
 insert into t1 values(0,0),(-15,-20),(-22,-12.5);
+
+#SQL[@361,N66]Result[]
 insert into t1 values(0,360),(30,390),(90,450),(180,270),(180,180);
+
+#SQL[@364,N59]Result[14, 8, 45, 44, 41, 42, 41, 57, 76]
 select tan(a*pi()/180) as tana,tan(b*pi()/180) tanb from t1;
-tana    tanb
-0.0    0.0
--0.2679491924311227    -0.36397023426620234
--0.4040262258351568    -0.22169466264293988
-0.0    -2.449293598294703E-16
-0.5773502691896257    0.5773502691896246
-1.6331239353195392E16    3.2662478706390785E15
--1.2246467991473515E-16    5.443746451065131E15
--1.2246467991473515E-16    -1.2246467991473515E-16
+tana  ¦  tanb
+0  ¦  0
+-0.2679491924311227  ¦  -0.36397023426620234
+-0.4040262258351568  ¦  -0.2216946626429399
+0  ¦  -0.0000000000000002449293598294703
+0.5773502691896257  ¦  0.5773502691896246
+16331239353195392  ¦  3266247870639078.5
+-0.00000000000000012246467991473515  ¦  5443746451065131
+-0.00000000000000012246467991473515  ¦  -0.00000000000000012246467991473515
+
+#SQL[@366,N92]Result[12, 8, 43, 44, 42, 43, 55, 41, 90]
 select tan(a*pi()/180)*tan(b*pi()/180) as tanab,tan(a*pi()/180)+tan(b*pi()/180) as c from t1;
-tanab    c
-0.0    0.0
-0.09752553034059545    -0.631919426697325
-0.08957045783542533    -0.6257208884780967
--0.0    -2.449293598294703E-16
-0.33333333333333265    1.1547005383792504
-5.334187576227157E31    1.9597487223834472E16
--0.6666666666666667    5.443746451065131E15
-1.4997597826618535E-32    -2.449293598294703E-16
+tanab  ¦  c
+0  ¦  0
+0.09752553034059545  ¦  -0.631919426697325
+0.08957045783542533  ¦  -0.6257208884780967
+-0  ¦  -0.0000000000000002449293598294703
+0.33333333333333265  ¦  1.1547005383792504
+53341875762271570000000000000000  ¦  19597487223834470
+-0.6666666666666667  ¦  5443746451065131
+0.000000000000000000000000000000014997597826618535  ¦  -0.0000000000000002449293598294703
+
+#SQL[@368,N67]Result[1, 5, 1, 3, 3]
 select b from t1 where tan(a*pi()/180)<=tan(b*pi()/180)  order by a;
 b
 -12.5
-0.0
-270.0
-180.0
+0
+270
+180
+
+#SQL[@372,N23]Result[]
 drop table if exists t1;
+
+#SQL[@373,N34]Result[]
 create table t1(a date,b datetime);
+
+#SQL[@374,N57]Result[]
 insert into t1 values("2022-06-01","2022-07-01 00:00:00");
+
+#SQL[@375,N57]Result[]
 insert into t1 values("2022-12-31","2011-01-31 12:00:00");
+
+#SQL[@376,N57]Result[]
 insert into t1 values("2022-06-12","2022-07-01 00:00:00");
+
+#SQL[@380,N40]Result[40, 49, 49, 49]
 select a,weekday(a),b,weekday(b) from t1;
-a    weekday(a)    b    weekday(b)
-2022-06-01    2    2022-07-01 00:00:00    4
-2022-12-31    5    2011-01-31 12:00:00    0
-2022-06-12    6    2022-07-01 00:00:00    4
+a  ¦  weekday(a)  ¦  b  ¦  weekday(b)
+2022-06-01  ¦  2  ¦  2022-07-01 00:00:00  ¦  4
+2022-12-31  ¦  5  ¦  2011-01-31 12:00:00  ¦  0
+2022-06-12  ¦  6  ¦  2022-07-01 00:00:00  ¦  4
+
+#SQL[@381,N44]Result[8, 35, 35]
 select * from t1 where weekday(a)>weekday(b);
-a    b
-2022-12-31    2011-01-31 12:00:00
-2022-06-12    2022-07-01 00:00:00
+a  ¦  b
+2022-12-31  ¦  2011-01-31 12:00:00
+2022-06-12  ¦  2022-07-01 00:00:00
+
+#SQL[@382,N49]Result[8, 35]
 select * from t1 where weekday(a) between 0 and 4;
-a    b
-2022-06-01    2022-07-01 00:00:00
+a  ¦  b
+2022-06-01  ¦  2022-07-01 00:00:00
+
+#SQL[@386,N23]Result[]
 drop table if exists t1;
+
+#SQL[@387,N34]Result[]
 create table t1(a date,b datetime);
+
+#SQL[@388,N57]Result[]
 insert into t1 values("2022-06-01","2022-07-01 00:00:00");
+
+#SQL[@389,N57]Result[]
 insert into t1 values("2022-12-31","2011-01-31 12:00:00");
+
+#SQL[@390,N57]Result[]
 insert into t1 values("2022-06-12","2022-07-01 00:00:00");
+
+#SQL[@393,N40]Result[40, 49, 49, 49]
 select a,weekday(a),b,weekday(b) from t1;
-a    weekday(a)    b    weekday(b)
-2022-06-01    2    2022-07-01 00:00:00    4
-2022-12-31    5    2011-01-31 12:00:00    0
-2022-06-12    6    2022-07-01 00:00:00    4
+a  ¦  weekday(a)  ¦  b  ¦  weekday(b)
+2022-06-01  ¦  2  ¦  2022-07-01 00:00:00  ¦  4
+2022-12-31  ¦  5  ¦  2011-01-31 12:00:00  ¦  0
+2022-06-12  ¦  6  ¦  2022-07-01 00:00:00  ¦  4
+
+#SQL[@394,N44]Result[8, 35, 35]
 select * from t1 where weekday(a)>weekday(b);
-a    b
-2022-12-31    2011-01-31 12:00:00
-2022-06-12    2022-07-01 00:00:00
+a  ¦  b
+2022-12-31  ¦  2011-01-31 12:00:00
+2022-06-12  ¦  2022-07-01 00:00:00
+
+#SQL[@395,N49]Result[8, 35]
 select * from t1 where weekday(a) between 0 and 4;
-a    b
-2022-06-01    2022-07-01 00:00:00
+a  ¦  b
+2022-06-01  ¦  2022-07-01 00:00:00
+
+#SQL[@399,N23]Result[]
 drop table if exists t1;
+
+#SQL[@400,N35]Result[]
 create table t1(a date, b datetime);
+
+#SQL[@401,N57]Result[]
 insert into t1 values('2022-01-01','2022-01-01 01:01:01');
+
+#SQL[@402,N57]Result[]
 insert into t1 values('2022-01-01','2022-01-01 01:01:01');
+
+#SQL[@403,N57]Result[]
 insert into t1 values('2022-01-02','2022-01-02 23:01:01');
+
+#SQL[@404,N57]Result[]
 insert into t1 values('2021-12-31','2021-12-30 23:59:59');
+
+#SQL[@405,N57]Result[]
 insert into t1 values('2022-06-30','2021-12-30 23:59:59');
+
+#SQL[@409,N30]Result[20, 26, 26, 26, 26, 26]
 select date(a),date(b) from t1;
-date(a)    date(b)
-2022-01-01    2022-01-01
-2022-01-01    2022-01-01
-2022-01-02    2022-01-02
-2021-12-31    2021-12-30
-2022-06-30    2021-12-30
+date(a)  ¦  date(b)
+2022-01-01  ¦  2022-01-01
+2022-01-01  ¦  2022-01-01
+2022-01-02  ¦  2022-01-02
+2021-12-31  ¦  2021-12-30
+2022-06-30  ¦  2021-12-30
+
+#SQL[@410,N43]Result[16, 26, 26, 26, 26, 26]
 select date(a),date(date(a)) as dda from t1;
-date(a)    dda
-2022-01-01    2022-01-01
-2022-01-01    2022-01-01
-2022-01-02    2022-01-02
-2021-12-31    2021-12-31
-2022-06-30    2022-06-30
+date(a)  ¦  dda
+2022-01-01  ¦  2022-01-01
+2022-01-01  ¦  2022-01-01
+2022-01-02  ¦  2022-01-02
+2021-12-31  ¦  2021-12-31
+2022-06-30  ¦  2022-06-30
+
+#SQL[@412,N13]Result[]
 drop table t1;
+
+#SQL[@416,N23]Result[]
 drop table if exists t1;
+
+#SQL[@417,N40]Result[]
 create table t1(a datetime, b timestamp);
+
+#SQL[@418,N58]Result[]
 insert into t1 values("2022-07-01", "2011-01-31 12:00:00");
+
+#SQL[@419,N58]Result[]
 insert into t1 values("2011-01-31 12:32:11", "1979-10-22");
+
+#SQL[@420,N50]Result[]
 insert into t1 values(NULL, "2022-08-01 23:10:11");
+
+#SQL[@421,N41]Result[]
 insert into t1 values("2011-01-31", NULL);
+
+#SQL[@422,N66]Result[]
 insert into t1 values("2022-06-01 14:11:09","2022-07-01 00:00:00");
+
+#SQL[@423,N57]Result[]
 insert into t1 values("2022-12-31","2011-01-31 12:00:00");
+
+#SQL[@424,N57]Result[]
 insert into t1 values("2022-06-12","2022-07-01 00:00:00");
+
+#SQL[@428,N30]Result[20, 9, 9, 12, 11, 9, 9, 8]
 select hour(a),hour(b) from t1;
-hour(a)    hour(b)
-0    12
-12    0
-null    23
-0    null
-14    0
-0    12
-0    0
+hour(a)  ¦  hour(b)
+0  ¦  12
+12  ¦  0
+null  ¦  23
+0  ¦  null
+14  ¦  0
+0  ¦  12
+0  ¦  0
+
+#SQL[@429,N38]Result[8, 44, 44]
 select * from t1 where hour(a)>hour(b);
-a    b
-2011-01-31 12:32:11    1979-10-22 00:00:00
-2022-06-01 14:11:09    2022-07-01 00:00:00
+a  ¦  b
+2011-01-31 12:32:11  ¦  1979-10-22 00:00:00
+2022-06-01 14:11:09  ¦  2022-07-01 00:00:00
+
+#SQL[@430,N48]Result[8, 44, 44]
 select * from t1 where hour(a) between 10 and 16;
-a    b
-2011-01-31 12:32:11    1979-10-22 00:00:00
-2022-06-01 14:11:09    2022-07-01 00:00:00
+a  ¦  b
+2011-01-31 12:32:11  ¦  1979-10-22 00:00:00
+2022-06-01 14:11:09  ¦  2022-07-01 00:00:00
+
+#SQL[@434,N34]Result[24, 8, 9, 12, 11, 9, 8, 8]
 select minute(a),minute(b) from t1;
-minute(a)    minute(b)
-0    0
-32    0
-null    10
-0    null
-11    0
-0    0
-0    0
+minute(a)  ¦  minute(b)
+0  ¦  0
+32  ¦  0
+null  ¦  10
+0  ¦  null
+11  ¦  0
+0  ¦  0
+0  ¦  0
+
+#SQL[@435,N43]Result[8, 44, 44, 44]
 select * from t1 where minute(a)<=minute(b);
-a    b
-2022-07-01 00:00:00    2011-01-31 12:00:00
-2022-12-31 00:00:00    2011-01-31 12:00:00
-2022-06-12 00:00:00    2022-07-01 00:00:00
+a  ¦  b
+2022-07-01 00:00:00  ¦  2011-01-31 12:00:00
+2022-12-31 00:00:00  ¦  2011-01-31 12:00:00
+2022-06-12 00:00:00  ¦  2022-07-01 00:00:00
+
+#SQL[@436,N50]Result[8, 44, 44]
 select * from t1 where minute(a) between 10 and 36;
-a    b
-2011-01-31 12:32:11    1979-10-22 00:00:00
-2022-06-01 14:11:09    2022-07-01 00:00:00
+a  ¦  b
+2011-01-31 12:32:11  ¦  1979-10-22 00:00:00
+2022-06-01 14:11:09  ¦  2022-07-01 00:00:00
+
+#SQL[@440,N34]Result[24, 8, 9, 12, 11, 8, 8, 8]
 select second(a),second(b) from t1;
-second(a)    second(b)
-0    0
-11    0
-null    11
-0    null
-9    0
-0    0
-0    0
+second(a)  ¦  second(b)
+0  ¦  0
+11  ¦  0
+null  ¦  11
+0  ¦  null
+9  ¦  0
+0  ¦  0
+0  ¦  0
+
+#SQL[@441,N43]Result[8, 44, 44, 44, 44, 44]
 select * from t1 where second(a)>=second(b);
-a    b
-2022-07-01 00:00:00    2011-01-31 12:00:00
-2011-01-31 12:32:11    1979-10-22 00:00:00
-2022-06-01 14:11:09    2022-07-01 00:00:00
-2022-12-31 00:00:00    2011-01-31 12:00:00
-2022-06-12 00:00:00    2022-07-01 00:00:00
+a  ¦  b
+2022-07-01 00:00:00  ¦  2011-01-31 12:00:00
+2011-01-31 12:32:11  ¦  1979-10-22 00:00:00
+2022-06-01 14:11:09  ¦  2022-07-01 00:00:00
+2022-12-31 00:00:00  ¦  2011-01-31 12:00:00
+2022-06-12 00:00:00  ¦  2022-07-01 00:00:00
+
+#SQL[@442,N50]Result[8, 44]
 select * from t1 where second(a) between 10 and 36;
-a    b
-2011-01-31 12:32:11    1979-10-22 00:00:00
+a  ¦  b
+2011-01-31 12:32:11  ¦  1979-10-22 00:00:00
+
+#SQL[@445,N23]Result[]
 drop table if exists t1;
+
+#SQL[@449,N23]Result[]
 drop table if exists t1;
+
+#SQL[@450,N29]Result[]
 create table t1(a int, b int);
+
+#SQL[@451,N98]Result[58, 8]
 select mo_table_rows(db_name,'t1'),mo_table_size(db_name,'t1') from (select database() as db_name);
-mo_table_rows(db_name, t1)    mo_table_size(db_name, t1)
-0    0
+mo_table_rows(db_name, t1)  ¦  mo_table_size(db_name, t1)
+0  ¦  0
+
+#SQL[@452,N27]Result[]
 insert into t1 values(1, 2);
+
+#SQL[@453,N27]Result[]
 insert into t1 values(3, 4);
+
+#SQL[@454,N37]Result[]
 set mo_table_stats.use_old_impl = yes;
+
+#SQL[@455,N98]Result[58, 9]
 select mo_table_rows(db_name,'t1'),mo_table_size(db_name,'t1') from (select database() as db_name);
-mo_table_rows(db_name, t1)    mo_table_size(db_name, t1)
-2    80
+mo_table_rows(db_name, t1)  ¦  mo_table_size(db_name, t1)
+2  ¦  80
+
+#SQL[@456,N36]Result[]
 set mo_table_stats.use_old_impl = no;
+
+#SQL[@460,N23]Result[]
 drop table if exists t1;
+
+#SQL[@462,N30]Result[]
 drop database if exists test01;
+
+#SQL[@463,N22]Result[]
 create database test01;
+
+#SQL[@464,N10]Result[]
 use test01;
+
+#SQL[@465,N36]Result[]
 create table t(a int, b varchar(10));
+
+#SQL[@466,N119]Result[]
 insert into t values(1, 'h'), (2, 'b'), (3, 'c'), (4, 'q'), (5, 'd'), (6, 'b'), (7, 's'), (8, 'a'), (9, 'z'), (10, 'm');
+
+#SQL[@468,N40]Result[27, 79]
 select mo_ctl('dn', 'flush', 'test01.t');
 mo_ctl(dn, flush, test01.t)
-{\n  "method": "Flush",\n  "result": [\n    {\n      "returnStr": "OK"\n    }\n  ]\n}\n
+{
+  "method": "Flush",
+  "result": [
+    {
+      "returnStr": "OK"
+    }
+  ]
+}
+
+
+#SQL[@469,N81]Result[66, 9]
 select mo_table_col_max('test01', 't', 'a'), mo_table_col_min('test01', 't', 'a');
-mo_table_col_max(test01, t, a)    mo_table_col_min(test01, t, a)
-10    1
+mo_table_col_max(test01, t, a)  ¦  mo_table_col_min(test01, t, a)
+10  ¦  1
+
+#SQL[@470,N12]Result[]
 drop table t;
+
+#SQL[@471,N20]Result[]
 drop database test01;
+
+#SQL[@473,N30]Result[]
 drop database if exists test01;
+
+#SQL[@474,N22]Result[]
 create database test01;
+
+#SQL[@475,N10]Result[]
 use test01;
+
+#SQL[@476,N61]Result[58, 30]
 select trim(' abc '), trim('abc '), trim(' abc'), trim('abc');
-trim( abc )    trim(abc )    trim( abc)    trim(abc)
-abc    abc    abc    abc
+trim( abc )  ¦  trim(abc )  ¦  trim( abc)  ¦  trim(abc)
+abc  ¦  abc  ¦  abc  ¦  abc
+
+#SQL[@477,N105]Result[94, 25]
 select trim('abc' from ' abc '), trim('abc' from 'abc '), trim('abc' from ' abc'), trim('abc' from 'abc');
-trim(abc from  abc )    trim(abc from abc )    trim(abc from  abc)    trim(abc from abc)
- abc               
+trim(abc from  abc )  ¦  trim(abc from abc )  ¦  trim(abc from  abc)  ¦  trim(abc from abc)
+ abc   ¦     ¦     ¦  
+
+#SQL[@478,N87]Result[82, 23]
 select trim(both from ' abc '), trim(leading from ' abcd'), trim(trailing from ' abc ');
-trim(both from  abc )    trim(leading from  abcd)    trim(trailing from  abc )
-abc    abcd     abc
+trim(both from  abc )  ¦  trim(leading from  abcd)  ¦  trim(trailing from  abc )
+abc  ¦  abcd  ¦   abc
+
+#SQL[@479,N103]Result[92, 16]
 select trim(both 'abc' from ' abc'), trim(leading 'abc' from 'abcd'), trim(trailing 'abc' from 'axabc');
-trim(both abc from  abc)    trim(leading abc from abcd)    trim(trailing abc from axabc)
-     d    ax
+trim(both abc from  abc)  ¦  trim(leading abc from abcd)  ¦  trim(trailing abc from axabc)
+   ¦  d  ¦  ax
+
+#SQL[@480,N184]Result[173, 43]
 select trim('嗷嗷' from '嗷嗷abc嗷嗷'), trim(both '嗷嗷' from '嗷嗷abc嗷嗷'), trim(leading '嗷嗷' from '嗷嗷abcd嗷嗷'), trim(trailing '嗷嗷' from '嗷嗷abc嗷嗷');
-trim(嗷嗷 from 嗷嗷abc嗷嗷)    trim(both 嗷嗷 from 嗷嗷abc嗷嗷)    trim(leading 嗷嗷 from 嗷嗷abcd嗷嗷)    trim(trailing 嗷嗷 from 嗷嗷abc嗷嗷)
-abc    abc    abcd嗷嗷    嗷嗷abc
+trim(嗷嗷 from 嗷嗷abc嗷嗷)  ¦  trim(both 嗷嗷 from 嗷嗷abc嗷嗷)  ¦  trim(leading 嗷嗷 from 嗷嗷abcd嗷嗷)  ¦  trim(trailing 嗷嗷 from 嗷嗷abc嗷嗷)
+abc  ¦  abc  ¦  abcd嗷嗷  ¦  嗷嗷abc
+
+#SQL[@481,N75]Result[72, 24]
 select trim(null from ' abc '), trim('abc' from null), trim(null from null);
-trim(null from  abc )    trim(abc from null)    trim(null from null)
-null    null    null
+trim(null from  abc )  ¦  trim(abc from null)  ¦  trim(null from null)
+null  ¦  null  ¦  null
+
+#SQL[@483,N23]Result[]
 drop table if exists t1;
+
+#SQL[@484,N47]Result[]
 create table t1(a varchar(100), b varchar(100));
+
+#SQL[@485,N35]Result[]
 insert into t1 values('abc', 'abc');
+
+#SQL[@486,N47]Result[]
 insert into t1 values('啊abc哦', '啊abc哦');
+
+#SQL[@487,N37]Result[]
 insert into t1 values('啊啊o', 'o');
+
+#SQL[@488,N39]Result[]
 insert into t1 values('啊啊o', '啊');
+
+#SQL[@489,N40]Result[]
 insert into t1 values('啊啊o', 'o啊');
+
+#SQL[@490,N29]Result[14, 0, 0, 1, 3, 4]
 select trim(a from b) from t1;
 trim(a from b)
 
@@ -703,6 +1146,8 @@ trim(a from b)
 o
 啊
 o啊
+
+#SQL[@491,N34]Result[19, 0, 0, 1, 3, 4]
 select trim(both a from b) from t1;
 trim(both a from b)
 
@@ -710,6 +1155,8 @@ trim(both a from b)
 o
 啊
 o啊
+
+#SQL[@492,N37]Result[22, 0, 0, 1, 3, 4]
 select trim(leading a from b) from t1;
 trim(leading a from b)
 
@@ -717,6 +1164,8 @@ trim(leading a from b)
 o
 啊
 o啊
+
+#SQL[@493,N38]Result[23, 0, 0, 1, 3, 4]
 select trim(trailing a from b) from t1;
 trim(trailing a from b)
 
@@ -724,7 +1173,11 @@ trim(trailing a from b)
 o
 啊
 o啊
+
+#SQL[@494,N34]Result[]
 insert into t1 values(null, 'abc');
+
+#SQL[@495,N29]Result[14, 0, 0, 1, 3, 4, 4]
 select trim(a from b) from t1;
 trim(a from b)
 
@@ -733,6 +1186,8 @@ o
 啊
 o啊
 null
+
+#SQL[@496,N31]Result[14, 2, 9, 7, 7, 7, 4]
 select trim('a' from a) from t1;
 trim(a from a)
 bc
@@ -741,6 +1196,8 @@ bc
 啊啊o
 啊啊o
 null
+
+#SQL[@497,N32]Result[17, 4, 4, 4, 4, 4, 4]
 select trim(null from b) from t1;
 trim(null from b)
 null
@@ -749,6 +1206,8 @@ null
 null
 null
 null
+
+#SQL[@498,N34]Result[17, 4, 4, 4, 4, 4, 4]
 select trim('a' from null) from t1;
 trim(a from null)
 null
@@ -757,6 +1216,8 @@ null
 null
 null
 null
+
+#SQL[@499,N35]Result[20, 4, 4, 4, 4, 4, 4]
 select trim(null from null) from t1;
 trim(null from null)
 null
@@ -765,5 +1226,10 @@ null
 null
 null
 null
+
+#SQL[@500,N13]Result[]
 drop table t1;
+
+#SQL[@501,N20]Result[]
 drop database test01;
+

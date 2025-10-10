@@ -1,79 +1,142 @@
+#SQL[@2,N16]Result[9, 4]
 SELECT avg(null);
 avg(null)
 null
+
+#SQL[@5,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@6,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@7,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@8,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@9,N130]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314, "2012-03-12", "2012-03-12 10:03:12", "2012-03-12 13:03:12", "abc", "dcf");
+
+#SQL[@10,N21]Result[6, 1]
 select avg(a) from t1;
 avg(a)
-1.0000
+1
+
+#SQL[@11,N21]Result[6, 1]
 select avg(b) from t1;
 avg(b)
-1.0000
+1
+
+#SQL[@12,N21]Result[6, 1]
 select avg(c) from t1;
 avg(c)
-2.0000
+2
+
+#SQL[@13,N21]Result[6, 1]
 select avg(d) from t1;
 avg(d)
-4.0000
+4
+
+#SQL[@14,N21]Result[6, 1]
 select avg(e) from t1;
 avg(e)
-5.0000
+5
+
+#SQL[@15,N21]Result[6, 3]
 select avg(f) from t1;
 avg(f)
 5.5
+
+#SQL[@16,N21]Result[6, 5]
 select avg(g) from t1;
 avg(g)
 31.13
+
+#SQL[@17,N21]Result[6, 22]
 select avg(h) from t1;
 avg(h)
-14.31400000000000000000000
+14.3140000000000000000
+
+#SQL[@19,N29]Result[6, 1]
 select avg(a) from t1 limit 1;
 avg(a)
-1.0000
+1
+
+#SQL[@20,N29]Result[6, 1]
 select avg(b) from t1 limit 1;
 avg(b)
-1.0000
+1
+
+#SQL[@21,N29]Result[6, 1]
 select avg(c) from t1 limit 1;
 avg(c)
-2.0000
+2
+
+#SQL[@22,N29]Result[6, 1]
 select avg(d) from t1 limit 1;
 avg(d)
-4.0000
+4
+
+#SQL[@23,N29]Result[6, 1]
 select avg(e) from t1 limit 1;
 avg(e)
-5.0000
+5
+
+#SQL[@24,N29]Result[6, 3]
 select avg(f) from t1 limit 1;
 avg(f)
 5.5
+
+#SQL[@25,N29]Result[6, 5]
 select avg(g) from t1 limit 1;
 avg(g)
 31.13
+
+#SQL[@26,N29]Result[6, 22]
 select avg(h) from t1 limit 1;
 avg(h)
-14.31400000000000000000000
+14.3140000000000000000
+
+#SQL[@28,N13]Result[]
 drop table t1;
+
+#SQL[@41,N25]Result[]
 create table t1(a bigint);
+
+#SQL[@42,N21]Result[6, 4]
 select avg(a) from t1;
 avg(a)
 null
+
+#SQL[@43,N48]Result[]
 insert into t1 values(null),(null),(null),(null);
+
+#SQL[@44,N21]Result[6, 4]
 select avg(a) from t1;
 avg(a)
 null
+
+#SQL[@45,N89]Result[]
 insert into t1 values(12417249128419),(124124125124151),(5124125151415),(124125152651515);
+
+#SQL[@46,N37]Result[6, 14]
 select avg(a) from t1 order by avg(a);
 avg(a)
-66447663013875.0000
+66447663013875
+
+#SQL[@47,N13]Result[]
 drop table t1;
+
+#SQL[@51,N154]Result[]
 CREATE TABLE t1 (
 bug_id bigint(9) NOT NULL,
 groupset bigint(20) DEFAULT 0 NOT NULL,
 assigned_to bigint(9) DEFAULT 0 NOT NULL,
 bug_file_loc varchar(255)
 );
+
+#SQL[@57,N187]Result[]
 CREATE TABLE t2 (
 value varchar(255),
 program varchar(64),
@@ -82,64 +145,130 @@ initialqacontact varchar(255) NOT NULL,
 description varchar(255) NOT NULL,
 id int not null
 );
+
+#SQL[@65,N45]Result[]
 INSERT INTO t1 VALUES (1,0,0,'TestComponent');
+
+#SQL[@66,N45]Result[]
 INSERT INTO t1 VALUES (2,0,0,'BBBBBBBBBBBBB');
+
+#SQL[@67,N46]Result[]
 INSERT INTO t1 VALUES (3,0,0,'TestComponent2');
+
+#SQL[@68,N46]Result[]
 INSERT INTO t1 VALUES (4,0,0,'TestComponent2');
+
+#SQL[@69,N70]Result[]
 INSERT INTO t2 VALUES ('TestComponent','TestProduct','id0001','','',2);
+
+#SQL[@70,N77]Result[]
 INSERT INTO t2 VALUES ('BBBBBBBBBBBBB - conversion','AAAAA','id0001','','',2);
+
+#SQL[@71,N74]Result[]
 INSERT INTO t2 VALUES ('BBBBBBBBBBBBB - generic','AAAAA','id0001','','',3);
+
+#SQL[@72,N71]Result[]
 INSERT INTO t2 VALUES ('TestComponent2','TestProduct','id0001','','',3);
+
+#SQL[@73,N143]Result[61, 26, 29]
 select any_value(value),any_value(description),avg(bug_id) from t2 left join t1 on t2.value=t1.bug_file_loc group by value having avg(bug_id)>0;
-any_value(value)	any_value(description)	avg(bug_id)
-TestComponent		1.0000
-TestComponent2		3.5000
+any_value(value)  ¦  any_value(description)  ¦  avg(bug_id)
+TestComponent  ¦    ¦  1
+TestComponent2  ¦    ¦  3.5
+
+#SQL[@74,N81]Result[28, 4]
 SELECT avg(t1.bug_id) >= avg(t2.id) from t1 join t2 on t1.bug_file_loc = t2.value;
 avg(t1.bug_id) >= avg(t2.id)
 true
+
+#SQL[@75,N13]Result[]
 drop table t1;
+
+#SQL[@76,N13]Result[]
 drop table t2;
+
+#SQL[@79,N23]Result[]
 create table t1 (a int);
+
+#SQL[@80,N24]Result[]
 insert t1 values (1),(2);
+
+#SQL[@81,N42]Result[31, 3]
 select if(1>2,any_value(a),avg(a)) from t1;
-if(1>2,any_value(a),avg(a))
-1.5000
+if(1 > 2, any_value(a), avg(a))
+1.5
+
+#SQL[@82,N13]Result[]
 drop table t1;
+
+#SQL[@85,N51]Result[]
 CREATE TABLE t1(c0 INTEGER, c1 INTEGER, c2 INTEGER);
+
+#SQL[@86,N41]Result[]
 INSERT INTO t1 VALUES(1, 1, 1), (1, 1, 1);
+
+#SQL[@87,N74]Result[58, 1]
 SELECT CASE AVG (c0) WHEN any_value(c1) * any_value(c2) THEN 1 END FROM t1;
-CASE AVG (c0) WHEN any_value(c1) * any_value(c2) THEN 1 END
+case AVG(c0) when any_value(c1) * any_value(c2) then 1 end
 1
+
+#SQL[@88,N93]Result[78, 1]
 SELECT CASE any_value(c1) * any_value(c2) WHEN SUM(c0) THEN 1 WHEN AVG(c0) THEN 2 END FROM t1;
-CASE any_value(c1) * any_value(c2) WHEN SUM(c0) THEN 1 WHEN AVG(c0) THEN 2 END
+case any_value(c1) * any_value(c2) when SUM(c0) then 1 when AVG(c0) then 2 end
 2
+
+#SQL[@89,N81]Result[70, 11]
 SELECT CASE any_value(c1) WHEN any_value(c1) + 1 THEN 1 END, ABS(AVG(c0)) FROM t1;
-CASE any_value(c1) WHEN any_value(c1) + 1 THEN 1 END	ABS(AVG(c0))
-null	1.0000
+case any_value(c1) when any_value(c1) + 1 then 1 end  ¦  ABS(AVG(c0))
+null  ¦  1
+
+#SQL[@90,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@94,N79]Result[]
 CREATE TABLE t1(a varchar(255), b INT, c INT UNSIGNED, d DECIMAL(12,2), e REAL);
+
+#SQL[@95,N42]Result[]
 INSERT INTO t1 VALUES('iynfj', 1, 1, 1, 1);
+
+#SQL[@96,N42]Result[]
 INSERT INTO t1 VALUES('innfj', 2, 2, 2, 2);
+
+#SQL[@102,N75]Error[60]
 SELECT DISTINCT SUM(  a ) FROM t1 GROUP BY a HAVING a IN ( AVG( 1 ), 1 + a);
 invalid argument aggregate function sum, bad value [VARCHAR]
+
+#SQL[@103,N75]Result[6, 1]
 SELECT DISTINCT SUM(  b ) FROM t1 GROUP BY b HAVING b IN ( AVG( 1 ), 1 + b);
-SUM(  b )
+SUM(b)
 1
+
+#SQL[@104,N75]Result[6, 1]
 SELECT DISTINCT SUM(  c ) FROM t1 GROUP BY c HAVING c IN ( AVG( 1 ), 1 + c);
-SUM(  c )
+SUM(c)
 1
+
+#SQL[@105,N75]Result[6, 4]
 SELECT DISTINCT SUM(  d ) FROM t1 GROUP BY d HAVING d IN ( AVG( 1 ), 1 + d);
-SUM(  d )
+SUM(d)
 1.00
+
+#SQL[@106,N75]Result[6, 1]
 SELECT DISTINCT SUM(  e ) FROM t1 GROUP BY e HAVING e IN ( AVG( 1 ), 1 + e);
-SUM(  e )
-1.0
+SUM(e)
+1
+
+#SQL[@107,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@110,N39]Result[]
 CREATE TABLE t1 (
 a INT,
 b INT,
 c INT
 );
+
+#SQL[@115,N146]Result[]
 INSERT INTO t1 VALUES
 ( 1, 1,  1 ),
 ( 1, 2,  2 ),
@@ -150,189 +279,406 @@ INSERT INTO t1 VALUES
 ( 2, 1,  6 ),
 ( 2, 2,  7 ),
 ( 2, 3,  8 );
+
+#SQL[@125,N192]Error[68]
 SELECT a, AVG(t1.b),
 (SELECT t11.c FROM t1 t11 WHERE t11.a = t1.a AND t11.b = AVG(t1.b)) AS t11c,
 (SELECT t12.c FROM t1 t12 WHERE t12.a = t1.a AND t12.b = AVG(t1.b)) AS t12c
 FROM t1 GROUP BY a;
 SQL syntax error: aggregate function avg not allowed in WHERE clause
+
+#SQL[@129,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@132,N47]Result[]
 CREATE TABLE t1 (id int(11),value1 float(10,2));
+
+#SQL[@133,N82]Result[]
 INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00);
+
+#SQL[@134,N42]Result[]
 CREATE TABLE t2 (id int(11),name char(20));
+
+#SQL[@135,N49]Result[]
 INSERT INTO t2 VALUES (1,'Set One'),(2,'Set Two');
+
+#SQL[@136,N73]Result[58, 55, 57]
 select id, avg(value1), std(value1), variance(value1) from t1 group by id;
-id	avg(value1)	std(value1)	variance(value1)
-1	1.0	0.816496580927726	0.6666666666666666
-2	11.0	0.816496580927726	0.6666666666666666
+id  ¦  avg(value1)  ¦  std(value1)  ¦  variance(value1)
+1  ¦  1  ¦  0.816496580927726  ¦  0.6666666666666667
+2  ¦  11  ¦  0.8164965809277289  ¦  0.6666666666666714
+
+#SQL[@137,N113]Result[71, 61, 63]
 select any_value(name), avg(value1), std(value1), variance(value1) from t1, t2 where t1.id = t2.id group by t1.id;
-any_value(name)	avg(value1)	std(value1)	variance(value1)
-Set One	1.0	0.816496580927726	0.6666666666666666
-Set Two	11.0	0.816496580927726	0.6666666666666666
+any_value(name)  ¦  avg(value1)  ¦  std(value1)  ¦  variance(value1)
+Set One  ¦  1  ¦  0.816496580927726  ¦  0.6666666666666667
+Set Two  ¦  11  ¦  0.8164965809277289  ¦  0.6666666666666714
+
+#SQL[@138,N13]Result[]
 drop table t1;
+
+#SQL[@139,N13]Result[]
 drop table t2;
+
+#SQL[@141,N33]Result[]
 create table t1 (id int not null);
+
+#SQL[@142,N49]Result[]
 create table t2 (id int not null,rating int null);
+
+#SQL[@143,N32]Result[]
 insert into t1 values(1),(2),(3);
+
+#SQL[@144,N64]Result[]
 insert into t2 values(1, 3),(2, NULL),(2, NULL),(3, 2),(3, NULL);
+
+#SQL[@145,N82]Result[19, 8, 11, 8]
 select t1.id, avg(rating) from t1 left join t2 on ( t1.id = t2.id ) group by t1.id;
-id	avg(rating)
-1	3.0000
-2	null
-3	2.0000
+id  ¦  avg(rating)
+1  ¦  3
+2  ¦  null
+3  ¦  2
+
+#SQL[@146,N13]Result[]
 drop table t1;
+
+#SQL[@147,N13]Result[]
 drop table t2;
+
+#SQL[@150,N30]Result[]
 CREATE TABLE t1 (a int, b int);
+
+#SQL[@151,N86]Result[99, 71]
 select count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1;
-count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-0	null	null	null	null	null	null	null
+count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@152,N99]Result[]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
+
+#SQL[@153,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@154,N99]Result[106, 78]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@155,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@156,N30]Result[]
 insert into t1 values (2,null);
+
+#SQL[@157,N99]Result[106, 78, 78]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	0	null	null	null	null	null	null	null
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@158,N27]Result[]
 insert into t1 values (2,1);
+
+#SQL[@159,N99]Result[106, 78, 57]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	1	1	1.0	0.0	1	1	1	1
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@160,N27]Result[]
 insert into t1 values (3,1);
+
+#SQL[@161,N99]Result[106, 78, 57, 57]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	1	1	1.0	0.0	1	1	1	1
-3	1	1	1.0	0.0	1	1	1	1
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+3  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@162,N13]Result[]
 drop table t1;
+
+#SQL[@164,N23]Result[]
 create table t1 (a int);
+
+#SQL[@165,N21]Result[6, 4]
 select avg(2) from t1;
 avg(2)
 null
+
+#SQL[@166,N13]Result[]
 drop table t1;
+
+#SQL[@170,N30]Result[]
 CREATE TABLE t1 (a INT, b INT);
+
+#SQL[@171,N39]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2),(2,3);
+
+#SQL[@172,N58]Error[63]
 SELECT (SELECT COUNT(DISTINCT t1.b)) FROM t1 GROUP BY t1.a;
 correlated columns in aggregate function is not yet implemented
+
+#SQL[@173,N56]Result[27, 1, 1]
 SELECT (SELECT COUNT(DISTINCT 12)) FROM t1 GROUP BY t1.a;
-(SELECT COUNT(DISTINCT 12))
+(select COUNT(distinct 12))
 1
 1
+
+#SQL[@174,N131]Result[171, 78]
 SELECT AVG(2), BIT_AND(2), BIT_OR(2), BIT_XOR(2), COUNT(*), COUNT(12), COUNT(DISTINCT 12), MIN(2),MAX(2),STD(2), VARIANCE(2),SUM(2);
-avg(2)	bit_and(2)	bit_or(2)	bit_xor(2)	count(*)	count(12)	count(distinct 12)	min(2)	max(2)	std(2)	variance(2)	sum(2)
-2.0	2	2	2	1	1	1	2	2	0.0	0.0	2
+AVG(2)  ¦  BIT_AND(2)  ¦  BIT_OR(2)  ¦  BIT_XOR(2)  ¦  COUNT(*)  ¦  COUNT(12)  ¦  COUNT(distinct 12)  ¦  MIN(2)  ¦  MAX(2)  ¦  STD(2)  ¦  VARIANCE(2)  ¦  SUM(2)
+2  ¦  2  ¦  2  ¦  2  ¦  1  ¦  1  ¦  1  ¦  2  ¦  2  ¦  0  ¦  0  ¦  2
+
+#SQL[@175,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@179,N37]Result[]
 CREATE TABLE t1 (col1 decimal(16,12));
+
+#SQL[@180,N123]Result[]
 INSERT INTO t1 VALUES (-5.00000000001),(-5.00000000002),(-5.00000000003),(-5.00000000000),(-5.00000000001),(-5.00000000002);
+
+#SQL[@181,N31]Result[]
 insert into t1 select * from t1;
+
+#SQL[@182,N65]Result[51, 65, 65, 65, 65]
 select col1,count(col1),sum(col1),avg(col1) from t1 group by col1;
-col1	count(col1)	sum(col1)	avg(col1)
--5.000000000010	4	-20.000000000040	-5.0000000000100000
--5.000000000020	4	-20.000000000080	-5.0000000000200000
--5.000000000030	2	-10.000000000060	-5.0000000000300000
--5.000000000000	2	-10.000000000000	-5.0000000000000000
+col1  ¦  count(col1)  ¦  sum(col1)  ¦  avg(col1)
+-5.000000000010  ¦  4  ¦  -20.000000000040  ¦  -5.000000000010
+-5.000000000020  ¦  4  ¦  -20.000000000080  ¦  -5.000000000020
+-5.000000000030  ¦  2  ¦  -10.000000000060  ¦  -5.000000000030
+-5.000000000000  ¦  2  ¦  -10.000000000000  ¦  -5.000000000000
+
+#SQL[@183,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@187,N30]Result[]
 CREATE TABLE t1 (a INT, b INT);
+
+#SQL[@188,N69]Result[]
 INSERT INTO t1 VALUES (1,1),(1,2),(1,3),(1,4),(1,5),(1,6),(1,7),(1,8);
+
+#SQL[@189,N42]Result[]
 INSERT INTO t1 SELECT a, b+8       FROM t1;
+
+#SQL[@190,N42]Result[]
 INSERT INTO t1 SELECT a, b+16      FROM t1;
+
+#SQL[@191,N42]Result[]
 INSERT INTO t1 SELECT a, b+32      FROM t1;
+
+#SQL[@192,N42]Result[]
 INSERT INTO t1 SELECT a, b+64      FROM t1;
+
+#SQL[@193,N42]Result[]
 INSERT INTO t1 SELECT a, b+128     FROM t1;
+
+#SQL[@194,N42]Result[]
 INSERT INTO t1 SELECT a, b+256     FROM t1;
+
+#SQL[@195,N42]Result[]
 INSERT INTO t1 SELECT a, b+512     FROM t1;
+
+#SQL[@196,N42]Result[]
 INSERT INTO t1 SELECT a, b+1024    FROM t1;
+
+#SQL[@197,N42]Result[]
 INSERT INTO t1 SELECT a, b+2048    FROM t1;
+
+#SQL[@198,N42]Result[]
 INSERT INTO t1 SELECT a, b+4096    FROM t1;
+
+#SQL[@199,N42]Result[]
 INSERT INTO t1 SELECT a, b+8192    FROM t1;
+
+#SQL[@200,N42]Result[]
 INSERT INTO t1 SELECT a, b+16384   FROM t1;
+
+#SQL[@202,N42]Result[]
 INSERT INTO t1 SELECT a, b+32768   FROM t1;
+
+#SQL[@203,N68]Result[10, 12]
 SELECT a,COUNT(DISTINCT b) AS cnt FROM t1 GROUP BY a HAVING cnt > 50;
-a    cnt
-1    65536
+a  ¦  cnt
+1  ¦  65536
+
+#SQL[@206,N78]Result[15, 17]
 SELECT DISTINCT a, SUM( b) AS sumation FROM t1 GROUP BY a HAVING sumation > 50;
-a    sumation
-1    2147516416
+a  ¦  sumation
+1  ¦  2147516416
+
+#SQL[@207,N76]Result[14, 14]
 SELECT DISTINCT a, AVG( b) AS average FROM t1 GROUP BY a HAVING average > 50;
-a    average
-1    32768.5
+a  ¦  average
+1  ¦  32768.5
+
+#SQL[@208,N75]Result[24, 12]
 SELECT a,COUNT(DISTINCT b) FROM t1 GROUP BY a HAVING COUNT(DISTINCT b) > 50;
-a	COUNT(DISTINCT b)
-1	65536
+a  ¦  COUNT(distinct b)
+1  ¦  65536
+
+#SQL[@209,N65]Result[13, 17]
 SELECT DISTINCT a, SUM( b) FROM t1 GROUP BY a HAVING SUM( b) > 50;
-a	SUM( b)
-1	2147516416
+a  ¦  SUM(b)
+1  ¦  2147516416
+
+#SQL[@210,N65]Result[13, 14]
 SELECT DISTINCT a, AVG( b) FROM t1 GROUP BY a HAVING AVG( b) > 50;
-a	AVG( b)
-1	32768.5000
+a  ¦  AVG(b)
+1  ¦  32768.5
+
+#SQL[@212,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@215,N25]Result[]
 CREATE TABLE t1(a DOUBLE);
+
+#SQL[@216,N32]Result[]
 INSERT INTO t1 VALUES (10), (20);
+
+#SQL[@217,N46]Result[39, 10]
 SELECT AVG(a), CAST(AVG(a) AS DECIMAL) FROM t1;
-AVG(a)	CAST(AVG(a) AS DECIMAL)
-15.0	15
+AVG(a)  ¦  cast(AVG(a) as decimal(38))
+15  ¦  15
+
+#SQL[@218,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@221,N65]Result[]
 create table t1 (grp int, a bigint unsigned, c char(10) not null);
+
+#SQL[@222,N31]Result[]
 insert into t1 values (1,1,"a");
+
+#SQL[@223,N31]Result[]
 insert into t1 values (2,2,"b");
+
+#SQL[@224,N31]Result[]
 insert into t1 values (2,3,"c");
+
+#SQL[@225,N31]Result[]
 insert into t1 values (3,4,"E");
+
+#SQL[@226,N31]Result[]
 insert into t1 values (3,5,"C");
+
+#SQL[@227,N31]Result[]
 insert into t1 values (3,6,"D");
-select sum(all a),count(all a),avg(all a),std(all a),variance(all a),bit_or(all a),bit_and(all a),min(all a),max(all a),min(all c),max(all c) from t1;
-sum(all a)	count(all a)	avg(all a)	std(all a)	variance(all a)	bit_or(all a)	bit_and(all a)	min(all a)	max(all a)	min(all c)	max(all c)
-21	6	3.5000	1.707825127659933	2.9166666666666665	7	0	1	6	a	E
+
+#SQL[@231,N123]Result[149, 78, 85, 113]
 select grp, sum(a),count(a),avg(a),std(a),variance(a),bit_or(a),bit_and(a),min(a),max(a),min(c),max(c) from t1 group by grp;
-grp	sum(a)	count(a)	avg(a)	std(a)	variance(a)	bit_or(a)	bit_and(a)	min(a)	max(a)	min(c)	max(c)
-1	1	1	1.0000	0.0	0.0	1	1	1	1	a	a
-2	5	2	2.5000	0.5	0.25	3	2	2	3	b	c
-3	15	3	5.0000	0.816496580927726	0.6666666666666666	7	4	4	6	C	E
+grp  ¦  sum(a)  ¦  count(a)  ¦  avg(a)  ¦  std(a)  ¦  variance(a)  ¦  bit_or(a)  ¦  bit_and(a)  ¦  min(a)  ¦  max(a)  ¦  min(c)  ¦  max(c)
+1  ¦  1  ¦  1  ¦  1  ¦  0  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1  ¦  a  ¦  a
+2  ¦  5  ¦  2  ¦  2.5  ¦  0.5  ¦  0.25  ¦  3  ¦  2  ¦  2  ¦  3  ¦  b  ¦  c
+3  ¦  15  ¦  3  ¦  5  ¦  0.8164965809277268  ¦  0.6666666666666679  ¦  7  ¦  4  ¦  4  ¦  6  ¦  C  ¦  E
+
+#SQL[@232,N130]Error[49]
 select grp, sum(a)+count(a)+avg(a)+std(a)+variance(a)+bit_or(a)+bit_and(a)+min(a)+max(a)+min(c)+max(c) as sum from t1 group by grp;
-strconv.ParseFloat: parsing "a": invalid syntax
+strconv.ParseFloat: parsing \"a\": invalid syntax
+
+#SQL[@233,N56]Result[]
 create table t2 (grp int, a bigint unsigned, c char(10));
+
+#SQL[@234,N69]Result[]
 insert into t2 select grp,max(a)+max(grp),max(c) from t1 group by grp;
+
+#SQL[@235,N16]Result[17, 15, 15, 15]
 select * from t2;
-grp	a	c
-1	2	a
-2	5	c
-3	9	E
+grp  ¦  a  ¦  c
+1  ¦  2  ¦  a
+2  ¦  5  ¦  c
+3  ¦  9  ¦  E
+
+#SQL[@236,N13]Result[]
 drop table t1;
+
+#SQL[@237,N13]Result[]
 drop table t2;
+
+#SQL[@241,N25]Result[]
 CREATE TABLE t1(a DOUBLE);
+
+#SQL[@242,N32]Result[]
 INSERT INTO t1 VALUES (10), (20);
+
+#SQL[@243,N37]Error[63]
 SELECT AVG(min(a)) FROM t1 group by a;
 SQL syntax error: aggregate function min calls cannot be nested
+
+#SQL[@244,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@248,N47]Result[]
 CREATE TABLE t1 (id int(11),value1 float(10,2));
+
+#SQL[@249,N82]Result[]
 INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00);
+
+#SQL[@250,N42]Result[]
 CREATE TABLE t2 (id int(11),name char(20));
+
+#SQL[@251,N49]Result[]
 INSERT INTO t2 VALUES (1,'Set One'),(2,'Set Two');
+
+#SQL[@252,N102]Error[107]
 select name, avg(value1), std(value1), variance(value1) from t1, t2 where t1.id = t2.id group by t1.id;
-SQL syntax error: column "t2.name" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t2.name\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@253,N13]Result[]
 drop table t1;
+
+#SQL[@254,N13]Result[]
 drop table t2;
+
+#SQL[@256,N65]Result[]
 create table t1 (grp int, a bigint unsigned, c char(10) not null);
+
+#SQL[@257,N31]Result[]
 insert into t1 values (1,1,"a");
+
+#SQL[@258,N31]Result[]
 insert into t1 values (2,2,"b");
+
+#SQL[@259,N31]Result[]
 insert into t1 values (2,3,"c");
+
+#SQL[@260,N31]Result[]
 insert into t1 values (3,4,"E");
+
+#SQL[@261,N31]Result[]
 insert into t1 values (3,5,"C");
+
+#SQL[@262,N31]Result[]
 insert into t1 values (3,6,"D");
+
+#SQL[@263,N48]Result[38, 10]
 select avg(distinct a),avg(distinct grp) from t1;
-avg(distinct a)	    avg(distinct grp)
-3.5	2.0
+avg(distinct a)  ¦  avg(distinct grp)
+3.5  ¦  2
+
+#SQL[@264,N36]Result[]
 insert into t1 values (null,null,'');
+
+#SQL[@265,N48]Result[38, 10]
 select avg(distinct a),avg(distinct grp) from t1;
-avg(distinct a)	    avg(distinct grp)
-3.5	2.0
+avg(distinct a)  ¦  avg(distinct grp)
+3.5  ¦  2
+
+#SQL[@266,N13]Result[]
 drop table t1;
+
+#SQL[@268,N24]Result[]
 create table d1 (i1 int);
+
+#SQL[@269,N54]Result[]
 insert into d1 select * from generate_series(0, 999) g;
+
+#SQL[@270,N31]Result[16, 5]
 select avg(distinct i1) from d1;
 avg(distinct i1)
 499.5
+
+#SQL[@271,N13]Result[]
 drop table d1;
+

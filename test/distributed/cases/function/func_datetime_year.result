@@ -1,132 +1,267 @@
+#SQL[@3,N61]Result[4, 4]
 SELECT YEAR(date_add("2021-09-30", interval 200 day)) AS year;
 year
 2022
+
+#SQL[@7,N34]Error[49]
 SELECT YEAR("10000-12-21") as year;
 invalid argument parsedate, bad value 10000-12-21
+
+#SQL[@8,N34]Error[49]
 SELECT YEAR("-1234-12-21") as year;
 invalid argument parsedate, bad value -1234-12-21
+
+#SQL[@9,N40]Error[55]
 SELECT YEAR("12415141412-12-21") as year;
 invalid argument parsedate, bad value 12415141412-12-21
+
+#SQL[@10,N33]Error[48]
 SELECT YEAR("0000-00-00") as year;
 invalid argument parsedate, bad value 0000-00-00
+
+#SQL[@11,N33]Error[48]
 SELECT YEAR("2049-14-34") as year;
 invalid argument parsedate, bad value 2049-14-34
+
+#SQL[@16,N30]Error[45]
 SELECT YEAR("2015-09") as year;
 invalid argument parsedate, bad value 2015-09
+
+#SQL[@19,N25]Error[42]
 SELECT YEAR(2015) as year;
 invalid argument parsedate, bad value 2015
+
+#SQL[@21,N28]Result[4, 3]
 SELECT YEAR(1340124) as year;
 year
 134
+
+#SQL[@22,N28]Error[45]
 SELECT YEAR(0.45133) as year;
 invalid argument parsedate, bad value 0.45133
+
+#SQL[@24,N24]Error[39]
 SELECT YEAR(1=1) as year;
 invalid argument parsedate, bad value 1
+
+#SQL[@27,N33]Error[48]
 SELECT YEAR('2015-09.30') as year;
 invalid argument parsedate, bad value 2015-09.30
+
+#SQL[@30,N29]Error[44]
 SELECT YEAR('2015-0') as year;
 invalid argument parsedate, bad value 2015-0
+
+#SQL[@33,N36]Error[51]
 SELECT YEAR('2015-09.30 12') as year;
 invalid argument parsedate, bad value 2015-09.30 12
+
+#SQL[@36,N43]Result[4, 4]
 SELECT YEAR('2015-09-26 08:09:22') AS Year ;
 Year
 2015
+
+#SQL[@38,N40]Result[4, 4]
 SELECT YEAR('2023-11-08 15:00') AS Year ;
 Year
 2023
+
+#SQL[@42,N45]Result[35, 2]
 SELECT YEAR("2015-09-10")- YEAR("2016-04-24");
-YEAR("2015-09-10")- YEAR("2016-04-24")
+YEAR(2015-09-10) - YEAR(2016-04-24)
 -1
+
+#SQL[@44,N45]Result[35, 4]
 SELECT YEAR("2015-09-10")+ YEAR("2016-04-24");
-YEAR("2015-09-10")+ YEAR("2016-04-24")
+YEAR(2015-09-10) + YEAR(2016-04-24)
 4031
+
+#SQL[@46,N44]Result[35, 7]
 SELECT YEAR("2015-09-10")*YEAR("2016-04-24");
-YEAR("2015-09-10")*YEAR("2016-04-24")
+YEAR(2015-09-10) * YEAR(2016-04-24)
 4062240
+
+#SQL[@48,N44]Result[35, 18]
 SELECT YEAR("2015-09-10")/YEAR("2016-04-24");
-YEAR("2015-09-10")/YEAR("2016-04-24")
-0.9995
+YEAR(2015-09-10) / YEAR(2016-04-24)
+0.9995039682539683
+
+#SQL[@51,N44]Result[35, 5]
 SELECT YEAR("2015-09-10")>YEAR("2016-04-24");
-YEAR("2015-09-10")>YEAR("2016-04-24")
+YEAR(2015-09-10) > YEAR(2016-04-24)
 false
+
+#SQL[@52,N44]Result[35, 4]
 SELECT YEAR("2015-09-10")<YEAR("2016-04-24");
-YEAR("2015-09-10")<YEAR("2016-04-24")
+YEAR(2015-09-10) < YEAR(2016-04-24)
 true
+
+#SQL[@53,N44]Result[35, 5]
 SELECT YEAR("2015-09-10")=YEAR("2016-04-24");
-YEAR("2015-09-10")=YEAR("2016-04-24")
+YEAR(2015-09-10) = YEAR(2016-04-24)
 false
+
+#SQL[@54,N45]Result[36, 4]
 SELECT YEAR("2015-09-10")<>YEAR("2016-04-24");
-YEAR("2015-09-10")<>YEAR("2016-04-24")
+YEAR(2015-09-10) != YEAR(2016-04-24)
 true
+
+#SQL[@55,N45]Result[36, 4]
 SELECT YEAR("2015-09-10")!=YEAR("2016-04-24");
-YEAR("2015-09-10")!=YEAR("2016-04-24")
+YEAR(2015-09-10) != YEAR(2016-04-24)
 true
+
+#SQL[@59,N26]Result[4, 4]
 SELECT YEAR(NULL) AS Year ;
 Year
 null
+
+#SQL[@62,N199]Result[]
 CREATE TABLE Product(Product_id INT,  Product_name VARCHAR(100) NOT NULL,Buying_price DECIMAL(13, 2) NOT NULL,Selling_price DECIMAL(13, 2) NOT NULL,Selling_Date Date NOT NULL,PRIMARY KEY(Product_id));
+
+#SQL[@63,N526]Error[60]
 INSERT INTO  Product(Product_name, Buying_price, Selling_price, Selling_Date) VALUES ('Audi Q8', 10000000.00, 15000000.00, '2018-01-26' ),('Volvo XC40', 2000000.00, 3000000.00, '2018-04-20' ),('Audi A6', 4000000.00, 5000000.00, '2018-07-25' ),('BMW X5', 5000500.00, 7006500.00, '2018-10-18'  ),('Jaguar XF', 5000000, 7507000.00, '2019-01-27'  ),('Mercedes-Benz C-Class', 4000000.00, 6000000.00, '2019-04-01'  ),('Jaguar F-PACE', 5000000.00, 7000000.00, '2019-12-26'  ),('Porsche Macan', 6500000.00, 8000000.00, '2020-04-16' ) ;
 invalid input: invalid default value for column 'product_id'
+
+#SQL[@64,N21]Result[]
 SELECT * FROM Product;
-Product_id	Product_name	Buying_price	Selling_price	Selling_Date
+
+#SQL[@65,N136]Result[]
 SELECT  YEAR (Selling_Date) year,  COUNT(Product_id) Product_Sold FROM Product GROUP BY YEAR (Selling_Date) ORDER BY YEAR (Selling_Date);
-year	Product_Sold
+
+#SQL[@66,N18]Result[]
 DROP TABLE Product;
+
+#SQL[@69,N23]Result[]
 drop table if exists t1;
+
+#SQL[@70,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@71,N54]Result[]
 insert into t1 select year("2012-10-12"), "2012-10-12";
+
+#SQL[@72,N54]Result[]
 insert into t1 select year("2004-04-24"), "2004-04-24";
+
+#SQL[@73,N54]Result[]
 insert into t1 select year("2008-12-04"), "2008-12-04";
+
+#SQL[@74,N16]Result[8, 20, 20, 20]
 select * from t1;
-a	b
-2012	2012-10-12
-2004	2004-04-24
-2008	2008-12-04
+a  ¦  b
+2012  ¦  2012-10-12
+2004  ¦  2004-04-24
+2008  ¦  2008-12-04
+
+#SQL[@75,N13]Result[]
 drop table t1;
+
+#SQL[@79,N23]Result[]
 drop table if exists t1;
+
+#SQL[@80,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@81,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@82,N37]Result[8, 17, 17]
 select * from t1 where year(b)="2012";
-a	b
-1	2012-10-12
-4	2012-03-23
+a  ¦  b
+1  ¦  2012-10-12
+4  ¦  2012-03-23
+
+#SQL[@83,N13]Result[]
 drop table t1;
+
+#SQL[@87,N23]Result[]
 drop table if exists t1;
+
+#SQL[@88,N23]Result[]
 drop table if exists t2;
+
+#SQL[@89,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@90,N31]Result[]
 create table t2(a INT,  b date);
+
+#SQL[@91,N92]Result[]
 insert into t1 values(1, "2012-10-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@92,N92]Result[]
 insert into t2 values(1, "2013-04-30"),(2, "1994-10-04"),(3, "2018-06-04"),(4, "2012-08-12");
+
+#SQL[@93,N62]Result[8, 8, 8]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (year(t1.b) = year(t2.b));
-a	a
-4	4
-1	4
+a  ¦  a
+1  ¦  4
+4  ¦  4
+
+#SQL[@94,N13]Result[]
 drop table t1;
+
+#SQL[@95,N13]Result[]
 drop table t2;
+
+#SQL[@100,N23]Result[]
 drop table if exists t1;
+
+#SQL[@101,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@102,N110]Result[]
 insert into t1 values(1, "2012-10-12"),(1, "2012-07-12"),(2, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@103,N49]Result[1, 10, 10, 10]
 select b from t1 group by b having year(b)="2012";
 b
 2012-10-12
 2012-07-12
 2012-03-23
+
+#SQL[@104,N13]Result[]
 drop table t1;
+
+#SQL[@108,N23]Result[]
 drop table if exists t1;
+
+#SQL[@109,N31]Result[]
 create table t1(a INT,  b date);
+
+#SQL[@110,N128]Result[]
 insert into t1 values(1, "2012-10-12"),(1, "2012-07-12"),(2, "2004-04-24"),(3, "2004-04-24"),(3, "2008-12-04"),(4, "2012-03-23");
+
+#SQL[@111,N31]Result[7, 4, 4, 4]
 select distinct year(b) from t1;
 year(b)
 2012
 2004
 2008
+
+#SQL[@112,N13]Result[]
 drop table t1;
+
+#SQL[@115,N33]Result[]
 CREATE TABLE t3(c1 DATE NOT NULL);
+
+#SQL[@116,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@117,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@118,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@119,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@120,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@121,N23]Result[8, 4, 4, 4, 4, 4]
 SELECT YEAR(c1) FROM t3;
 YEAR(c1)
 2000
@@ -134,13 +269,29 @@ YEAR(c1)
 2000
 2006
 2008
+
+#SQL[@122,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@123,N37]Result[]
 CREATE TABLE t3(c1 DATETIME NOT NULL);
+
+#SQL[@124,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@125,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@126,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@127,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@128,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@129,N23]Result[8, 4, 4, 4, 4, 4]
 SELECT YEAR(c1) FROM t3;
 YEAR(c1)
 2000
@@ -148,13 +299,29 @@ YEAR(c1)
 2000
 2006
 2008
+
+#SQL[@130,N13]Result[]
 DROP TABLE t3;
+
+#SQL[@133,N38]Result[]
 CREATE TABLE t3(c1 TIMESTAMP NOT NULL);
+
+#SQL[@134,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@135,N35]Result[]
 INSERT INTO t3 VALUES('1999-12-31');
+
+#SQL[@136,N35]Result[]
 INSERT INTO t3 VALUES('2000-01-01');
+
+#SQL[@137,N35]Result[]
 INSERT INTO t3 VALUES('2006-12-25');
+
+#SQL[@138,N35]Result[]
 INSERT INTO t3 VALUES('2008-02-29');
+
+#SQL[@139,N23]Result[8, 4, 4, 4, 4, 4]
 SELECT YEAR(c1) FROM t3;
 YEAR(c1)
 2000
@@ -162,4 +329,7 @@ YEAR(c1)
 2000
 2006
 2008
+
+#SQL[@140,N13]Result[]
 DROP TABLE t3;
+

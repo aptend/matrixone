@@ -1,412 +1,800 @@
+#SQL[@1,N78]Result[67, 13]
 SELECT TIMESTAMPDIFF( MICROSECOND, '2017-12-01 12:15:12','2018-01-01 7:18:20');
-timestampdiff(time_stamp_unit(microsecond), 2017-12-01 12:15:12, 2018-01-01 7:18:20)
+TIMESTAMPDIFF(microsecond, 2017-12-01 12:15:12, 2018-01-01 7:18:20)
 2660588000000
+
+#SQL[@2,N73]Result[62, 7]
 SELECT TIMESTAMPDIFF( SECOND, '2017-12-01 12:15:12','2018-01-01 7:18:20');
-timestampdiff(time_stamp_unit(second), 2017-12-01 12:15:12, 2018-01-01 7:18:20)
+TIMESTAMPDIFF(second, 2017-12-01 12:15:12, 2018-01-01 7:18:20)
 2660588
+
+#SQL[@3,N73]Result[62, 5]
 SELECT TIMESTAMPDIFF( MINUTE, '2017-12-01 12:15:12','2018-01-01 7:18:20');
-timestampdiff(time_stamp_unit(minute), 2017-12-01 12:15:12, 2018-01-01 7:18:20)
+TIMESTAMPDIFF(minute, 2017-12-01 12:15:12, 2018-01-01 7:18:20)
 44343
+
+#SQL[@4,N71]Result[60, 3]
 SELECT TIMESTAMPDIFF( HOUR, '2017-12-01 12:15:12','2018-01-01 7:18:20');
-timestampdiff(time_stamp_unit(hour), 2017-12-01 12:15:12, 2018-01-01 7:18:20)
+TIMESTAMPDIFF(hour, 2017-12-01 12:15:12, 2018-01-01 7:18:20)
 739
+
+#SQL[@5,N70]Result[59, 2]
 SELECT TIMESTAMPDIFF( DAY, '2017-12-01 12:15:12','2018-01-01 7:18:20');
-timestampdiff(time_stamp_unit(day), 2017-12-01 12:15:12, 2018-01-01 7:18:20)
+TIMESTAMPDIFF(day, 2017-12-01 12:15:12, 2018-01-01 7:18:20)
 30
+
+#SQL[@6,N72]Result[61, 1]
 SELECT TIMESTAMPDIFF( WEEK, '2018-01-01 12:15:12','2018-01-08 12:15:12');
-timestampdiff(time_stamp_unit(week), 2018-01-01 12:15:12, 2018-01-08 12:15:12)
+TIMESTAMPDIFF(week, 2018-01-01 12:15:12, 2018-01-08 12:15:12)
 1
+
+#SQL[@7,N73]Result[62, 1]
 SELECT TIMESTAMPDIFF( MONTH, '2017-11-01 12:15:12','2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2017-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2017-11-01 12:15:12, 2018-01-01 12:15:12)
 2
+
+#SQL[@8,N76]Result[64, 1]
 SELECT TIMESTAMPDIFF( QUARTER,  '2017-01-01 12:15:12','2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2017-01-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2017-01-01 12:15:12, 2018-01-01 12:15:12)
 4
+
+#SQL[@9,N72]Result[61, 1]
 SELECT TIMESTAMPDIFF( YEAR, '2017-01-01 12:15:12','2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2017-01-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2017-01-01 12:15:12, 2018-01-01 12:15:12)
 1
+
+#SQL[@11,N78]Result[67, 14]
 SELECT TIMESTAMPDIFF( MICROSECOND, '2018-01-01 7:18:20','2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(microsecond), 2018-01-01 7:18:20, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(microsecond, 2018-01-01 7:18:20, 2017-12-01 12:15:12)
 -2660588000000
+
+#SQL[@12,N74]Result[62, 8]
 SELECT TIMESTAMPDIFF( SECOND, '2018-01-01 7:18:20', '2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(second), 2018-01-01 7:18:20, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(second, 2018-01-01 7:18:20, 2017-12-01 12:15:12)
 -2660588
+
+#SQL[@13,N73]Result[62, 6]
 SELECT TIMESTAMPDIFF( MINUTE, '2018-01-01 7:18:20','2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(minute), 2018-01-01 7:18:20, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(minute, 2018-01-01 7:18:20, 2017-12-01 12:15:12)
 -44343
+
+#SQL[@14,N71]Result[60, 4]
 SELECT TIMESTAMPDIFF( HOUR, '2018-01-01 7:18:20','2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(hour), 2018-01-01 7:18:20, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(hour, 2018-01-01 7:18:20, 2017-12-01 12:15:12)
 -739
+
+#SQL[@15,N71]Result[59, 3]
 SELECT TIMESTAMPDIFF( DAY, '2018-01-01 7:18:20', '2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(day), 2018-01-01 7:18:20, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(day, 2018-01-01 7:18:20, 2017-12-01 12:15:12)
 -30
+
+#SQL[@16,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( WEEK, '2018-01-08 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(week), 2018-01-08 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(week, 2018-01-08 12:15:12, 2018-01-01 12:15:12)
 -1
+
+#SQL[@17,N74]Result[62, 2]
 SELECT TIMESTAMPDIFF( MONTH, '2018-01-01 12:15:12', '2017-11-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2018-01-01 12:15:12, 2017-11-01 12:15:12)
+TIMESTAMPDIFF(month, 2018-01-01 12:15:12, 2017-11-01 12:15:12)
 -2
+
+#SQL[@18,N77]Result[64, 2]
 SELECT TIMESTAMPDIFF( QUARTER,  '2018-01-01 12:15:12', '2017-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, 2017-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, 2017-01-01 12:15:12)
 -4
+
+#SQL[@19,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( YEAR, '2018-01-01 12:15:12', '2017-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2018-01-01 12:15:12, 2017-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2018-01-01 12:15:12, 2017-01-01 12:15:12)
 -1
+
+#SQL[@21,N62]Result[53, 4]
 SELECT TIMESTAMPDIFF( MICROSECOND, NULL,'2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(microsecond), null, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(microsecond, null, 2017-12-01 12:15:12)
 null
+
+#SQL[@22,N57]Result[47, 4]
 SELECT TIMESTAMPDIFF( SECOND, '2018-01-01 7:18:20', NULL);
-timestampdiff(time_stamp_unit(second), 2018-01-01 7:18:20, null)
+TIMESTAMPDIFF(second, 2018-01-01 7:18:20, null)
 null
+
+#SQL[@23,N55]Result[46, 4]
 SELECT TIMESTAMPDIFF( HOUR, NULL,'2017-12-01 12:15:12');
-timestampdiff(time_stamp_unit(hour), null, 2017-12-01 12:15:12)
+TIMESTAMPDIFF(hour, null, 2017-12-01 12:15:12)
 null
+
+#SQL[@24,N54]Result[44, 4]
 SELECT TIMESTAMPDIFF( DAY, '2018-01-01 7:18:20', NULL);
-timestampdiff(time_stamp_unit(day), 2018-01-01 7:18:20, null)
+TIMESTAMPDIFF(day, 2018-01-01 7:18:20, null)
 null
+
+#SQL[@25,N57]Result[47, 4]
 SELECT TIMESTAMPDIFF( MONTH, NULL, '2017-11-01 12:15:12');
-timestampdiff(time_stamp_unit(month), null, 2017-11-01 12:15:12)
+TIMESTAMPDIFF(month, null, 2017-11-01 12:15:12)
 null
+
+#SQL[@26,N60]Result[49, 4]
 SELECT TIMESTAMPDIFF( QUARTER,  '2018-01-01 12:15:12', NULL);
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, null)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, null)
 null
+
+#SQL[@28,N74]Result[62, 2]
 SELECT TIMESTAMPDIFF( MONTH, '2018-01-01 12:15:12', '2019-11-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2018-01-01 12:15:12, 2019-11-01 12:15:12)
+TIMESTAMPDIFF(month, 2018-01-01 12:15:12, 2019-11-01 12:15:12)
 22
+
+#SQL[@29,N74]Result[62, 2]
 SELECT TIMESTAMPDIFF( MONTH, '2018-01-01 12:15:12', '2019-10-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2018-01-01 12:15:12, 2019-10-01 12:15:12)
+TIMESTAMPDIFF(month, 2018-01-01 12:15:12, 2019-10-01 12:15:12)
 21
+
+#SQL[@30,N74]Result[62, 2]
 SELECT TIMESTAMPDIFF( MONTH, '2018-01-01 12:15:12', '2020-10-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2018-01-01 12:15:12, 2020-10-01 12:15:12)
+TIMESTAMPDIFF(month, 2018-01-01 12:15:12, 2020-10-01 12:15:12)
 33
+
+#SQL[@31,N74]Result[62, 2]
 SELECT TIMESTAMPDIFF( MONTH, '2018-01-01 12:15:12', '2021-11-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2018-01-01 12:15:12, 2021-11-01 12:15:12)
+TIMESTAMPDIFF(month, 2018-01-01 12:15:12, 2021-11-01 12:15:12)
 46
+
+#SQL[@32,N74]Result[62, 2]
 SELECT TIMESTAMPDIFF( MONTH, '2018-01-01 12:15:12', '2022-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2018-01-01 12:15:12, 2022-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2018-01-01 12:15:12, 2022-01-01 12:15:12)
 48
+
+#SQL[@33,N76]Result[64, 1]
 SELECT TIMESTAMPDIFF( QUARTER, '2018-01-01 12:15:12', '2019-11-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, 2019-11-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, 2019-11-01 12:15:12)
 7
+
+#SQL[@34,N76]Result[64, 1]
 SELECT TIMESTAMPDIFF( QUARTER, '2018-01-01 12:15:12', '2019-10-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, 2019-10-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, 2019-10-01 12:15:12)
 7
+
+#SQL[@35,N76]Result[64, 2]
 SELECT TIMESTAMPDIFF( QUARTER, '2018-01-01 12:15:12', '2020-10-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, 2020-10-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, 2020-10-01 12:15:12)
 11
+
+#SQL[@36,N76]Result[64, 2]
 SELECT TIMESTAMPDIFF( QUARTER, '2018-01-01 12:15:12', '2021-11-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, 2021-11-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, 2021-11-01 12:15:12)
 15
+
+#SQL[@37,N76]Result[64, 2]
 SELECT TIMESTAMPDIFF( QUARTER, '2018-01-01 12:15:12', '2022-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2018-01-01 12:15:12, 2022-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2018-01-01 12:15:12, 2022-01-01 12:15:12)
 16
+
+#SQL[@38,N73]Result[61, 1]
 SELECT TIMESTAMPDIFF( YEAR, '2018-01-01 12:15:12', '2019-11-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2018-01-01 12:15:12, 2019-11-01 12:15:12)
+TIMESTAMPDIFF(year, 2018-01-01 12:15:12, 2019-11-01 12:15:12)
 1
+
+#SQL[@39,N73]Result[61, 1]
 SELECT TIMESTAMPDIFF( YEAR, '2018-01-01 12:15:12', '2019-10-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2018-01-01 12:15:12, 2019-10-01 12:15:12)
+TIMESTAMPDIFF(year, 2018-01-01 12:15:12, 2019-10-01 12:15:12)
 1
+
+#SQL[@40,N73]Result[61, 1]
 SELECT TIMESTAMPDIFF( YEAR, '2018-01-01 12:15:12', '2020-10-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2018-01-01 12:15:12, 2020-10-01 12:15:12)
+TIMESTAMPDIFF(year, 2018-01-01 12:15:12, 2020-10-01 12:15:12)
 2
+
+#SQL[@41,N73]Result[61, 1]
 SELECT TIMESTAMPDIFF( YEAR, '2018-01-01 12:15:12', '2021-11-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2018-01-01 12:15:12, 2021-11-01 12:15:12)
+TIMESTAMPDIFF(year, 2018-01-01 12:15:12, 2021-11-01 12:15:12)
 3
+
+#SQL[@42,N73]Result[61, 1]
 SELECT TIMESTAMPDIFF( YEAR, '2018-01-01 12:15:12', '2022-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2018-01-01 12:15:12, 2022-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2018-01-01 12:15:12, 2022-01-01 12:15:12)
 4
+
+#SQL[@44,N74]Result[62, 3]
 SELECT TIMESTAMPDIFF( MONTH, '2019-11-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2019-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2019-11-01 12:15:12, 2018-01-01 12:15:12)
 -22
+
+#SQL[@45,N74]Result[62, 3]
 SELECT TIMESTAMPDIFF( MONTH, '2019-10-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2019-10-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2019-10-01 12:15:12, 2018-01-01 12:15:12)
 -21
+
+#SQL[@46,N74]Result[62, 3]
 SELECT TIMESTAMPDIFF( MONTH, '2020-10-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2020-10-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2020-10-01 12:15:12, 2018-01-01 12:15:12)
 -33
+
+#SQL[@47,N74]Result[62, 3]
 SELECT TIMESTAMPDIFF( MONTH, '2021-11-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2021-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2021-11-01 12:15:12, 2018-01-01 12:15:12)
 -46
+
+#SQL[@48,N74]Result[62, 3]
 SELECT TIMESTAMPDIFF( MONTH, '2022-01-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(month), 2022-01-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(month, 2022-01-01 12:15:12, 2018-01-01 12:15:12)
 -48
+
+#SQL[@49,N76]Result[64, 2]
 SELECT TIMESTAMPDIFF( QUARTER, '2019-11-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2019-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2019-11-01 12:15:12, 2018-01-01 12:15:12)
 -7
+
+#SQL[@50,N76]Result[64, 2]
 SELECT TIMESTAMPDIFF( QUARTER, '2019-10-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2019-10-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2019-10-01 12:15:12, 2018-01-01 12:15:12)
 -7
+
+#SQL[@51,N76]Result[64, 3]
 SELECT TIMESTAMPDIFF( QUARTER, '2020-10-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2020-10-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2020-10-01 12:15:12, 2018-01-01 12:15:12)
 -11
+
+#SQL[@52,N76]Result[64, 3]
 SELECT TIMESTAMPDIFF( QUARTER, '2021-11-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2021-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2021-11-01 12:15:12, 2018-01-01 12:15:12)
 -15
+
+#SQL[@53,N76]Result[64, 3]
 SELECT TIMESTAMPDIFF( QUARTER, '2022-01-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(quarter), 2022-01-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(quarter, 2022-01-01 12:15:12, 2018-01-01 12:15:12)
 -16
+
+#SQL[@54,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( YEAR, '2019-11-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2019-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2019-11-01 12:15:12, 2018-01-01 12:15:12)
 -1
+
+#SQL[@55,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( YEAR, '2019-10-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2019-10-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2019-10-01 12:15:12, 2018-01-01 12:15:12)
 -1
+
+#SQL[@56,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( YEAR, '2020-10-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2020-10-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2020-10-01 12:15:12, 2018-01-01 12:15:12)
 -2
+
+#SQL[@57,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( YEAR, '2021-11-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2021-11-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2021-11-01 12:15:12, 2018-01-01 12:15:12)
 -3
+
+#SQL[@58,N73]Result[61, 2]
 SELECT TIMESTAMPDIFF( YEAR, '2022-01-01 12:15:12', '2018-01-01 12:15:12');
-timestampdiff(time_stamp_unit(year), 2022-01-01 12:15:12, 2018-01-01 12:15:12)
+TIMESTAMPDIFF(year, 2022-01-01 12:15:12, 2018-01-01 12:15:12)
 -4
+
+#SQL[@60,N23]Result[]
 drop table if exists t1;
+
+#SQL[@61,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@62,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@63,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@64,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@65,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@66,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@67,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@68,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@69,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@70,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@71,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@72,N53]Result[46, 47, 47, 47, 48, 48, 46, 46, 46, 47, 47]
 SELECT a, b, TIMESTAMPDIFF(MICROSECOND, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(microsecond), a, b)
-2019-11-01    2018-01-01    -57801600000000
-2019-10-01    2018-01-01    -55123200000000
-2020-10-01    2018-01-01    -86745600000000
-2021-11-01    2018-01-01    -120960000000000
-2022-01-01    2018-01-01    -126230400000000
-2018-01-01    2019-11-01    57801600000000
-2018-01-01    2019-10-01    55123200000000
-2018-01-01    2020-10-01    86745600000000
-2018-01-01    2021-11-01    120960000000000
-2018-01-01    2022-01-01    126230400000000
+a  ¦  b  ¦  TIMESTAMPDIFF(microsecond, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -57801600000000
+2019-10-01  ¦  2018-01-01  ¦  -55123200000000
+2020-10-01  ¦  2018-01-01  ¦  -86745600000000
+2021-11-01  ¦  2018-01-01  ¦  -120960000000000
+2022-01-01  ¦  2018-01-01  ¦  -126230400000000
+2018-01-01  ¦  2019-11-01  ¦  57801600000000
+2018-01-01  ¦  2019-10-01  ¦  55123200000000
+2018-01-01  ¦  2020-10-01  ¦  86745600000000
+2018-01-01  ¦  2021-11-01  ¦  120960000000000
+2018-01-01  ¦  2022-01-01  ¦  126230400000000
+
+#SQL[@73,N13]Result[]
 drop table t1;
+
+#SQL[@75,N23]Result[]
 drop table if exists t1;
+
+#SQL[@76,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@77,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@78,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@79,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@80,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@81,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@82,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@83,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@84,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@85,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@86,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@87,N48]Result[41, 41, 41, 41, 42, 42, 40, 40, 40, 41, 41]
 SELECT a, b, TIMESTAMPDIFF(SECOND, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(second), a, b)
-2019-11-01    2018-01-01    -57801600
-2019-10-01    2018-01-01    -55123200
-2020-10-01    2018-01-01    -86745600
-2021-11-01    2018-01-01    -120960000
-2022-01-01    2018-01-01    -126230400
-2018-01-01    2019-11-01    57801600
-2018-01-01    2019-10-01    55123200
-2018-01-01    2020-10-01    86745600
-2018-01-01    2021-11-01    120960000
-2018-01-01    2022-01-01    126230400
+a  ¦  b  ¦  TIMESTAMPDIFF(second, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -57801600
+2019-10-01  ¦  2018-01-01  ¦  -55123200
+2020-10-01  ¦  2018-01-01  ¦  -86745600
+2021-11-01  ¦  2018-01-01  ¦  -120960000
+2022-01-01  ¦  2018-01-01  ¦  -126230400
+2018-01-01  ¦  2019-11-01  ¦  57801600
+2018-01-01  ¦  2019-10-01  ¦  55123200
+2018-01-01  ¦  2020-10-01  ¦  86745600
+2018-01-01  ¦  2021-11-01  ¦  120960000
+2018-01-01  ¦  2022-01-01  ¦  126230400
+
+#SQL[@88,N13]Result[]
 drop table t1;
+
+#SQL[@90,N23]Result[]
 drop table if exists t1;
+
+#SQL[@91,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@92,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@93,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@94,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@95,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@96,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@97,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@98,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@99,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@100,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@101,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@102,N48]Result[41, 39, 39, 40, 40, 40, 38, 38, 39, 39, 39]
 SELECT a, b, TIMESTAMPDIFF(MINUTE, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(minute), a, b)
-2019-11-01    2018-01-01    -963360
-2019-10-01    2018-01-01    -918720
-2020-10-01    2018-01-01    -1445760
-2021-11-01    2018-01-01    -2016000
-2022-01-01    2018-01-01    -2103840
-2018-01-01    2019-11-01    963360
-2018-01-01    2019-10-01    918720
-2018-01-01    2020-10-01    1445760
-2018-01-01    2021-11-01    2016000
-2018-01-01    2022-01-01    2103840
+a  ¦  b  ¦  TIMESTAMPDIFF(minute, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -963360
+2019-10-01  ¦  2018-01-01  ¦  -918720
+2020-10-01  ¦  2018-01-01  ¦  -1445760
+2021-11-01  ¦  2018-01-01  ¦  -2016000
+2022-01-01  ¦  2018-01-01  ¦  -2103840
+2018-01-01  ¦  2019-11-01  ¦  963360
+2018-01-01  ¦  2019-10-01  ¦  918720
+2018-01-01  ¦  2020-10-01  ¦  1445760
+2018-01-01  ¦  2021-11-01  ¦  2016000
+2018-01-01  ¦  2022-01-01  ¦  2103840
+
+#SQL[@103,N13]Result[]
 drop table t1;
+
+#SQL[@105,N23]Result[]
 drop table if exists t1;
+
+#SQL[@106,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@107,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@108,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@109,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@110,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@111,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@112,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@113,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@114,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@115,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@116,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@117,N46]Result[39, 38, 38, 38, 38, 38, 37, 37, 37, 37, 37]
 SELECT a, b, TIMESTAMPDIFF(HOUR, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(hour), a, b)
-2019-11-01    2018-01-01    -16056
-2019-10-01    2018-01-01    -15312
-2020-10-01    2018-01-01    -24096
-2021-11-01    2018-01-01    -33600
-2022-01-01    2018-01-01    -35064
-2018-01-01    2019-11-01    16056
-2018-01-01    2019-10-01    15312
-2018-01-01    2020-10-01    24096
-2018-01-01    2021-11-01    33600
-2018-01-01    2022-01-01    35064
+a  ¦  b  ¦  TIMESTAMPDIFF(hour, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -16056
+2019-10-01  ¦  2018-01-01  ¦  -15312
+2020-10-01  ¦  2018-01-01  ¦  -24096
+2021-11-01  ¦  2018-01-01  ¦  -33600
+2022-01-01  ¦  2018-01-01  ¦  -35064
+2018-01-01  ¦  2019-11-01  ¦  16056
+2018-01-01  ¦  2019-10-01  ¦  15312
+2018-01-01  ¦  2020-10-01  ¦  24096
+2018-01-01  ¦  2021-11-01  ¦  33600
+2018-01-01  ¦  2022-01-01  ¦  35064
+
+#SQL[@118,N13]Result[]
 drop table t1;
+
+#SQL[@120,N23]Result[]
 drop table if exists t1;
+
+#SQL[@121,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@122,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@123,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@124,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@125,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@126,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@127,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@128,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@129,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@130,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@131,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@132,N45]Result[38, 36, 36, 37, 37, 37, 35, 35, 36, 36, 36]
 SELECT a, b, TIMESTAMPDIFF(DAY, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(day), a, b)
-2019-11-01    2018-01-01    -669
-2019-10-01    2018-01-01    -638
-2020-10-01    2018-01-01    -1004
-2021-11-01    2018-01-01    -1400
-2022-01-01    2018-01-01    -1461
-2018-01-01    2019-11-01    669
-2018-01-01    2019-10-01    638
-2018-01-01    2020-10-01    1004
-2018-01-01    2021-11-01    1400
-2018-01-01    2022-01-01    1461
+a  ¦  b  ¦  TIMESTAMPDIFF(day, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -669
+2019-10-01  ¦  2018-01-01  ¦  -638
+2020-10-01  ¦  2018-01-01  ¦  -1004
+2021-11-01  ¦  2018-01-01  ¦  -1400
+2022-01-01  ¦  2018-01-01  ¦  -1461
+2018-01-01  ¦  2019-11-01  ¦  669
+2018-01-01  ¦  2019-10-01  ¦  638
+2018-01-01  ¦  2020-10-01  ¦  1004
+2018-01-01  ¦  2021-11-01  ¦  1400
+2018-01-01  ¦  2022-01-01  ¦  1461
+
+#SQL[@133,N13]Result[]
 drop table t1;
+
+#SQL[@135,N23]Result[]
 drop table if exists t1;
+
+#SQL[@136,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@137,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@138,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@139,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@140,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@141,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@142,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@143,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@144,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@145,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@146,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@147,N46]Result[39, 35, 35, 36, 36, 36, 34, 34, 35, 35, 35]
 SELECT a, b, TIMESTAMPDIFF(WEEK, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(week), a, b)
-2019-11-01    2018-01-01    -95
-2019-10-01    2018-01-01    -91
-2020-10-01    2018-01-01    -143
-2021-11-01    2018-01-01    -200
-2022-01-01    2018-01-01    -208
-2018-01-01    2019-11-01    95
-2018-01-01    2019-10-01    91
-2018-01-01    2020-10-01    143
-2018-01-01    2021-11-01    200
-2018-01-01    2022-01-01    208
+a  ¦  b  ¦  TIMESTAMPDIFF(week, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -95
+2019-10-01  ¦  2018-01-01  ¦  -91
+2020-10-01  ¦  2018-01-01  ¦  -143
+2021-11-01  ¦  2018-01-01  ¦  -200
+2022-01-01  ¦  2018-01-01  ¦  -208
+2018-01-01  ¦  2019-11-01  ¦  95
+2018-01-01  ¦  2019-10-01  ¦  91
+2018-01-01  ¦  2020-10-01  ¦  143
+2018-01-01  ¦  2021-11-01  ¦  200
+2018-01-01  ¦  2022-01-01  ¦  208
+
+#SQL[@148,N13]Result[]
 drop table t1;
+
+#SQL[@150,N23]Result[]
 drop table if exists t1;
+
+#SQL[@151,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@152,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@153,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@154,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@155,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@156,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@157,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@158,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@159,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@160,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@161,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@162,N47]Result[40, 35, 35, 35, 35, 35, 34, 34, 34, 34, 34]
 SELECT a, b, TIMESTAMPDIFF(MONTH, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(month), a, b)
-2019-11-01    2018-01-01    -22
-2019-10-01    2018-01-01    -21
-2020-10-01    2018-01-01    -33
-2021-11-01    2018-01-01    -46
-2022-01-01    2018-01-01    -48
-2018-01-01    2019-11-01    22
-2018-01-01    2019-10-01    21
-2018-01-01    2020-10-01    33
-2018-01-01    2021-11-01    46
-2018-01-01    2022-01-01    48
+a  ¦  b  ¦  TIMESTAMPDIFF(month, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -22
+2019-10-01  ¦  2018-01-01  ¦  -21
+2020-10-01  ¦  2018-01-01  ¦  -33
+2021-11-01  ¦  2018-01-01  ¦  -46
+2022-01-01  ¦  2018-01-01  ¦  -48
+2018-01-01  ¦  2019-11-01  ¦  22
+2018-01-01  ¦  2019-10-01  ¦  21
+2018-01-01  ¦  2020-10-01  ¦  33
+2018-01-01  ¦  2021-11-01  ¦  46
+2018-01-01  ¦  2022-01-01  ¦  48
+
+#SQL[@163,N13]Result[]
 drop table t1;
+
+#SQL[@165,N23]Result[]
 drop table if exists t1;
+
+#SQL[@166,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@167,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@168,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@169,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@170,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@171,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@172,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@173,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@174,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@175,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@176,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@177,N49]Result[42, 34, 34, 35, 35, 35, 33, 33, 34, 34, 34]
 SELECT a, b, TIMESTAMPDIFF(QUARTER, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(quarter), a, b)
-2019-11-01    2018-01-01    -7
-2019-10-01    2018-01-01    -7
-2020-10-01    2018-01-01    -11
-2021-11-01    2018-01-01    -15
-2022-01-01    2018-01-01    -16
-2018-01-01    2019-11-01    7
-2018-01-01    2019-10-01    7
-2018-01-01    2020-10-01    11
-2018-01-01    2021-11-01    15
-2018-01-01    2022-01-01    16
+a  ¦  b  ¦  TIMESTAMPDIFF(quarter, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -7
+2019-10-01  ¦  2018-01-01  ¦  -7
+2020-10-01  ¦  2018-01-01  ¦  -11
+2021-11-01  ¦  2018-01-01  ¦  -15
+2022-01-01  ¦  2018-01-01  ¦  -16
+2018-01-01  ¦  2019-11-01  ¦  7
+2018-01-01  ¦  2019-10-01  ¦  7
+2018-01-01  ¦  2020-10-01  ¦  11
+2018-01-01  ¦  2021-11-01  ¦  15
+2018-01-01  ¦  2022-01-01  ¦  16
+
+#SQL[@178,N13]Result[]
 drop table t1;
+
+#SQL[@180,N23]Result[]
 drop table if exists t1;
+
+#SQL[@181,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@182,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@183,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@184,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@185,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@186,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@187,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@188,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@189,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@190,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@191,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@192,N46]Result[39, 34, 34, 34, 34, 34, 33, 33, 33, 33, 33]
 SELECT a, b, TIMESTAMPDIFF(YEAR, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(year), a, b)
-2019-11-01    2018-01-01    -1
-2019-10-01    2018-01-01    -1
-2020-10-01    2018-01-01    -2
-2021-11-01    2018-01-01    -3
-2022-01-01    2018-01-01    -4
-2018-01-01    2019-11-01    1
-2018-01-01    2019-10-01    1
-2018-01-01    2020-10-01    2
-2018-01-01    2021-11-01    3
-2018-01-01    2022-01-01    4
+a  ¦  b  ¦  TIMESTAMPDIFF(year, a, b)
+2019-11-01  ¦  2018-01-01  ¦  -1
+2019-10-01  ¦  2018-01-01  ¦  -1
+2020-10-01  ¦  2018-01-01  ¦  -2
+2021-11-01  ¦  2018-01-01  ¦  -3
+2022-01-01  ¦  2018-01-01  ¦  -4
+2018-01-01  ¦  2019-11-01  ¦  1
+2018-01-01  ¦  2019-10-01  ¦  1
+2018-01-01  ¦  2020-10-01  ¦  2
+2018-01-01  ¦  2021-11-01  ¦  3
+2018-01-01  ¦  2022-01-01  ¦  4
+
+#SQL[@193,N13]Result[]
 drop table t1;
+
+#SQL[@195,N23]Result[]
 drop table if exists t1;
+
+#SQL[@196,N32]Result[]
 create table t1(a date,  b date);
+
+#SQL[@197,N67]Result[]
 insert into t1 values('2019-11-01 12:15:12', '2019-11-01 12:15:12');
+
+#SQL[@198,N67]Result[]
 insert into t1 values('2019-10-01 12:15:12', '2019-10-01 12:15:12');
+
+#SQL[@199,N67]Result[]
 insert into t1 values('2020-10-01 12:15:12', '2020-10-01 12:15:12');
+
+#SQL[@200,N67]Result[]
 insert into t1 values('2021-11-01 12:15:12', '2021-11-01 12:15:12');
+
+#SQL[@201,N67]Result[]
 insert into t1 values('2022-01-01 12:15:12', '2022-01-01 12:15:12');
+
+#SQL[@202,N67]Result[]
 insert into t1 values('2018-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@203,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@204,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@205,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@206,N68]Result[]
 insert into t1 values( '2018-01-01 12:15:12', '2018-01-01 12:15:12');
+
+#SQL[@207,N46]Result[39, 33, 33, 33, 33, 33, 33, 33, 33, 33, 33]
 SELECT a, b, TIMESTAMPDIFF(YEAR, a, b) from t1;
-a    b    timestampdiff(time_stamp_unit(year), a, b)
-2019-11-01    2019-11-01    0
-2019-10-01    2019-10-01    0
-2020-10-01    2020-10-01    0
-2021-11-01    2021-11-01    0
-2022-01-01    2022-01-01    0
-2018-01-01    2018-01-01    0
-2018-01-01    2018-01-01    0
-2018-01-01    2018-01-01    0
-2018-01-01    2018-01-01    0
-2018-01-01    2018-01-01    0
+a  ¦  b  ¦  TIMESTAMPDIFF(year, a, b)
+2019-11-01  ¦  2019-11-01  ¦  0
+2019-10-01  ¦  2019-10-01  ¦  0
+2020-10-01  ¦  2020-10-01  ¦  0
+2021-11-01  ¦  2021-11-01  ¦  0
+2022-01-01  ¦  2022-01-01  ¦  0
+2018-01-01  ¦  2018-01-01  ¦  0
+2018-01-01  ¦  2018-01-01  ¦  0
+2018-01-01  ¦  2018-01-01  ¦  0
+2018-01-01  ¦  2018-01-01  ¦  0
+2018-01-01  ¦  2018-01-01  ¦  0
+
+#SQL[@208,N13]Result[]
 drop table t1;
+

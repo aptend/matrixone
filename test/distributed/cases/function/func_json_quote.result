@@ -1,32 +1,50 @@
+#SQL[@1,N22]Result[13, 3]
 select json_quote('a');
 json_quote(a)
 "a"
+
+#SQL[@2,N23]Result[14, 5]
 select json_quote('a"');
 json_quote(a")
 "a\""
+
+#SQL[@3,N24]Result[15, 6]
 select json_quote('a"b');
 json_quote(a"b)
 "a\"b"
+
+#SQL[@4,N23]Result[16, 4]
 select json_quote(null);
 json_quote(null)
 null
+
+#SQL[@5,N31]Result[]
 create table t1 (a varchar(10));
+
+#SQL[@6,N52]Result[]
 insert into t1 values ('a'), ('a"'), ('a"b'), (null);
+
+#SQL[@7,N28]Result[13, 3, 5, 6, 4]
 select json_quote(a) from t1;
 json_quote(a)
 "a"
 "a\""
 "a\"b"
 null
+
+#SQL[@8,N32]Result[15, 5, 5, 5, 5]
 select json_quote('xax') from t1;
 json_quote(xax)
 "xax"
 "xax"
 "xax"
 "xax"
+
+#SQL[@9,N31]Result[16, 4, 4, 4, 4]
 select json_quote(null) from t1;
 json_quote(null)
 null
 null
 null
 null
+

@@ -1,108 +1,228 @@
+#SQL[@2,N38]Result[6, 4]
 SELECT REGEXP_LIKE('Cat', '.*') Result;
-result
+Result
 true
+
+#SQL[@3,N38]Result[6, 5]
 SELECT REGEXP_LIKE('Cat', 'b+') Result;
-result
+Result
 false
+
+#SQL[@4,N39]Result[6, 4]
 SELECT REGEXP_LIKE('Cat', '^Ca') Result;
-result
+Result
 true
+
+#SQL[@5,N39]Result[6, 5]
 SELECT REGEXP_LIKE('Cat', '^Da') Result;
-result
+Result
 false
+
+#SQL[@6,N30]Result[21, 4]
 SELECT REGEXP_LIKE(NULL, '.*');
-regexp_like(null, .*)
-NULL
+REGEXP_LIKE(null, .*)
+null
+
+#SQL[@7,N31]Result[22, 4]
 SELECT REGEXP_LIKE('Cat', NULL);
-regexp_like(Cat, null)
-NULL
+REGEXP_LIKE(Cat, null)
+null
+
+#SQL[@8,N30]Result[23, 4]
 SELECT REGEXP_LIKE(NULL, NULL);
-regexp_like(null, null)
-NULL
+REGEXP_LIKE(null, null)
+null
+
+#SQL[@9,N23]Result[]
 drop table if exists t1;
+
+#SQL[@10,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@11,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@12,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@13,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@14,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@15,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@16,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@17,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@18,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@19,N37]Result[]
 insert into t1 values( 9 , "Killers");
+
+#SQL[@20,N53]Result[]
 insert into t1 values(10 , "No Prayer for the Dying");
+
+#SQL[@21,N54]Result[]
 insert into t1 values(11 , "No Sound Without Silence");
+
+#SQL[@22,N44]Result[]
 insert into t1 values(12 , "Big Swing Face");
+
+#SQL[@23,N40]Result[]
 insert into t1 values(13 , "Blue Night");
+
+#SQL[@24,N38]Result[]
 insert into t1 values(14 , "Eternity");
+
+#SQL[@25,N41]Result[]
 insert into t1 values(15 , "Scandinavia");
+
+#SQL[@26,N48]Result[]
 insert into t1 values(16 , "Long Lost Suitcase");
+
+#SQL[@27,N46]Result[]
 insert into t1 values(17 , "Praise and Blame");
+
+#SQL[@28,N46]Result[]
 insert into t1 values(18 , "Along Came Jones");
+
+#SQL[@29,N45]Result[]
 insert into t1 values(19 , "All Night Wrong");
+
+#SQL[@30,N53]Result[]
 insert into t1 values(20 , "The Sixteen Men of Tain");
+
+#SQL[@31,N50]Result[8, 17, 15]
 SELECT a, b
 FROM t1
 WHERE REGEXP_LIKE(b, '^Power');
-a    b
-1    PowerSlave
-2    Powerage
+a  ¦  b
+1  ¦  PowerSlave
+2  ¦  Powerage
+
+#SQL[@34,N13]Result[]
 drop table t1;
+
+#SQL[@36,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@37,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@38,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@39,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@40,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@41,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@42,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@43,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@44,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@45,N37]Result[]
 insert into t1 values( 9 , "Killers");
+
+#SQL[@46,N38]Result[25, 11, 11, 12, 12, 12, 12, 12, 11, 12]
 SELECT a, REGEXP_LIKE(b, '^P') from t1;
-a    regexp_like(b, ^P)
-1    true
-2    true
-3    false
-4    false
-5    false
-6    false
-7    false
-8    true
-9    false
+a  ¦  REGEXP_LIKE(b, ^P)
+1  ¦  true
+2  ¦  true
+3  ¦  false
+4  ¦  false
+5  ¦  false
+6  ¦  false
+7  ¦  false
+8  ¦  true
+9  ¦  false
+
+#SQL[@47,N13]Result[]
 drop table t1;
+
+#SQL[@49,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@50,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@51,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@52,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@53,N31]Result[]
 insert into t1 values(4 , NULL);
+
+#SQL[@54,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@55,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@56,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@57,N31]Result[]
 insert into t1 values(8 , NULL);
+
+#SQL[@58,N37]Result[]
 insert into t1 values( 9 , "Killers");
+
+#SQL[@59,N38]Result[25, 11, 11, 12, 11, 12, 12, 12, 11, 12]
 SELECT a, REGEXP_LIKE(b, '^P') from t1;
-a    regexp_like(b, ^P)
-1    true
-2    true
-3    false
-4    null
-5    false
-6    false
-7    false
-8    null
-9    false
+a  ¦  REGEXP_LIKE(b, ^P)
+1  ¦  true
+2  ¦  true
+3  ¦  false
+4  ¦  null
+5  ¦  false
+6  ¦  false
+7  ¦  false
+8  ¦  null
+9  ¦  false
+
+#SQL[@60,N13]Result[]
 drop table t1;
+
+#SQL[@62,N30]Error[66]
 select regexp_like('Cat', '*');
 error parsing regexp: missing argument to repetition operator: `*`
+
+#SQL[@63,N37]Result[1, 4]
 select regexp_like('CAT','cat','i') r;
 r
 true
+
+#SQL[@64,N34]Result[1, 4]
 select regexp_like('\n','.','n') r;
 r
 true
+
+#SQL[@65,N43]Result[1, 4]
 select regexp_like('abc\ndef','^def','m') r;
 r
 true
+
+#SQL[@66,N44]Result[1, 5]
 select regexp_like('CAT','cat','iiiiiiic') r;
 r
 false
+

@@ -2,7 +2,7 @@
 #select now()-now(),weekday("2022-06-02")-weekday(now()),unix_timestamp()-unix_timestamp(now());
 #select now()-current_timestamp();
 
-#0.5 not supported curdate and curtime 
+#0.5 not supported curdate and curtime
 #select now()-curdate()*1000000-curtime();
 
 #INSERT
@@ -111,21 +111,21 @@ drop table t1;
 
 select timestampdiff(second, t1, t2), a from (select sysdate() as t1, sleep(2) as a, sysdate() as t2);
 
--- @ignore:0
 select time(now());
--- @ignore:0
+| @ignore(0);
 select date(now());
--- @ignore:0
+| @ignore(0);
 select timestamp(now());
--- @ignore:0
+| @ignore(0);
 select year(now());
--- @ignore:0
+| @ignore(0);
 select month(now());
--- @ignore:0
+| @ignore(0);
 select day(now());
--- @ignore:0
+| @ignore(0);
 select hour(now());
--- @ignore:0
+| @ignore(0);
 select minute(now());
--- @ignore:0
+| @ignore(0);
 select second(now());
+| @ignore(0);

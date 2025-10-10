@@ -1,192 +1,314 @@
+#SQL[@1,N21]Result[14, 4]
 SELECT MAKEDATE(0, 0);
 MAKEDATE(0, 0)
 null
+
+#SQL[@2,N24]Result[17, 10]
 SELECT MAKEDATE(2024, 1);
 MAKEDATE(2024, 1)
 2024-01-01
+
+#SQL[@3,N26]Result[19, 10]
 SELECT MAKEDATE(2024, 366);
 MAKEDATE(2024, 366)
 2024-12-31
+
+#SQL[@4,N48]Result[39, 4]
 SELECT DATEDIFF(MAKEDATE(2024, 1), '2024-07-01');
 DATEDIFF(MAKEDATE(2024, 1), 2024-07-01)
 -182
+
+#SQL[@5,N50]Result[43, 10]
 SELECT MAKEDATE(YEAR(NOW()), DAY(LAST_DAY(NOW())));
 MAKEDATE(YEAR(NOW()), DAY(LAST_DAY(NOW())))
-2024-01-31
+2025-01-31
+
+#SQL[@7,N78]Result[13, 26]
 SELECT DATE_SUB(MAKEDATE(YEAR(CURDATE()), 1), INTERVAL 1 DAY) AS LastDayOfYear;
 LastDayOfYear
-2023-12-31 00:00:00
+2024-12-31 00:00:00.000000
+
+#SQL[@10,N68]Result[21, 31]
 SELECT '生日快乐！' AS message, MAKEDATE(1990, 100) AS birthday;
-message    birthday
-生日快乐！    1990-04-10
+message  ¦  birthday
+生日快乐！  ¦  1990-04-10
+
+#SQL[@12,N67]Result[12, 1]
 SELECT YEAR(NOW()) - YEAR(MAKEDATE(YEAR(NOW()), 1)) AS years_passed;
 years_passed
 0
+
+#SQL[@15,N19]Result[]
 create database abc;
+
+#SQL[@16,N7]Result[]
 use abc;
+
+#SQL[@17,N217]Result[]
 CREATE TABLE employees (
-id INT AUTO_INCREMENT PRIMARY KEY,
-employee_name VARCHAR(255) NOT NULL,
-employee_hire_date DATE,
-company_founded DATE,
-employee_status ENUM('active', 'inactive') NOT NULL
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    employee_name VARCHAR(255) NOT NULL,
+    employee_hire_date DATE,
+    company_founded DATE,
+    employee_status ENUM('active', 'inactive') NOT NULL
 );
+
+#SQL[@25,N338]Result[]
 INSERT INTO employees (employee_name, employee_hire_date, company_founded, employee_status)
 VALUES
-('Alice Smith', '2020-06-01', '2000-01-01', 'active'),
-('Bob Johnson', '1999-12-15', '2000-01-01', 'inactive'),
-('Charlie Brown', '2022-03-20', '2000-01-01', 'active'),
-('Diana Prince', '2019-11-30', '1998-12-31', 'active');
+    ('Alice Smith', '2020-06-01', '2000-01-01', 'active'),
+    ('Bob Johnson', '1999-12-15', '2000-01-01', 'inactive'),
+    ('Charlie Brown', '2022-03-20', '2000-01-01', 'active'),
+    ('Diana Prince', '2019-11-30', '1998-12-31', 'active');
+
+#SQL[@32,N308]Result[58, 48, 48, 48]
 SELECT employee_hire_date,
-MAKEDATE(YEAR(company_founded), 1) AS CompanyFoundedDate,
-CASE
-WHEN employee_hire_date > MAKEDATE(YEAR(company_founded), 1) THEN 'After Foundation'
-ELSE 'Before Foundation'
-END AS HirePeriod
+       MAKEDATE(YEAR(company_founded), 1) AS CompanyFoundedDate,
+       CASE
+           WHEN employee_hire_date > MAKEDATE(YEAR(company_founded), 1) THEN 'After Foundation'
+           ELSE 'Before Foundation'
+       END AS HirePeriod
 FROM employees
 WHERE employee_status = 'active';
-employee_hire_date    CompanyFoundedDate    HirePeriod
-2020-06-01    2000-01-01    After Foundation
-2022-03-20    2000-01-01    After Foundation
-2019-11-30    1998-01-01    After Foundation
+employee_hire_date  ¦  CompanyFoundedDate  ¦  HirePeriod
+2020-06-01  ¦  2000-01-01  ¦  After Foundation
+2022-03-20  ¦  2000-01-01  ¦  After Foundation
+2019-11-30  ¦  1998-01-01  ¦  After Foundation
+
+#SQL[@41,N17]Result[]
 drop database abc;
+
+#SQL[@43,N43]Result[42, 26]
 SELECT MAKEDATE(2011,31), MAKEDATE(2011,32);
-MAKEDATE(2011, 31)    MAKEDATE(2011, 32)
-2011-01-31    2011-02-01
+MAKEDATE(2011, 31)  ¦  MAKEDATE(2011, 32)
+2011-01-31  ¦  2011-02-01
+
+#SQL[@44,N45]Result[44, 26]
 SELECT MAKEDATE(2011,365), MAKEDATE(2014,365);
-MAKEDATE(2011, 365)    MAKEDATE(2014, 365)
-2011-12-31    2014-12-31
+MAKEDATE(2011, 365)  ¦  MAKEDATE(2014, 365)
+2011-12-31  ¦  2014-12-31
+
+#SQL[@45,N23]Result[17, 4]
 SELECT MAKEDATE(2011,0);
 MAKEDATE(2011, 0)
 null
+
+#SQL[@46,N24]Result[17, 10]
 SELECT MAKEDATE(2017, 3);
 MAKEDATE(2017, 3)
 2017-01-03
+
+#SQL[@47,N26]Result[19, 10]
 SELECT MAKEDATE(2017, 175);
 MAKEDATE(2017, 175)
 2017-06-24
+
+#SQL[@48,N26]Result[19, 10]
 SELECT MAKEDATE(2017, 100);
 MAKEDATE(2017, 100)
 2017-04-10
+
+#SQL[@49,N26]Result[19, 10]
 SELECT MAKEDATE(2017, 366);
 MAKEDATE(2017, 366)
 2018-01-01
+
+#SQL[@51,N32]Result[25, 4]
 SELECT MAKEDATE(YEAR(NOW()), -2);
 MAKEDATE(YEAR(NOW()), -2)
 null
+
+#SQL[@52,N34]Result[27, 4]
 SELECT MAKEDATE(2024, 29131750000);
 MAKEDATE(2024, 29131750000)
 null
+
+#SQL[@53,N43]Result[36, 4]
 SELECT MAKEDATE(29131750000111111111, 2024);
 MAKEDATE(29131750000111111111, 2024)
 null
+
+#SQL[@55,N28]Result[19, 4]
 SELECT MAKEDATE('2x23', 321);
 MAKEDATE(2x23, 321)
 null
+
+#SQL[@56,N25]Result[16, 4]
 SELECT MAKEDATE(2024, '');
 MAKEDATE(2024, )
 null
+
+#SQL[@58,N21]Result[14, 4]
 SELECT MAKEDATE(0, 0);
 MAKEDATE(0, 0)
 null
+
+#SQL[@59,N23]Result[16, 10]
 SELECT MAKEDATE(0, 123);
 MAKEDATE(0, 123)
 2000-05-02
+
+#SQL[@60,N25]Result[18, 10]
 SELECT MAKEDATE(2024, 99);
 MAKEDATE(2024, 99)
 2024-04-08
+
+#SQL[@61,N26]Result[19, 10]
 SELECT MAKEDATE(2024, 366);
 MAKEDATE(2024, 366)
 2024-12-31
+
+#SQL[@62,N26]Result[19, 10]
 SELECT MAKEDATE(2024, 367);
 MAKEDATE(2024, 367)
 2025-01-01
+
+#SQL[@63,N27]Result[20, 4]
 SELECT MAKEDATE(2024, -399);
 MAKEDATE(2024, -399)
 null
+
+#SQL[@64,N24]Result[17, 4]
 SELECT MAKEDATE(2055, 0);
 MAKEDATE(2055, 0)
 null
+
+#SQL[@65,N27]Result[18, 10]
 SELECT MAKEDATE(2055, '10');
 MAKEDATE(2055, 10)
 2055-01-10
+
+#SQL[@66,N28]Result[19, 10]
 SELECT MAKEDATE(2055, '010');
 MAKEDATE(2055, 010)
 2055-01-10
+
+#SQL[@67,N26]Result[18, 10]
 SELECT MAKEDATE(2832, 088);
 MAKEDATE(2832, 88)
 2832-03-28
+
+#SQL[@68,N27]Error[41]
 SELECT MAKEDATE(2832, 0A88);
 invalid input: column 0a88 does not exist
+
+#SQL[@69,N29]Result[20, 4]
 SELECT MAKEDATE(2832, '0A88');
 MAKEDATE(2832, 0A88)
 null
+
+#SQL[@70,N26]Result[19, 10]
 SELECT MAKEDATE(2024, 1.2);
 MAKEDATE(2024, 1.2)
 2024-01-01
+
+#SQL[@71,N34]Result[27, 10]
 SELECT MAKEDATE(2024, 300.1234890);
 MAKEDATE(2024, 300.1234890)
 2024-10-26
+
+#SQL[@72,N43]Result[34, 10]
 SELECT MAKEDATE(YEAR('2011-01-09'), 10.456);
 MAKEDATE(YEAR(2011-01-09), 10.456)
 2011-01-10
+
+#SQL[@73,N32]Result[25, 4]
 SELECT MAKEDATE(YEAR(NOW()), -2);
 MAKEDATE(YEAR(NOW()), -2)
 null
+
+#SQL[@75,N31]Result[24, 10]
 SELECT MAKEDATE(YEAR(NOW()), 2);
 MAKEDATE(YEAR(NOW()), 2)
-2024-01-02
+2025-01-02
+
+#SQL[@77,N27]Result[20, 4]
 SELECT MAKEDATE(20244, 123);
 MAKEDATE(20244, 123)
 null
+
+#SQL[@78,N26]Result[18, 10]
 SELECT MAKEDATE(0123, 123);
 MAKEDATE(123, 123)
 0123-05-03
+
+#SQL[@79,N26]Result[16, 10]
 SELECT MAKEDATE(0000, 123);
 MAKEDATE(0, 123)
 2000-05-02
+
+#SQL[@80,N26]Result[16, 10]
 SELECT MAKEDATE(0001, 123);
 MAKEDATE(1, 123)
 2001-05-03
+
+#SQL[@81,N26]Result[17, 10]
 SELECT MAKEDATE(0042, 321);
 MAKEDATE(42, 321)
 2042-11-17
+
+#SQL[@82,N28]Result[19, 10]
 SELECT MAKEDATE('2024', 321);
 MAKEDATE(2024, 321)
 2024-11-16
+
+#SQL[@83,N28]Result[19, 4]
 SELECT MAKEDATE('2x23', 321);
 MAKEDATE(2x23, 321)
 null
+
+#SQL[@84,N35]Result[28, 10]
 SELECT MAKEDATE(0b11111100101, 123);
 MAKEDATE(0b11111100101, 123)
 2021-05-03
+
+#SQL[@85,N27]Result[20, 10]
 SELECT MAKEDATE(0x82d, 123);
 MAKEDATE(0x82d, 123)
 2093-05-03
+
+#SQL[@86,N26]Result[19, 4]
 SELECT MAKEDATE(NULL, 123);
 MAKEDATE(null, 123)
 null
+
+#SQL[@87,N27]Result[20, 4]
 SELECT MAKEDATE(NULL, NULL);
 MAKEDATE(null, null)
 null
+
+#SQL[@88,N27]Result[20, 4]
 SELECT MAKEDATE(2024, NULL);
 MAKEDATE(2024, null)
 null
+
+#SQL[@89,N25]Result[16, 4]
 SELECT MAKEDATE(2024, '');
 MAKEDATE(2024, )
 null
+
+#SQL[@90,N30]Result[23, 10]
 SELECT MAKEDATE(2024, 2913174);
 MAKEDATE(2024, 2913174)
 9999-12-31
+
+#SQL[@91,N30]Result[23, 4]
 SELECT MAKEDATE(2024, 2913175);
 MAKEDATE(2024, 2913175)
 null
+
+#SQL[@92,N34]Result[27, 4]
 SELECT MAKEDATE(2024, 29131750000);
 MAKEDATE(2024, 29131750000)
 null
+
+#SQL[@93,N34]Result[27, 4]
 SELECT MAKEDATE(29131750000, 2024);
 MAKEDATE(29131750000, 2024)
 null
+
+#SQL[@94,N43]Result[36, 4]
 SELECT MAKEDATE(29131750000111111111, 2024);
 MAKEDATE(29131750000111111111, 2024)
 null
+

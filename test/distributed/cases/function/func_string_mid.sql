@@ -151,7 +151,7 @@ drop table t1;
 #NULL
 select mid(null, 1, 1);
 
-#WHERE 
+#WHERE
 create table t1 (b varchar(5));
 insert t1 values ('ab'), ('abc'), ('abcd'), ('abcde');
 select * from t1 where mid(b,1,1) = 'a';

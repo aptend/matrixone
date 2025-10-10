@@ -1,237 +1,426 @@
+#SQL[@3,N35]Result[27, 9]
 SELECT SUBSTRING('Quadratically',5);
-substring(Quadratically, 5)
+SUBSTRING(Quadratically, 5)
 ratically
+
+#SQL[@4,N36]Result[23, 6]
 SELECT SUBSTRING('foobarbar' FROM 4);
-substring(foobarbar, 4)
+SUBSTRING(foobarbar, 4)
 barbar
+
+#SQL[@5,N37]Result[30, 6]
 SELECT SUBSTRING('Quadratically',5,6);
-substring(Quadratically, 5, 6)
+SUBSTRING(Quadratically, 5, 6)
 ratica
+
+#SQL[@6,N30]Result[21, 3]
 SELECT SUBSTRING('Sakila', -3);
-substring(Sakila, -3)
+SUBSTRING(Sakila, -3)
 ila
+
+#SQL[@7,N33]Result[24, 3]
 SELECT SUBSTRING('Sakila', -5, 3);
-substring(Sakila, -5, 3)
+SUBSTRING(Sakila, -5, 3)
 aki
+
+#SQL[@8,N40]Result[24, 2]
 SELECT SUBSTRING('Sakila' FROM -4 FOR 2);
-substring(Sakila, -4, 2)
+SUBSTRING(Sakila, -4, 2)
 ki
+
+#SQL[@9,N29]Result[22, 1]
 SELECT SUBSTRING('monty',5,1);
-substring(monty, 5, 1)
+SUBSTRING(monty, 5, 1)
 y
+
+#SQL[@10,N25]Result[18, 1]
 SELECT SUBSTRING('a',1,2);
-substring(a, 1, 2)
+SUBSTRING(a, 1, 2)
 a
+
+#SQL[@11,N28]Result[21, 2]
 select SUBSTR('abcdefg',3,2);
-substr(abcdefg, 3, 2)
+SUBSTR(abcdefg, 3, 2)
 cd
+
+#SQL[@12,N31]Result[24, 2]
 select SUBSTRING('abcdefg',3,2);
-substring(abcdefg, 3, 2)
+SUBSTRING(abcdefg, 3, 2)
 cd
+
+#SQL[@13,N29]Result[22, 2]
 select SUBSTR('abcdefg',-3,2);
-substr(abcdefg, -3, 2)
+SUBSTR(abcdefg, -3, 2)
 ef
+
+#SQL[@14,N29]Result[22, 1]
 select SUBSTR('abcdefg',-1,5);
-substr(abcdefg, -1, 5)
+SUBSTR(abcdefg, -1, 5)
 g
+
+#SQL[@15,N28]Result[21, 0]
 select SUBSTR('abcdefg',0,0);
-substr(abcdefg, 0, 0)
+SUBSTR(abcdefg, 0, 0)
 
+
+#SQL[@17,N30]Result[23, 0]
 select SUBSTR('abcdefg',-1,-1);
-substr(abcdefg, -1, -1)
+SUBSTR(abcdefg, -1, -1)
 
+
+#SQL[@18,N29]Result[22, 0]
 select SUBSTR('abcdefg',1,-1);
-substr(abcdefg, 1, -1)
+SUBSTR(abcdefg, 1, -1)
 
+
+#SQL[@19,N32]Result[23, 0]
 select substring('hello', 2, -1);
 substring(hello, 2, -1)
 
+
+#SQL[@21,N32]Result[23, 1]
 select substring('hello', -1, 1);
 substring(hello, -1, 1)
 o
+
+#SQL[@22,N32]Result[23, 1]
 select substring('hello', -2, 1);
 substring(hello, -2, 1)
 l
+
+#SQL[@23,N41]Result[32, 0]
 select substring('hello', -4294967295, 1);
 substring(hello, -4294967295, 1)
 
+
+#SQL[@24,N40]Result[31, 0]
 select substring('hello', 4294967295, 1);
 substring(hello, 4294967295, 1)
 
+
+#SQL[@25,N41]Result[32, 0]
 select substring('hello', -4294967296, 1);
 substring(hello, -4294967296, 1)
 
+
+#SQL[@26,N40]Result[31, 0]
 select substring('hello', 4294967296, 1);
 substring(hello, 4294967296, 1)
 
+
+#SQL[@27,N41]Result[32, 0]
 select substring('hello', -4294967297, 1);
 substring(hello, -4294967297, 1)
 
+
+#SQL[@28,N40]Result[31, 0]
 select substring('hello', 4294967297, 1);
 substring(hello, 4294967297, 1)
 
+
+#SQL[@30,N51]Error[65]
 select substring('hello', -18446744073709551615, 1);
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@31,N50]Error[64]
 select substring('hello', 18446744073709551615, 1);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@32,N51]Error[65]
 select substring('hello', -18446744073709551616, 1);
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@33,N50]Error[64]
 select substring('hello', 18446744073709551616, 1);
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@34,N51]Error[65]
 select substring('hello', -18446744073709551617, 1);
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@35,N50]Error[64]
 select substring('hello', 18446744073709551617, 1);
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@36,N32]Result[23, 0]
 select substring('hello', 1, -1);
 substring(hello, 1, -1)
 
+
+#SQL[@37,N41]Result[32, 0]
 select substring('hello', 1, -4294967295);
 substring(hello, 1, -4294967295)
 
+
+#SQL[@38,N40]Result[31, 5]
 select substring('hello', 1, 4294967295);
 substring(hello, 1, 4294967295)
 hello
+
+#SQL[@39,N41]Result[32, 0]
 select substring('hello', 1, -4294967296);
 substring(hello, 1, -4294967296)
 
+
+#SQL[@40,N40]Result[31, 5]
 select substring('hello', 1, 4294967296);
 substring(hello, 1, 4294967296)
 hello
+
+#SQL[@41,N41]Result[32, 0]
 select substring('hello', 1, -4294967297);
 substring(hello, 1, -4294967297)
 
+
+#SQL[@43,N40]Result[31, 5]
 select substring('hello', 1, 4294967297);
 substring(hello, 1, 4294967297)
 hello
+
+#SQL[@45,N51]Error[65]
 select substring('hello', 1, -18446744073709551615);
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@46,N50]Error[64]
 select substring('hello', 1, 18446744073709551615);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@47,N51]Error[65]
 select substring('hello', 1, -18446744073709551616);
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@48,N50]Error[64]
 select substring('hello', 1, 18446744073709551616);
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@49,N51]Error[65]
 select substring('hello', 1, -18446744073709551617);
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@50,N50]Error[64]
 select substring('hello', 1, 18446744073709551617);
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@51,N33]Result[24, 0]
 select substring('hello', -1, -1);
 substring(hello, -1, -1)
 
+
+#SQL[@53,N51]Result[42, 0]
 select substring('hello', -4294967295, -4294967295);
 substring(hello, -4294967295, -4294967295)
 
+
+#SQL[@54,N49]Result[40, 0]
 select substring('hello', 4294967295, 4294967295);
 substring(hello, 4294967295, 4294967295)
 
+
+#SQL[@55,N51]Result[42, 0]
 select substring('hello', -4294967296, -4294967296);
 substring(hello, -4294967296, -4294967296)
 
+
+#SQL[@56,N49]Result[40, 0]
 select substring('hello', 4294967296, 4294967296);
 substring(hello, 4294967296, 4294967296)
 
+
+#SQL[@57,N51]Result[42, 0]
 select substring('hello', -4294967297, -4294967297);
 substring(hello, -4294967297, -4294967297)
 
+
+#SQL[@58,N49]Result[40, 0]
 select substring('hello', 4294967297, 4294967297);
 substring(hello, 4294967297, 4294967297)
 
+
+#SQL[@60,N71]Error[65]
 select substring('hello', -18446744073709551615, -18446744073709551615);
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@61,N69]Error[64]
 select substring('hello', 18446744073709551615, 18446744073709551615);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@62,N71]Error[65]
 select substring('hello', -18446744073709551616, -18446744073709551616);
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@63,N69]Error[64]
 select substring('hello', 18446744073709551616, 18446744073709551616);
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@64,N71]Error[65]
 select substring('hello', -18446744073709551617, -18446744073709551617);
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@65,N69]Error[64]
 select substring('hello', 18446744073709551617, 18446744073709551617);
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@67,N40]Result[24, 2]
 SELECT SUBSTRING('Sakila' FROM -4 FOR 2);
-substring(Sakila, -4, 2)
+SUBSTRING(Sakila, -4, 2)
 ki
+
+#SQL[@68,N36]Result[23, 6]
 SELECT SUBSTRING('foobarbar' FROM 4);
-substring(foobarbar, 4)
+SUBSTRING(foobarbar, 4)
 barbar
+
+#SQL[@71,N31]Result[24, 3]
 SELECT SUBSTR('w3resource',4,3);
-substr(w3resource, 4, 3)
+SUBSTR(w3resource, 4, 3)
 eso
+
+#SQL[@74,N48]Result[39, 2]
 select substring('abc', cast(2 as unsigned int));
 substring(abc, cast(2 as int unsigned))
 bc
+
+#SQL[@76,N32]Result[]
 create table t1(f1 varchar(255));
+
+#SQL[@77,N37]Result[]
 insert into t1 values ("123"),("456");
+
+#SQL[@78,N59]Result[19, 1, 1]
 select substring(f1,1,1) from t1 group by substring(f1,1,1);
-substirng(f1, 1, 1)
+substring(f1, 1, 1)
 1
 4
+
+#SQL[@79,N43]Result[19, 1, 1]
 select substring(f1,1,1) from t1 group by 1;
-substirng(f1, 1, 1)
+substring(f1, 1, 1)
 1
 4
+
+#SQL[@80,N13]Result[]
 drop table t1;
+
+#SQL[@85,N55]Result[44, 4]
 SELECT '1' IN ('1', SUBSTRING(-9223372036854775809, 1));
-1 in (1, substring(-9223372036854775809, 1))
+1 in (1, SUBSTRING(-9223372036854775809, 1))
 true
+
+#SQL[@88,N46]Result[37, 4]
 SELECT SUBSTRING('1', year(FROM_UNIXTIME(-1)));
-substring(1, year(from_unixtime(-1)))
+SUBSTRING(1, year(FROM_UNIXTIME(-1)))
 null
+
+#SQL[@89,N32]Result[27, 1]
 select reverse(substring(1,1,1));
 reverse(substring(1, 1, 1))
 1
+
+#SQL[@93,N28]Result[]
 CREATE TABLE t1(c1 CHAR(30));
+
+#SQL[@94,N36]Result[]
 INSERT INTO t1 VALUES('111'),('222');
+
+#SQL[@95,N49]Result[25, 3, 3]
 SELECT DISTINCT substr(c1, 1, 2147483647) FROM t1;
 substr(c1, 1, 2147483647)
 111
 222
+
+#SQL[@96,N49]Result[25, 3, 3]
 SELECT DISTINCT substr(c1, 1, 2147483648) FROM t1;
 substr(c1, 1, 2147483648)
 111
 222
+
+#SQL[@97,N50]Result[26, 1, 1]
 SELECT DISTINCT substr(c1, -1, 2147483648) FROM t1;
 substr(c1, -1, 2147483648)
 1
 2
+
+#SQL[@99,N59]Result[35, 0]
 SELECT DISTINCT substr(c1, -2147483647, 2147483648) FROM t1;
 substr(c1, -2147483647, 2147483648)
 
+
+#SQL[@101,N59]Result[35, 0]
 SELECT DISTINCT substr(c1, 9223372036854775807, 23) FROM t1;
 substr(c1, 9223372036854775807, 23)
 
+
+#SQL[@102,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@112,N30]Result[]
 create table t1 (b varchar(5));
+
+#SQL[@113,N53]Result[]
 insert t1 values ('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@114,N111]Result[132, 43, 48, 54, 61]
 select *,substring(b,1),substring(b,-1),substring(b,-2),substring(b,-3),substring(b,-4),substring(b,-5) from t1;
-b    substring(b, 1)    substring(b, -1)    substring(b, -2)    substring(b, -3)    substring(b, -4)    substring(b, -5)
-ab    ab    b    ab            
-abc    abc    c    bc    abc        
-abcd    abcd    d    cd    bcd    abcd    
-abcde    abcde    e    de    cde    bcde    abcde
+b  ¦  substring(b, 1)  ¦  substring(b, -1)  ¦  substring(b, -2)  ¦  substring(b, -3)  ¦  substring(b, -4)  ¦  substring(b, -5)
+ab  ¦  ab  ¦  b  ¦  ab  ¦    ¦    ¦  
+abc  ¦  abc  ¦  c  ¦  bc  ¦  abc  ¦    ¦  
+abcd  ¦  abcd  ¦  d  ¦  cd  ¦  bcd  ¦  abcd  ¦  
+abcde  ¦  abcde  ¦  e  ¦  de  ¦  cde  ¦  bcde  ¦  abcde
+
+#SQL[@115,N129]Result[132, 43, 48, 54, 61]
 select * from (select *,substring(b,1),substring(b,-1),substring(b,-2),substring(b,-3),substring(b,-4),substring(b,-5) from t1) t;
-b    substring(b, 1)    substring(b, -1)    substring(b, -2)    substring(b, -3)    substring(b, -4)    substring(b, -5)
-ab    ab    b    ab            
-abc    abc    c    bc    abc        
-abcd    abcd    d    cd    bcd    abcd    
-abcde    abcde    e    de    cde    bcde    abcde
+b  ¦  substring(b, 1)  ¦  substring(b, -1)  ¦  substring(b, -2)  ¦  substring(b, -3)  ¦  substring(b, -4)  ¦  substring(b, -5)
+ab  ¦  ab  ¦  b  ¦  ab  ¦    ¦    ¦  
+abc  ¦  abc  ¦  c  ¦  bc  ¦  abc  ¦    ¦  
+abcd  ¦  abcd  ¦  d  ¦  cd  ¦  bcd  ¦  abcd  ¦  
+abcde  ¦  abcde  ¦  e  ¦  de  ¦  cde  ¦  bcde  ¦  abcde
+
+#SQL[@116,N13]Result[]
 drop table t1;
+
+#SQL[@119,N48]Result[]
 CREATE TABLE t1 (a varchar(2000), b varchar(10));
+
+#SQL[@120,N39]Result[]
 INSERT INTO t1 select space(1300),'one';
+
+#SQL[@121,N39]Result[]
 INSERT INTO t1 select space(1300),'two';
+
+#SQL[@123,N54]Result[34, 20]
 SELECT SUBSTRING(a,1,10), LENGTH(a) FROM t1 GROUP BY a;
-substring(a, 1, 10)	length(a)
-          	1300
+SUBSTRING(a, 1, 10)  ¦  LENGTH(a)
+            ¦  1300
+
+#SQL[@124,N13]Result[]
 drop table t1;
+
+#SQL[@125,N22]Result[]
 CREATE TABLE t1(a INT);
+
+#SQL[@126,N29]Result[]
 INSERT INTO t1 VALUES (0),(0);
+
+#SQL[@127,N44]Error[40]
 SELECT 1 FROM t1 GROUP BY SUBSTRING('',1,'');
 invalid argument cast to int, bad value 
+
+#SQL[@128,N13]Result[]
 drop table t1;
+
+#SQL[@131,N35]Result[]
 create table t1 (email varchar(50));
+
+#SQL[@132,N113]Result[]
 insert into t1 values ('sasha@mysql.com'),('monty@mysql.com'),('foo@hotmail.com'),('foo@aol.com'),('bar@aol.com');
+
+#SQL[@133,N48]Result[]
 create table t2(id int not null, t2 varchar(50));
+
+#SQL[@134,N54]Result[]
 insert into t2 select 1, substring(email, 2,1) from t1;
+
+#SQL[@135,N17]Result[2, 1, 1, 1, 1, 1]
 select id from t2;
 id
 1
@@ -239,6 +428,8 @@ id
 1
 1
 1
+
+#SQL[@136,N17]Result[2, 1, 1, 1, 1, 1]
 select t2 from t2;
 t2
 a
@@ -246,74 +437,139 @@ o
 o
 o
 a
+
+#SQL[@137,N13]Result[]
 drop table t1;
+
+#SQL[@138,N13]Result[]
 drop table t2;
+
+#SQL[@143,N31]Result[]
 create table t1 (a varchar(50));
+
+#SQL[@144,N55]Result[]
 insert into t1 values("你好"), ("再见"), ("今天");
+
+#SQL[@145,N16]Result[1, 6, 6, 6]
 select * from t1;
 a
 你好
 再见
 今天
+
+#SQL[@146,N33]Result[18, 3, 3, 3]
 select substring(a, 1, 1) from t1;
 substring(a, 1, 1)
 你
 再
 今
+
+#SQL[@147,N13]Result[]
 drop table t1;
+
+#SQL[@150,N28]Result[21, 4]
 select substring(null, 1, 1);
 substring(null, 1, 1)
 null
+
+#SQL[@153,N30]Result[]
 create table t1 (b varchar(5));
+
+#SQL[@154,N53]Result[]
 insert t1 values ('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@155,N45]Result[1, 2, 3, 4, 5]
 select * from t1 where substring(b,1,1) = 'a';
 b
 ab
 abc
 abcd
 abcde
+
+#SQL[@156,N13]Result[]
 drop table t1;
+
+#SQL[@159,N23]Result[]
 drop table if exists t1;
+
+#SQL[@160,N29]Result[]
 create table t1(b varchar(5));
+
+#SQL[@161,N57]Result[]
 insert into t1 values('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@162,N60]Result[1, 2, 3, 4, 5]
 select b from t1 group by b having substring(b,1,1)+'a'='aa';
 b
 ab
 abc
 abcd
 abcde
+
+#SQL[@163,N13]Result[]
 drop table t1;
+
+#SQL[@166,N23]Result[]
 drop table if exists t1;
+
+#SQL[@167,N23]Result[]
 drop table if exists t2;
+
+#SQL[@168,N29]Result[]
 create table t1(a varchar(5));
+
+#SQL[@169,N30]Result[]
 create table t2(a varchar(20));
+
+#SQL[@170,N57]Result[]
 insert into t1 values('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@171,N98]Result[]
 insert into t2 values("2013-04-30"),("1994-10-04"),("2018-06-04"),("2012-10-12"), ("abc"),("abcd");
+
+#SQL[@172,N83]Result[8, 11, 12, 12, 13, 13, 14, 14, 15]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (substring(t1.a, 1,1) = substring(t2.a, 1,1 ));
-a    a
-ab    abc
-abc    abc
-abcd    abc
-abcde    abc
-ab    abcd
-abc    abcd
-abcd    abcd
-abcde    abcd
+a  ¦  a
+ab  ¦  abc
+ab  ¦  abcd
+abc  ¦  abc
+abc  ¦  abcd
+abcd  ¦  abc
+abcd  ¦  abcd
+abcde  ¦  abc
+abcde  ¦  abcd
+
+#SQL[@173,N13]Result[]
 drop table t1;
+
+#SQL[@174,N13]Result[]
 drop table t2;
+
+#SQL[@178,N23]Result[]
 drop table if exists t1;
+
+#SQL[@179,N23]Result[]
 create table t1(a blob);
+
+#SQL[@180,N57]Result[]
 insert into t1 values('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@181,N53]Result[33, 9, 10, 11, 11]
 SELECT SUBSTRING(a,1,4), LENGTH(a) FROM t1 GROUP BY a;
-substring(a, 1, 4)    length(a)
-ab    2
-abc    3
-abcd    4
-abcd    5
+SUBSTRING(a, 1, 4)  ¦  LENGTH(a)
+ab  ¦  2
+abc  ¦  3
+abcd  ¦  4
+abcd  ¦  5
+
+#SQL[@182,N30]Result[16, 1, 1, 1, 1]
 SELECT SUBSTRING(a,-1) FROM t1;
-substring(a, -1)
+SUBSTRING(a, -1)
 b
 c
 d
 e
+
+#SQL[@183,N13]Result[]
 drop table t1;
+

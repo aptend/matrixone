@@ -1,96 +1,169 @@
+#SQL[@1,N47]Result[36, 0]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', 0);
-substring_index(www.mysql.com, ., 0)
+SUBSTRING_INDEX(www.mysql.com, ., 0)
 
+
+#SQL[@2,N47]Result[36, 3]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', 1);
-substring_index(www.mysql.com, ., 1)
+SUBSTRING_INDEX(www.mysql.com, ., 1)
 www
+
+#SQL[@3,N47]Result[36, 9]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', 2);
-substring_index(www.mysql.com, ., 2)
+SUBSTRING_INDEX(www.mysql.com, ., 2)
 www.mysql
+
+#SQL[@4,N47]Result[36, 13]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', 3);
-substring_index(www.mysql.com, ., 3)
+SUBSTRING_INDEX(www.mysql.com, ., 3)
 www.mysql.com
+
+#SQL[@5,N48]Result[37, 13]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', -3);
-substring_index(www.mysql.com, ., -3)
+SUBSTRING_INDEX(www.mysql.com, ., -3)
 www.mysql.com
+
+#SQL[@6,N48]Result[37, 9]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', -2);
-substring_index(www.mysql.com, ., -2)
+SUBSTRING_INDEX(www.mysql.com, ., -2)
 mysql.com
+
+#SQL[@7,N48]Result[37, 3]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', -1);
-substring_index(www.mysql.com, ., -1)
+SUBSTRING_INDEX(www.mysql.com, ., -1)
 com
+
+#SQL[@8,N46]Result[35, 0]
 SELECT SUBSTRING_INDEX('www.mysql.com', '', 0);
-substring_index(www.mysql.com, , 0)
+SUBSTRING_INDEX(www.mysql.com, , 0)
 
+
+#SQL[@10,N49]Result[36, 0]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', '0');
-substring_index(www.mysql.com, ., 0)
+SUBSTRING_INDEX(www.mysql.com, ., 0)
 
+
+#SQL[@11,N49]Result[36, 3]
 SELECT SUBSTRING_INDEX('www.mysql.com', '.', '1');
-substring_index(www.mysql.com, ., 1)
+SUBSTRING_INDEX(www.mysql.com, ., 1)
 www
-SELECT SUBSTRING_INDEX('www.mysql.com', '.', '2');
-substring_index(www.mysql.com, ., 2)
-www.mysql
-SELECT SUBSTRING_INDEX('www.mysql.com', '.', '3');
-substring_index(www.mysql.com, ., 3)
-www.mysql.com
-SELECT SUBSTRING_INDEX('www.mysql.com', '.', '4');
-substring_index(www.mysql.com, ., 4)
-www.mysql.com
-SELECT SUBSTRING_INDEX('www.mysql.com', '.', '-3');
-substring_index(www.mysql.com, ., -3)
-www.mysql.com
-SELECT SUBSTRING_INDEX('www.mysql.com', '.', '-2');
-substring_index(www.mysql.com, ., -2)
-mysql.com
-SELECT SUBSTRING_INDEX('www.mysql.com', '.', '-1');
-substring_index(www.mysql.com, ., -1)
-com
-SELECT SUBSTRING_INDEX('www.mysql.com', '', '0');
-substring_index(www.mysql.com, , 0)
 
+#SQL[@12,N49]Result[36, 9]
+SELECT SUBSTRING_INDEX('www.mysql.com', '.', '2');
+SUBSTRING_INDEX(www.mysql.com, ., 2)
+www.mysql
+
+#SQL[@13,N49]Result[36, 13]
+SELECT SUBSTRING_INDEX('www.mysql.com', '.', '3');
+SUBSTRING_INDEX(www.mysql.com, ., 3)
+www.mysql.com
+
+#SQL[@14,N49]Result[36, 13]
+SELECT SUBSTRING_INDEX('www.mysql.com', '.', '4');
+SUBSTRING_INDEX(www.mysql.com, ., 4)
+www.mysql.com
+
+#SQL[@15,N50]Result[37, 13]
+SELECT SUBSTRING_INDEX('www.mysql.com', '.', '-3');
+SUBSTRING_INDEX(www.mysql.com, ., -3)
+www.mysql.com
+
+#SQL[@16,N50]Result[37, 9]
+SELECT SUBSTRING_INDEX('www.mysql.com', '.', '-2');
+SUBSTRING_INDEX(www.mysql.com, ., -2)
+mysql.com
+
+#SQL[@17,N50]Result[37, 3]
+SELECT SUBSTRING_INDEX('www.mysql.com', '.', '-1');
+SUBSTRING_INDEX(www.mysql.com, ., -1)
+com
+
+#SQL[@18,N48]Result[35, 0]
+SELECT SUBSTRING_INDEX('www.mysql.com', '', '0');
+SUBSTRING_INDEX(www.mysql.com, , 0)
+
+
+#SQL[@21,N57]Result[46, 3]
 select substring_index('xyz', 'abc', 9223372036854775808);
 substring_index(xyz, abc, 9223372036854775808)
 xyz
+
+#SQL[@22,N70]Result[61, 19]
 select substring_index("aaa.bbb.ccc.ddd.eee",'.',18446744073709551613);
 substring_index(aaa.bbb.ccc.ddd.eee, ., 18446744073709551613)
 aaa.bbb.ccc.ddd.eee
+
+#SQL[@23,N71]Result[62, 19]
 select substring_index("aaa.bbb.ccc.ddd.eee",'.',-18446744073709551613);
 substring_index(aaa.bbb.ccc.ddd.eee, ., -18446744073709551613)
 aaa.bbb.ccc.ddd.eee
+
+#SQL[@26,N56]Result[47, 4]
 select substring_index(null, 'abc', 9223372036854775808);
 substring_index(null, abc, 9223372036854775808)
 null
+
+#SQL[@27,N56]Result[47, 4]
 select substring_index('xyz', null, 9223372036854775808);
 substring_index(xyz, null, 9223372036854775808)
 null
+
+#SQL[@28,N42]Result[31, 4]
 select substring_index('xyz', 'abc', null);
 substring_index(xyz, abc, null)
 null
+
+#SQL[@30,N47]Result[36, 3]
 SELECT SUBSTRING_INDEX('192,168,8,203', ',', 1);
-substring_index(192,168,8,203, ,, 1)
+SUBSTRING_INDEX(192,168,8,203, ,, 1)
 192
+
+#SQL[@31,N48]Result[37, 3]
 SELECT SUBSTRING_INDEX('192,168,8,203', ',', -1);
-substring_index(192,168,8,203, ,, -1)
+SUBSTRING_INDEX(192,168,8,203, ,, -1)
 203
+
+#SQL[@32,N72]Result[60, 3]
 SELECT SUBSTRING_INDEX(SUBSTRING_INDEX('192,168,8,203', ',', 2), ',',-1);
-substring_index(substring_index(192,168,8,203, ,, 2), ,, -1)
+SUBSTRING_INDEX(SUBSTRING_INDEX(192,168,8,203, ,, 2), ,, -1)
 168
+
+#SQL[@33,N72]Result[60, 1]
 SELECT SUBSTRING_INDEX(SUBSTRING_INDEX('192,168,8,203', ',', -2), ',',1);
-substring_index(substring_index(192,168,8,203, ,, -2), ,, 1)
+SUBSTRING_INDEX(SUBSTRING_INDEX(192,168,8,203, ,, -2), ,, 1)
 8
+
+#SQL[@36,N55]Result[]
 create table test(a varchar(100), b varchar(20), c int);
+
+#SQL[@37,N48]Result[]
 insert into test values('www.mysql.com', '.', 0);
+
+#SQL[@38,N48]Result[]
 insert into test values('www.mysql.com', '.', 1);
+
+#SQL[@39,N48]Result[]
 insert into test values('www.mysql.com', '.', 2);
+
+#SQL[@40,N48]Result[]
 insert into test values('www.mysql.com', '.', 3);
+
+#SQL[@41,N66]Error[63]
 insert into test values('www.mysql.com', '.', 9223372036854775808);
-Data truncation: data out of range: data type int32, value '9223372036854775808'
+data out of range: data type int32, value '9223372036854775808'
+
+#SQL[@42,N49]Result[]
 insert into test values('www.mysql.com', '.', -1);
+
+#SQL[@43,N49]Result[]
 insert into test values('www.mysql.com', '.', -2);
+
+#SQL[@44,N49]Result[]
 insert into test values('www.mysql.com', '.', -3);
+
+#SQL[@45,N41]Result[24, 0, 3, 9, 13, 3, 9, 13]
 select SUBSTRING_INDEX(a, b, c) from test;
-substring_index(a, b, c)
+SUBSTRING_INDEX(a, b, c)
 
 www
 www.mysql
@@ -98,18 +171,40 @@ www.mysql.com
 com
 mysql.com
 www.mysql.com
+
+#SQL[@46,N15]Result[]
 drop table test;
+
+#SQL[@49,N57]Result[]
 create table test(a varchar(100), b varchar(20), c float);
+
+#SQL[@50,N48]Result[]
 insert into test values('www.mysql.com', '.', 0);
+
+#SQL[@51,N50]Result[]
 insert into test values('www.mysql.com', '.', 1.0);
+
+#SQL[@52,N50]Result[]
 insert into test values('www.mysql.com', '.', 2.0);
+
+#SQL[@53,N50]Result[]
 insert into test values('www.mysql.com', '.', 3.0);
+
+#SQL[@54,N66]Result[]
 insert into test values('www.mysql.com', '.', 92233720368547758.0);
+
+#SQL[@55,N51]Result[]
 insert into test values('www.mysql.com', '.', -1.0);
+
+#SQL[@56,N51]Result[]
 insert into test values('www.mysql.com', '.', -2.0);
+
+#SQL[@57,N51]Result[]
 insert into test values('www.mysql.com', '.', -3.0);
+
+#SQL[@58,N41]Result[24, 0, 3, 9, 13, 13, 3, 9, 13]
 select SUBSTRING_INDEX(a, b, c) from test;
-substring_index(a, b, c)
+SUBSTRING_INDEX(a, b, c)
 
 www
 www.mysql
@@ -118,17 +213,37 @@ www.mysql.com
 com
 mysql.com
 www.mysql.com
+
+#SQL[@59,N15]Result[]
 drop table test;
+
+#SQL[@62,N64]Result[]
 create table test(a varchar(100), b varchar(20), c varchar(100));
+
+#SQL[@63,N50]Result[]
 insert into test values('www.mysql.com', '.', '0');
+
+#SQL[@64,N50]Result[]
 insert into test values('www.mysql.com', '.', '1');
+
+#SQL[@65,N50]Result[]
 insert into test values('www.mysql.com', '.', '2');
+
+#SQL[@66,N50]Result[]
 insert into test values('www.mysql.com', '.', '3');
+
+#SQL[@67,N51]Result[]
 insert into test values('www.mysql.com', '.', '-1');
+
+#SQL[@68,N51]Result[]
 insert into test values('www.mysql.com', '.', '-2');
+
+#SQL[@69,N51]Result[]
 insert into test values('www.mysql.com', '.', '-3');
+
+#SQL[@70,N41]Result[24, 0, 3, 9, 13, 3, 9, 13]
 select SUBSTRING_INDEX(a, b, c) from test;
-substring_index(a, b, c)
+SUBSTRING_INDEX(a, b, c)
 
 www
 www.mysql
@@ -136,19 +251,41 @@ www.mysql.com
 com
 mysql.com
 www.mysql.com
+
+#SQL[@71,N15]Result[]
 drop table test;
+
+#SQL[@73,N47]Result[]
 create table test(a text, b varchar(20), c int);
+
+#SQL[@74,N48]Result[]
 insert into test values('www.mysql.com', '.', 0);
+
+#SQL[@75,N48]Result[]
 insert into test values('www.mysql.com', '.', 1);
+
+#SQL[@76,N48]Result[]
 insert into test values('www.mysql.com', '.', 2);
+
+#SQL[@77,N48]Result[]
 insert into test values('www.mysql.com', '.', 3);
+
+#SQL[@78,N66]Error[63]
 insert into test values('www.mysql.com', '.', 9223372036854775808);
-Data truncation: data out of range: data type int32, value '9223372036854775808'
+data out of range: data type int32, value '9223372036854775808'
+
+#SQL[@79,N49]Result[]
 insert into test values('www.mysql.com', '.', -1);
+
+#SQL[@80,N49]Result[]
 insert into test values('www.mysql.com', '.', -2);
+
+#SQL[@81,N49]Result[]
 insert into test values('www.mysql.com', '.', -3);
+
+#SQL[@82,N41]Result[24, 0, 3, 9, 13, 3, 9, 13]
 select SUBSTRING_INDEX(a, b, c) from test;
-substring_index(a, b, c)
+SUBSTRING_INDEX(a, b, c)
 
 www
 www.mysql
@@ -156,19 +293,41 @@ www.mysql.com
 com
 mysql.com
 www.mysql.com
+
+#SQL[@83,N15]Result[]
 drop table test;
+
+#SQL[@85,N47]Result[]
 create table test(a blob, b varchar(20), c int);
+
+#SQL[@86,N48]Result[]
 insert into test values('www.mysql.com', '.', 0);
+
+#SQL[@87,N48]Result[]
 insert into test values('www.mysql.com', '.', 1);
+
+#SQL[@88,N48]Result[]
 insert into test values('www.mysql.com', '.', 2);
+
+#SQL[@89,N48]Result[]
 insert into test values('www.mysql.com', '.', 3);
+
+#SQL[@90,N66]Error[63]
 insert into test values('www.mysql.com', '.', 9223372036854775808);
-Data truncation: data out of range: data type int32, value '9223372036854775808'
+data out of range: data type int32, value '9223372036854775808'
+
+#SQL[@91,N49]Result[]
 insert into test values('www.mysql.com', '.', -1);
+
+#SQL[@92,N49]Result[]
 insert into test values('www.mysql.com', '.', -2);
+
+#SQL[@93,N49]Result[]
 insert into test values('www.mysql.com', '.', -3);
+
+#SQL[@94,N41]Result[24, 0, 3, 9, 13, 3, 9, 13]
 select SUBSTRING_INDEX(a, b, c) from test;
-substring_index(a, b, c)
+SUBSTRING_INDEX(a, b, c)
 
 www
 www.mysql
@@ -176,4 +335,7 @@ www.mysql.com
 com
 mysql.com
 www.mysql.com
+
+#SQL[@95,N15]Result[]
 drop table test;
+

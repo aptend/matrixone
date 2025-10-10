@@ -1,4 +1,4 @@
-#SELECT 
+#SELECT
 SELECT LPAD('hi',4,'??');
 SELECT LPAD('hi',1,'??');
 SELECT RPAD('hi',5,'?');

@@ -1,29 +1,82 @@
+#SQL[@1,N30]Result[]
 drop database if exists testdb;
+
+#SQL[@2,N22]Result[]
 create database testdb;
+
+#SQL[@3,N10]Result[]
 use testdb;
+
+#SQL[@5,N56]Result[]
 create account acc admin_name "root" identified by "111";
+
+#SQL[@6,N51]Result[]
 create publication pub1 database testdb account all;
+
+#SQL[@8,N23]Result[]
 create table t1 (a int);
+
+#SQL[@9,N23]Result[]
 create table t2 (a int);
+
+#SQL[@10,N23]Result[]
 create table t3 (a int);
+
+#SQL[@12,N54]Result[]
 insert into t1 select * from generate_series(1, 1000)g;
+
+#SQL[@13,N54]Result[]
 insert into t2 select * from generate_series(1, 1000)g;
+
+#SQL[@14,N54]Result[]
 insert into t3 select * from generate_series(1, 1000)g;
+
+#SQL[@16,N34]Result[]
 drop database if exists testdb_sub;
+
+#SQL[@17,N52]Result[]
 create database testdb_sub from sys publication pub1;
+
+#SQL[@19,N34]Result[]
 drop database if exists testdb_nor;
+
+#SQL[@20,N26]Result[]
 create database testdb_nor;
+
+#SQL[@21,N14]Result[]
 use testdb_nor;
+
+#SQL[@23,N23]Result[]
 create table t1 (a int);
+
+#SQL[@24,N23]Result[]
 create table t2 (a int);
+
+#SQL[@25,N23]Result[]
 create table t3 (a int);
+
+#SQL[@27,N54]Result[]
 insert into t1 select * from generate_series(1, 1001)g;
+
+#SQL[@28,N54]Result[]
 insert into t2 select * from generate_series(1, 1001)g;
+
+#SQL[@29,N54]Result[]
 insert into t3 select * from generate_series(1, 1001)g;
+
+#SQL[@31,N49]Result[]
 create table tmp(dbName varchar, tblName varchar);
+
+#SQL[@32,N87]Result[]
 insert into tmp values ("testdb_nor", "t1"), ("testdb_nor", "t2"), ("testdb_nor", "t3");
+
+#SQL[@33,N87]Result[]
 insert into tmp values ("testdb_sub", "t1"), ("testdb_sub", "t2"), ("testdb_sub", "t3");
+
+#SQL[@35,N37]Result[]
 set mo_table_stats.force_update = yes;
+
+#SQL[@36,N102]Result[30, 4, 4, 4, 4, 4, 4]
 select mo_table_rows(dbName, tblName) from (select * from testdb_nor.tmp order by dbName, tblName asc);
 mo_table_rows(dbName, tblName)
 1001
@@ -32,12 +85,24 @@ mo_table_rows(dbName, tblName)
 1000
 1000
 1000
+
+#SQL[@38,N43]Result[]
 insert into tmp values ("testdb_sub", "t4");
+
+#SQL[@39,N102]Error[53]
 select mo_table_rows(dbName, tblName) from (select * from testdb_nor.tmp order by dbName, tblName asc);
 internal error: get the subscribed tbl info empty: t4
+
+#SQL[@41,N36]Result[]
 set mo_table_stats.force_update = no;
+
+#SQL[@42,N62]Result[]
 delete from tmp where dbName = "testdb_sub" and tblName = "t4";
+
+#SQL[@44,N37]Result[]
 set mo_table_stats.use_old_impl = yes;
+
+#SQL[@45,N102]Result[30, 4, 4, 4, 4, 4, 4]
 select mo_table_rows(dbName, tblName) from (select * from testdb_nor.tmp order by dbName, tblName asc);
 mo_table_rows(dbName, tblName)
 1001
@@ -46,6 +111,8 @@ mo_table_rows(dbName, tblName)
 1000
 1000
 1000
+
+#SQL[@46,N102]Result[30, 5, 5, 5, 5, 5, 5]
 select mo_table_size(dbName, tblName) from (select * from testdb_nor.tmp order by dbName, tblName asc);
 mo_table_size(dbName, tblName)
 36036
@@ -54,14 +121,33 @@ mo_table_size(dbName, tblName)
 36000
 36000
 36000
+
+#SQL[@49,N43]Result[]
 insert into tmp values ("testdb_sub", "t4");
+
+#SQL[@50,N102]Error[53]
 select mo_table_rows(dbName, tblName) from (select * from testdb_nor.tmp order by dbName, tblName asc);
 internal error: get the subscribed tbl info empty: t4
+
+#SQL[@51,N102]Error[53]
 select mo_table_size(dbName, tblName) from (select * from testdb_nor.tmp order by dbName, tblName asc);
 internal error: get the subscribed tbl info empty: t4
+
+#SQL[@54,N36]Result[]
 set mo_table_stats.use_old_impl = no;
+
+#SQL[@56,N34]Result[]
 drop database if exists testdb_nor;
+
+#SQL[@57,N34]Result[]
 drop database if exists testdb_sub;
+
+#SQL[@60,N26]Result[]
 drop account if exists acc;
+
+#SQL[@61,N31]Result[]
 drop publication if exists pub1;
+
+#SQL[@62,N30]Result[]
 drop database if exists testdb;
+

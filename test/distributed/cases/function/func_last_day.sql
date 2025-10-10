@@ -1,11 +1,11 @@
 SELECT LAST_DAY('2024-07-01');
 SELECT LAST_DAY('2024-02-15');
--- @ignore:0
 SELECT LAST_DAY(CURDATE());
--- @ignore:0
+| @ignore(0);
 SELECT LAST_DAY(NOW());
--- @ignore:0
+| @ignore(0);
 SELECT LAST_DAY(DATE_SUB('2024-07-01', INTERVAL 1 MONTH)) AS last_day_of_previous_month;
+| @ignore(0);
 
 create database abc;
 use abc;
@@ -55,10 +55,10 @@ SELECT LAST_DAY('20240603');
 SELECT LAST_DAY('hello');
 SELECT LAST_DAY();
 SELECT LAST_DAY(MAKEDATE(2024, 100));
--- @ignore:0
 SELECT LAST_DAY(CURDATE());
--- @ignore:0
+| @ignore(0);
 SELECT LAST_DAY(NOW());
+| @ignore(0);
 SELECT LAST_DAY(DATE_SUB('1991-01-01', INTERVAL 1 MONTH)) AS last_day_of_previous_month;
 SELECT LAST_DAY(20240601);
 SELECT LAST_DAY(2024-06-01);

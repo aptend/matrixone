@@ -1,10 +1,18 @@
+#SQL[@1,N38]Result[1, 4]
 select cast(now() as date)=curdate() q;
 q
 true
+
+#SQL[@2,N23]Result[]
 create table t1 (a int);
+
+#SQL[@3,N33]Result[]
 insert into t1 values (1),(2),(3);
+
+#SQL[@4,N46]Result[1, 4, 4, 4]
 select cast(now() as date)=curdate() q from t1;
 q
 true
 true
 true
+

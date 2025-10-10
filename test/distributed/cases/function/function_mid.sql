@@ -63,13 +63,13 @@ SELECT mid(str1, d1, d2) FROM mid_01 WHERE d1 > 0;
 -- @suite
 -- @setup
 DROP TABLE IF EXISTS mid_02;
-CREATE TABLE mid_02(id int, 
+CREATE TABLE mid_02(id int,
 					s VARCHAR(50),
 					d1 smallint,
 					d2 bigint unsigned NOT NULL,
 					PRIMARY KEY(id));
-					
-					
+
+
 INSERT INTO mid_02 VALUES(1, 'woshishei3829', 3, 12);
 INSERT INTO mid_02 VALUES(2, '', -2, 2132);
 INSERT INTO mid_02 VALUES(3, ' 356284o 329&***((^%$%^&',-2, 2);
@@ -125,7 +125,7 @@ CREATE TABLE mid_03(
     d1 tinyint unsigned,
     str1 VARCHAR(50),
     primary key (id));
-	
+
 CREATE TABLE mid_04(
     id int,
     d2 bigint,
@@ -144,7 +144,7 @@ INSERT INTO mid_04 VALUES(3, 35267192, 'ewgu278wd-+ABNJDSK');
 INSERT INTO mid_04 VALUES(4, NULL, 'hey32983..........,,');
 
 
--- join 
+-- join
 SELECT mid_03.id AS id_3,mid_04.id AS id_4 FROM mid_03,mid_04 WHERE mid(mid_03.str1,1,4) = mid(mid_04.str1,1,4);
 SELECT mid_03.str1 AS str1_3,mid_04.str1 FROM mid_03,mid_04 WHERE mid(mid_03.str1,2,1) = mid(mid_04.str1,-1,1);
 SELECT mid(mid_03.str1, -10, 5) FROM mid_03,mid_04 WHERE mid_03.str1 = mid_04.str1;

@@ -1,217 +1,419 @@
+#SQL[@1,N39]Result[6, 1]
 SELECT REGEXP_INSTR('Cat', 'at') Result;
-result
+Result
 2
+
+#SQL[@2,N40]Result[6, 1]
 SELECT REGEXP_INSTR('Cat', '^at') Result;
-result
+Result
 0
+
+#SQL[@3,N39]Result[6, 1]
 SELECT REGEXP_INSTR('at', '^at') Result;
-result
+Result
 1
+
+#SQL[@4,N47]Result[6, 1]
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 2) Result;
-result
+Result
 5
+
+#SQL[@6,N50]Result[4, 1]
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 2) AS 'Pos2';
 Pos2
 5
+
+#SQL[@7,N50]Result[4, 1]
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 3) AS 'Pos3';
 Pos3
 5
+
+#SQL[@8,N50]Result[4, 1]
 SELECT REGEXP_INSTR('Cat Cat', 'Cat', 5) AS 'Pos5';
 Pos5
 5
+
+#SQL[@10,N60]Result[4, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1) 'Pos1';
 Pos1
 1
+
+#SQL[@11,N60]Result[4, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 2) 'Pos2';
 Pos2
 5
+
+#SQL[@12,N60]Result[4, 2]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 6) 'Pos6';
 Pos6
 16
+
+#SQL[@14,N70]Result[11, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1, 1) 'Occurrence1';
 Occurrence1
 1
+
+#SQL[@15,N70]Result[11, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1, 2) 'Occurrence2';
 Occurrence2
 5
+
+#SQL[@16,N70]Result[11, 2]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1, 3) 'Occurrence3';
 Occurrence3
 16
+
+#SQL[@18,N70]Result[11, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 2, 1) 'Occurrence1';
 Occurrence1
 5
+
+#SQL[@19,N70]Result[11, 2]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 2, 2) 'Occurrence2';
 Occurrence2
 16
+
+#SQL[@20,N70]Result[11, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 2, 3) 'Occurrence3';
 Occurrence3
 0
+
+#SQL[@22,N69]Result[7, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1, 1, 0) 'Option0';
 Option0
 1
+
+#SQL[@23,N69]Result[7, 1]
 SELECT REGEXP_INSTR('Cat City is SO Cute!', 'C.t', 1, 1, 1) 'Option1';
 Option1
 4
+
+#SQL[@25,N39]Result[6, 4]
 SELECT REGEXP_INSTR('Cat', null) Result;
-result
-NULL
-SELECT REGEXP_INSTR(null, 'C.t') Result;
-result
-NULL
-SELECT REGEXP_INSTR(null,  null) Result;
-result
+Result
 null
+
+#SQL[@26,N39]Result[6, 4]
+SELECT REGEXP_INSTR(null, 'C.t') Result;
+Result
+null
+
+#SQL[@27,N39]Result[6, 4]
+SELECT REGEXP_INSTR(null,  null) Result;
+Result
+null
+
+#SQL[@29,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@30,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@31,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@32,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@33,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@34,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@35,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@36,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@37,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@38,N39]Result[26, 8, 8, 8, 8, 8, 8, 8, 8]
 SELECT a, REGEXP_INSTR(b, '^P') from t1;
-a    regexp_instr(b, ^P)
-1    1
-2    1
-3    0
-4    0
-5    0
-6    0
-7    0
-8    1
+a  ¦  REGEXP_INSTR(b, ^P)
+1  ¦  1
+2  ¦  1
+3  ¦  0
+4  ¦  0
+5  ¦  0
+6  ¦  0
+7  ¦  0
+8  ¦  1
+
+#SQL[@39,N13]Result[]
 drop table t1;
+
+#SQL[@41,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@42,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@43,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@44,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@45,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@46,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@47,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@48,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@49,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@50,N51]Result[8, 17, 15, 20]
 SELECT a, b from t1 WHERE REGEXP_INSTR(b, '^P') = 1;
-a    b
-1    PowerSlave
-2    Powerage
-8    Piece of Mind
+a  ¦  b
+1  ¦  PowerSlave
+2  ¦  Powerage
+8  ¦  Piece of Mind
+
+#SQL[@51,N13]Result[]
 drop table t1;
+
+#SQL[@52,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@53,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@54,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@55,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@56,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@57,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@58,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@59,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@60,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@61,N41]Result[28, 8, 8, 8, 8, 8, 8, 9, 9]
 SELECT a, REGEXP_INSTR(b, 'i', 3) from t1;
-a    regexp_instr(b, i, 3)
-1    0
-2    0
-3    5
-4    6
-5    8
-6    3
-7    11
-8    11
+a  ¦  REGEXP_INSTR(b, i, 3)
+1  ¦  0
+2  ¦  0
+3  ¦  5
+4  ¦  6
+5  ¦  8
+6  ¦  3
+7  ¦  11
+8  ¦  11
+
+#SQL[@62,N13]Result[]
 drop table t1;
+
+#SQL[@64,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@65,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@66,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@67,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@68,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@69,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@70,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@71,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@72,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@73,N44]Result[31, 8, 8, 8, 8, 8, 8, 9, 9]
 SELECT a, REGEXP_INSTR(b, 'i', 2, 2) from t1;
-a    regexp_instr(b, i, 2, 2)
-1    0
-2    0
-3    5
-4    6
-5    0
-6    0
-7    15
-8    11
+a  ¦  REGEXP_INSTR(b, i, 2, 2)
+1  ¦  0
+2  ¦  0
+3  ¦  5
+4  ¦  6
+5  ¦  0
+6  ¦  0
+7  ¦  15
+8  ¦  11
+
+#SQL[@74,N13]Result[]
 drop table t1;
+
+#SQL[@76,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@77,N39]Result[]
 insert into t1 values(1 , "PowerSlave");
+
+#SQL[@78,N37]Result[]
 insert into t1 values(2 , "Powerage");
+
+#SQL[@79,N52]Result[]
 insert into t1 values( 3 , "Singing Down the Lane" );
+
+#SQL[@80,N51]Result[]
 insert into t1 values(4 , "Ziltoid the Omniscient");
+
+#SQL[@81,N47]Result[]
 insert into t1 values(5 , "Casualties of Cool");
+
+#SQL[@82,N38]Result[]
 insert into t1 values( 6 , "Epicloud");
+
+#SQL[@83,N46]Result[]
 insert into t1 values(7 , "Somewhere in Time");
+
+#SQL[@84,N42]Result[]
 insert into t1 values(8 , "Piece of Mind");
+
+#SQL[@85,N47]Result[34, 8, 8, 8, 8, 8, 8, 9, 9]
 SELECT a, REGEXP_INSTR(b, 'i', 2, 2, 1) from t1;
-a    regexp_instr(b, i, 2, 2, 1)
-1    0
-2    0
-3    6
-4    7
-5    0
-6    0
-7    16
-8    12
+a  ¦  REGEXP_INSTR(b, i, 2, 2, 1)
+1  ¦  0
+2  ¦  0
+3  ¦  6
+4  ¦  7
+5  ¦  0
+6  ¦  0
+7  ¦  16
+8  ¦  12
+
+#SQL[@86,N13]Result[]
 drop table t1;
+
+#SQL[@88,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@89,N47]Result[]
 CREATE TABLE t(str1 VARCHAR(20), str2 CHAR(20));
+
+#SQL[@90,N81]Result[]
 INSERT INTO t VALUES ('W * P', 'W + Z - O'), ('have has having', 'do does doing');
+
+#SQL[@91,N79]Result[]
 INSERT INTO t VALUES ('XV*XZ', 'PP-ZZ-DXA'), ('aa bbb cc ddd', 'k ii lll oooo');
+
+#SQL[@92,N63]Error[76]
 SELECT REGEXP_INSTR(str1, '*'), REGEXP_INSTR(str2,'hav') FROM t;
 invalid argument regexp_instr have invalid regexp pattern arg, bad value [*]
+
+#SQL[@93,N12]Result[]
 drop table t;
+
+#SQL[@95,N29]Result[]
 create database big_data_test;
+
+#SQL[@96,N17]Result[]
 use big_data_test;
+
+#SQL[@97,N57]Result[]
 create table table_basic_for_load_100M(col1 varchar(100));
+
+#SQL[@98,N103]Result[]
 insert into table_basic_for_load_100M values(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy');
+
+#SQL[@99,N49]Result[]
 insert into table_basic_for_load_100M values('a');
+
+#SQL[@100,N42]Result[4, 55, 1]
 select col1 from table_basic_for_load_100M;
 col1
 ,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy
 a
+
+#SQL[@101,N85]Result[75, 1]
 select REGEXP_INSTR(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy', ',',1);
-regexp_instr(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, ,, 1)
+REGEXP_INSTR(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, ,, 1)
 1
+
+#SQL[@102,N85]Result[75, 2]
 select REGEXP_INSTR(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy', 'a',1);
-regexp_instr(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, a, 1)
+REGEXP_INSTR(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, a, 1)
 31
+
+#SQL[@103,N76]Result[24, 1, 1]
 select REGEXP_INSTR(col1,',',1) from big_data_test.table_basic_for_load_100M;
-regexp_instr(col1, ,, 1)
+REGEXP_INSTR(col1, ,, 1)
 1
 0
+
+#SQL[@104,N76]Result[24, 2, 1]
 select REGEXP_INSTR(col1,'a',1) from big_data_test.table_basic_for_load_100M;
-regexp_instr(col1, a, 1)
+REGEXP_INSTR(col1, a, 1)
 31
 1
+
+#SQL[@105,N91]Result[80, 55]
 select REGEXP_REPLACE(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy', ',','b',1);
-regexp_replace(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, ,, b, 1)
+REGEXP_REPLACE(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, ,, b, 1)
 bGHIbG;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy
+
+#SQL[@106,N91]Result[80, 55]
 select REGEXP_REPLACE(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy', 'a','b',1);
-regexp_replace(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, a, b, 1)
+REGEXP_REPLACE(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, a, b, 1)
 ,GHI,G;KL/MN?OPQR.STU-_+=VWXYZbbcdefghigklmnopqrstuvwxy
+
+#SQL[@107,N82]Result[29, 55, 1]
 select REGEXP_REPLACE(col1,',','b',1) from big_data_test.table_basic_for_load_100M;
-regexp_replace(col1, ,, b, 1)
+REGEXP_REPLACE(col1, ,, b, 1)
 bGHIbG;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy
 a
+
+#SQL[@108,N82]Result[29, 55, 1]
 select REGEXP_REPLACE(col1,'a','b',1) from big_data_test.table_basic_for_load_100M;
-regexp_replace(col1, a, b, 1)
+REGEXP_REPLACE(col1, a, b, 1)
 ,GHI,G;KL/MN?OPQR.STU-_+=VWXYZbbcdefghigklmnopqrstuvwxy
 b
+
+#SQL[@109,N86]Result[76, 1]
 select REGEXP_SUBSTR(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy', ',',1);
-regexp_substr(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, ,, 1)
+REGEXP_SUBSTR(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, ,, 1)
 ,
+
+#SQL[@110,N86]Result[76, 1]
 select REGEXP_SUBSTR(',GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy', 'a',1);
-regexp_substr(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, a, 1)
+REGEXP_SUBSTR(,GHI,G;KL/MN?OPQR.STU-_+=VWXYZabcdefghigklmnopqrstuvwxy, a, 1)
 a
+
+#SQL[@111,N77]Result[25, 1, 4]
 select REGEXP_SUBSTR(col1,',',1) from big_data_test.table_basic_for_load_100M;
-regexp_substr(col1, ,, 1)
+REGEXP_SUBSTR(col1, ,, 1)
 ,
 null
+
+#SQL[@112,N77]Result[25, 1, 1]
 select REGEXP_SUBSTR(col1,'a',1) from big_data_test.table_basic_for_load_100M;
-regexp_substr(col1, a, 1)
+REGEXP_SUBSTR(col1, a, 1)
 a
 a
+
+#SQL[@113,N27]Result[]
 drop database big_data_test;
+

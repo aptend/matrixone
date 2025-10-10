@@ -1,181 +1,270 @@
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@4,N52]Result[]
 create table t1 ( id int, c char(10),vc varchar(20));
+
+#SQL[@5,N45]Result[]
 insert into t1 values (1,'Daffy','Aducklife');
+
+#SQL[@6,N45]Result[]
 insert into t1 values (1,'Daffy','Aducklife');
+
+#SQL[@7,N46]Result[]
 insert into t1 values (2,'Bugs','Arabbitlife');
+
+#SQL[@8,N51]Result[]
 insert into t1 values (3,'Cowboy','Lifeontherange');
+
+#SQL[@9,N57]Result[]
 insert into t1 values (4,'Anonymous','Wannabuythisbook?');
+
+#SQL[@10,N55]Result[]
 insert into t1 values (5,'BestSeller','OneHeckuvabook');
+
+#SQL[@11,N55]Result[]
 insert into t1 values (5,'BestSeller','OneHeckuvabook');
+
+#SQL[@12,N53]Result[]
 insert into t1 values (6,'EveryoneBu','Thisverybook');
+
+#SQL[@13,N58]Result[]
 insert into t1 values (7,'SanFran','Itisasanfranlifetyle');
+
+#SQL[@14,N61]Result[]
 insert into t1 values (8,'BerkAuthor','Cool.Berkly.the.book');
+
+#SQL[@15,N35]Result[]
 insert into t1 values (9,null,null);
+
+#SQL[@17,N32]Result[]
 insert into t1 values (10,'','');
+
+#SQL[@22,N42]Result[34, 20, 20, 21, 26, 32, 30, 30, 28, 33, 36, 14, 6]
 select SUBSTRING(c,1),SUBSTR(vc,1) from t1;
-SUBSTRING(c,1)	SUBSTR(vc,1)
-Daffy	Aducklife
-Daffy	Aducklife
-Bugs	Arabbitlife
-Cowboy	Lifeontherange
-Anonymous	Wannabuythisbook?
-BestSeller	OneHeckuvabook
-BestSeller	OneHeckuvabook
-EveryoneBu	Thisverybook
-SanFran	Itisasanfranlifetyle
-BerkAuthor	Cool.Berkly.the.book
-null	null
+SUBSTRING(c, 1)  ¦  SUBSTR(vc, 1)
+Daffy  ¦  Aducklife
+Daffy  ¦  Aducklife
+Bugs  ¦  Arabbitlife
+Cowboy  ¦  Lifeontherange
+Anonymous  ¦  Wannabuythisbook?
+BestSeller  ¦  OneHeckuvabook
+BestSeller  ¦  OneHeckuvabook
+EveryoneBu  ¦  Thisverybook
+SanFran  ¦  Itisasanfranlifetyle
+BerkAuthor  ¦  Cool.Berkly.the.book
+null  ¦  null
+  ¦  
 
+#SQL[@23,N42]Result[34, 18, 18, 19, 24, 30, 28, 28, 26, 31, 34, 14, 6]
 select SUBSTRING(c,2),SUBSTR(vc,2) from t1;
-SUBSTRING(c,2)	SUBSTR(vc,2)
-affy	ducklife
-affy	ducklife
-ugs	rabbitlife
-owboy	ifeontherange
-nonymous	annabuythisbook?
-estSeller	neHeckuvabook
-estSeller	neHeckuvabook
-veryoneBu	hisverybook
-anFran	tisasanfranlifetyle
-erkAuthor	ool.Berkly.the.book
-null	null
+SUBSTRING(c, 2)  ¦  SUBSTR(vc, 2)
+affy  ¦  ducklife
+affy  ¦  ducklife
+ugs  ¦  rabbitlife
+owboy  ¦  ifeontherange
+nonymous  ¦  annabuythisbook?
+estSeller  ¦  neHeckuvabook
+estSeller  ¦  neHeckuvabook
+veryoneBu  ¦  hisverybook
+anFran  ¦  tisasanfranlifetyle
+erkAuthor  ¦  ool.Berkly.the.book
+null  ¦  null
+  ¦  
 
+#SQL[@24,N56]Result[34, 8, 8]
 select SUBSTRING(c,5),SUBSTR(vc,9) from t1 where id = 1 ;
-SUBSTRING(c,5)	SUBSTR(vc,9)
-y	e
-y	e
+SUBSTRING(c, 5)  ¦  SUBSTR(vc, 9)
+y  ¦  e
+y  ¦  e
+
+#SQL[@25,N58]Result[36, 6]
 select substring(c,11),substr(vc,13) from t1 where id = 6 ;
-substring(c,11)	substr(vc,13)
+substring(c, 11)  ¦  substr(vc, 13)
+  ¦  
 
+#SQL[@27,N44]Result[36, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 14, 6]
 select SUBSTRING(c,-1),SUBSTR(vc,-1) from t1;
-SUBSTRING(c,-1)	SUBSTR(vc,-1)
-y	e
-y	e
-s	e
-y	e
-s	?
-r	k
-r	k
-u	k
-n	e
-r	k
-null	null
+SUBSTRING(c, -1)  ¦  SUBSTR(vc, -1)
+y  ¦  e
+y  ¦  e
+s  ¦  e
+y  ¦  e
+s  ¦  ?
+r  ¦  k
+r  ¦  k
+u  ¦  k
+n  ¦  e
+r  ¦  k
+null  ¦  null
+  ¦  
 
+#SQL[@28,N44]Result[36, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 14, 6]
 select SUBSTRING(c,-2),SUBSTR(vc,-2) from t1;
-SUBSTRING(c,-2)	SUBSTR(vc,-2)
-fy	fe
-fy	fe
-gs	fe
-oy	ge
-us	k?
-er	ok
-er	ok
-Bu	ok
-an	le
-or	ok
-null	null
+SUBSTRING(c, -2)  ¦  SUBSTR(vc, -2)
+fy  ¦  fe
+fy  ¦  fe
+gs  ¦  fe
+oy  ¦  ge
+us  ¦  k?
+er  ¦  ok
+er  ¦  ok
+Bu  ¦  ok
+an  ¦  le
+or  ¦  ok
+null  ¦  null
+  ¦  
 
+#SQL[@29,N58]Result[36, 20, 20]
 select SUBSTRING(c,-5),SUBSTR(vc,-9) from t1 where id = 1 ;
-SUBSTRING(c,-5)	SUBSTR(vc,-9)
-Daffy	Aducklife
-Daffy	Aducklife
+SUBSTRING(c, -5)  ¦  SUBSTR(vc, -9)
+Daffy  ¦  Aducklife
+Daffy  ¦  Aducklife
+
+#SQL[@31,N60]Result[38, 6]
 select substring(c,-11),substr(vc,-13) from t1 where id = 6 ;
-substring(c,-11)	substr(vc,-13)
+substring(c, -11)  ¦  substr(vc, -13)
+  ¦  
 
+#SQL[@33,N60]Result[40, 8, 8]
 select SUBSTRING(c,1,1),SUBSTR(vc,1,1) from t1 where id = 1 ;
-SUBSTRING(c,1,1)	SUBSTR(vc,1,1)
-D	A
-D	A
+SUBSTRING(c, 1, 1)  ¦  SUBSTR(vc, 1, 1)
+D  ¦  A
+D  ¦  A
+
+#SQL[@34,N60]Result[40, 11, 11]
 select SUBSTRING(c,2,2),SUBSTR(vc,3,3) from t1 where id = 1 ;
-SUBSTRING(c,2,2)	SUBSTR(vc,3,3)
-af	uck
-af	uck
+SUBSTRING(c, 2, 2)  ¦  SUBSTR(vc, 3, 3)
+af  ¦  uck
+af  ¦  uck
+
+#SQL[@35,N60]Result[40, 17, 17]
 select SUBSTRING(c,2,5),SUBSTR(vc,3,9) from t1 where id = 1 ;
-SUBSTRING(c,2,5)	SUBSTR(vc,3,9)
-affy	ucklife
-affy	ucklife
+SUBSTRING(c, 2, 5)  ¦  SUBSTR(vc, 3, 9)
+affy  ¦  ucklife
+affy  ¦  ucklife
+
+#SQL[@36,N61]Result[41, 29]
 select substring(c,2,9),substr(vc,3,17) from t1 where id = 4 ;
-substring(c,2,9)	substr(vc,3,17)
-nonymous	nnabuythisbook?
+substring(c, 2, 9)  ¦  substr(vc, 3, 17)
+nonymous  ¦  nnabuythisbook?
+
+#SQL[@37,N62]Result[42, 29]
 select substring(c,2,10),substr(vc,3,18) from t1 where id = 4 ;
-substring(c,2,10)	substr(vc,3,18)
-nonymous	nnabuythisbook?
+substring(c, 2, 10)  ¦  substr(vc, 3, 18)
+nonymous  ¦  nnabuythisbook?
+
+#SQL[@38,N60]Result[40, 14]
 select substring(c,5,4),substr(vc,5,4) from t1 where id = 4 ;
-substring(c,5,4)	substr(vc,5,4)
-ymou	abuy
+substring(c, 5, 4)  ¦  substr(vc, 5, 4)
+ymou  ¦  abuy
+
+#SQL[@39,N64]Result[44, 6]
 select substring(c,10,10),substr(vc,18,18) from t1 where id = 4 ;
-substring(c,10,10)	substr(vc,18,18)
+substring(c, 10, 10)  ¦  substr(vc, 18, 18)
+  ¦  
 
+#SQL[@40,N62]Result[42, 6]
 select substring(c,2,-1),substr(vc,3,-1) from t1 where id = 4 ;
-substring(c,2,-1)	substr(vc,3,-1)
+substring(c, 2, -1)  ¦  substr(vc, 3, -1)
+  ¦  
 
+#SQL[@42,N61]Result[41, 8, 8]
 select SUBSTRING(c,-1,1),SUBSTR(vc,1,1) from t1 where id = 1 ;
-SUBSTRING(c,-1,1)	SUBSTR(vc,1,1)
-y	A
-y	A
-select SUBSTRING(c,-2,2),SUBSTR(vc,3,3) from t1 where id = 1 ;
-SUBSTRING(c,-2,2)	SUBSTR(vc,3,3)
-fy	uck
-fy	uck
-select SUBSTRING(c,-2,5),SUBSTR(vc,3,9) from t1 where id = 1 ;
-SUBSTRING(c,-2,5)	SUBSTR(vc,3,9)
-fy	ucklife
-fy	ucklife
-select substring(c,-2,9),substr(vc,3,17) from t1 where id = 4 ;
-substring(c,-2,9)	substr(vc,3,17)
-us	nnabuythisbook?
-select substring(c,-2,10),substr(vc,3,18) from t1 where id = 4 ;
-substring(c,-2,10)	substr(vc,3,18)
-us	nnabuythisbook?
-select substring(c,1,-1),substr(vc,3,-2) from t1 where id = 4 ;
-substring(c,1,-1)	substr(vc,3,-2)
+SUBSTRING(c, -1, 1)  ¦  SUBSTR(vc, 1, 1)
+y  ¦  A
+y  ¦  A
 
+#SQL[@43,N61]Result[41, 11, 11]
+select SUBSTRING(c,-2,2),SUBSTR(vc,3,3) from t1 where id = 1 ;
+SUBSTRING(c, -2, 2)  ¦  SUBSTR(vc, 3, 3)
+fy  ¦  uck
+fy  ¦  uck
+
+#SQL[@44,N61]Result[41, 15, 15]
+select SUBSTRING(c,-2,5),SUBSTR(vc,3,9) from t1 where id = 1 ;
+SUBSTRING(c, -2, 5)  ¦  SUBSTR(vc, 3, 9)
+fy  ¦  ucklife
+fy  ¦  ucklife
+
+#SQL[@45,N62]Result[42, 23]
+select substring(c,-2,9),substr(vc,3,17) from t1 where id = 4 ;
+substring(c, -2, 9)  ¦  substr(vc, 3, 17)
+us  ¦  nnabuythisbook?
+
+#SQL[@46,N63]Result[43, 23]
+select substring(c,-2,10),substr(vc,3,18) from t1 where id = 4 ;
+substring(c, -2, 10)  ¦  substr(vc, 3, 18)
+us  ¦  nnabuythisbook?
+
+#SQL[@47,N62]Result[42, 6]
+select substring(c,1,-1),substr(vc,3,-2) from t1 where id = 4 ;
+substring(c, 1, -1)  ¦  substr(vc, 3, -2)
+  ¦  
+
+#SQL[@49,N60]Error[38]
 select substring(c,1,a),substr(vc,3,1) from t1 where id = 4 ;
 invalid input: column a does not exist
+
+#SQL[@50,N60]Error[38]
 select substring(c,1,2),substr(vc,a,1) from t1 where id = 4 ;
 invalid input: column a does not exist
-select max(substr(c,2)) from t1;
-max(substr(c,2))
-veryoneBu
-select min(substr(c,2)) from t1;
-min(substr(c,2))
 
+#SQL[@55,N31]Result[17, 9]
+select max(substr(c,2)) from t1;
+max(substr(c, 2))
+veryoneBu
+
+#SQL[@56,N31]Result[17, 0]
+select min(substr(c,2)) from t1;
+min(substr(c, 2))
+
+
+#SQL[@61,N43]Result[17, 27, 27]
 select * from t1 where substr(c,2) = 'affy';
-id	c	vc
-1	Daffy	Aducklife
-1	Daffy	Aducklife
+id  ¦  c  ¦  vc
+1  ¦  Daffy  ¦  Aducklife
+1  ¦  Daffy  ¦  Aducklife
+
+#SQL[@62,N44]Result[17, 28, 33, 39, 37, 37, 35, 40, 43, 14]
 select * from t1 where substr(c,2) <> 'affy';
-id	c	vc
-2	Bugs	Arabbitlife
-3	Cowboy	Lifeontherange
-4	Anonymous	Wannabuythisbook?
-5	BestSeller	OneHeckuvabook
-5	BestSeller	OneHeckuvabook
-6	EveryoneBu	Thisverybook
-7	SanFran	Itisasanfranlifetyle
-8	BerkAuthor	Cool.Berkly.the.book
-10
+id  ¦  c  ¦  vc
+2  ¦  Bugs  ¦  Arabbitlife
+3  ¦  Cowboy  ¦  Lifeontherange
+4  ¦  Anonymous  ¦  Wannabuythisbook?
+5  ¦  BestSeller  ¦  OneHeckuvabook
+5  ¦  BestSeller  ¦  OneHeckuvabook
+6  ¦  EveryoneBu  ¦  Thisverybook
+7  ¦  SanFran  ¦  Itisasanfranlifetyle
+8  ¦  BerkAuthor  ¦  Cool.Berkly.the.book
+10  ¦    ¦  
+
+#SQL[@63,N43]Result[17, 28, 33, 39, 37, 37, 35, 40, 43]
 select * from t1 where substr(c,2) > 'affy';
-id	c	vc
-2	Bugs	Arabbitlife
-3	Cowboy	Lifeontherange
-4	Anonymous	Wannabuythisbook?
-5	BestSeller	OneHeckuvabook
-5	BestSeller	OneHeckuvabook
-6	EveryoneBu	Thisverybook
-7	SanFran	Itisasanfranlifetyle
-8	BerkAuthor	Cool.Berkly.the.book
+id  ¦  c  ¦  vc
+2  ¦  Bugs  ¦  Arabbitlife
+3  ¦  Cowboy  ¦  Lifeontherange
+4  ¦  Anonymous  ¦  Wannabuythisbook?
+5  ¦  BestSeller  ¦  OneHeckuvabook
+5  ¦  BestSeller  ¦  OneHeckuvabook
+6  ¦  EveryoneBu  ¦  Thisverybook
+7  ¦  SanFran  ¦  Itisasanfranlifetyle
+8  ¦  BerkAuthor  ¦  Cool.Berkly.the.book
+
+#SQL[@64,N60]Result[17, 28, 33, 39, 37, 37, 35, 43]
 select * from t1 where substr(c,2) > substring('fdasfsad',2);
-id	c	vc
-2	Bugs	Arabbitlife
-3	Cowboy	Lifeontherange
-4	Anonymous	Wannabuythisbook?
-5	BestSeller	OneHeckuvabook
-5	BestSeller	OneHeckuvabook
-6	EveryoneBu	Thisverybook
-8	BerkAuthor	Cool.Berkly.the.book
+id  ¦  c  ¦  vc
+2  ¦  Bugs  ¦  Arabbitlife
+3  ¦  Cowboy  ¦  Lifeontherange
+4  ¦  Anonymous  ¦  Wannabuythisbook?
+5  ¦  BestSeller  ¦  OneHeckuvabook
+5  ¦  BestSeller  ¦  OneHeckuvabook
+6  ¦  EveryoneBu  ¦  Thisverybook
+8  ¦  BerkAuthor  ¦  Cool.Berkly.the.book
+
+#SQL[@69,N47]Result[12, 4, 0, 4, 6, 9, 9, 8, 5, 3, 9]
 select distinct(substr(c,2)) from t1 order by 1;
-(substr(c,2))
+substr(c, 2)
 null
 
 affy
@@ -186,8 +275,10 @@ nonymous
 owboy
 ugs
 veryoneBu
+
+#SQL[@70,N48]Result[13, 4, 0, 9, 12, 12, 18, 10, 15, 18, 7]
 select distinct(substr(vc,3)) from t1 order by 1;
-(substr(vc,3))
+substr(vc, 3)
 null
 
 abbitlife
@@ -198,81 +289,99 @@ isverybook
 nnabuythisbook?
 ol.Berkly.the.book
 ucklife
+
+#SQL[@76,N47]Result[35, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 14, 16]
 select endswith(c,'a'),endswith(vc,'a') from t1;
-endswith(c, a)	endswith(vc, a)
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-null	null
-false	false
+endswith(c, a)  ¦  endswith(vc, a)
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+null  ¦  null
+false  ¦  false
+
+#SQL[@77,N47]Result[35, 14, 14, 15, 14, 16, 16, 16, 16, 15, 16, 14, 16]
 select endswith(c,'y'),endswith(vc,'e') from t1;
-endswith(c, y)	endswith(vc, e)
-true	true
-true	true
-false	true
-true	true
-false	false
-false	false
-false	false
-false	false
-false	true
-false	false
-null	null
-false	false
+endswith(c, y)  ¦  endswith(vc, e)
+true  ¦  true
+true  ¦  true
+false  ¦  true
+true  ¦  true
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  true
+false  ¦  false
+null  ¦  null
+false  ¦  false
+
+#SQL[@78,N38]Result[17, 27, 27, 33]
 select * from t1 where endswith(c,'y');
-id	c	vc
-1	Daffy	Aducklife
-1	Daffy	Aducklife
-3	Cowboy	Lifeontherange
+id  ¦  c  ¦  vc
+1  ¦  Daffy  ¦  Aducklife
+1  ¦  Daffy  ¦  Aducklife
+3  ¦  Cowboy  ¦  Lifeontherange
+
+#SQL[@79,N60]Result[17, 33]
 select * from t1 where endswith(c,'y') and endswith(vc,'ge');
-id	c	vc
-3	Cowboy	Lifeontherange
+id  ¦  c  ¦  vc
+3  ¦  Cowboy  ¦  Lifeontherange
+
+#SQL[@84,N51]Result[39, 15, 15, 14, 16, 16, 15, 15, 16, 16, 15, 14, 16]
 select startswith(c,'B'),startswith(vc,'A') from t1;
-startswith(c, B)	startswith(vc, A)
-false	true
-false	true
-true	true
-false	false
-false	false
-true	false
-true	false
-false	false
-false	false
-true	false
-null	null
-false	false
+startswith(c, B)  ¦  startswith(vc, A)
+false  ¦  true
+false  ¦  true
+true  ¦  true
+false  ¦  false
+false  ¦  false
+true  ¦  false
+true  ¦  false
+false  ¦  false
+false  ¦  false
+true  ¦  false
+null  ¦  null
+false  ¦  false
+
+#SQL[@85,N51]Result[39, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 14, 16]
 select startswith(c,'y'),startswith(vc,'e') from t1;
-startswith(c, y)	startswith(vc, e)
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-false	false
-null	null
-false	false
+startswith(c, y)  ¦  startswith(vc, e)
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+false  ¦  false
+null  ¦  null
+false  ¦  false
+
+#SQL[@86,N40]Result[17, 28, 37, 37, 43]
 select * from t1 where startswith(c,'B');
-id	c	vc
-2	Bugs	Arabbitlife
-5	BestSeller	OneHeckuvabook
-5	BestSeller	OneHeckuvabook
-8	BerkAuthor	Cool.Berkly.the.book
+id  ¦  c  ¦  vc
+2  ¦  Bugs  ¦  Arabbitlife
+5  ¦  BestSeller  ¦  OneHeckuvabook
+5  ¦  BestSeller  ¦  OneHeckuvabook
+8  ¦  BerkAuthor  ¦  Cool.Berkly.the.book
+
+#SQL[@87,N63]Result[17, 28]
 select * from t1 where startswith(c,'B') and startswith(vc,'A');
-id	c	vc
-2	Bugs	Arabbitlife
+id  ¦  c  ¦  vc
+2  ¦  Bugs  ¦  Arabbitlife
+
+#SQL[@92,N28]Result[13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
 select lpad(c,0,'*') from t1;
-lpad(c,0,'*')
+lpad(c, 0, *)
 
 
 
@@ -285,8 +394,10 @@ lpad(c,0,'*')
 
 null
 
+
+#SQL[@93,N28]Result[13, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1]
 select lpad(c,1,'*') from t1;
-lpad(c,1,'*')
+lpad(c, 1, *)
 D
 D
 B
@@ -299,8 +410,10 @@ S
 B
 null
 *
+
+#SQL[@94,N28]Result[13, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5]
 select lpad(c,5,'*') from t1;
-lpad(c,5,'*')
+lpad(c, 5, *)
 Daffy
 Daffy
 *Bugs
@@ -313,8 +426,10 @@ SanFr
 BerkA
 null
 *****
+
+#SQL[@95,N29]Result[14, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 4, 10]
 select lpad(c,10,'*') from t1;
-lpad(c,10,'*')
+lpad(c, 10, *)
 *****Daffy
 *****Daffy
 ******Bugs
@@ -327,8 +442,10 @@ EveryoneBu
 BerkAuthor
 null
 **********
+
+#SQL[@97,N30]Result[13, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1]
 select rpad(c,'1','*') from t1;
-rpad(c,'1','*')
+rpad(c, 1, *)
 D
 D
 B
@@ -341,8 +458,10 @@ S
 B
 null
 *
+
+#SQL[@103,N28]Result[13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0]
 select rpad(c,0,'*') from t1;
-rpad(c,0,'*')
+rpad(c, 0, *)
 
 
 
@@ -355,8 +474,10 @@ rpad(c,0,'*')
 
 null
 
+
+#SQL[@104,N28]Result[13, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 1]
 select rpad(c,1,'*') from t1;
-rpad(c,1,'*')
+rpad(c, 1, *)
 D
 D
 B
@@ -369,8 +490,10 @@ S
 B
 null
 *
+
+#SQL[@105,N28]Result[13, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4, 5]
 select rpad(c,5,'*') from t1;
-rpad(c,5,'*')
+rpad(c, 5, *)
 Daffy
 Daffy
 Bugs*
@@ -383,8 +506,10 @@ SanFr
 BerkA
 null
 *****
+
+#SQL[@106,N29]Result[14, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 4, 10]
 select rpad(c,10,'*') from t1;
-rpad(c,10,'*')
+rpad(c, 10, *)
 Daffy*****
 Daffy*****
 Bugs******
@@ -397,95 +522,132 @@ SanFran***
 BerkAuthor
 null
 **********
-select rpad(c,'1','*') from t1;
-rpad(c,'1','*')
-D
-D
-B
-C
-A
-B
-B
-E
-S
-B
-null
-*
+
+#SQL[@115,N23]Result[]
 drop table if exists t1;
+
+#SQL[@116,N52]Result[]
 create table t1 ( id int, c char(20),vc varchar(50));
+
+#SQL[@117,N49]Result[]
 insert into t1 values (1,'Daffy  ','  Aducklife');
+
+#SQL[@118,N50]Result[]
 insert into t1 values (1,'  Daffy  ','Aducklife ');
+
+#SQL[@119,N49]Result[]
 insert into t1 values (2,' Bugs',' Arabbitlife ');
+
+#SQL[@120,N56]Result[]
 insert into t1 values (3,'    Cowboy',' Lifeontherange');
+
+#SQL[@121,N63]Result[]
 insert into t1 values (4,' Anonymous  ',' Wannabuythisbook?  ');
+
+#SQL[@122,N59]Result[]
 insert into t1 values (5,'  BestSeller',' OneHeckuvabook ');
+
+#SQL[@123,N58]Result[]
 insert into t1 values (5,'  BestSeller','OneHeckuvabook ');
+
+#SQL[@124,N56]Result[]
 insert into t1 values (6,' EveryoneBu',' Thisverybook ');
+
+#SQL[@125,N61]Result[]
 insert into t1 values (7,' SanFran',' Itisasanfranlifetyle ');
+
+#SQL[@126,N65]Result[]
 insert into t1 values (8,' BerkAuthor','  Cool.Berkly.the.book ');
+
+#SQL[@127,N35]Result[]
 insert into t1 values (9,null,null);
+
+#SQL[@129,N32]Result[]
 insert into t1 values (10,'','');
+
+#SQL[@135,N33]Result[23, 22, 23, 22, 26, 36, 31, 31, 29, 34, 37, 14, 6]
 select ltrim(c),ltrim(vc) from t1;
-ltrim(c)	ltrim(vc)
-Daffy  	Aducklife
-Daffy  	Aducklife 
-Bugs	Arabbitlife 
-Cowboy	Lifeontherange
-Anonymous  	Wannabuythisbook?  
-BestSeller	OneHeckuvabook 
-BestSeller	OneHeckuvabook 
-EveryoneBu	Thisverybook 
-SanFran	Itisasanfranlifetyle 
-BerkAuthor	Cool.Berkly.the.book 
-null	null
+ltrim(c)  ¦  ltrim(vc)
+Daffy    ¦  Aducklife
+Daffy    ¦  Aducklife 
+Bugs  ¦  Arabbitlife 
+Cowboy  ¦  Lifeontherange
+Anonymous    ¦  Wannabuythisbook?  
+BestSeller  ¦  OneHeckuvabook 
+BestSeller  ¦  OneHeckuvabook 
+EveryoneBu  ¦  Thisverybook 
+SanFran  ¦  Itisasanfranlifetyle 
+BerkAuthor  ¦  Cool.Berkly.the.book 
+null  ¦  null
+  ¦  
 
+#SQL[@137,N33]Result[23, 22, 22, 23, 31, 34, 33, 32, 30, 35, 39, 14, 6]
 select rtrim(c),rtrim(vc) from t1;
-rtrim(c)	rtrim(vc)
-Daffy	  Aducklife
-  Daffy	Aducklife
- Bugs	 Arabbitlife
-    Cowboy	 Lifeontherange
- Anonymous	 Wannabuythisbook?
-  BestSeller	 OneHeckuvabook
-  BestSeller	OneHeckuvabook
- EveryoneBu	 Thisverybook
- SanFran	 Itisasanfranlifetyle
- BerkAuthor	  Cool.Berkly.the.book
-null	null
+rtrim(c)  ¦  rtrim(vc)
+Daffy  ¦    Aducklife
+  Daffy  ¦  Aducklife
+ Bugs  ¦   Arabbitlife
+    Cowboy  ¦   Lifeontherange
+ Anonymous  ¦   Wannabuythisbook?
+  BestSeller  ¦   OneHeckuvabook
+  BestSeller  ¦  OneHeckuvabook
+ EveryoneBu  ¦   Thisverybook
+ SanFran  ¦   Itisasanfranlifetyle
+ BerkAuthor  ¦    Cool.Berkly.the.book
+null  ¦  null
+  ¦  
 
+#SQL[@139,N47]Result[37, 20, 20, 21, 26, 32, 30, 30, 28, 33, 36, 14, 6]
 select ltrim(rtrim(c)),rtrim(ltrim(vc)) from t1;
-ltrim(rtrim(c))	rtrim(ltrim(vc))
-Daffy	Aducklife
-Daffy	Aducklife
-Bugs	Arabbitlife
-Cowboy	Lifeontherange
-Anonymous	Wannabuythisbook?
-BestSeller	OneHeckuvabook
-BestSeller	OneHeckuvabook
-EveryoneBu	Thisverybook
-SanFran	Itisasanfranlifetyle
-BerkAuthor	Cool.Berkly.the.book
-null	null
+ltrim(rtrim(c))  ¦  rtrim(ltrim(vc))
+Daffy  ¦  Aducklife
+Daffy  ¦  Aducklife
+Bugs  ¦  Arabbitlife
+Cowboy  ¦  Lifeontherange
+Anonymous  ¦  Wannabuythisbook?
+BestSeller  ¦  OneHeckuvabook
+BestSeller  ¦  OneHeckuvabook
+EveryoneBu  ¦  Thisverybook
+SanFran  ¦  Itisasanfranlifetyle
+BerkAuthor  ¦  Cool.Berkly.the.book
+null  ¦  null
+  ¦  
 
+#SQL[@141,N46]Result[17, 41, 40]
 select * from t1 where ltrim(c) = 'BestSeller';
-id	c	vc
-5	  BestSeller	 OneHeckuvabook 
-5	  BestSeller	OneHeckuvabook 
+id  ¦  c  ¦  vc
+5  ¦    BestSeller  ¦   OneHeckuvabook 
+5  ¦    BestSeller  ¦  OneHeckuvabook 
+
+#SQL[@143,N79]Result[17, 40]
 select * from t1 where ltrim(c) = 'BestSeller' and rtrim(vc) = 'OneHeckuvabook';
-id	c	vc
-5	  BestSeller	OneHeckuvabook 
+id  ¦  c  ¦  vc
+5  ¦    BestSeller  ¦  OneHeckuvabook 
+
+#SQL[@149,N23]Result[]
 drop table if exists t1;
+
+#SQL[@150,N24]Result[]
 create table t1 ( d int);
+
+#SQL[@151,N38]Result[]
 insert into t1 values(0),(-1),(2),(10);
+
+#SQL[@153,N37]Result[8, 0, 2, 10]
 select space(d) from t1 where d <> -1;
 space(d)
 
   
           
+
+#SQL[@155,N23]Result[8, 0, 0, 2, 10]
 select space(d) from t1;
 space(d)
 
 
   
           
+
+#SQL[@156,N13]Result[]
 drop table t1;
+

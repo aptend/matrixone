@@ -5,13 +5,13 @@ a int primary key,
 b varchar(10)
 );
 
--- @ignore:0
 select mo_ctl('dn', 'inspect', 'merge switch off -t mo_ctl_policy.t1');
--- @ignore:0
+| @ignore(0);
 select mo_ctl('dn', 'inspect', 'merge show -t mo_ctl_policy.t1');
--- @ignore:0
+| @ignore(0);
 select mo_ctl('dn', 'inspect', 'merge switch on -t mo_ctl_policy.t1');
--- @ignore:0
+| @ignore(0);
 select mo_ctl('dn', 'inspect', 'merge show -t mo_ctl_policy.t1');
+| @ignore(0);
 create table t2(a int primary key);
 drop table t2;

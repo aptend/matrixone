@@ -1,187 +1,317 @@
+#SQL[@6,N40]Result[41, 15]
 SELECT BIT_AND(0), BIT_OR(0), BIT_XOR(0);
-bit_and(0)    bit_or(0)    bit_xor(0)
-0    0    0
+BIT_AND(0)  ¦  BIT_OR(0)  ¦  BIT_XOR(0)
+0  ¦  0  ¦  0
+
+#SQL[@7,N40]Result[41, 15]
 SELECT BIT_AND(1), BIT_OR(1), BIT_XOR(1);
-bit_and(1)    bit_or(1)    bit_xor(1)
-1    1    1
+BIT_AND(1)  ¦  BIT_OR(1)  ¦  BIT_XOR(1)
+1  ¦  1  ¦  1
+
+#SQL[@8,N43]Result[44, 72]
 SELECT BIT_AND(-1), BIT_OR(-1), BIT_XOR(-1);
-bit_and(-1)    bit_or(-1)    bit_xor(-1)
-18446744073709551615    18446744073709551615    18446744073709551615
+BIT_AND(-1)  ¦  BIT_OR(-1)  ¦  BIT_XOR(-1)
+18446744073709551615  ¦  18446744073709551615  ¦  18446744073709551615
+
+#SQL[@9,N58]Result[59, 15]
 SELECT BIT_AND(ABS(-1)), BIT_OR(ABS(-1)), BIT_XOR(ABS(-1));
-bit_and(abs(-1))    bit_or(abs(-1))    bit_xor(abs(-1))
-1    1    1
+BIT_AND(ABS(-1))  ¦  BIT_OR(ABS(-1))  ¦  BIT_XOR(ABS(-1))
+1  ¦  1  ¦  1
+
+#SQL[@10,N52]Result[53, 15]
 SELECT BIT_AND(1 + 1), BIT_OR(1 + 1), BIT_XOR(1 + 1);
-bit_and(1 + 1)    bit_or(1 + 1)    bit_xor(1 + 1)
-2    2    2
+BIT_AND(1 + 1)  ¦  BIT_OR(1 + 1)  ¦  BIT_XOR(1 + 1)
+2  ¦  2  ¦  2
+
+#SQL[@11,N55]Result[56, 15]
 SELECT BIT_AND(COS(0)), BIT_OR(COS(0)), BIT_XOR(COS(0));
-bit_and(cos(0))    bit_or(cos(0))    bit_xor(cos(0))
-1    1    1
+BIT_AND(COS(0))  ¦  BIT_OR(COS(0))  ¦  BIT_XOR(COS(0))
+1  ¦  1  ¦  1
+
+#SQL[@13,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@14,N109]Result[]
 CREATE TABLE t(
-tiny TINYINT NOT NULL,
-small SMALLINT NOT NULL,
-int_t INT NOT NULL,
-big BIGINT NOT NULL
+	tiny TINYINT NOT NULL,
+	small SMALLINT NOT NULL,
+	int_t INT NOT NULL,
+	big BIGINT NOT NULL
 );
+
+#SQL[@20,N70]Result[]
 INSERT INTO t VALUES (-128, -32768, -2147483648, -9223372036854775808);
+
+#SQL[@21,N66]Result[]
 INSERT INTO t VALUES (127, 32767, 2147483647, 9223372036854775807);
+
+#SQL[@22,N56]Result[50, 53]
 SELECT BIT_AND(tiny), BIT_OR(tiny), BIT_XOR(tiny) FROM t;
-bit_and(tiny)    bit_or(tiny)    bit_xor(tiny)
-0    18446744073709551615    18446744073709551615
+BIT_AND(tiny)  ¦  BIT_OR(tiny)  ¦  BIT_XOR(tiny)
+0  ¦  18446744073709551615  ¦  18446744073709551615
+
+#SQL[@23,N59]Result[53, 53]
 SELECT BIT_AND(small), BIT_OR(small), BIT_XOR(small) FROM t;
-bit_and(small)    bit_or(small)    bit_xor(small)
-0    18446744073709551615    18446744073709551615
+BIT_AND(small)  ¦  BIT_OR(small)  ¦  BIT_XOR(small)
+0  ¦  18446744073709551615  ¦  18446744073709551615
+
+#SQL[@24,N59]Result[53, 53]
 SELECT BIT_AND(int_t), BIT_OR(int_t), BIT_XOR(int_t) FROM t;
-bit_and(int_t)    bit_or(int_t)    bit_xor(int_t)
-0    18446744073709551615    18446744073709551615
+BIT_AND(int_t)  ¦  BIT_OR(int_t)  ¦  BIT_XOR(int_t)
+0  ¦  18446744073709551615  ¦  18446744073709551615
+
+#SQL[@25,N53]Result[47, 53]
 SELECT BIT_AND(big), BIT_OR(big), BIT_XOR(big) FROM t;
-bit_and(big)    bit_or(big)    bit_xor(big)
-0    18446744073709551615    18446744073709551615
+BIT_AND(big)  ¦  BIT_OR(big)  ¦  BIT_XOR(big)
+0  ¦  18446744073709551615  ¦  18446744073709551615
+
+#SQL[@27,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@28,N145]Result[]
 CREATE TABLE t(
-tiny TINYINT UNSIGNED NOT NULL,
-small SMALLINT UNSIGNED NOT NULL,
-int_t INT UNSIGNED NOT NULL,
-big BIGINT UNSIGNED NOT NULL
+	tiny TINYINT UNSIGNED NOT NULL,
+	small SMALLINT UNSIGNED NOT NULL,
+	int_t INT UNSIGNED NOT NULL,
+	big BIGINT UNSIGNED NOT NULL
 );
+
+#SQL[@34,N62]Result[]
 INSERT INTO t VALUES (255, 65535, 65535, 18446744073709551615);
+
+#SQL[@35,N56]Result[50, 21]
 SELECT BIT_AND(tiny), BIT_OR(tiny), BIT_XOR(tiny) FROM t;
-bit_and(tiny)    bit_or(tiny)    bit_xor(tiny)
-255    255    255
+BIT_AND(tiny)  ¦  BIT_OR(tiny)  ¦  BIT_XOR(tiny)
+255  ¦  255  ¦  255
+
+#SQL[@36,N59]Result[53, 27]
 SELECT BIT_AND(small), BIT_OR(small), BIT_XOR(small) FROM t;
-bit_and(small)    bit_or(small)    bit_xor(small)
-65535    65535    65535
+BIT_AND(small)  ¦  BIT_OR(small)  ¦  BIT_XOR(small)
+65535  ¦  65535  ¦  65535
+
+#SQL[@37,N59]Result[53, 27]
 SELECT BIT_AND(int_t), BIT_OR(int_t), BIT_XOR(int_t) FROM t;
-bit_and(int_t)    bit_or(int_t)    bit_xor(int_t)
-65535    65535    65535
+BIT_AND(int_t)  ¦  BIT_OR(int_t)  ¦  BIT_XOR(int_t)
+65535  ¦  65535  ¦  65535
+
+#SQL[@38,N53]Result[47, 72]
 SELECT BIT_AND(big), BIT_OR(big), BIT_XOR(big) FROM t;
-bit_and(big)    bit_or(big)    bit_xor(big)
-18446744073709551615    18446744073709551615    18446744073709551615
+BIT_AND(big)  ¦  BIT_OR(big)  ¦  BIT_XOR(big)
+18446744073709551615  ¦  18446744073709551615  ¦  18446744073709551615
+
+#SQL[@40,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@41,N109]Result[]
 CREATE TABLE t(
-tiny TINYINT NOT NULL,
-small SMALLINT NOT NULL,
-int_t INT NOT NULL,
-big BIGINT NOT NULL
+	tiny TINYINT NOT NULL,
+	small SMALLINT NOT NULL,
+	int_t INT NOT NULL,
+	big BIGINT NOT NULL
 );
+
+#SQL[@47,N36]Result[]
 INSERT INTO t VALUES (0, 1, -1, 1-0);
+
+#SQL[@48,N40]Result[]
 INSERT INTO t VALUES (1, 9, 66666, TRUE);
+
+#SQL[@49,N57]Result[47, 8]
 SELECT BIT_AND(tiny + small), BIT_AND(int_t + big) FROM t;
-bit_and(tiny + small)    bit_and(int_t + big)
-0    0
+BIT_AND(tiny + small)  ¦  BIT_AND(int_t + big)
+0  ¦  0
+
+#SQL[@50,N61]Result[51, 27]
 SELECT BIT_AND(tiny + SIN(0)), BIT_XOR(int_t + TAN(0)) FROM t;
-bit_and(tiny + sin(0))    bit_xor(int_t + tan(0))
-0    18446744073709484949
+BIT_AND(tiny + SIN(0))  ¦  BIT_XOR(int_t + TAN(0))
+0  ¦  18446744073709484949
+
+#SQL[@51,N56]Result[46, 13]
 SELECT BIT_OR(tiny + small), BIT_XOR(int_t + big) FROM t;
-bit_or(tiny + small)    bit_xor(int_t + big)
-11    66667
+BIT_OR(tiny + small)  ¦  BIT_XOR(int_t + big)
+11  ¦  66667
+
+#SQL[@52,N57]Result[47, 12]
 SELECT BIT_XOR(tiny + SIN(0)), BIT_OR(int_t + big) FROM t;
-bit_xor(tiny + sin(0))    bit_or(int_t + big)
-1    66667
-SELECT BIT_AND(tiny + 1), BIT_OR(small - 1), BIT_XOR(int_t / 0) FROM t;
-[unknown result because it is related to issue#5638]
+BIT_XOR(tiny + SIN(0))  ¦  BIT_OR(int_t + big)
+1  ¦  66667
+
+#SQL[@59,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@60,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@61,N58]Result[]
 CREATE TABLE t(
-id INT,
-score FLOAT,
-PRIMARY KEY (id)
+	id INT,
+	score FLOAT,
+	PRIMARY KEY (id)
 );
+
+#SQL[@66,N61]Result[]
 CREATE TABLE t1(
-id INT,
-salary DOUBLE,
-PRIMARY KEY (id)
+	id INT,
+	salary DOUBLE,
+	PRIMARY KEY (id)
 );
+
+#SQL[@71,N74]Result[]
 INSERT INTO t VALUES (1, 67.5), (2, 87.5), (3, 72.5), (4, 90.1), (5, 81.0);
+
+#SQL[@72,N66]Result[]
 INSERT INTO t1 VALUES (1, 1120.2), (2, 4320), (3, 9078), (4, 3071);
+
+#SQL[@73,N67]Result[14, 2]
 SELECT BIT_AND(score) FROM t JOIN t1 ON t.id = t1.id WHERE t.id > 1;
-bit_and(score)
+BIT_AND(score)
 64
+
+#SQL[@74,N58]Result[15, 2]
 SELECT BIT_AND(salary) FROM t LEFT JOIN t1 ON t.id = t1.id;
-bit_and(salary)
+BIT_AND(salary)
 96
+
+#SQL[@75,N84]Result[14, 5]
 SELECT BIT_OR(salary) FROM t LEFT JOIN t1 ON t.id = t1.id WHERE t.id BETWEEN 2 AND 5;
-bit_or(salary)
+BIT_OR(salary)
 15359
+
+#SQL[@76,N57]Result[13, 2]
 SELECT BIT_OR(score) FROM t RIGHT JOIN t1 ON t.id = t1.id;
-bit_or(score)
+BIT_OR(score)
 95
+
+#SQL[@77,N59]Result[15, 5]
 SELECT BIT_XOR(salary) FROM t RIGHT JOIN t1 ON t.id = t1.id;
-bit_xor(salary)
+BIT_XOR(salary)
 15369
+
+#SQL[@80,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@81,N63]Result[]
 CREATE TABLE t(
-id INT,
-str1 VARCHAR(20),
-PRIMARY KEY (id)
+	id INT,
+	str1 VARCHAR(20),
+	PRIMARY KEY (id)
 );
+
+#SQL[@86,N63]Result[]
 INSERT INTO t VALUES (1,'123'), (2,'234'), (3,'345'), (4,'456');
+
+#SQL[@87,N41]Result[27, 3]
 SELECT BIT_OR(CAST(str1 AS FLOAT)) FROM t;
-bit_or(cast(str1 as float))
+BIT_OR(cast(str1 as float))
 507
+
+#SQL[@88,N43]Result[29, 1]
 SELECT BIT_XOR(CAST(str1 AS DOUBLE)) FROM t;
-bit_xor(cast(str1 as double))
+BIT_XOR(cast(str1 as double))
 0
+
+#SQL[@91,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@92,N23]Result[]
 DROP TABLE IF EXISTS t1;
+
+#SQL[@93,N79]Result[]
 CREATE TABLE t(
-id INT,
-str1 VARCHAR(50),
-str2 CHAR(50),
-PRIMARY KEY (id)
+	id INT,
+	str1 VARCHAR(50),
+	str2 CHAR(50),
+	PRIMARY KEY (id)
 );
+
+#SQL[@99,N80]Result[]
 CREATE TABLE t1(
-id INT,
-str1 VARCHAR(50),
-str2 CHAR(50),
-PRIMARY KEY (id)
+	id INT,
+	str1 VARCHAR(50),
+	str2 CHAR(50),
+	PRIMARY KEY (id)
 );
+
+#SQL[@106,N116]Result[]
 INSERT INTO t VALUES (1,'12.3','9.00200001'), (2,'0','1'), (3,'0.000000000000111101010101','189'), (4,'456','1.001');
+
+#SQL[@107,N120]Result[]
 INSERT INTO t1 VALUES (1,'00000.01','3.001'), (2,'-1','99999999999999999'), (3,'1.0111','0.00001'), (4,'1.01','000.001');
+
+#SQL[@108,N81]Result[68, 8]
 SELECT BIT_AND(CAST(t.str1 AS FLOAT)), BIT_AND(CAST(t1.str2 AS DOUBLE)) FROM t,t1;
-bit_and(cast(t.str1 as float))    bit_and(cast(t1.str2 as double))
-0    0
+BIT_AND(cast(t.str1 as float))  ¦  BIT_AND(cast(t1.str2 as double))
+0  ¦  0
+
+#SQL[@109,N80]Result[67, 27]
 SELECT BIT_AND(CAST(t.str2 AS FLOAT)), BIT_OR(CAST(t1.str1 AS DOUBLE)) FROM t,t1;
-bit_and(cast(t.str2 as float))    bit_or(cast(t1.str1 as double))
-1    18446744073709551615
+BIT_AND(cast(t.str2 as float))  ¦  BIT_OR(cast(t1.str1 as double))
+1  ¦  18446744073709551615
+
+#SQL[@110,N101]Result[67, 10]
 SELECT BIT_XOR(CAST(t.str1 AS FLOAT)), BIT_AND(CAST(t1.str2 AS FLOAT)) FROM t JOIN t1 ON t.id = t1.id;
-bit_xor(cast(t.str1 as float))    bit_and(cast(t1.str2 as float))
-452    0
+BIT_XOR(cast(t.str1 as float))  ¦  BIT_AND(cast(t1.str2 as float))
+452  ¦  0
+
+#SQL[@111,N132]Result[102, 36]
 SELECT BIT_XOR(CAST(t.str1 AS FLOAT)), BIT_AND(CAST(t.str2 AS FLOAT)), BIT_OR(CAST(t1.str1 AS FLOAT)) FROM t JOIN t1 ON t.id = t1.id;
-bit_xor(cast(t.str1 as float))    bit_and(cast(t.str2 as float))    bit_or(cast(t1.str1 as float))
-452    1    18446744073709551615
+BIT_XOR(cast(t.str1 as float))  ¦  BIT_AND(cast(t.str2 as float))  ¦  BIT_OR(cast(t1.str1 as float))
+452  ¦  1  ¦  18446744073709551615
+
+#SQL[@112,N108]Result[68, 26]
 SELECT BIT_XOR(CAST(t.str1 AS DOUBLE)), BIT_XOR(CAST(t1.str2 AS FLOAT)) FROM t RIGHT JOIN t1 ON t.id = t1.id;
-bit_xor(cast(t.str1 as double))    bit_xor(cast(t1.str2 as float))
-452    99999998430674947
+BIT_XOR(cast(t.str1 as double))  ¦  BIT_XOR(cast(t1.str2 as float))
+452  ¦  99999998430674947
+
+#SQL[@115,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@116,N63]Result[]
 CREATE TABLE t(
-id INT,
-d1 DECIMAL(28,20),
-PRIMARY KEY(id)
+	id INT,
+	d1 DECIMAL(28,20),
+	PRIMARY KEY(id)
 );
+
+#SQL[@121,N97]Result[]
 INSERT INTO t VALUES (1,12.300101010100), (2,34.557978974325555),(3,56.),(4,0.000043524389789999);
+
+#SQL[@122,N15]Result[10, 30, 30, 30, 29]
 SELECT * FROM t;
-id    d1
-1    12.30010101010000000000
-2    34.55797897432555500000
-3    56.00000000000000000000
-4    0.00004352438978999900
+id  ¦  d1
+1  ¦  12.30010101010000000000
+2  ¦  34.55797897432555500000
+3  ¦  56.00000000000000000000
+4  ¦  0.00004352438978999900
+
+#SQL[@123,N25]Result[11, 1]
 SELECT BIT_AND(d1) FROM t;
-bit_and(d1)
+BIT_AND(d1)
 0
+
+#SQL[@126,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@127,N56]Result[]
 CREATE TABLE t(
-id INT,
-d1 DECIMAL,
-PRIMARY KEY(id)
+	id INT,
+	d1 DECIMAL,
+	PRIMARY KEY(id)
 );
+
+#SQL[@132,N97]Result[]
 INSERT INTO t VALUES (1,12.300101010100), (2,34.557978974325555),(3,56.),(4,0.000043524389789999);
+
+#SQL[@133,N15]Result[10, 9, 9, 9, 8]
 SELECT * FROM t;
-id    d1
-1    12
-2    35
-3    56
-4    0
+id  ¦  d1
+1  ¦  12
+2  ¦  35
+3  ¦  56
+4  ¦  0
+
+#SQL[@134,N50]Result[44, 17]
 SELECT BIT_AND(d1), BIT_OR(d1), BIT_XOR(d1) FROM t;
-bit_and(d1)    bit_or(d1)    bit_xor(d1)
-0    63    23
+BIT_AND(d1)  ¦  BIT_OR(d1)  ¦  BIT_XOR(d1)
+0  ¦  63  ¦  23
+

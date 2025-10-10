@@ -1,303 +1,467 @@
+#SQL[@2,N48]Result[29, 1]
 SELECT FIELD('Bb', 'Aa', 'Bb', 'Cc', 'Dd', 'Ff');
-field(Bb, Aa, Bb, Cc, Dd, Ff)
+FIELD(Bb, Aa, Bb, Cc, Dd, Ff)
 2
+
+#SQL[@3,N48]Result[29, 1]
 SELECT FIELD('Bb', 'Bb', 'Aa', 'Cc', 'Dd', 'Ff');
-field(Bb, Bb, Aa, Cc, Dd, Ff)
+FIELD(Bb, Bb, Aa, Cc, Dd, Ff)
 1
+
+#SQL[@4,N48]Result[29, 1]
 SELECT FIELD('Bb', 'Aa', 'Cc', 'Bb', 'Dd', 'Ff');
-field(Bb, Aa, Cc, Bb, Dd, Ff)
+FIELD(Bb, Aa, Cc, Bb, Dd, Ff)
 3
+
+#SQL[@5,N48]Result[29, 1]
 SELECT FIELD('Bb', 'Aa', 'Cc', 'Dd', 'Bb', 'Ff');
-field(Bb, Aa, Cc, Dd, Bb, Ff)
+FIELD(Bb, Aa, Cc, Dd, Bb, Ff)
 4
+
+#SQL[@6,N48]Result[29, 1]
 SELECT FIELD('Bb', 'Aa', 'Cc', 'Dd', 'Ff', 'Bb');
-field(Bb, Aa, Cc, Dd, Ff, Bb)
+FIELD(Bb, Aa, Cc, Dd, Ff, Bb)
 5
+
+#SQL[@7,N48]Result[29, 1]
 SELECT FIELD('Gg', 'Aa', 'Bb', 'Cc', 'Dd', 'Ff');
-field(Gg, Aa, Bb, Cc, Dd, Ff)
+FIELD(Gg, Aa, Bb, Cc, Dd, Ff)
 0
+
+#SQL[@10,N48]Result[31, 1]
 SELECT FIELD(null, 'Aa', 'Bb', 'Cc', 'Dd', 'Ff');
-field(null, Aa, Bb, Cc, Dd, Ff)
+FIELD(null, Aa, Bb, Cc, Dd, Ff)
 0
+
+#SQL[@11,N48]Result[31, 1]
 SELECT FIELD('Bb', null, 'Bb', 'Cc', 'Dd', 'Ff');
-field(Bb, null, Bb, Cc, Dd, Ff)
+FIELD(Bb, null, Bb, Cc, Dd, Ff)
 2
+
+#SQL[@12,N48]Result[31, 1]
 SELECT FIELD('Bb', 'Aa', null, 'Cc', 'Dd', 'Ff');
-field(Bb, Aa, null, Cc, Dd, Ff)
+FIELD(Bb, Aa, null, Cc, Dd, Ff)
 0
+
+#SQL[@13,N60]Result[45, 1]
 SELECT FIELD('Bb', null, null, null, 'Bb', null, 'Dd', 'Ff');
-field(Bb, null, null, null, Bb, null, Dd, Ff)
+FIELD(Bb, null, null, null, Bb, null, Dd, Ff)
 4
+
+#SQL[@15,N32]Result[]
 create table test(a varchar(20));
+
+#SQL[@16,N29]Result[]
 insert into test values('Aa');
+
+#SQL[@17,N29]Result[]
 insert into test values('Bb');
+
+#SQL[@18,N29]Result[]
 insert into test values('Cc');
+
+#SQL[@19,N29]Result[]
 insert into test values('Dd');
+
+#SQL[@20,N29]Result[]
 insert into test values('Ee');
+
+#SQL[@21,N29]Result[]
 insert into test values('Ff');
+
+#SQL[@22,N61]Result[34, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(null, a, 'Aa', 'Bb', 'Cc', 'Dd', 'Ff') from test;
-field(null, a, Aa, Bb, Cc, Dd, Ff)
+FIELD(null, a, Aa, Bb, Cc, Dd, Ff)
 0
 0
 0
 0
 0
 0
+
+#SQL[@23,N55]Result[28, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(a, 'Aa', 'Bb', 'Cc', 'Dd', 'Ff') from test;
-field(a, Aa, Bb, Cc, Dd, Ff)
+FIELD(a, Aa, Bb, Cc, Dd, Ff)
 1
 2
 3
 4
 0
 5
+
+#SQL[@24,N55]Result[28, 1, 1, 1, 1, 1, 1]
 SELECT FIELD('Aa', a, 'Bb', 'Cc', 'Dd', 'Ff') from test;
-field(Aa, a, Bb, Cc, Dd, Ff)
+FIELD(Aa, a, Bb, Cc, Dd, Ff)
 1
 0
 0
 0
 0
 0
+
+#SQL[@25,N55]Result[28, 1, 1, 1, 1, 1, 1]
 SELECT FIELD('Aa', 'Bb', a, 'Cc', 'Dd', 'Ff') from test;
-field(Aa, Bb, a, Cc, Dd, Ff)
+FIELD(Aa, Bb, a, Cc, Dd, Ff)
 2
 0
 0
 0
 0
 0
+
+#SQL[@26,N55]Result[28, 1, 1, 1, 1, 1, 1]
 SELECT FIELD('Aa', 'Bb', 'Cc', a, 'Dd', 'Ff') from test;
-field(Aa, Bb, Cc, a, Dd, Ff)
+FIELD(Aa, Bb, Cc, a, Dd, Ff)
 3
 0
 0
 0
 0
 0
+
+#SQL[@27,N55]Result[28, 1, 1, 1, 1, 1, 1]
 SELECT FIELD('Aa', 'Aa', 'Cc', a, 'Dd', 'Ff') from test;
-field(Aa, Aa, Cc, a, Dd, Ff)
+FIELD(Aa, Aa, Cc, a, Dd, Ff)
 1
 1
 1
 1
 1
 1
+
+#SQL[@28,N49]Result[32, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(a, null, null, null, null) from test;
-field(a, null, null, null, null)
+FIELD(a, null, null, null, null)
 0
 0
 0
 0
 0
 0
+
+#SQL[@29,N15]Result[]
 drop table test;
+
+#SQL[@34,N30]Result[23, 1]
 SELECT FIELD(1, 1, 2, 3, 4, 5);
-field(1, 1, 2, 3, 4, 5)
+FIELD(1, 1, 2, 3, 4, 5)
 1
+
+#SQL[@35,N30]Result[23, 1]
 SELECT FIELD(2, 1, 2, 3, 4, 5);
-field(2, 1, 2, 3, 4, 5)
+FIELD(2, 1, 2, 3, 4, 5)
 2
+
+#SQL[@36,N30]Result[23, 1]
 SELECT FIELD(3, 1, 2, 3, 4, 5);
-field(3, 1, 2, 3, 4, 5)
+FIELD(3, 1, 2, 3, 4, 5)
 3
+
+#SQL[@37,N30]Result[23, 1]
 SELECT FIELD(4, 1, 2, 3, 4, 5);
-field(4, 1, 2, 3, 4, 5)
+FIELD(4, 1, 2, 3, 4, 5)
 4
+
+#SQL[@38,N30]Result[23, 1]
 SELECT FIELD(5, 1, 2, 3, 4, 5);
-field(5, 1, 2, 3, 4, 5)
+FIELD(5, 1, 2, 3, 4, 5)
 5
+
+#SQL[@39,N30]Result[23, 1]
 SELECT FIELD(6, 1, 2, 3, 4, 5);
-field(6, 1, 2, 3, 4, 5)
+FIELD(6, 1, 2, 3, 4, 5)
 0
+
+#SQL[@42,N36]Result[29, 1]
 SELECT FIELD(null, 1, 1, 2, 3, 4, 5);
-field(null, 1, 1, 2, 3, 4, 5)
+FIELD(null, 1, 1, 2, 3, 4, 5)
 0
+
+#SQL[@43,N33]Result[26, 1]
 SELECT FIELD(1, null, 2, 3, 4, 5);
-field(1, null, 2, 3, 4, 5)
+FIELD(1, null, 2, 3, 4, 5)
 0
+
+#SQL[@44,N33]Result[26, 1]
 SELECT FIELD(1, 1, null, 3, 4, 5);
-field(1, 1, null, 3, 4, 5)
+FIELD(1, 1, null, 3, 4, 5)
 1
+
+#SQL[@45,N42]Result[35, 1]
 SELECT FIELD(1, null, null, null, 1, null);
-field(1, null, null, null, 1, null)
+FIELD(1, null, null, null, 1, null)
 4
+
+#SQL[@47,N24]Result[]
 create table test(a int);
+
+#SQL[@48,N26]Result[]
 insert into test values(1);
+
+#SQL[@49,N26]Result[]
 insert into test values(2);
+
+#SQL[@50,N26]Result[]
 insert into test values(3);
+
+#SQL[@51,N26]Result[]
 insert into test values(4);
+
+#SQL[@52,N26]Result[]
 insert into test values(5);
+
+#SQL[@53,N26]Result[]
 insert into test values(6);
+
+#SQL[@54,N46]Result[29, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(null, a, 1, 2, 3, 4, 5) from test;
-field(null, a, 1, 2, 3, 4, 5)
+FIELD(null, a, 1, 2, 3, 4, 5)
 0
 0
 0
 0
 0
 0
+
+#SQL[@55,N40]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(a, 1, 2, 3, 4, 5) from test;
-field(a, 1, 2, 3, 4, 5)
+FIELD(a, 1, 2, 3, 4, 5)
 1
 2
 3
 4
 5
 0
+
+#SQL[@56,N40]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(1, a, 2, 3, 4, 5) from test;
-field(1, a, 2, 3, 4, 5)
+FIELD(1, a, 2, 3, 4, 5)
 1
 0
 0
 0
 0
 0
+
+#SQL[@57,N40]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(1, 2, a, 3, 4, 5) from test;
-field(1, 2, a, 3, 4, 5)
+FIELD(1, 2, a, 3, 4, 5)
 2
 0
 0
 0
 0
 0
+
+#SQL[@58,N40]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(1, 2, 3, a, 4, 5) from test;
-field(1, 2, 3, a, 4, 5)
+FIELD(1, 2, 3, a, 4, 5)
 3
 0
 0
 0
 0
 0
+
+#SQL[@59,N40]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(1, 2, 3, 4, a, 5) from test;
-field(1, 2, 3, 4, a, 5)
+FIELD(1, 2, 3, 4, a, 5)
 4
 0
 0
 0
 0
 0
+
+#SQL[@60,N43]Result[26, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(a, null, null, null) from test;
-field(a, null, null, null)
+FIELD(a, null, null, null)
 0
 0
 0
 0
 0
 0
+
+#SQL[@61,N15]Result[]
 drop table test;
+
+#SQL[@64,N34]Result[23, 1]
 SELECT FIELD(1, '1', '2', 3, 4, 5);
-field(1, 1, 2, 3, 4, 5)
+FIELD(1, 1, 2, 3, 4, 5)
 1
+
+#SQL[@65,N32]Result[23, 1]
 SELECT FIELD(2, 1, '2', 3, 4, 5);
-field(2, 1, 2, 3, 4, 5)
+FIELD(2, 1, 2, 3, 4, 5)
 2
+
+#SQL[@66,N32]Result[23, 1]
 SELECT FIELD(3, 1, '2', 3, 4, 5);
-field(3, 1, 2, 3, 4, 5)
+FIELD(3, 1, 2, 3, 4, 5)
 3
+
+#SQL[@67,N34]Result[23, 1]
 SELECT FIELD(4, '1', '2', 3, 4, 5);
-field(4, 1, 2, 3, 4, 5)
+FIELD(4, 1, 2, 3, 4, 5)
 4
+
+#SQL[@68,N32]Result[23, 1]
 SELECT FIELD('5', 1, 2, 3, 4, 5);
-field(5, 1, 2, 3, 4, 5)
+FIELD(5, 1, 2, 3, 4, 5)
 5
+
+#SQL[@69,N32]Result[23, 1]
 SELECT FIELD('6', 1, 2, 3, 4, 5);
-field(6, 1, 2, 3, 4, 5)
+FIELD(6, 1, 2, 3, 4, 5)
 0
+
+#SQL[@72,N40]Result[29, 1]
 SELECT FIELD(null, 1, '1', 2, '3', 4, 5);
-field(null, 1, 1, 2, 3, 4, 5)
+FIELD(null, 1, 1, 2, 3, 4, 5)
 0
+
+#SQL[@73,N35]Result[26, 1]
 SELECT FIELD(1, null, 2, '3', 4, 5);
-field(1, null, 2, 3, 4, 5)
+FIELD(1, null, 2, 3, 4, 5)
 0
+
+#SQL[@74,N35]Result[26, 1]
 SELECT FIELD(1, 1, null, 3, '4', 5);
-field(1, 1, null, 3, 4, 5)
+FIELD(1, 1, null, 3, 4, 5)
 1
+
+#SQL[@75,N44]Result[35, 1]
 SELECT FIELD(1, null, null, null, '1', null);
-field(1, null, null, null, 1, null)
+FIELD(1, null, null, null, 1, null)
 4
+
+#SQL[@77,N24]Result[]
 create table test(a int);
+
+#SQL[@78,N26]Result[]
 insert into test values(1);
+
+#SQL[@79,N26]Result[]
 insert into test values(2);
+
+#SQL[@80,N26]Result[]
 insert into test values(3);
+
+#SQL[@81,N26]Result[]
 insert into test values(4);
+
+#SQL[@82,N26]Result[]
 insert into test values(5);
+
+#SQL[@83,N26]Result[]
 insert into test values(6);
+
+#SQL[@84,N48]Result[29, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(null, a, '1', 2, 3, 4, 5) from test;
-field(null, a, 1, 2, 3, 4, 5)
+FIELD(null, a, 1, 2, 3, 4, 5)
 0
 0
 0
 0
 0
 0
+
+#SQL[@85,N42]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(a, '1', 2, 3, 4, 5) from test;
-field(a, 1, 2, 3, 4, 5)
+FIELD(a, 1, 2, 3, 4, 5)
 1
 2
 3
 4
 5
 0
+
+#SQL[@86,N42]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD('1', a, 2, 3, 4, 5) from test;
-field(1, a, 2, 3, 4, 5)
+FIELD(1, a, 2, 3, 4, 5)
 1
 0
 0
 0
 0
 0
+
+#SQL[@87,N42]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(1, '2', a, 3, 4, 5) from test;
-field(1, 2, a, 3, 4, 5)
+FIELD(1, 2, a, 3, 4, 5)
 2
 0
 0
 0
 0
 0
+
+#SQL[@88,N42]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(1, 2, '3', a, 4, 5) from test;
-field(1, 2, 3, a, 4, 5)
+FIELD(1, 2, 3, a, 4, 5)
 3
 0
 0
 0
 0
 0
+
+#SQL[@89,N42]Result[23, 1, 1, 1, 1, 1, 1]
 SELECT FIELD('1', 2, 3, 4, a, 5) from test;
-field(1, 2, 3, 4, a, 5)
+FIELD(1, 2, 3, 4, a, 5)
 4
 0
 0
 0
 0
 0
+
+#SQL[@90,N43]Result[26, 1, 1, 1, 1, 1, 1]
 SELECT FIELD(a, null, null, null) from test;
-field(a, null, null, null)
+FIELD(a, null, null, null)
 0
 0
 0
 0
 0
 0
+
+#SQL[@91,N15]Result[]
 drop table test;
+
+#SQL[@94,N120]Result[113, 1]
 SELECT FIELD(1.39479374937490, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937490, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937490, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 1
+
+#SQL[@95,N120]Result[113, 1]
 SELECT FIELD(1.39479374937491, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937491, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937491, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 2
+
+#SQL[@96,N120]Result[113, 1]
 SELECT FIELD(1.39479374937492, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937492, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937492, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 3
+
+#SQL[@97,N120]Result[113, 1]
 SELECT FIELD(1.39479374937493, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937493, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937493, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 4
+
+#SQL[@98,N120]Result[113, 1]
 SELECT FIELD(1.39479374937494, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937494, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937494, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 5
+
+#SQL[@99,N120]Result[113, 1]
 SELECT FIELD(1.39479374937495, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937495, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937495, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 0
+
+#SQL[@100,N120]Result[113, 1]
 SELECT FIELD(1.39479374937496, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494);
-field(1.39479374937496, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
+FIELD(1.39479374937496, 1.39479374937490, 1.39479374937491, 1.39479374937492, 1.39479374937493, 1.39479374937494)
 0
+

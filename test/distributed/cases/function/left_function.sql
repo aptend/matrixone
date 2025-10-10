@@ -48,15 +48,15 @@ SELECT LEFT(d1, SIN(0)+MONTH(d1)) FROM t;
 SELECT LEFT(d1, COS(10)+MONTH(d1)) FROM t;
 
 -- Decimal column
--- @bvt:issue#5511
-CREATE TABLE t(
-    d INT,
-    d1 BIGINT,
-    d2 FLOAT,
-    d3 DOUBLE,
-    PRIMARY KEY (id)
-);
--- @bvt:issue
+@issue(no=5511) {
+    CREATE TABLE t(
+        d INT,
+        d1 BIGINT,
+        d2 FLOAT,
+        d3 DOUBLE,
+        PRIMARY KEY (id)
+    );
+}
 
 DROP TABLE IF EXISTS t;
 CREATE TABLE t(
@@ -68,10 +68,10 @@ CREATE TABLE t(
 );
 INSERT INTO t VALUES (1,101210131014,50565056.5566,80898089.8899);
 INSERT INTO t VALUES (2,46863515648464,9876453.3156153,6486454631564.156153489);
--- @bvt:issue#5513
-SELECT LEFT(d1,3), LEFT(d2,4), LEFT(d3,5) FROM t;
-SELECT LEFT(d1,LENGTH(d1)), LEFT(d2,LENGTH(d2)) FROM t;
--- @bvt:issue
+@issue(no=5513) {
+    SELECT LEFT(d1,3), LEFT(d2,4), LEFT(d3,5) FROM t;
+    SELECT LEFT(d1,LENGTH(d1)), LEFT(d2,LENGTH(d2)) FROM t;
+}
 
 -- JOIN
 DROP TABLE IF EXISTS t;

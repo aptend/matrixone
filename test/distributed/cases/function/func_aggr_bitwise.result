@@ -1,257 +1,447 @@
+#SQL[@3,N49]Result[50, 24]
 SELECT bit_and(null), bit_or(null), bit_xor(null);
-bit_and(null)    bit_or(null)    bit_xor(null)
-null    null    null
+bit_and(null)  ¦  bit_or(null)  ¦  bit_xor(null)
+null  ¦  null  ¦  null
+
+#SQL[@7,N30]Result[]
 CREATE TABLE t1 (a int, b int);
+
+#SQL[@8,N30]Result[]
 INSERT INTO t1 VALUES (1,null);
+
+#SQL[@9,N30]Result[]
 INSERT INTO t1 VALUES (1,null);
+
+#SQL[@10,N30]Result[]
 INSERT INTO t1 VALUES (2,null);
+
+#SQL[@11,N62]Result[48, 31, 31]
 select a, BIT_AND(b), BIT_OR(b), BIT_XOR(b) from t1 group by a;
-a    BIT_AND(b)    BIT_OR(b)    BIT_XOR(b)
-1    null    null    null
-2    null    null    null
+a  ¦  BIT_AND(b)  ¦  BIT_OR(b)  ¦  BIT_XOR(b)
+1  ¦  null  ¦  null  ¦  null
+2  ¦  null  ¦  null  ¦  null
+
+#SQL[@12,N77]Result[63, 31, 31]
 SELECT a, OCT(BIT_AND(b)), OCT(BIT_OR(b)), OCT(BIT_XOR(b)) FROM t1 GROUP BY a;
-a    OCT(BIT_AND(b))    OCT(BIT_OR(b))    OCT(BIT_XOR(b))
-1    null    null    null
-2    null    null    null
+a  ¦  OCT(BIT_AND(b))  ¦  OCT(BIT_OR(b))  ¦  OCT(BIT_XOR(b))
+1  ¦  null  ¦  null  ¦  null
+2  ¦  null  ¦  null  ¦  null
+
+#SQL[@13,N63]Result[56, 24]
 SELECT OCT(BIT_AND(b)), OCT(BIT_OR(b)), OCT(BIT_XOR(b)) FROM t1;
-OCT(BIT_AND(b))    OCT(BIT_OR(b))    OCT(BIT_XOR(b))
-null    null    null
+OCT(BIT_AND(b))  ¦  OCT(BIT_OR(b))  ¦  OCT(BIT_XOR(b))
+null  ¦  null  ¦  null
+
+#SQL[@14,N29]Result[]
 INSERT INTO t1 VALUES (3,123);
+
+#SQL[@15,N77]Result[63, 31, 31, 28]
 SELECT a, OCT(BIT_AND(b)), OCT(BIT_OR(b)), OCT(BIT_XOR(b)) FROM t1 GROUP BY a;
-a    OCT(BIT_AND(b))    OCT(BIT_OR(b))    OCT(BIT_XOR(b))
-1    null    null    null
-2    null    null    null
-3    173    173    173
+a  ¦  OCT(BIT_AND(b))  ¦  OCT(BIT_OR(b))  ¦  OCT(BIT_XOR(b))
+1  ¦  null  ¦  null  ¦  null
+2  ¦  null  ¦  null  ¦  null
+3  ¦  173  ¦  173  ¦  173
+
+#SQL[@16,N46]Result[]
 INSERT INTO t1 VALUES (2,124124), (3, 4951312);
+
+#SQL[@17,N77]Result[63, 31, 37, 37]
 SELECT a, OCT(BIT_AND(b)), OCT(BIT_OR(b)), OCT(BIT_XOR(b)) FROM t1 GROUP BY a;
-a    OCT(BIT_AND(b))    OCT(BIT_OR(b))    OCT(BIT_XOR(b))
-1    null    null    null
-2    362334    362334    362334
-3    20    22706573    22706553
+a  ¦  OCT(BIT_AND(b))  ¦  OCT(BIT_OR(b))  ¦  OCT(BIT_XOR(b))
+1  ¦  null  ¦  null  ¦  null
+2  ¦  362334  ¦  362334  ¦  362334
+3  ¦  20  ¦  22706573  ¦  22706553
+
+#SQL[@18,N34]Result[]
 INSERT INTO t1 VALUES (4,-4124124);
+
+#SQL[@19,N77]Result[63, 31, 37, 37, 85]
 SELECT a, OCT(BIT_AND(b)), OCT(BIT_OR(b)), OCT(BIT_XOR(b)) FROM t1 GROUP BY a;
-a    OCT(BIT_AND(b))    OCT(BIT_OR(b))    OCT(BIT_XOR(b))
-1    null    null    null
-2    362334    362334    362334
-3    20    22706573    22706553
-4    1777777777777760211044    1777777777777760211044    1777777777777760211044
+a  ¦  OCT(BIT_AND(b))  ¦  OCT(BIT_OR(b))  ¦  OCT(BIT_XOR(b))
+1  ¦  null  ¦  null  ¦  null
+2  ¦  362334  ¦  362334  ¦  362334
+3  ¦  20  ¦  22706573  ¦  22706553
+4  ¦  1777777777777760211044  ¦  1777777777777760211044  ¦  1777777777777760211044
+
+#SQL[@20,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@24,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@25,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@26,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@27,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@28,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@29,N25]Result[10, 1]
 select bit_and(a) from t1;
 bit_and(a)
 1
+
+#SQL[@30,N25]Result[10, 1]
 select bit_and(b) from t1;
 bit_and(b)
 1
+
+#SQL[@31,N25]Result[10, 1]
 select bit_and(c) from t1;
 bit_and(c)
 0
+
+#SQL[@32,N25]Result[10, 1]
 select bit_and(d) from t1;
 bit_and(d)
 0
+
+#SQL[@33,N25]Result[10, 1]
 select bit_and(e) from t1;
 bit_and(e)
 4
+
+#SQL[@36,N25]Result[10, 1]
 select bit_and(f) from t1;
 bit_and(f)
 1
+
+#SQL[@38,N25]Result[10, 1]
 select bit_and(g) from t1;
 bit_and(g)
 5
+
+#SQL[@40,N25]Result[10, 2]
 select bit_and(h) from t1;
 bit_and(h)
 12
+
+#SQL[@41,N25]Error[61]
 select bit_and(i) from t1;
 invalid argument aggregate function bit_and, bad value [DATE]
+
+#SQL[@42,N25]Error[65]
 select bit_and(k) from t1;
 invalid argument aggregate function bit_and, bad value [DATETIME]
+
+#SQL[@43,N25]Error[66]
 select bit_and(l) from t1;
 invalid argument aggregate function bit_and, bad value [TIMESTAMP]
-select bit_and(m) from t1;
-bit_and(m)
-0
-select bit_and(n) from t1;
-bit_and(n)
-0
+
+#SQL[@48,N13]Result[]
 drop table t1;
+
+#SQL[@50,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@51,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@52,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@53,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@54,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@55,N24]Result[9, 2]
 select bit_or(a) from t1;
 bit_or(a)
 71
+
+#SQL[@56,N24]Result[9, 2]
 select bit_or(b) from t1;
 bit_or(b)
 71
+
+#SQL[@57,N24]Result[9, 2]
 select bit_or(c) from t1;
 bit_or(c)
 23
+
+#SQL[@58,N24]Result[9, 2]
 select bit_or(d) from t1;
 bit_or(d)
 47
+
+#SQL[@59,N24]Result[9, 2]
 select bit_or(e) from t1;
 bit_or(e)
 55
+
+#SQL[@62,N24]Result[9, 2]
 select bit_or(f) from t1;
 bit_or(f)
 55
+
+#SQL[@64,N24]Result[9, 3]
 select bit_or(g) from t1;
 bit_or(g)
 511
+
+#SQL[@66,N24]Result[9, 3]
 select bit_or(h) from t1;
 bit_or(h)
 127
+
+#SQL[@67,N24]Error[60]
 select bit_or(i) from t1;
 invalid argument aggregate function bit_or, bad value [DATE]
+
+#SQL[@68,N24]Error[64]
 select bit_or(k) from t1;
 invalid argument aggregate function bit_or, bad value [DATETIME]
+
+#SQL[@69,N24]Error[65]
 select bit_or(l) from t1;
 invalid argument aggregate function bit_or, bad value [TIMESTAMP]
-select bit_or(m) from t1;
-bit_or(m)
-3
-select bit_or(n) from t1;
-bit_or(n)
-3
+
+#SQL[@74,N13]Result[]
 drop table t1;
+
+#SQL[@76,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@77,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@78,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@79,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@80,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@81,N25]Result[10, 2]
 select bit_xor(a) from t1;
 bit_xor(a)
 70
+
+#SQL[@82,N25]Result[10, 2]
 select bit_xor(b) from t1;
 bit_xor(b)
 70
+
+#SQL[@83,N25]Result[10, 2]
 select bit_xor(c) from t1;
 bit_xor(c)
 23
+
+#SQL[@84,N25]Result[10, 2]
 select bit_xor(d) from t1;
 bit_xor(d)
 47
+
+#SQL[@85,N25]Result[10, 2]
 select bit_xor(e) from t1;
 bit_xor(e)
 51
+
+#SQL[@87,N25]Result[10, 2]
 select bit_xor(f) from t1;
 bit_xor(f)
 22
+
+#SQL[@89,N25]Result[10, 3]
 select bit_xor(g) from t1;
 bit_xor(g)
 250
+
+#SQL[@91,N25]Result[10, 3]
 select bit_xor(h) from t1;
 bit_xor(h)
 115
+
+#SQL[@92,N25]Error[61]
 select bit_xor(i) from t1;
 invalid argument aggregate function bit_xor, bad value [DATE]
+
+#SQL[@93,N25]Error[65]
 select bit_xor(k) from t1;
 invalid argument aggregate function bit_xor, bad value [DATETIME]
+
+#SQL[@94,N25]Error[66]
 select bit_xor(l) from t1;
 invalid argument aggregate function bit_xor, bad value [TIMESTAMP]
-select bit_xor(m) from t1;
-bit_xor(m)
-3
-select bit_xor(n) from t1;
-bit_xor(n)
-3
+
+#SQL[@99,N13]Result[]
 drop table t1;
+
+#SQL[@109,N106]Result[107, 66]
 select BIT_AND(99999999999999999.99999), BIT_OR(99999999999999999.99999), BIT_XOR(99999999999999999.99999);
-BIT_AND(99999999999999999.99999)    BIT_OR(99999999999999999.99999)    BIT_XOR(99999999999999999.99999)
-100000000000000000    100000000000000000    100000000000000000
+BIT_AND(99999999999999999.99999)  ¦  BIT_OR(99999999999999999.99999)  ¦  BIT_XOR(99999999999999999.99999)
+100000000000000000  ¦  100000000000000000  ¦  100000000000000000
+
+#SQL[@110,N125]Result[128, 69]
 select BIT_AND(999999999999999933193939.99999),BIT_OR(999999999999999933193939.99999),BIT_XOR(999999999999999933193939.99999);
-BIT_AND(999999999999999933193939.99999)    BIT_OR(999999999999999933193939.99999)    BIT_XOR(999999999999999933193939.99999)
-9223372036854775807    9223372036854775807    9223372036854775807
+BIT_AND(999999999999999933193939.99999)  ¦  BIT_OR(999999999999999933193939.99999)  ¦  BIT_XOR(999999999999999933193939.99999)
+9223372036854775807  ¦  9223372036854775807  ¦  9223372036854775807
+
+#SQL[@111,N179]Result[182, 69]
 select BIT_AND(9999999999999999999999999999999999.9999999999999),BIT_OR(9999999999999999999999999999999999.9999999999999),BIT_XOR(9999999999999999999999999999999999.9999999999999);
-BIT_AND(9999999999999999999999999999999999.9999999999999)    BIT_OR(9999999999999999999999999999999999.9999999999999)    BIT_XOR(9999999999999999999999999999999999.9999999999999)
-9223372036854775807    9223372036854775807    9223372036854775807
+BIT_AND(9999999999999999999999999999999999.9999999999999)  ¦  BIT_OR(9999999999999999999999999999999999.9999999999999)  ¦  BIT_XOR(9999999999999999999999999999999999.9999999999999)
+9223372036854775807  ¦  9223372036854775807  ¦  9223372036854775807
+
+#SQL[@112,N107]Result[110, 72]
 select BIT_AND(-99999999999999999.99999),BIT_OR(-99999999999999999.99999),BIT_XOR(-99999999999999999.99999);
-BIT_AND(-99999999999999999.99999)    BIT_OR(-99999999999999999.99999)    BIT_XOR(-99999999999999999.99999)
-18346744073709551616    18346744073709551616    18346744073709551616
+BIT_AND(-99999999999999999.99999)  ¦  BIT_OR(-99999999999999999.99999)  ¦  BIT_XOR(-99999999999999999.99999)
+18346744073709551616  ¦  18346744073709551616  ¦  18346744073709551616
+
+#SQL[@113,N128]Result[131, 69]
 select BIT_AND(-999999999999999933193939.99999),BIT_OR(-999999999999999933193939.99999),BIT_XOR(-999999999999999933193939.99999);
-BIT_AND(-999999999999999933193939.99999)    BIT_OR(-999999999999999933193939.99999)    BIT_XOR(-999999999999999933193939.99999)
-9223372036854775808    9223372036854775808    9223372036854775808
+BIT_AND(-999999999999999933193939.99999)  ¦  BIT_OR(-999999999999999933193939.99999)  ¦  BIT_XOR(-999999999999999933193939.99999)
+9223372036854775808  ¦  9223372036854775808  ¦  9223372036854775808
+
+#SQL[@114,N182]Result[185, 69]
 select BIT_AND(-9999999999999999999999999999999999.9999999999999),BIT_OR(-9999999999999999999999999999999999.9999999999999),BIT_XOR(-9999999999999999999999999999999999.9999999999999);
-BIT_AND(-9999999999999999999999999999999999.9999999999999)    BIT_OR(-9999999999999999999999999999999999.9999999999999)    BIT_XOR(-9999999999999999999999999999999999.9999999999999)
-9223372036854775808    9223372036854775808    9223372036854775808
+BIT_AND(-9999999999999999999999999999999999.9999999999999)  ¦  BIT_OR(-9999999999999999999999999999999999.9999999999999)  ¦  BIT_XOR(-9999999999999999999999999999999999.9999999999999)
+9223372036854775808  ¦  9223372036854775808  ¦  9223372036854775808
+
+#SQL[@116,N25]Result[]
 create table t1(a bigint);
+
+#SQL[@117,N47]Result[41, 24]
 select BIT_AND(a),BIT_OR(a), BIT_XOR(a) from t1;
-BIT_AND(a)    BIT_OR(a)    BIT_XOR(a)
-null    null    null
+BIT_AND(a)  ¦  BIT_OR(a)  ¦  BIT_XOR(a)
+null  ¦  null  ¦  null
+
+#SQL[@118,N48]Result[]
 insert into t1 values(null),(null),(null),(null);
+
+#SQL[@119,N48]Result[41, 24]
 select BIT_AND(a),BIT_OR(a), BIT_XOR(a)  from t1;
-BIT_AND(a)    BIT_OR(a)    BIT_XOR(a)
-null    null    null
+BIT_AND(a)  ¦  BIT_OR(a)  ¦  BIT_XOR(a)
+null  ¦  null  ¦  null
+
+#SQL[@120,N89]Result[]
 insert into t1 values(12417249128419),(124124125124151),(5124125151415),(124125152651515);
+
+#SQL[@121,N47]Result[41, 48]
 select BIT_AND(a),BIT_OR(a), BIT_XOR(a) from t1;
-BIT_AND(a)    BIT_OR(a)    BIT_XOR(a)
-2097187    140668768616447    17479809270168
+BIT_AND(a)  ¦  BIT_OR(a)  ¦  BIT_XOR(a)
+2097187  ¦  140668768616447  ¦  17479809270168
+
+#SQL[@122,N13]Result[]
 drop table t1;
+
+#SQL[@125,N56]Result[]
 create table t1 ( a int not null default 1, big bigint );
+
+#SQL[@126,N85]Result[]
 insert into t1 (big) values (-1),(1234567890167),(92233720368547),(18446744073709515);
+
+#SQL[@127,N16]Result[10, 9, 20, 21, 24]
 select * from t1;
-a    big
-1    -1
-1    1234567890167
-1    92233720368547
-1    18446744073709515
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+
+#SQL[@128,N109]Result[112, 136]
 select distinct BIT_AND(big),BIT_OR(big), BIT_XOR(big),BIT_AND(big)-1, BIT_OR(big)-1, BIT_XOR(big)-1  from t1;
-BIT_AND(big)    BIT_OR(big)    BIT_XOR(big)    BIT_AND(big) - 1    BIT_OR(big) - 1    BIT_XOR(big) - 1
-1109175436419    18446744073709551615    18428206535632081248    1109175436418    18446744073709551614    18428206535632081247
+BIT_AND(big)  ¦  BIT_OR(big)  ¦  BIT_XOR(big)  ¦  BIT_AND(big) - 1  ¦  BIT_OR(big) - 1  ¦  BIT_XOR(big) - 1
+1109175436419  ¦  18446744073709551615  ¦  18428206535632081248  ¦  1109175436418  ¦  18446744073709551614  ¦  18428206535632081247
+
+#SQL[@129,N110]Result[112, 136]
 select BIT_AND(big),BIT_OR(big), BIT_XOR(big),BIT_AND(big)-1, BIT_OR(big)-1, BIT_XOR(big)-1 from t1 group by a;
-BIT_AND(big)    BIT_OR(big)    BIT_XOR(big)    BIT_AND(big) - 1    BIT_OR(big) - 1    BIT_XOR(big) - 1
-1109175436419    18446744073709551615    18428206535632081248    1109175436418    18446744073709551614    18428206535632081247
+BIT_AND(big)  ¦  BIT_OR(big)  ¦  BIT_XOR(big)  ¦  BIT_AND(big) - 1  ¦  BIT_OR(big) - 1  ¦  BIT_XOR(big) - 1
+1109175436419  ¦  18446744073709551615  ¦  18428206535632081248  ¦  1109175436418  ¦  18446744073709551614  ¦  18428206535632081247
+
+#SQL[@130,N45]Result[]
 insert into t1 (big) values (184467440737615);
+
+#SQL[@131,N16]Result[10, 9, 20, 21, 24, 22]
 select * from t1;
-a    big
-1    -1
-1    1234567890167
-1    92233720368547
-1    18446744073709515
-1    184467440737615
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+1  ¦  184467440737615
+
+#SQL[@132,N109]Result[112, 136]
 select distinct BIT_AND(big),BIT_OR(big), BIT_XOR(big),BIT_AND(big)-1, BIT_OR(big)-1, BIT_XOR(big)-1  from t1;
-BIT_AND(big)    BIT_OR(big)    BIT_XOR(big)    BIT_AND(big) - 1    BIT_OR(big) - 1    BIT_XOR(big) - 1
-1099511759875    18446744073709551615    18428311795277417519    1099511759874    18446744073709551614    18428311795277417518
+BIT_AND(big)  ¦  BIT_OR(big)  ¦  BIT_XOR(big)  ¦  BIT_AND(big) - 1  ¦  BIT_OR(big) - 1  ¦  BIT_XOR(big) - 1
+1099511759875  ¦  18446744073709551615  ¦  18428311795277417519  ¦  1099511759874  ¦  18446744073709551614  ¦  18428311795277417518
+
+#SQL[@133,N110]Result[112, 136]
 select BIT_AND(big),BIT_OR(big), BIT_XOR(big),BIT_AND(big)-1, BIT_OR(big)-1, BIT_XOR(big)-1 from t1 group by a;
-BIT_AND(big)    BIT_OR(big)    BIT_XOR(big)    BIT_AND(big) - 1    BIT_OR(big) - 1    BIT_XOR(big) - 1
-1099511759875    18446744073709551615    18428311795277417519    1099511759874    18446744073709551614    18428311795277417518
+BIT_AND(big)  ¦  BIT_OR(big)  ¦  BIT_XOR(big)  ¦  BIT_AND(big) - 1  ¦  BIT_OR(big) - 1  ¦  BIT_XOR(big) - 1
+1099511759875  ¦  18446744073709551615  ¦  18428311795277417519  ¦  1099511759874  ¦  18446744073709551614  ¦  18428311795277417518
+
+#SQL[@134,N13]Result[]
 drop table t1;
+
+#SQL[@140,N69]Result[]
 CREATE TABLE t1 (Fld1 int(11) default NULL,Fld2 int(11) default NULL);
+
+#SQL[@141,N60]Result[]
 INSERT INTO t1 VALUES (1,10),(1,20),(2,NULL),(2,NULL),(3,50);
+
+#SQL[@142,N102]Result[48, 24, 25]
 select Fld1, BIT_AND(Fld2),BIT_OR(Fld2), BIT_XOR(Fld2) as q from t1 group by Fld1 having q is not null;
-Fld1    BIT_AND(Fld2)    BIT_OR(Fld2)    q
-1    0    30    30
-3    50    50    50
+Fld1  ¦  BIT_AND(Fld2)  ¦  BIT_OR(Fld2)  ¦  q
+1  ¦  0  ¦  30  ¦  30
+3  ¦  50  ¦  50  ¦  50
+
+#SQL[@143,N109]Result[60, 24, 25]
 select Fld1, BIT_AND(Fld2),BIT_OR(Fld2), BIT_XOR(Fld2) from t1 group by Fld1 having BIT_AND(Fld2) is not null;
-Fld1    BIT_AND(Fld2)    BIT_OR(Fld2)    BIT_XOR(Fld2)
-1    0    30    30
-3    50    50    50
+Fld1  ¦  BIT_AND(Fld2)  ¦  BIT_OR(Fld2)  ¦  BIT_XOR(Fld2)
+1  ¦  0  ¦  30  ¦  30
+3  ¦  50  ¦  50  ¦  50
+
+#SQL[@144,N108]Result[60, 24, 25]
 select Fld1, BIT_AND(Fld2),BIT_OR(Fld2), BIT_XOR(Fld2) from t1 group by Fld1 having BIT_OR(Fld2) is not null;
-Fld1    BIT_AND(Fld2)    BIT_OR(Fld2)    BIT_XOR(Fld2)
-1    0    30    30
-3    50    50    50
+Fld1  ¦  BIT_AND(Fld2)  ¦  BIT_OR(Fld2)  ¦  BIT_XOR(Fld2)
+1  ¦  0  ¦  30  ¦  30
+3  ¦  50  ¦  50  ¦  50
+
+#SQL[@145,N109]Result[60, 24, 25]
 select Fld1, BIT_AND(Fld2),BIT_OR(Fld2), BIT_XOR(Fld2) from t1 group by Fld1 having BIT_XOR(Fld2) is not null;
-Fld1    BIT_AND(Fld2)    BIT_OR(Fld2)    BIT_XOR(Fld2)
-1    0    30    30
-3    50    50    50
+Fld1  ¦  BIT_AND(Fld2)  ¦  BIT_OR(Fld2)  ¦  BIT_XOR(Fld2)
+1  ¦  0  ¦  30  ¦  30
+3  ¦  50  ¦  50  ¦  50
+
+#SQL[@146,N13]Result[]
 drop table t1;
+
+#SQL[@151,N73]Result[80, 26]
 SELECT BIT_AND(1)<BIT_AND(2), BIT_AND(1)>BIT_OR(3), BIT_AND(3)>BIT_XOR(5);
-BIT_AND(1) < BIT_AND(2)    BIT_AND(1) > BIT_OR(3)    BIT_AND(3) > BIT_XOR(5)
-true    false    false
+BIT_AND(1) < BIT_AND(2)  ¦  BIT_AND(1) > BIT_OR(3)  ¦  BIT_AND(3) > BIT_XOR(5)
+true  ¦  false  ¦  false
+
+#SQL[@152,N55]Error[16]
 SELECT BIT_AND(1 - 1), BIT_OR(1 - (-1)), BIT_XOR(1 / 0);
-Data truncation: division by zero
+division by zero
+
+#SQL[@154,N23]Result[]
 drop table if exists t1;
+
+#SQL[@155,N31]Result[]
 create table t1(a varbinary(3));
+
+#SQL[@156,N44]Result[]
 insert into t1 values(3), (4), (9), (7), (6);
+
+#SQL[@157,N48]Result[41, 15]
 select bit_and(a), bit_or(a), bit_xor(a) from t1;
-bit_and(a)    bit_or(a)    bit_xor(a)
-0    ?    ?
+bit_and(a)  ¦  bit_or(a)  ¦  bit_xor(a)
+0  ¦  ?  ¦  ?
+
+#SQL[@158,N25]Result[]
 insert into t1 values(33);
+
+#SQL[@159,N25]Error[76]
 select bit_and(a) from t1;
 internal error: Binary operands of bitwise operators must be of equal length
+

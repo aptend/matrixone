@@ -1,508 +1,932 @@
+#SQL[@2,N16]Result[9, 4]
 SELECT max(null);
 max(null)
 null
+
+#SQL[@5,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@6,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@7,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@8,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@9,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@10,N21]Result[6, 2]
 select max(a) from t1;
 max(a)
 71
+
+#SQL[@11,N21]Result[6, 2]
 select max(b) from t1;
 max(b)
 71
+
+#SQL[@12,N21]Result[6, 2]
 select max(c) from t1;
 max(c)
 21
+
+#SQL[@13,N21]Result[6, 2]
 select max(d) from t1;
 max(d)
 43
+
+#SQL[@14,N21]Result[6, 2]
 select max(e) from t1;
 max(e)
 54
+
+#SQL[@15,N21]Result[6, 4]
 select max(f) from t1;
 max(f)
 53.5
+
+#SQL[@16,N21]Result[6, 6]
 select max(g) from t1;
 max(g)
 431.13
+
+#SQL[@17,N21]Result[6, 23]
 select max(h) from t1;
 max(h)
 124.3140000000000000000
+
+#SQL[@18,N21]Result[6, 10]
 select max(i) from t1;
 max(i)
 2012-03-22
+
+#SQL[@19,N21]Result[6, 19]
 select max(k) from t1;
 max(k)
 2019-03-12 10:03:12
+
+#SQL[@20,N21]Result[6, 19]
 select max(l) from t1;
 max(l)
 2032-03-12 13:04:12
+
+#SQL[@21,N21]Result[6, 4]
 select max(m) from t1;
 max(m)
 afbc
+
+#SQL[@22,N21]Result[6, 4]
 select max(n) from t1;
 max(n)
 dcvf
+
+#SQL[@23,N13]Result[]
 drop table t1;
+
+#SQL[@36,N35]Result[28, 23]
 select max(99999999999999999.99999);
 max(99999999999999999.99999)
 99999999999999999.99999
+
+#SQL[@37,N42]Result[35, 30]
 select max(999999999999999933193939.99999);
 max(999999999999999933193939.99999)
 999999999999999933193939.99999
+
+#SQL[@38,N60]Result[53, 39]
 select max(9999999999999999999999999999999999.9999999999999);
 max(9999999999999999999999999999999999.9999999999999)
-9999999999999999999999999999999999.9999999999999
+10000000000000000000000000000000000.000
+
+#SQL[@40,N25]Result[]
 create table t1(a bigint);
+
+#SQL[@41,N21]Result[6, 4]
 select max(a) from t1;
 max(a)
 null
+
+#SQL[@42,N48]Result[]
 insert into t1 values(null),(null),(null),(null);
+
+#SQL[@43,N21]Result[6, 4]
 select max(a) from t1;
 max(a)
 null
+
+#SQL[@44,N89]Result[]
 insert into t1 values(12417249128419),(124124125124151),(5124125151415),(124125152651515);
+
+#SQL[@45,N21]Result[6, 15]
 select max(a) from t1;
 max(a)
 124125152651515
+
+#SQL[@46,N13]Result[]
 drop table t1;
+
+#SQL[@47,N56]Result[]
 create table t1 ( a int not null default 1, big bigint );
+
+#SQL[@48,N85]Result[]
 insert into t1 (big) values (-1),(1234567890167),(92233720368547),(18446744073709515);
+
+#SQL[@49,N16]Result[10, 9, 20, 21, 24]
 select * from t1;
-a	big
-1	-1
-1	1234567890167
-1	92233720368547
-1	18446744073709515
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+
+#SQL[@50,N43]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1;
-min(big)	max(big)	max(big)-1
--1	18446744073709515	18446744073709514
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  18446744073709515  ¦  18446744073709514
+
+#SQL[@51,N54]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1 group by a;
-min(big)	max(big)	max(big)-1
--1	18446744073709515	18446744073709514
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  18446744073709515  ¦  18446744073709514
+
+#SQL[@52,N45]Result[]
 insert into t1 (big) values (184467440737615);
+
+#SQL[@53,N16]Result[10, 9, 20, 21, 24, 22]
 select * from t1;
-a	big
-1	-1
-1	1234567890167
-1	92233720368547
-1	18446744073709515
-1	184467440737615
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+1  ¦  184467440737615
+
+#SQL[@54,N43]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1;
-min(big)	max(big)	max(big)-1
--1	18446744073709515	18446744073709514
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  18446744073709515  ¦  18446744073709514
+
+#SQL[@55,N54]Result[40, 48]
 select min(big),max(big),max(big)-1 from t1 group by a;
-min(big)	max(big)	max(big)-1
--1	18446744073709515	18446744073709514
+min(big)  ¦  max(big)  ¦  max(big) - 1
+-1  ¦  18446744073709515  ¦  18446744073709514
+
+#SQL[@56,N13]Result[]
 drop table t1;
+
+#SQL[@60,N40]Result[]
 create table t1 (name char(20) not null);
+
+#SQL[@61,N40]Result[]
 create table t2 (name char(20) not null);
+
+#SQL[@62,N28]Result[]
 insert into t1 values ("å");
+
+#SQL[@63,N28]Result[]
 insert into t1 values ("ä");
+
+#SQL[@64,N28]Result[]
 insert into t1 values ("ö");
+
+#SQL[@65,N31]Result[]
 insert into t2 select * from t1;
+
+#SQL[@66,N30]Result[4, 2, 2, 2]
 select * from t1 order by name;
 name
 ä
 å
 ö
+
+#SQL[@67,N53]Result[24, 6, 6, 6]
 select concat_ws(",","*",name,"*") from t1 order by 1;
-concat_ws(",","*",name,"*")
+concat_ws(,, *, name, *)
 *,ä,*
 *,å,*
 *,ö,*
-select min(name),min(concat_ws(",","*",name,"*")),max(name),max(concat_ws("*",name,"*")) from t1;
-min(name)	min(concat_ws(",","*",name,"*"))	max(name)	max(concat_ws("*",name,"*"))
-å	*,å,*	ö	ö**
+
+#SQL[@71,N13]Result[]
 drop table t1;
+
+#SQL[@72,N13]Result[]
 drop table t2;
+
+#SQL[@75,N69]Result[]
 CREATE TABLE t1 (Fld1 int(11) default NULL,Fld2 int(11) default NULL);
+
+#SQL[@76,N60]Result[]
 INSERT INTO t1 VALUES (1,10),(1,20),(2,NULL),(2,NULL),(3,50);
+
+#SQL[@78,N81]Result[11, 9, 9]
 select distinct Fld1,  max( Fld2) as q from t1 group by Fld1 having q is not null;
-fld1    q
-1    20
-3    50
+Fld1  ¦  q
+1  ¦  20
+3  ¦  50
+
+#SQL[@79,N73]Result[19, 9, 9]
 select Fld1, max(Fld2) from t1 group by Fld1 having max(Fld2) is not null;
-Fld1	max(Fld2)
-1	20
-3	50
+Fld1  ¦  max(Fld2)
+1  ¦  20
+3  ¦  50
+
+#SQL[@80,N73]Result[19, 9, 9]
 select Fld1, max(Fld2) from t1 group by Fld1 having avg(Fld2) is not null;
-Fld1	max(Fld2)
-1	20
-3	50
+Fld1  ¦  max(Fld2)
+1  ¦  20
+3  ¦  50
+
+#SQL[@81,N73]Result[19, 9, 9]
 select Fld1, max(Fld2) from t1 group by Fld1 having std(Fld2) is not null;
-Fld1	max(Fld2)
-1	20
-3	50
+Fld1  ¦  max(Fld2)
+1  ¦  20
+3  ¦  50
+
+#SQL[@82,N78]Result[19, 9, 9]
 select Fld1, max(Fld2) from t1 group by Fld1 having variance(Fld2) is not null;
-Fld1	max(Fld2)
-1	20
-3	50
+Fld1  ¦  max(Fld2)
+1  ¦  20
+3  ¦  50
+
+#SQL[@83,N13]Result[]
 drop table t1;
+
+#SQL[@87,N65]Result[]
 create table t1 (grp int, a bigint unsigned, c char(10) not null);
+
+#SQL[@88,N31]Result[]
 insert into t1 values (1,1,"a");
+
+#SQL[@89,N31]Result[]
 insert into t1 values (2,2,"b");
+
+#SQL[@90,N31]Result[]
 insert into t1 values (2,3,"c");
+
+#SQL[@91,N31]Result[]
 insert into t1 values (3,4,"E");
+
+#SQL[@92,N31]Result[]
 insert into t1 values (3,5,"C");
+
+#SQL[@93,N31]Result[]
 insert into t1 values (3,6,"D");
+
+#SQL[@94,N34]Result[6, 4]
 select sum(a) from t1 where a > 10;
 sum(a)
 null
+
+#SQL[@95,N52]Result[42, 8]
 select count(distinct a),count(distinct grp) from t1;
-count(distinct a)	count(distinct grp)
-6	3
+count(distinct a)  ¦  count(distinct grp)
+6  ¦  3
+
+#SQL[@96,N36]Result[]
 insert into t1 values (null,null,'');
+
+#SQL[@97,N52]Result[42, 8]
 select count(distinct a),count(distinct grp) from t1;
-count(distinct a)	count(distinct grp)
-6	3
+count(distinct a)  ¦  count(distinct grp)
+6  ¦  3
+
+#SQL[@98,N56]Result[]
 create table t2 (grp int, a bigint unsigned, c char(10));
+
+#SQL[@99,N69]Result[]
 insert into t2 select grp,max(a)+max(grp),max(c) from t1 group by grp;
+
+#SQL[@100,N13]Result[]
 drop table t1;
+
+#SQL[@101,N13]Result[]
 drop table t2;
+
+#SQL[@105,N36]Result[]
 create table t1 (a1 int, a2 char(3));
+
+#SQL[@106,N66]Result[]
 insert into t1 values(10,'aaa'), (10,null), (10,'bbb'), (20,'zzz');
+
+#SQL[@107,N44]Result[]
 create table t2(a1 char(3), a2 int, a3 real);
+
+#SQL[@108,N16]Result[10, 11, 12, 11, 11]
 select * from t1;
-a1	a2
-10	aaa
-10	null
-10	bbb
-20	zzz
-select min(a2) from t1;
-min(a2)
-aaa
+a1  ¦  a2
+10  ¦  aaa
+10  ¦  null
+10  ¦  bbb
+20  ¦  zzz
+
+#SQL[@112,N41]Result[26, 14]
 select max(t1.a1), max(t2.a2) from t1, t2;
-max(t1.a1)	max(t2.a2)
-null	null
+max(t1.a1)  ¦  max(t2.a2)
+null  ¦  null
+
+#SQL[@113,N29]Result[10, 4]
 select max(t1.a1) from t1, t2;
 max(t1.a1)
 null
+
+#SQL[@114,N41]Result[26, 14]
 select max(t2.a2), max(t1.a1) from t1, t2;
-max(t2.a2)	max(t1.a1)
-null	null
+max(t2.a2)  ¦  max(t1.a1)
+null  ¦  null
+
+#SQL[@115,N37]Result[]
 insert into t2 values('AAA', 10, 0.5);
+
+#SQL[@116,N37]Result[]
 insert into t2 values('BBB', 20, 1.0);
+
+#SQL[@117,N44]Result[26, 28, 29, 28, 28, 28, 29, 28, 28]
 select t1.a1, t1.a2, t2.a1, t2.a2 from t1,t2;
-a1	a2	a1	a2
-10	aaa	BBB	20
-10	aaa	AAA	10
-10	null	BBB	20
-10	null	AAA	10
-10	bbb	BBB	20
-10	bbb	AAA	10
-20	zzz	BBB	20
-20	zzz	AAA	10
+a1  ¦  a2  ¦  a1  ¦  a2
+10  ¦  aaa  ¦  AAA  ¦  10
+10  ¦  null  ¦  AAA  ¦  10
+10  ¦  bbb  ¦  AAA  ¦  10
+20  ¦  zzz  ¦  AAA  ¦  10
+10  ¦  aaa  ¦  BBB  ¦  20
+10  ¦  null  ¦  BBB  ¦  20
+10  ¦  bbb  ¦  BBB  ¦  20
+20  ¦  zzz  ¦  BBB  ¦  20
+
+#SQL[@118,N55]Result[26, 14]
 select max(t1.a1), max(t2.a1) from t1, t2 where t2.a2=9;
-max(t1.a1)	max(t2.a1)
-null	null
+max(t1.a1)  ¦  max(t2.a1)
+null  ¦  null
+
+#SQL[@119,N55]Result[26, 14]
 select max(t2.a1), max(t1.a1) from t1, t2 where t2.a2=9;
-max(t2.a1)	max(t1.a1)
-null	null
+max(t2.a1)  ¦  max(t1.a1)
+null  ¦  null
+
+#SQL[@120,N72]Result[26, 28, 28, 29, 29, 28, 28, 31]
 select t1.a1, t1.a2, t2.a1, t2.a2 from t1 left outer join t2 on t1.a1=10;
-a1	a2	a1	a2
-10	aaa	BBB	20
-10	aaa	AAA	10
-10	null	BBB	20
-10	null	AAA	10
-10	bbb	BBB	20
-10	bbb	AAA	10
-20	zzz	null	null
+a1  ¦  a2  ¦  a1  ¦  a2
+10  ¦  aaa  ¦  AAA  ¦  10
+10  ¦  aaa  ¦  BBB  ¦  20
+10  ¦  null  ¦  AAA  ¦  10
+10  ¦  null  ¦  BBB  ¦  20
+10  ¦  bbb  ¦  AAA  ¦  10
+10  ¦  bbb  ¦  BBB  ¦  20
+20  ¦  zzz  ¦  null  ¦  null
+
+#SQL[@121,N56]Result[10, 3]
 select max(t1.a2) from t1 left outer join t2 on t1.a1=10;
 max(t1.a2)
 zzz
+
+#SQL[@122,N71]Result[10, 3]
 select max(t2.a1) from t2 left outer join t1 on t2.a2=10 where t2.a2=20;
 max(t2.a1)
 BBB
+
+#SQL[@123,N71]Result[10, 3]
 select max(t2.a1) from t2 left outer join t1 on t2.a2=10 where t2.a2=10;
 max(t2.a1)
 AAA
+
+#SQL[@124,N85]Result[10, 4]
 select max(t2.a1) from t1 left outer join t2 on t1.a2=t2.a1 and 1=0 where t2.a1='AAA';
 max(t2.a1)
 null
+
+#SQL[@125,N67]Result[26, 12]
 select max(t1.a2),max(t2.a1) from t1 left outer join t2 on t1.a1=10;
-max(t1.a2)	max(t2.a1)
-zzz	BBB
+max(t1.a2)  ¦  max(t2.a1)
+zzz  ¦  BBB
+
+#SQL[@126,N13]Result[]
 drop table t1;
+
+#SQL[@127,N13]Result[]
 drop table t2;
+
+#SQL[@130,N30]Result[]
 CREATE TABLE t1 (a int, b int);
+
+#SQL[@131,N86]Result[99, 71]
 select count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1;
-count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-0	null	null	null	null	null	null	null
+count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@132,N99]Result[]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
+
+#SQL[@133,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@134,N99]Result[106, 78]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@135,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@136,N30]Result[]
 insert into t1 values (2,null);
+
+#SQL[@137,N99]Result[106, 78, 78]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	0	null	null	null	null	null	null	null
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+
+#SQL[@138,N27]Result[]
 insert into t1 values (2,1);
+
+#SQL[@139,N99]Result[106, 78, 57]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	1	1	1.0	0.0	1	1	1	1
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@140,N27]Result[]
 insert into t1 values (3,1);
+
+#SQL[@141,N99]Result[106, 78, 57, 57]
 select a,count(b), sum(b), avg(b), std(b), min(b), max(b), bit_and(b), bit_or(b) from t1 group by a;
-a	count(b)	sum(b)	avg(b)	std(b)	min(b)	max(b)	bit_and(b)	bit_or(b)
-1	0	null	null	null	null	null	null	null
-2	1	1	1.0	0.0	1	1	1	1
-3	1	1	1.0	0.0	1	1	1	1
+a  ¦  count(b)  ¦  sum(b)  ¦  avg(b)  ¦  std(b)  ¦  min(b)  ¦  max(b)  ¦  bit_and(b)  ¦  bit_or(b)
+1  ¦  0  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null  ¦  null
+2  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+3  ¦  1  ¦  1  ¦  1  ¦  0  ¦  1  ¦  1  ¦  1  ¦  1
+
+#SQL[@142,N13]Result[]
 drop table t1;
+
+#SQL[@146,N78]Result[]
 create table t1(a1 char(3) primary key,a2 smallint,a3 char(3),a4 real,a5 date);
+
+#SQL[@147,N73]Result[]
 create table t2(a1 char(3) primary key,a2 char(17),a3 char(2),a4 char(3));
+
+#SQL[@148,N59]Result[]
 insert into t1 values('AME',0,'SEA',0.100,date'1942-02-19');
+
+#SQL[@149,N59]Result[]
 insert into t1 values('HBR',1,'SEA',0.085,date'1948-03-05');
+
+#SQL[@150,N59]Result[]
 insert into t1 values('BOT',2,'SEA',0.085,date'1951-11-29');
+
+#SQL[@151,N59]Result[]
 insert into t1 values('BMC',3,'SEA',0.085,date'1958-09-08');
+
+#SQL[@152,N59]Result[]
 insert into t1 values('TWU',0,'LAX',0.080,date'1969-10-05');
+
+#SQL[@153,N59]Result[]
 insert into t1 values('BDL',0,'DEN',0.080,date'1960-11-27');
+
+#SQL[@154,N59]Result[]
 insert into t1 values('DTX',1,'NYC',0.080,date'1961-05-04');
+
+#SQL[@155,N59]Result[]
 insert into t1 values('PLS',1,'WDC',0.075,date'1949-01-02');
+
+#SQL[@156,N59]Result[]
 insert into t1 values('ZAJ',2,'CHI',0.075,date'1960-06-15');
+
+#SQL[@157,N59]Result[]
 insert into t1 values('VVV',2,'MIN',0.075,date'1959-06-28');
+
+#SQL[@158,N59]Result[]
 insert into t1 values('GTM',3,'DAL',0.070,date'1977-09-23');
+
+#SQL[@159,N61]Result[]
 insert into t1 values('SSJ',null,'CHI',null,date'1974-03-19');
+
+#SQL[@160,N46]Result[]
 insert into t1 values('KKK',3,'ATL',null,null);
+
+#SQL[@161,N49]Result[]
 insert into t1 values('XXX',null,'MIN',null,null);
+
+#SQL[@162,N46]Result[]
 insert into t1 values('WWW',1,'LED',null,null);
+
+#SQL[@164,N49]Result[]
 insert into t2 values('TKF','Seattle','WA','AME');
+
+#SQL[@165,N53]Result[]
 insert into t2 values('LCC','Los Angeles','CA','TWU');
+
+#SQL[@166,N48]Result[]
 insert into t2 values('DEN','Denver','CO','BDL');
+
+#SQL[@167,N51]Result[]
 insert into t2 values('SDC','San Diego','CA','TWU');
+
+#SQL[@168,N53]Result[]
 insert into t2 values('NOL','New Orleans','LA','GTM');
+
+#SQL[@169,N53]Result[]
 insert into t2 values('LAK','Los Angeles','CA','TWU');
+
+#SQL[@170,N45]Result[]
 insert into t2 values('AAA','AAA','AA','AME');
+
+#SQL[@173,N16]Result[34, 44, 46, 46, 46, 45, 45, 45, 46, 46, 46, 45, 48, 39, 42, 39]
 select * from t1;
-a1	a2	a3	a4	a5
-AME	0	SEA	0.1	1942-02-19
-BDL	0	DEN	0.08	1960-11-27
-BMC	3	SEA	0.085	1958-09-08
-BOT	2	SEA	0.085	1951-11-29
-DTX	1	NYC	0.08	1961-05-04
-GTM	3	DAL	0.07	1977-09-23
-HBR	1	SEA	0.085	1948-03-05
-KKK	3	ATL	null	null
-PLS	1	WDC	0.075	1949-01-02
-SSJ	null	CHI	null	1974-03-19
-TWU	0	LAX	0.08	1969-10-05
-VVV	2	MIN	0.075	1959-06-28
-WWW	1	LED	null	null
-XXX	null	MIN	null	null
-ZAJ	2	CHI	0.075	1960-06-15
+a1  ¦  a2  ¦  a3  ¦  a4  ¦  a5
+AME  ¦  0  ¦  SEA  ¦  0.1  ¦  1942-02-19
+HBR  ¦  1  ¦  SEA  ¦  0.085  ¦  1948-03-05
+BOT  ¦  2  ¦  SEA  ¦  0.085  ¦  1951-11-29
+BMC  ¦  3  ¦  SEA  ¦  0.085  ¦  1958-09-08
+TWU  ¦  0  ¦  LAX  ¦  0.08  ¦  1969-10-05
+BDL  ¦  0  ¦  DEN  ¦  0.08  ¦  1960-11-27
+DTX  ¦  1  ¦  NYC  ¦  0.08  ¦  1961-05-04
+PLS  ¦  1  ¦  WDC  ¦  0.075  ¦  1949-01-02
+ZAJ  ¦  2  ¦  CHI  ¦  0.075  ¦  1960-06-15
+VVV  ¦  2  ¦  MIN  ¦  0.075  ¦  1959-06-28
+GTM  ¦  3  ¦  DAL  ¦  0.07  ¦  1977-09-23
+SSJ  ¦  null  ¦  CHI  ¦  null  ¦  1974-03-19
+KKK  ¦  3  ¦  ATL  ¦  null  ¦  null
+XXX  ¦  null  ¦  MIN  ¦  null  ¦  null
+WWW  ¦  1  ¦  LED  ¦  null  ¦  null
+
+#SQL[@174,N16]Result[26, 33, 37, 32, 35, 37, 37, 29]
 select * from t2;
-a1	a2	a3	a4
-AAA	AAA	AA	AME
-DEN	Denver	CO	BDL
-LAK	Los Angeles	CA	TWU
-LCC	Los Angeles	CA	TWU
-NOL	New Orleans	LA	GTM
-SDC	San Diego	CA	TWU
-TKF	Seattle	WA	AME
+a1  ¦  a2  ¦  a3  ¦  a4
+TKF  ¦  Seattle  ¦  WA  ¦  AME
+LCC  ¦  Los Angeles  ¦  CA  ¦  TWU
+DEN  ¦  Denver  ¦  CO  ¦  BDL
+SDC  ¦  San Diego  ¦  CA  ¦  TWU
+NOL  ¦  New Orleans  ¦  LA  ¦  GTM
+LAK  ¦  Los Angeles  ¦  CA  ¦  TWU
+AAA  ¦  AAA  ¦  AA  ¦  AME
+
+#SQL[@175,N22]Result[7, 3]
 select min(a1) from t1;
 min(a1)
 AME
+
+#SQL[@176,N22]Result[7, 3]
 select max(a4) from t1;
 max(a4)
 0.1
+
+#SQL[@177,N31]Result[20, 26]
 select min(a5), max(a5) from t1;
-min(a5)	max(a5)
-1942-02-19	1977-09-23
+min(a5)  ¦  max(a5)
+1942-02-19  ¦  1977-09-23
+
+#SQL[@178,N35]Result[7, 3]
 select min(a3) from t1 where a2 = 2;
 min(a3)
 CHI
+
+#SQL[@179,N48]Result[20, 12]
 select min(a1), max(a1) from t1 where a4 = 0.080;
-min(a1)	max(a1)
-BDL	TWU
+min(a1)  ¦  max(a1)
+BDL  ¦  TWU
+
+#SQL[@180,N41]Result[26, 18]
 select min(t1.a5), max(t2.a3) from t1, t2;
-min(t1.a5)	max(t2.a3)
-1942-02-19	WA
+min(t1.a5)  ¦  max(t2.a3)
+1942-02-19  ¦  WA
+
+#SQL[@181,N74]Result[26, 18]
 select min(t1.a3), max(t2.a2) from t1, t2 where t1.a2 = 0 and t2.a3 = 'CA';
-min(t1.a3)	max(t2.a2)
-DEN	San Diego
+min(t1.a3)  ¦  max(t2.a2)
+DEN  ¦  San Diego
+
+#SQL[@182,N39]Result[7, 3]
 select min(a1) from t1 where a1 > 'KKK';
 min(a1)
 PLS
+
+#SQL[@183,N40]Result[7, 3]
 select min(a1) from t1 where a1 >= 'KKK';
 min(a1)
 KKK
+
+#SQL[@184,N50]Result[7, 3]
 select max(a3) from t1 where a2 = 2 and a3 < 'SEA';
 max(a3)
 MIN
+
+#SQL[@185,N50]Result[7, 10]
 select max(a5) from t1 where a5 < date'1970-01-01';
 max(a5)
 1969-10-05
+
+#SQL[@186,N39]Result[7, 3]
 select max(a3) from t1 where a2 is null;
 max(a3)
 MIN
+
+#SQL[@187,N62]Result[7, 3]
 select max(a3) from t1 where a2 = 0 and a3 between 'K' and 'Q';
 max(a3)
 LAX
+
+#SQL[@188,N60]Result[20, 12]
 select min(a1), max(a1) from t1 where a1 between 'A' and 'P';
-min(a1)	max(a1)
-AME	KKK
+min(a1)  ¦  max(a1)
+AME  ¦  KKK
+
+#SQL[@189,N66]Result[7, 3]
 select max(a3) from t1 where a3 < 'SEA' and a2 = 2 and a3 <= 'MIN';
 max(a3)
 MIN
+
+#SQL[@190,N50]Result[7, 3]
 select max(a3) from t1 where a3 = 'MIN' and a2 = 2;
 max(a3)
 MIN
+
+#SQL[@191,N50]Result[7, 4]
 select max(a3) from t1 where a3 = 'DEN' and a2 = 2;
 max(a3)
 null
+
+#SQL[@192,N92]Result[26, 20]
 select max(t1.a3), min(t2.a2) from t1, t2 where t1.a2 = 2 and t1.a3 < 'MIN' and t2.a3 = 'CA';
-max(t1.a3)	min(t2.a2)
-CHI	Los Angeles
+max(t1.a3)  ¦  min(t2.a2)
+CHI  ¦  Los Angeles
+
+#SQL[@193,N50]Result[7, 4]
 select max(a3) from t1 where a2 is null and a2 = 2;
 max(a3)
 null
+
+#SQL[@194,N36]Result[7, 1]
 select max(a2) from t1 where a2 >= 1;
 max(a2)
 3
+
+#SQL[@195,N50]Result[7, 3]
 select min(a3) from t1 where a2 = 2 and a3 < 'SEA';
 min(a3)
 CHI
+
+#SQL[@196,N35]Result[7, 4]
 select min(a3) from t1 where a2 = 4;
 min(a3)
 null
+
+#SQL[@197,N50]Result[7, 4]
 select min(a3) from t1 where a2 = 2 and a3 > 'SEA';
 min(a3)
 null
+
+#SQL[@198,N34]Result[23, 5]
 select (min(a4)+max(a4))/2 from t1;
-(min(a4)+max(a4))/2
+(min(a4) + max(a4)) / 2
 0.085
+
+#SQL[@199,N35]Result[7, 3]
 select min(a3) from t1 where 2 = a2;
 min(a3)
 CHI
+
+#SQL[@200,N50]Result[7, 3]
 select max(a3) from t1 where a2 = 2 and 'SEA' > a3;
 max(a3)
 MIN
+
+#SQL[@201,N50]Result[7, 4]
 select max(a3) from t1 where a2 = 2 and 'SEA' < a3;
 max(a3)
 null
+
+#SQL[@202,N51]Result[7, 3]
 select min(a3) from t1 where a2 = 2 and a3 >= 'CHI';
 min(a3)
 CHI
+
+#SQL[@203,N66]Result[7, 3]
 select min(a3) from t1 where a2 = 2 and a3 >= 'CHI' and a3 < 'SEA';
 min(a3)
 CHI
+
+#SQL[@204,N66]Result[7, 3]
 select min(a3) from t1 where a2 = 2 and a3 >= 'CHI' and a3 = 'MIN';
 min(a3)
 MIN
+
+#SQL[@205,N66]Result[7, 4]
 select min(a3) from t1 where a2 = 2 and a3 >= 'SEA' and a3 = 'MIN';
 min(a3)
 null
+
+#SQL[@206,N78]Result[26, 12]
 select min(t1.a1), min(t2.a4) from t1,t2 where t1.a1 < 'KKK' and t2.a4 < 'KKK';
-min(t1.a1)	min(t2.a4)
-AME	AME
+min(t1.a1)  ¦  min(t2.a4)
+AME  ¦  AME
+
+#SQL[@207,N13]Result[]
 drop table t1;
+
+#SQL[@208,N13]Result[]
 drop table t2;
+
+#SQL[@211,N23]Result[]
 create table t1 (a int);
+
+#SQL[@212,N25]Result[]
 insert into t1 values (1);
+
+#SQL[@213,N37]Result[1, 1]
 select max(a) as b from t1 having b=1;
 b
 1
+
+#SQL[@214,N27]Error[104]
 select a from t1 having a=1;
-SQL syntax error: column "t1.a" must appear in the GROUP BY clause or be used in an aggregate function
+SQL syntax error: column \"t1.a\" must appear in the GROUP BY clause or be used in an aggregate function
+
+#SQL[@215,N13]Result[]
 drop table t1;
+
+#SQL[@218,N35]Result[]
 CREATE TABLE t1 (a int primary key);
+
+#SQL[@219,N37]Result[]
 INSERT INTO t1 VALUES (1),(2),(3),(4);
+
+#SQL[@221,N33]Result[6, 4]
 SELECT MAX(a) FROM t1 WHERE a > 5;
 MAX(a)
 null
+
+#SQL[@222,N33]Result[6, 4]
 SELECT MIN(a) FROM t1 WHERE a < 0;
 MIN(a)
 null
+
+#SQL[@224,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@228,N47]Result[]
 CREATE TABLE t1 (id int PRIMARY KEY, b char(3));
+
+#SQL[@229,N40]Result[]
 INSERT INTO t1 VALUES (1,'xx'), (2,'aa');
+
+#SQL[@230,N16]Result[9, 9, 9]
 SELECT * FROM t1;
-id	b
-1	xx
-2	aa
+id  ¦  b
+1  ¦  xx
+2  ¦  aa
+
+#SQL[@231,N39]Result[6, 2]
 SELECT MAX(b) FROM t1 WHERE b < 'ppppp';
 MAX(b)
 aa
+
+#SQL[@232,N36]Result[6, 2]
 SELECT MAX(b) FROM t1 WHERE b < 'pp';
 MAX(b)
 aa
+
+#SQL[@233,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@236,N48]Result[]
 CREATE TABLE t1 (id int PRIMARY KEY, b char(16));
+
+#SQL[@237,N54]Result[]
 INSERT INTO t1 VALUES (1, 'xxxxbbbb'), (2, 'xxxxaaaa');
+
+#SQL[@238,N21]Result[6, 8]
 SELECT MAX(b) FROM t1;
 MAX(b)
 xxxxbbbb
+
+#SQL[@239,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@242,N37]Result[]
 create table t1 (col1 decimal(16,12));
+
+#SQL[@243,N38]Result[]
 insert into t1 values (-5.00000000001);
+
+#SQL[@244,N38]Result[]
 insert into t1 values (-5.00000000001);
+
+#SQL[@245,N63]Result[49, 79]
 select col1,sum(col1),max(col1),min(col1) from t1 group by col1;
-col1	sum(col1)	max(col1)	min(col1)
--5.000000000010	-10.000000000020	-5.000000000010	-5.000000000010
+col1  ¦  sum(col1)  ¦  max(col1)  ¦  min(col1)
+-5.000000000010  ¦  -10.000000000020  ¦  -5.000000000010  ¦  -5.000000000010
+
+#SQL[@246,N14]Result[]
 delete from t1;
+
+#SQL[@247,N37]Result[]
 insert into t1 values (5.00000000001);
+
+#SQL[@248,N37]Result[]
 insert into t1 values (5.00000000001);
+
+#SQL[@249,N63]Result[49, 75]
 select col1,sum(col1),max(col1),min(col1) from t1 group by col1;
-col1	sum(col1)	max(col1)	min(col1)
-5.000000000010	10.000000000020	5.000000000010	5.000000000010
+col1  ¦  sum(col1)  ¦  max(col1)  ¦  min(col1)
+5.000000000010  ¦  10.000000000020  ¦  5.000000000010  ¦  5.000000000010
+
+#SQL[@250,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@254,N54]Result[]
 create table t1 (f1 int, f2 int, f3 date, f4 datetime);
+
+#SQL[@255,N65]Result[]
 insert into t1 values(98,1998,"1998-01-01","1998-01-01 00:00:00");
+
+#SQL[@256,N63]Error[55]
 insert into t1 values('00',2000,20000101,"2000-01-01 00:00:01");
 invalid argument operator cast, bad value [BIGINT DATE]
+
+#SQL[@257,N61]Error[55]
 insert into t1 values(02,2002,20020101,"2002-01-01 23:59:59");
 invalid argument operator cast, bad value [BIGINT DATE]
+
+#SQL[@258,N61]Error[55]
 insert into t1 values(60,2060,20600101,"2060-01-01 11:11:11");
 invalid argument operator cast, bad value [BIGINT DATE]
+
+#SQL[@259,N61]Error[55]
 insert into t1 values(70,1970,19700101,"1970-11-11 22:22:22");
 invalid argument operator cast, bad value [BIGINT DATE]
+
+#SQL[@260,N42]Result[]
 insert into t1 values(NULL,NULL,NULL,NULL);
-select min(f1),max(f1) from t1;
-min(f1)	max(f1)
-0	98
-select min(f2),max(f2) from t1;
-min(f2)	max(f2)
-0	1998
-select min(f3),max(f3) from t1;
-min(f3)	max(f3)
-0001-01-01	1998-01-01
-select min(f4),max(f4) from t1;
-min(f4)	max(f4)
-0001-01-01 00:00:00	1998-01-01 00:00:00
-drop table t1;
-create table t1 (grp int, a bigint unsigned, c char(10) not null);
-insert into t1 values (1,1,"a");
-insert into t1 values (2,2,"b");
-insert into t1 values (2,3,"c");
-insert into t1 values (3,4,"E");
-insert into t1 values (3,5,"C");
-insert into t1 values (3,6,"D");
-select max(distinct a),max(distinct grp) from t1;
-max(distinct a)	    max(distinct grp)
-6	3
-insert into t1 values (null,null,'');
-select max(distinct a),max(distinct grp) from t1;
-max(distinct a)	    max(distinct grp)
-6	3
+
+#SQL[@267,N13]Result[]
 drop table t1;
 
+#SQL[@269,N65]Result[]
+create table t1 (grp int, a bigint unsigned, c char(10) not null);
+
+#SQL[@270,N31]Result[]
+insert into t1 values (1,1,"a");
+
+#SQL[@271,N31]Result[]
+insert into t1 values (2,2,"b");
+
+#SQL[@272,N31]Result[]
+insert into t1 values (2,3,"c");
+
+#SQL[@273,N31]Result[]
+insert into t1 values (3,4,"E");
+
+#SQL[@274,N31]Result[]
+insert into t1 values (3,5,"C");
+
+#SQL[@275,N31]Result[]
+insert into t1 values (3,6,"D");
+
+#SQL[@276,N48]Result[38, 8]
+select max(distinct a),max(distinct grp) from t1;
+max(distinct a)  ¦  max(distinct grp)
+6  ¦  3
+
+#SQL[@277,N36]Result[]
+insert into t1 values (null,null,'');
+
+#SQL[@278,N48]Result[38, 8]
+select max(distinct a),max(distinct grp) from t1;
+max(distinct a)  ¦  max(distinct grp)
+6  ¦  3
+
+#SQL[@279,N13]Result[]
+drop table t1;
+
+#SQL[@281,N23]Result[]
 CREATE TABLE t1 (a INT);
+
+#SQL[@282,N61]Result[]
 INSERT INTO t1 SELECT result FROM generate_series(1,100000) g;
+
+#SQL[@283,N21]Result[6, 6]
 SELECT MAX(a) FROM t1;
-max(a)
+MAX(a)
 100000
+
+#SQL[@284,N28]Result[]
 DELETE FROM t1 WHERE a>50000;
+
+#SQL[@285,N21]Result[6, 5]
 SELECT MAX(a) FROM t1;
-max(a)
+MAX(a)
 50000
+
+#SQL[@286,N26]Result[]
 DELETE FROM t1 WHERE a%2=0;
+
+#SQL[@287,N21]Result[6, 5]
 SELECT MAX(a) FROM t1;
-max(a)
+MAX(a)
 49999
+
+#SQL[@288,N13]Result[]
 DROP TABLE t1;
+

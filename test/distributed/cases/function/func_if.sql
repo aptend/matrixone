@@ -82,14 +82,14 @@ select IF(0,"ERROR","this"),IF(1,"is","ERROR"),IF(NULL,"ERROR","a"),IF(1,2,3)|0,
 
 
 
--- @bvt:issue#3334
-CREATE TABLE t1 (st varchar(255) NOT NULL, u int(11) NOT NULL);
-INSERT INTO t1 VALUES ('a',1),('A',1),('aa',1),('AA',1),('a',1),('aaa',0),('BBB',0);
-select if(1,st,st) s from t1 order by s;
-select if(u=1,st,st) s from t1 order by s;
-select if(u=1,st,st) s from t1 where st like "%a%" order by s;
-drop table t1;
--- @bvt:issue
+@issue(no=3334) {
+    CREATE TABLE t1 (st varchar(255) NOT NULL, u int(11) NOT NULL);
+    INSERT INTO t1 VALUES ('a',1),('A',1),('aa',1),('AA',1),('a',1),('aaa',0),('BBB',0);
+    select if(1,st,st) s from t1 order by s;
+    select if(u=1,st,st) s from t1 order by s;
+    select if(u=1,st,st) s from t1 where st like "%a%" order by s;
+    drop table t1;
+}
 
 create table t1 (num  double(12,2));
 insert into t1 values (144.54);
@@ -128,13 +128,13 @@ drop table t1;
 select if(0, 18446744073709551610, 18446744073709551610);
 
 CREATE TABLE t1(a DECIMAL(10,3));
--- @bvt:issue#2302
-SELECT t1.a,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,
-IF((ROUND(t1.a,2)=1), 2,0)))) + 1 FROM t1;
--- @bvt:issue
+@issue(no=2302) {
+    SELECT t1.a,
+    IF((ROUND(t1.a,2)=1), 2,
+    IF((ROUND(t1.a,2)=1), 2,
+    IF((ROUND(t1.a,2)=1), 2,
+    IF((ROUND(t1.a,2)=1), 2,0)))) + 1 FROM t1;
+}
 DROP TABLE t1;
 
 
@@ -144,12 +144,12 @@ SELECT * FROM (SELECT MAX(IF(1, CAST(c AS UNSIGNED), 0)) FROM t1) AS te;
 DROP TABLE t1;
 
 
--- @bvt:issue#3265
-CREATE TABLE t1 (a int, b DOUBLE);
-INSERT INTO t1 VALUES (NULL, 0), (NULL, 1);
-SELECT IF(b, (SELECT a FROM t1 LIMIT 1), b) c FROM t1 GROUP BY c;
-DROP TABLE t1;
--- @bvt:issue
+@issue(no=3265) {
+    CREATE TABLE t1 (a int, b DOUBLE);
+    INSERT INTO t1 VALUES (NULL, 0), (NULL, 1);
+    SELECT IF(b, (SELECT a FROM t1 LIMIT 1), b) c FROM t1 GROUP BY c;
+    DROP TABLE t1;
+}
 
 SELECT if(0, (SELECT min('hello')), NULL);
 SELECT if(1, (SELECT min('hello')), NULL);

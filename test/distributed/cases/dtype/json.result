@@ -61,9 +61,8 @@ delete from t1;
 #SQL[@28,N55]Result[]
 insert into t1 values ('{"t1":"a"}',1),('{"t1":"b"}',2);
 
-#SQL[@29,N98]Error[32]
+#SQL[@29,N98]Result[]
 select * from t1 into outfile '$resources/json/export_1.csv' fields enclosed by '"' force_quote(a);
-file export_1.csv already exists
 
 #SQL[@30,N101]Result[]
 load data infile '$resources/json/export_1.csv' into table t1 fields terminated by ',' ignore 1 lines;
@@ -85,9 +84,8 @@ a  ¦  b
 {"t1": "a"}  ¦  1
 {"t1": "b"}  ¦  2
 
-#SQL[@34,N86]Error[32]
+#SQL[@34,N86]Result[]
 select * from t1 into outfile '$resources/json/export_2.csv' fields terminated by '\t';
-file export_2.csv already exists
 
 #SQL[@35,N103]Result[]
 load data  infile '$resources/json/export_2.csv' into table t1 fields terminated by '\t' ignore 1 lines;

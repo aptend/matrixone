@@ -1,7 +1,7 @@
 #SELECT, 科学计数
--- @bvt:issue#3156
-select oct(0b11111111);
--- @bvt:issue
+@issue(no=3156) {
+    select oct(0b11111111);
+}
 
 select oct(12);
 SELECT oct(1314);

@@ -1,81 +1,159 @@
+#SQL[@2,N19]Result[12, 2]
 select log(exp(10));
 log(exp(10))
-10.0
+10
+
+#SQL[@4,N27]Result[22, 18]
 select exp(log(sqrt(10))*2);
-exp(log(sqrt(10))*2)
+exp(log(sqrt(10)) * 2)
 10.000000000000002
+
+#SQL[@7,N13]Result[6, 16]
 SELECT EXP(2);
 EXP(2)
 7.38905609893065
+
+#SQL[@8,N14]Result[7, 18]
 SELECT EXP(-2);
 EXP(-2)
 0.1353352832366127
+
+#SQL[@9,N13]Result[6, 1]
 SELECT EXP(0);
 EXP(0)
-1.0
+1
+
+#SQL[@14,N31]Result[24, 1]
 select EXP(0.00000000000000001);
 EXP(0.00000000000000001)
-1.0
+1
+
+#SQL[@15,N15]Result[8, 87]
 select EXP(2e2);
 EXP(2e2)
-7.225973768125749E86
+722597376812574900000000000000000000000000000000000000000000000000000000000000000000000
+
+#SQL[@16,N29]Result[22, 18]
 select EXP(0.141241241241313);
 EXP(0.141241241241313)
-1.1517024526037207
+1.1517024526037205
+
+#SQL[@17,N34]Result[27, 1]
 select EXP(-124314124124.12412341);
 EXP(-124314124124.12412341)
-0.0
+0
+
+#SQL[@21,N16]Result[9, 4]
 select exp(null);
 exp(null)
 null
+
+#SQL[@24,N25]Result[]
 CREATE TABLE t1(a DOUBLE);
+
+#SQL[@25,N31]Result[]
 INSERT INTO t1 select (exp(56));
+
+#SQL[@26,N32]Result[]
 INSERT INTO t1 select (exp(100));
+
+#SQL[@27,N27]Result[1, 25, 44]
 SELECT * FROM t1 ORDER BY a;
 a
-2.091659496012996E24
-2.6881171418161356E43
+2091659496012996000000000
+26881171418161356000000000000000000000000000
+
+#SQL[@28,N13]Result[]
 drop table t1;
+
+#SQL[@31,N102]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19));
+
+#SQL[@32,N56]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314);
+
+#SQL[@33,N70]Result[90, 181]
 select EXP(a),EXP(b),EXP(c),EXP(d),EXP(e),EXP(f),EXP(g),EXP(h) from t1;
-EXP(a)	EXP(b)	EXP(c)	EXP(d)	EXP(e)	EXP(f)	EXP(g)	EXP(h)
-2.718281828459045	2.718281828459045	7.38905609893065	54.598150033144236	148.4131591025766	244.69193226422038	3.3081654501713676E13	1646232.6617210666
+EXP(a)  ¦  EXP(b)  ¦  EXP(c)  ¦  EXP(d)  ¦  EXP(e)  ¦  EXP(f)  ¦  EXP(g)  ¦  EXP(h)
+2.718281828459045  ¦  2.718281828459045  ¦  7.38905609893065  ¦  54.598150033144236  ¦  148.4131591025766  ¦  244.69193226422038  ¦  33081654501713.676  ¦  1646232.6617210666
+
+#SQL[@34,N13]Result[]
 drop table t1;
+
+#SQL[@37,N25]Result[20, 18]
 select EXP(123.54-123.03);
-EXP(123.54-123.03)
+EXP(123.54 - 123.03)
 1.6652911949458864
+
+#SQL[@38,N23]Result[18, 19]
 select EXP(123.54*0.34);
-EXP(123.54*0.34)
-1.74554761534837658E18
+EXP(123.54 * 0.34)
+1745547615348376600
+
+#SQL[@39,N24]Result[19, 86]
 select EXP(134)-EXP(194);
-EXP(134)-EXP(194)
--1.7911398206275708E84
+EXP(134) - EXP(194)
+-1791139820627570800000000000000000000000000000000000000000000000000000000000000000000
+
+#SQL[@43,N23]Result[]
 drop table if exists t1;
+
+#SQL[@44,N22]Result[]
 create table t1(a int);
+
+#SQL[@45,N32]Result[]
 insert into t1 values(10), (100);
+
+#SQL[@46,N40]Result[1, 2, 3]
 select distinct * from t1 where exp(a)>0;
 a
 10
 100
+
+#SQL[@47,N13]Result[]
 drop table t1;
+
+#SQL[@50,N29]Result[]
 create table t1(a INT, b int);
+
+#SQL[@51,N29]Result[]
 create table t2(a INT, b int);
+
+#SQL[@52,N36]Result[]
 insert into t1 values(2,4), (100,23);
+
+#SQL[@53,N37]Result[]
 insert into t2 values(10,100), (4,41);
+
+#SQL[@54,N61]Result[8, 9, 8, 11, 10]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (exp(t1.a) <> exp(t2.a));
-a	a
-100	10
-2	10
-100	4
-2	4
+a  ¦  a
+2  ¦  10
+2  ¦  4
+100  ¦  10
+100  ¦  4
+
+#SQL[@55,N13]Result[]
 drop table t1;
+
+#SQL[@56,N13]Result[]
 drop table t2;
+
+#SQL[@60,N23]Result[]
 drop table if exists t1;
+
+#SQL[@61,N34]Result[]
 create table t1(a float,  b float);
+
+#SQL[@62,N53]Result[]
 insert into t1 values(14.413, 43.413), (8.123, 0.409);
+
+#SQL[@63,N43]Result[1, 6, 5]
 select b from t1 group by b having exp(b)>0;
 b
 43.413
 0.409
+
+#SQL[@64,N13]Result[]
 drop table t1;
+

@@ -1,21 +1,43 @@
+#SQL[@9,N23]Result[]
 drop table if exists t1;
+
+#SQL[@10,N47]Result[]
 CREATE TABLE t1 (id int(11),value1 float(10,2));
+
+#SQL[@11,N93]Result[]
 INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00), (2,13.00);
+
+#SQL[@12,N50]Result[26, 24, 24]
 select id, stddev_pop(value1)  from t1 group by id;
-id	stddev_pop(value1)
-1	0.816496580927726
-2	1.118033988749895
+id  ¦  stddev_pop(value1)
+1  ¦  0.816496580927726
+2  ¦  1.118033988749895
+
+#SQL[@13,N48]Result[24, 25, 11]
 select id, variance(value1)  from t1 group by id;
-id	variance(value1)
-1	0.6666666666666666
-2	1.25
+id  ¦  variance(value1)
+1  ¦  0.6666666666666667
+2  ¦  1.25
+
+#SQL[@14,N13]Result[]
 drop table t1;
+
+#SQL[@16,N22]Result[]
 drop table if exists t;
+
+#SQL[@17,N34]Result[]
 CREATE TABLE t(txt char(1), i INT);
+
+#SQL[@18,N59]Result[]
 INSERT INTO t VALUES ('a', 2), ('b', 8), ('b', 0), ('c', 2);
+
+#SQL[@19,N63]Result[10, 8, 8, 8]
 SELECT txt, STDDEV_POP(i) s FROM t GROUP BY txt ORDER BY s, txt;
-txt	s
-a	0.0
-c	0.0
-b	4.0
+txt  ¦  s
+a  ¦  0
+c  ¦  0
+b  ¦  4
+
+#SQL[@20,N12]Result[]
 drop table t;
+

@@ -1,48 +1,89 @@
+#SQL[@2,N29]Result[27, 9]
 select floor(5.5),floor(-5.5);
-floor(5.5)	floor(-5.5)
-5	-6
+floor(5.5)  ¦  floor(-5.5)
+5  ¦  -6
+
+#SQL[@3,N19]Result[12, 6]
 select floor(1.1e5);
 floor(1.1e5)
-110000.0
+110000
+
+#SQL[@7,N74]Error[47]
 select floor(cast(-2 as unsigned)), floor(18446744073709551614), floor(-2);
-Data truncation: data out of range: data type uint64, value '-2'
+data out of range: data type uint64, value '-2'
+
+#SQL[@8,N40]Result[33, 20]
 SELECT floor(ceil(12345678901234567890));
 floor(ceil(12345678901234567890))
 12345678901234567890
+
+#SQL[@10,N34]Result[27, 20]
 SELECT floor(18446744073709551616);
 floor(18446744073709551616)
 18446744073709551616
+
+#SQL[@11,N41]Result[34, 20]
 SELECT floor(floor(18446744073709551616));
 floor(floor(18446744073709551616))
 18446744073709551616
+
+#SQL[@12,N48]Result[41, 20]
 SELECT floor(floor(floor(18446744073709551616)));
 floor(floor(floor(18446744073709551616)))
 18446744073709551616
+
+#SQL[@15,N34]Result[]
 CREATE TABLE t1(a BIGINT UNSIGNED);
+
+#SQL[@16,N43]Result[]
 INSERT INTO t1 VALUES(18446744073709551615);
+
+#SQL[@17,N45]Result[8, 46]
 SELECT CEILING(a) AS c, FLOOR(a) AS f FROM t1;
-c	f
-18446744073709551615	18446744073709551615
+c  ¦  f
+18446744073709551615  ¦  18446744073709551615
+
+#SQL[@18,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@22,N32]Result[25, 18]
 select floor(999999999999999999);
 floor(999999999999999999)
 999999999999999999
+
+#SQL[@23,N36]Result[29, 22]
 select floor(9999999999999999999999);
 floor(9999999999999999999999)
 9999999999999999999999
+
+#SQL[@24,N37]Result[30, 1]
 select floor(9.999999999999999999999);
 floor(9.999999999999999999999)
 9
+
+#SQL[@27,N38]Result[31, 3]
 select floor(-9.999999999999999999999);
 floor(-9.999999999999999999999)
 -10
+
+#SQL[@28,N40]Result[33, 23]
 select floor(-999999999999999999999.999);
 floor(-999999999999999999999.999)
 -1000000000000000000000
+
+#SQL[@76,N30]Result[]
 CREATE TABLE t1 (col1 INTEGER);
+
+#SQL[@77,N30]Result[]
 CREATE TABLE t2 (col1 INTEGER);
+
+#SQL[@78,N30]Result[]
 INSERT INTO t1 VALUES (1), (2);
+
+#SQL[@79,N30]Result[]
 INSERT INTO t2 VALUES (1), (2);
+
+#SQL[@80,N82]Result[14, 8]
 SELECT
 t1.col1,
 t2.col1
@@ -52,141 +93,286 @@ t2
 WHERE
 t1.col1 = t2.col1
 AND t1.col1 = FLOOR(2);
-col1	col1
-2	2
+col1  ¦  col1
+2  ¦  2
+
+#SQL[@89,N13]Result[]
 drop table t1;
+
+#SQL[@90,N13]Result[]
 drop table t2;
+
+#SQL[@94,N56]Result[]
 CREATE TABLE t1 (a VARCHAR(250), b INT, PRIMARY KEY (b));
+
+#SQL[@95,N45]Error[51]
 insert into t1 (a) select (FLOOR(0.13 * 100));
 invalid input: invalid default value for column 'b'
+
+#SQL[@96,N51]Error[51]
 insert into t1 (a) select FLOOR(1.32 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@97,N53]Error[51]
 insert into t1 (a) select FLOOR(0.0044 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@98,N54]Error[51]
 insert into t1 (a) select FLOOR(124.314 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@99,N53]Error[51]
 insert into t1 (a) select FLOOR(0.3414 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@100,N54]Error[51]
 insert into t1 (a) select FLOOR(12.4412 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@101,N58]Error[51]
 insert into t1 (a) select FLOOR(124131.4123 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@102,N56]Error[51]
 insert into t1 (a) select FLOOR(0.2314114 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@103,N55]Error[51]
 insert into t1 (a) select FLOOR(13.45123 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@104,N54]Error[51]
 insert into t1 (a) select FLOOR(0.44521 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@105,N55]Error[51]
 insert into t1 (a) select FLOOR(0.577134 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@106,N54]Error[51]
 insert into t1 (a) select FLOOR(1244.53 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@107,N58]Error[51]
 insert into t1 (a) select FLOOR(6604.642222 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@108,N55]Error[51]
 insert into t1 (a) select FLOOR(1415.313 * 100) from t1;
 invalid input: invalid default value for column 'b'
+
+#SQL[@109,N107]Error[54]
 SELECT a,
 (SELECT space(250) FROM t1 i1
 WHERE i1.b=t1.a ORDER BY 1 LIMIT 1) AS a
 FROM t1 ORDER BY a LIMIT 5;
 invalid input: Column 'a' in order clause is ambiguous
+
+#SQL[@113,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@128,N38]Result[31, 10]
 SELECT DATE(FLOOR(20110512154559.616));
-date(floor(20110512154559.616))
+DATE(FLOOR(20110512154559.616))
 2011-05-12
+
+#SQL[@131,N31]Result[]
 CREATE table t1(a int, b float);
+
+#SQL[@132,N56]Result[]
 insert into t1 select floor(12124.413), floor(-4213.413);
+
+#SQL[@133,N57]Result[]
 insert into t1 select floor(12124.123), floor(-42413.409);
+
+#SQL[@134,N32]Result[8, 5]
 select distinct floor(a) from t1;
 floor(a)
 12124
+
+#SQL[@135,N13]Result[]
 drop table t1;
+
+#SQL[@138,N18]Result[11, 4]
 select floor(null);
 floor(null)
 null
+
+#SQL[@141,N34]Result[29, 1]
 select floor(123.34)-floor(123.03);
-floor(123.34)-floor(123.03)
+floor(123.34) - floor(123.03)
 0
+
+#SQL[@144,N23]Result[]
 drop table if exists t1;
+
+#SQL[@145,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@146,N56]Result[]
 insert into t1 select floor(12124.413), floor(-4213.413);
+
+#SQL[@147,N57]Result[]
 insert into t1 select floor(12124.123), floor(-42413.409);
+
+#SQL[@148,N37]Result[8, 16, 17]
 select * from t1 where floor(a)=12124;
-a	b
-12124	-4214.0
-12124	-42414.0
+a  ¦  b
+12124  ¦  -4214
+12124  ¦  -42414
+
+#SQL[@149,N13]Result[]
 drop table t1;
+
+#SQL[@153,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@154,N32]Result[]
 create table t2(a INT,  b float);
+
+#SQL[@155,N56]Result[]
 insert into t1 select floor(12124.413), floor(-4213.413);
+
+#SQL[@156,N57]Result[]
 insert into t1 select floor(12124.123), floor(-42413.409);
+
+#SQL[@157,N56]Result[]
 insert into t2 select floor(14124.413), floor(-4213.413);
+
+#SQL[@158,N56]Result[]
 insert into t2 select floor(984798.123), floor(-980.409);
+
+#SQL[@159,N64]Result[8, 16]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (floor(t1.b) = floor(t2.b));
-a	a
-12124	14124
+a  ¦  a
+12124  ¦  14124
+
+#SQL[@160,N13]Result[]
 drop table t1;
+
+#SQL[@161,N13]Result[]
 drop table t2;
+
+#SQL[@164,N23]Result[]
 drop table if exists t1;
+
+#SQL[@165,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@166,N56]Result[]
 insert into t1 select floor(14124.413), floor(-4213.413);
+
+#SQL[@167,N56]Result[]
 insert into t1 select floor(984798.123), floor(-980.409);
+
+#SQL[@168,N49]Result[1, 5]
 select b from t1 group by b having floor(b)<-1000;
 b
--4214.0
+-4214
+
+#SQL[@169,N13]Result[]
 drop table t1;
+
+#SQL[@173,N24]Result[17, 5]
 select floor(123.342, 1);
 floor(123.342, 1)
-123.3000
+123.3
+
+#SQL[@174,N24]Result[17, 3]
 select floor(123.45, -1);
 floor(123.45, -1)
-120.0000
+120
+
+#SQL[@175,N35]Result[28, 16]
 select floor(123.342124124214, 100);
 floor(123.342124124214, 100)
 123.342124124214
-select floor(-123.342124124214, -100);
-Data truncation: data out of range: data type decimal64, floor(decimal64(18,12),-100)
+
+#SQL[@180,N27]Error[70]
 select floor(123.342, null);
 invalid argument the second argument of the floor, bad value not const
+
+#SQL[@182,N21]Result[14, 4]
 select floor(null, 1);
 floor(null, 1)
 null
+
+#SQL[@184,N24]Error[70]
 select floor(null, null);
 invalid argument the second argument of the floor, bad value not const
+
+#SQL[@186,N21]Result[15, 4]
 select floor(1.999,2);
-floor(1.999,2)
+floor(1.999, 2)
 1.99
+
+#SQL[@188,N23]Result[]
 drop table if exists t1;
+
+#SQL[@189,N39]Result[]
 create table t1(a int ,b decimal(10,5));
+
+#SQL[@190,N28]Result[]
 insert into t1 values(1,0.5);
+
+#SQL[@191,N30]Result[]
 insert into t1 values(2,0.499);
+
+#SQL[@192,N30]Result[]
 insert into t1 values(3,0.501);
+
+#SQL[@193,N29]Result[]
 insert into t1 values(4,20.5);
+
+#SQL[@194,N31]Result[]
 insert into t1 values(5,20.499);
+
+#SQL[@195,N31]Result[]
 insert into t1 values(6,13.500);
+
+#SQL[@196,N31]Result[]
 insert into t1 values(7,-0.500);
+
+#SQL[@197,N31]Result[]
 insert into t1 values(8,-0.499);
+
+#SQL[@198,N31]Result[]
 insert into t1 values(9,-0.501);
+
+#SQL[@199,N33]Result[]
 insert into t1 values(10,-20.499);
+
+#SQL[@200,N33]Result[]
 insert into t1 values(11,-20.500);
+
+#SQL[@201,N33]Result[]
 insert into t1 values(12,-13.500);
+
+#SQL[@202,N36]Result[]
 insert into t1 values (13, 20.89123);
+
+#SQL[@203,N36]Result[]
 insert into t1 values (14, 23.40123);
+
+#SQL[@204,N37]Result[]
 insert into t1 values (15, 123.45678);
+
+#SQL[@205,N31]Result[25, 24, 24, 24, 26, 26, 26, 26, 26, 26, 29, 29, 29, 27, 27, 29]
 select a, b, floor(b,2) from t1;
-a    b    floor(b, 2)
-1    0.50000    0.50
-2    0.49900    0.49
-3    0.50100    0.50
-4    20.50000    20.50
-5    20.49900    20.49
-6    13.50000    13.50
-7    -0.50000    -0.50
-8    -0.49900    -0.50
-9    -0.50100    -0.51
-10    -20.49900    -20.50
-11    -20.50000    -20.50
-12    -13.50000    -13.50
-13    20.89123    20.89
-14    23.40123    23.40
-15    123.45678    123.45
+a  ¦  b  ¦  floor(b, 2)
+1  ¦  0.50000  ¦  0.50
+2  ¦  0.49900  ¦  0.49
+3  ¦  0.50100  ¦  0.50
+4  ¦  20.50000  ¦  20.50
+5  ¦  20.49900  ¦  20.49
+6  ¦  13.50000  ¦  13.50
+7  ¦  -0.50000  ¦  -0.50
+8  ¦  -0.49900  ¦  -0.50
+9  ¦  -0.50100  ¦  -0.51
+10  ¦  -20.49900  ¦  -20.50
+11  ¦  -20.50000  ¦  -20.50
+12  ¦  -13.50000  ¦  -13.50
+13  ¦  20.89123  ¦  20.89
+14  ¦  23.40123  ¦  23.40
+15  ¦  123.45678  ¦  123.45
+

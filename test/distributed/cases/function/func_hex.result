@@ -1,27 +1,45 @@
+#SQL[@2,N16]Result[9, 4]
 SELECT hex(NULL);
 hex(null)
 null
+
+#SQL[@5,N13]Result[6, 1]
 SELECT hex(0);
 hex(0)
 0
+
+#SQL[@6,N31]Result[24, 16]
 SELECT hex(9223372036854775807);
 hex(9223372036854775807)
 7FFFFFFFFFFFFFFF
+
+#SQL[@7,N16]Result[9, 16]
 SELECT hex(-255);
 hex(-255)
 FFFFFFFFFFFFFF01
+
+#SQL[@10,N23]Result[14, 18]
 SELECT hex("你好。");
 hex(你好。)
 E4BDA0E5A5BDE38082
+
+#SQL[@11,N41]Result[32, 54]
 SELECT hex("おはようございます");
 hex(おはようございます)
 E3818AE381AFE38288E38186E38194E38196E38184E381BEE38199
+
+#SQL[@12,N18]Result[9, 8]
 SELECT hex("-255");
 hex(-255)
 2D323535
+
+#SQL[@13,N16]Result[9, 2]
 SELECT hex(0x62);
 hex(0x62)
 62
+
+#SQL[@14,N22]Result[14, 2]
 SELECT hex(b'1101100');
 hex(0b1101100)
 6C
+

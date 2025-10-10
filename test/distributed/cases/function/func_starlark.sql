@@ -4,51 +4,51 @@
 
 select 'Test will fail if code depends on space/formatting.   #22165';
 
--- @bvt:issue#22165
-select starlark(
-$$
-def main(args):
-    return jq('.[0] + .[1]', args)
-$$, '[1, 2]') as result;
+@issue(no=22165) {
+    select starlark(
+    $$
+    def main(args):
+        return jq('.[0] + .[1]', args)
+    $$, '[1, 2]') as result;
 
-select starlark(
-$$
-def main(args):
-    arg1 = jq('.[0]', args) 
-    arg2 = jq('.[1]', args) 
-    return arg1 + arg2
-$$, '[1, 2]') as result;
+    select starlark(
+    $$
+    def main(args):
+        arg1 = jq('.[0]', args)
+        arg2 = jq('.[1]', args)
+        return arg1 + arg2
+    $$, '[1, 2]') as result;
 
-select starlark(
-$$
-def main(args):
-    arg1 = int(jq('.[0]', args))
-    arg2 = int(jq('.[1]', args))
-    return arg1 + arg2
-$$, '[1, 2]') as result;
+    select starlark(
+    $$
+    def main(args):
+        arg1 = int(jq('.[0]', args))
+        arg2 = int(jq('.[1]', args))
+        return arg1 + arg2
+    $$, '[1, 2]') as result;
 
-select try_starlark(
-$$
-def main(args):
-    arg1 = int(jq('.[0]', args))
-    arg2 = int(jq('.[1]', args))
-    return arg1 + arg2
-$$, '[1, 2]') as result;
+    select try_starlark(
+    $$
+    def main(args):
+        arg1 = int(jq('.[0]', args))
+        arg2 = int(jq('.[1]', args))
+        return arg1 + arg2
+    $$, '[1, 2]') as result;
 
-select try_starlark(
-$$
-def main(args):
-    arg1 = int(jq('.[0]', args))
-    arg2 = int(jq('.[1]', args))
-    return arg1 + arg2
-$$, '1') as result;
+    select try_starlark(
+    $$
+    def main(args):
+        arg1 = int(jq('.[0]', args))
+        arg2 = int(jq('.[1]', args))
+        return arg1 + arg2
+    $$, '1') as result;
 
-select starlark(
-$$
-def main(args):
-    arg1 = int(jq('.[0]', args))
-    arg2 = int(jq('.[1]', args))
-    return arg1 + arg2
-$$, '1') as result;
--- @bvt:issue
+    select starlark(
+    $$
+    def main(args):
+        arg1 = int(jq('.[0]', args))
+        arg2 = int(jq('.[1]', args))
+        return arg1 + arg2
+    $$, '1') as result;
+}
 

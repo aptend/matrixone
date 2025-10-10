@@ -1,41 +1,91 @@
+#SQL[@2,N36]Result[]
 drop account if exists bvt_purge_log;
+
+#SQL[@3,N67]Result[]
 create account bvt_purge_log admin_name 'admin' identified by '111';
+
+#SQL[@7,N42]Error[39]
 select purge_log('rawlog', '2023-06-30') a;
 not supported: only support sys account
+
+#SQL[@12,N129]Result[1, 108]
 select REGEXP_REPLACE(a, '[0-9]+', '*') a from (select mo_ctl('dn', 'inspect', 'objprune -t system_metrics.metric -d 2021h') a) a;
 a
-\nmsg: prune: table *-metric, *h*m*s ago, cacheLen *\n\ntotal: *, stale: *, selected: *, no valid objs to prune
+
+msg: prune: table *-metric, *h*m*s ago, cacheLen *
+
+total: *, stale: *, selected: *, no valid objs to prune
+
+#SQL[@13,N93]Result[1, 108]
 select REGEXP_REPLACE(a, '[0-9]+', '*') a from (select purge_log('rawlog', '2021-02-01') a) a;
 a
-\nmsg: prune: table *-rawlog, *h*m*s ago, cacheLen *\n\ntotal: *, stale: *, selected: *, no valid objs to prune
+
+msg: prune: table *-rawlog, *h*m*s ago, cacheLen *
+
+total: *, stale: *, selected: *, no valid objs to prune
+
+#SQL[@14,N101]Result[1, 116]
 select REGEXP_REPLACE(a, '[0-9]+', '*') a from (select purge_log('statement_info', '2021-02-01') a) a;
 a
-\nmsg: prune: table *-statement_info, *h*m*s ago, cacheLen *\n\ntotal: *, stale: *, selected: *, no valid objs to prune
+
+msg: prune: table *-statement_info, *h*m*s ago, cacheLen *
+
+total: *, stale: *, selected: *, no valid objs to prune
+
+#SQL[@15,N93]Result[1, 108]
 select REGEXP_REPLACE(a, '[0-9]+', '*') a from (select purge_log('metric', '2021-02-01') a) a;
 a
-\nmsg: prune: table *-metric, *h*m*s ago, cacheLen *\n\ntotal: *, stale: *, selected: *, no valid objs to prune
+
+msg: prune: table *-metric, *h*m*s ago, cacheLen *
+
+total: *, stale: *, selected: *, no valid objs to prune
+
+#SQL[@16,N64]Error[41]
 select purge_log('rawlog,statement_info,metric', '2021-02-01') a;
 not supported: table name contains comma.
+
+#SQL[@19,N52]Error[39]
 select purge_log('rawlog_not_exist', '2023-06-30') a;
 not supported: purge 'rawlog_not_exist'
+
+#SQL[@20,N45]Error[41]
 select purge_log('rawlog_not_exist', '123') a;
 invalid argument parsedate, bad value 123
+
+#SQL[@23,N44]Result[1, 4]
 select purge_log('rawlog_not_exist', NULL) a;
 a
-NULL
+null
+
+#SQL[@24,N38]Result[1, 4]
 select purge_log(NULL, '2023-06-30') a;
 a
-NULL
+null
+
+#SQL[@25,N30]Result[1, 4]
 select purge_log(NULL, NULL) a;
 a
-NULL
+null
+
+#SQL[@29,N60]Result[]
 set @ts=(select max(collecttime) from system_metrics.metric);
+
+#SQL[@30,N139]Result[]
 set @metric_name=(select metric_name from system_metrics.metric where collecttime between @ts and date_add(@ts, interval 1 second) limit 1);
+
+#SQL[@31,N154]Result[]
 set @node=(select node from system_metrics.metric where collecttime between @ts and date_add(@ts, interval 1 second) and metric_name=@metric_name limit 1);
+
+#SQL[@32,N60]Result[1, 7]
 select purge_log('metric', DATE_ADD( @ts, interval 1 day)) a;
 a
 success
+
+#SQL[@33,N184]Result[41, 93]
 select count(1) cnt, @ts, @metric_name, @node from  system_metrics.metric where collecttime between @ts and date_add(@ts, interval 1 second) and metric_name=@metric_name and node=@node;
-cnt    @ts    @metric_name    @node
-0    date time    any_value    any_value
+cnt  ¦  @ts  ¦  @metric_name  ¦  @node
+0  ¦  2025-10-10 14:39:58  ¦  process_cpu_percent  ¦  7c4dccb4-4d3c-41f8-b482-5251dc7a41bf
+
+#SQL[@37,N36]Result[]
 drop account if exists bvt_purge_log;
+

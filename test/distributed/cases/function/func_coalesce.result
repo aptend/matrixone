@@ -1,297 +1,574 @@
+#SQL[@5,N26]Result[]
 CREATE TABLE t1 (a BIGINT);
+
+#SQL[@6,N25]Result[]
 INSERT INTO t1 VALUES (1);
+
+#SQL[@7,N52]Result[]
 SELECT * FROM t1 WHERE coalesce(a) BETWEEN 0 and 0.9;
-a
+
+#SQL[@8,N38]Result[]
 SELECT * FROM t1 WHERE coalesce(a)=0.9;
-a
+
+#SQL[@9,N47]Result[]
 SELECT * FROM t1 WHERE coalesce(a) in (0.8,0.9);
-a
+
+#SQL[@10,N42]Result[]
 SELECT * FROM t1 WHERE a BETWEEN 0 AND 0.9;
-a
+
+#SQL[@11,N28]Result[]
 SELECT * FROM t1 WHERE a=0.9;
-a
+
+#SQL[@12,N37]Result[]
 SELECT * FROM t1 WHERE a IN (0.8,0.9);
-a
+
+#SQL[@13,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@17,N28]Result[]
 CREATE TABLE t1 (EMPNUM INT);
+
+#SQL[@18,N30]Result[]
 INSERT INTO t1 VALUES (0), (2);
+
+#SQL[@19,N39]Result[]
 CREATE TABLE t2 (EMPNUM DECIMAL (4, 2));
+
+#SQL[@20,N34]Result[]
 INSERT INTO t2 VALUES (0.0), (9.0);
+
+#SQL[@21,N135]Result[33, 21, 21]
 SELECT COALESCE(t2.EMPNUM,t1.EMPNUM) AS CEMPNUM,
 t1.EMPNUM AS EMPMUM1, t2.EMPNUM AS EMPNUM2
 FROM t1 LEFT JOIN t2 ON t1.EMPNUM=t2.EMPNUM;
-CEMPNUM	EMPMUM1	EMPNUM2
-0.00	0	0.00
-2.00	2	null
+CEMPNUM  ¦  EMPMUM1  ¦  EMPNUM2
+0.00  ¦  0  ¦  0.00
+2.00  ¦  2  ¦  null
+
+#SQL[@24,N13]Result[]
 drop table t1;
+
+#SQL[@25,N13]Result[]
 drop table t2;
+
+#SQL[@29,N35]Result[]
 CREATE TABLE t0(c0 BIGINT UNSIGNED);
+
+#SQL[@30,N31]Result[]
 INSERT INTO t0(c0) VALUES(NULL);
+
+#SQL[@31,N60]Error[47]
 SELECT * FROM t0 WHERE CAST(COALESCE(t0.c0, -1) AS UNSIGNED);
-Data truncation: data out of range: data type uint64, value '-1'
+data out of range: data type uint64, value '-1'
+
+#SQL[@32,N58]Error[47]
 SELECT * FROM t0 WHERE CAST(IFNULL(t0.c0, -1) AS UNSIGNED);
-Data truncation: data out of range: data type uint64, value '-1'
+data out of range: data type uint64, value '-1'
+
+#SQL[@33,N60]Error[47]
 SELECT CAST(COALESCE(t0.c0, -1) AS UNSIGNED) IS TRUE FROM t0;
-Data truncation: data out of range: data type uint64, value '-1'
+data out of range: data type uint64, value '-1'
+
+#SQL[@34,N52]Error[47]
 SELECT CAST(COALESCE(t0.c0, -1) AS UNSIGNED) FROM t0;
-Data truncation: data out of range: data type uint64, value '-1'
+data out of range: data type uint64, value '-1'
+
+#SQL[@35,N13]Result[]
 DROP TABLE t0;
+
+#SQL[@38,N35]Result[]
 CREATE TABLE t1 (a char(10), b INT);
+
+#SQL[@39,N29]Result[]
 INSERT INTO t1 VALUES ('', 0);
+
+#SQL[@40,N40]Error[40]
 SELECT COALESCE(a) = COALESCE(b) FROM t1;
 invalid argument cast to int, bad value 
+
+#SQL[@41,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@44,N45]Result[]
 CREATE TABLE t1 ( a INTEGER, b varchar(255) );
+
+#SQL[@45,N29]Result[]
 INSERT INTO t1 VALUES (1,'z');
+
+#SQL[@46,N29]Result[]
 INSERT INTO t1 VALUES (2,'y');
+
+#SQL[@47,N29]Result[]
 INSERT INTO t1 VALUES (3,'x');
+
+#SQL[@48,N72]Result[5, 1, 1, 1]
 SELECT MIN(b) AS min_b FROM t1 GROUP BY a ORDER BY COALESCE(MIN(b), 'a');
 min_b
 x
 y
 z
+
+#SQL[@49,N71]Result[5, 1, 1, 1]
 SELECT MIN(b) AS min_b FROM t1 GROUP BY a ORDER BY COALESCE(min_b, 'a');
 min_b
 x
 y
 z
+
+#SQL[@50,N77]Result[5, 1, 1, 1]
 SELECT MIN(b) AS min_b FROM t1 GROUP BY a ORDER BY COALESCE(MIN(b), 'a') DESC;
 min_b
 z
 y
 x
+
+#SQL[@51,N76]Result[5, 1, 1, 1]
 SELECT MIN(b) AS min_b FROM t1 GROUP BY a ORDER BY COALESCE(min_b, 'a') DESC;
 min_b
 z
 y
 x
+
+#SQL[@52,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@55,N35]Result[]
 create table t1 (a bigint unsigned);
+
+#SQL[@56,N53]Error[63]
 insert into t1 select (if(1, 9223372036854775808, 1));
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@57,N71]Error[63]
 insert into t1 select (case when 1 then 9223372036854775808 else 1 end);
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@58,N56]Error[63]
 insert into t1 select (coalesce(9223372036854775808, 1));
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@59,N16]Result[]
 select * from t1;
-a
+
+#SQL[@60,N13]Result[]
 drop table t1;
+
+#SQL[@63,N179]Result[16, 69]
 select if(1, cast(1111111111111111111 as unsigned), 1) i,case when 1 then cast(1111111111111111111 as unsigned) else 1 end c, coalesce(cast(1111111111111111111 as unsigned), 1) co;
-i	c	co
-1111111111111111111	1111111111111111111	1111111111111111111
+i  ¦  c  ¦  co
+1111111111111111111  ¦  1111111111111111111  ¦  1111111111111111111
+
+#SQL[@66,N69]Result[]
 CREATE TABLE ot (col_int_nokey int(11), col_varchar_nokey varchar(1));
+
+#SQL[@67,N29]Result[]
 INSERT INTO ot VALUES (1,'x');
+
+#SQL[@68,N65]Result[]
 CREATE TABLE it (col_int_key int(11), col_varchar_key varchar(1));
+
+#SQL[@69,N44]Result[]
 INSERT INTO it VALUES (NULL,'x'), (NULL,'f');
+
+#SQL[@70,N121]Result[13, 1]
 SELECT col_int_nokey FROM ot WHERE col_varchar_nokey IN(SELECT col_varchar_key FROM it WHERE coalesce(col_int_nokey, 1) );
 col_int_nokey
 1
+
+#SQL[@71,N13]Result[]
 drop table ot;
+
+#SQL[@72,N13]Result[]
 drop table it;
+
+#SQL[@75,N23]Result[]
 CREATE TABLE ot1(a INT);
+
+#SQL[@76,N23]Result[]
 CREATE TABLE ot2(a INT);
+
+#SQL[@77,N23]Result[]
 CREATE TABLE ot3(a INT);
+
+#SQL[@78,N23]Result[]
 CREATE TABLE it1(a INT);
+
+#SQL[@79,N23]Result[]
 CREATE TABLE it2(a INT);
+
+#SQL[@80,N23]Result[]
 CREATE TABLE it3(a INT);
+
+#SQL[@81,N53]Result[]
 INSERT INTO ot1 VALUES(0),(1),(2),(3),(4),(5),(6),(7);
+
+#SQL[@82,N37]Result[]
 INSERT INTO ot2 VALUES(0),(2),(4),(6);
+
+#SQL[@83,N33]Result[]
 INSERT INTO ot3 VALUES(0),(3),(6);
+
+#SQL[@84,N53]Result[]
 INSERT INTO it1 VALUES(0),(1),(2),(3),(4),(5),(6),(7);
+
+#SQL[@85,N37]Result[]
 INSERT INTO it2 VALUES(0),(2),(4),(6);
+
+#SQL[@86,N33]Result[]
 INSERT INTO it3 VALUES(0),(3),(6);
+
+#SQL[@87,N93]Result[8, 8, 11, 11, 11, 8, 11]
 SELECT *
 FROM ot1 LEFT JOIN ot2 ON ot1.a=ot2.a
 WHERE COALESCE(ot2.a,0) IN (SELECT a FROM it3);
-a	a
-0	0
-1	null
-3	null
-5	null
-6	6
-7	null
+a  ¦  a
+0  ¦  0
+1  ¦  null
+3  ¦  null
+5  ¦  null
+6  ¦  6
+7  ¦  null
+
+#SQL[@90,N95]Result[8, 8, 11, 11, 11, 8, 11]
 SELECT *
 FROM ot1 LEFT JOIN ot2 ON ot1.a=ot2.a
 WHERE COALESCE(ot2.a,0) IN (SELECT a+0 FROM it3);
-a	a
-0	0
-1	null
-3	null
-5	null
-6	6
-7	null
+a  ¦  a
+0  ¦  0
+1  ¦  null
+3  ¦  null
+5  ¦  null
+6  ¦  6
+7  ¦  null
+
+#SQL[@93,N122]Result[15, 15, 21, 18, 21, 15, 21]
 SELECT *
 FROM ot1 LEFT JOIN ot2 ON ot1.a=ot2.a
 LEFT JOIN ot3 ON ot1.a=ot3.a
 WHERE COALESCE(ot2.a,0) IN (SELECT a FROM it3);
-a	a	a
-0	0	0
-1	null	null
-3	null	3
-5	null	null
-6	6	6
-7	null	null
+a  ¦  a  ¦  a
+0  ¦  0  ¦  0
+1  ¦  null  ¦  null
+3  ¦  null  ¦  3
+5  ¦  null  ¦  null
+6  ¦  6  ¦  6
+7  ¦  null  ¦  null
+
+#SQL[@97,N122]Result[15, 15, 21, 18, 18, 18, 21, 15, 21]
 SELECT *
 FROM ot1 LEFT JOIN ot2 ON ot1.a=ot2.a
 LEFT JOIN ot3 ON ot1.a=ot3.a
 WHERE COALESCE(ot3.a,0) IN (SELECT a FROM it3);
-a	a	a
-0	0	0
-1	null	null
-2	2	null
-3	null	3
-4	4	null
-5	null	null
-6	6	6
-7	null	null
+a  ¦  a  ¦  a
+0  ¦  0  ¦  0
+1  ¦  null  ¦  null
+2  ¦  2  ¦  null
+3  ¦  null  ¦  3
+4  ¦  4  ¦  null
+5  ¦  null  ¦  null
+6  ¦  6  ¦  6
+7  ¦  null  ¦  null
+
+#SQL[@101,N122]Result[15, 15, 21, 21, 21, 15, 21]
 SELECT *
 FROM ot1 LEFT JOIN ot2 ON ot1.a=ot2.a
 LEFT JOIN ot3 ON ot2.a=ot3.a
 WHERE COALESCE(ot2.a,0) IN (SELECT a FROM it3);
-a	a	a
-0	0	0
-1	null	null
-3	null	null
-5	null	null
-6	6	6
-7	null	null
+a  ¦  a  ¦  a
+0  ¦  0  ¦  0
+1  ¦  null  ¦  null
+3  ¦  null  ¦  null
+5  ¦  null  ¦  null
+6  ¦  6  ¦  6
+7  ¦  null  ¦  null
+
+#SQL[@105,N122]Result[15, 15, 21, 18, 21, 18, 21, 15, 21]
 SELECT *
 FROM ot1 LEFT JOIN ot2 ON ot1.a=ot2.a
 LEFT JOIN ot3 ON ot2.a=ot3.a
 WHERE COALESCE(ot3.a,0) IN (SELECT a FROM it3);
-a	a	a
-0	0	0
-1	null	null
-2	2	null
-3	null	null
-4	4	null
-5	null	null
-6	6	6
-7	null	null
+a  ¦  a  ¦  a
+0  ¦  0  ¦  0
+1  ¦  null  ¦  null
+2  ¦  2  ¦  null
+3  ¦  null  ¦  null
+4  ¦  4  ¦  null
+5  ¦  null  ¦  null
+6  ¦  6  ¦  6
+7  ¦  null  ¦  null
+
+#SQL[@109,N14]Result[]
 drop table ot1;
+
+#SQL[@110,N14]Result[]
 drop table ot2;
+
+#SQL[@111,N14]Result[]
 drop table ot3;
+
+#SQL[@112,N14]Result[]
 drop table it1;
+
+#SQL[@113,N14]Result[]
 drop table it2;
+
+#SQL[@114,N14]Result[]
 drop table it3;
+
+#SQL[@117,N55]Result[]
 CREATE TABLE t1 (dt2 DATETIME(2), t3 TIMESTAMP, d DATE);
+
+#SQL[@118,N89]Result[]
 INSERT INTO t1 VALUES ('2001-01-01 00:00:00.12', '2001-01-01 00:00:00.567', '2002-01-01');
+
+#SQL[@119,N41]Result[17, 22]
 SELECT distinct COALESCE(dt2, t3) FROM t1;
 COALESCE(dt2, t3)
-2001-01-01 00:00:00.120000000
-SELECT CONCAT_WS(",", COALESCE(dt2, t3)) FROM t1;
-CONCAT_WS(",", COALESCE(dt2, t3))
 2001-01-01 00:00:00.12
+
+#SQL[@120,N48]Result[31, 22]
+SELECT CONCAT_WS(",", COALESCE(dt2, t3)) FROM t1;
+CONCAT_WS(,, COALESCE(dt2, t3))
+2001-01-01 00:00:00.12
+
+#SQL[@121,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@124,N24]Result[]
 CREATE TABLE t1 (a DATE);
+
+#SQL[@125,N36]Result[]
 INSERT INTO t1 VALUES ('2000-01-01');
+
+#SQL[@126,N44]Result[30, 5]
 SELECT CAST(COALESCE(a,a) AS SIGNED) FROM t1;
-cast(coalesce(a, a) as signed)
+cast(COALESCE(a, a) as signed)
 10957
+
+#SQL[@127,N42]Result[31, 10]
 SELECT CAST(COALESCE(a,a) AS CHAR) FROM t1;
-CAST(COALESCE(a,a) AS CHAR)
+cast(COALESCE(a, a) as varchar)
 2000-01-01
+
+#SQL[@128,N51]Error[59]
 SELECT CAST(COALESCE(a,a) AS DECIMAL(25,3)) FROM t1;
 invalid argument operator cast, bad value [DATE DECIMAL128]
+
+#SQL[@129,N49]Result[38, 26]
 SELECT CAST(COALESCE(a,a) AS DATETIME(6)) FROM t1;
-CAST(COALESCE(a,a) AS DATETIME(6))
-2000-01-01 00:00:00
+cast(COALESCE(a, a) as datetime(6, 6))
+2000-01-01 00:00:00.000000
+
+#SQL[@131,N45]Result[34, 15]
 SELECT CAST(COALESCE(a,a) AS TIME(6)) FROM t1;
-CAST(COALESCE(a,a) AS TIME(6))
-00:00:00
+cast(COALESCE(a, a) as time(6, 6))
+00:00:00.000000
+
+#SQL[@133,N35]Error[49]
 SELECT ROUND(COALESCE(a,a)) FROM t1;
 invalid argument function round, bad value [DATE]
+
+#SQL[@134,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@135,N28]Result[]
 CREATE TABLE t1 (a DATETIME);
+
+#SQL[@136,N45]Result[]
 INSERT INTO t1 VALUES ('2000-01-01 00:00:00');
+
+#SQL[@137,N44]Result[30, 9]
 SELECT CAST(COALESCE(a,a) AS SIGNED) FROM t1;
-cast(coalesce(a, a) as signed)
+cast(COALESCE(a, a) as signed)
 946684800
+
+#SQL[@138,N42]Result[31, 19]
 SELECT CAST(COALESCE(a,a) AS CHAR) FROM t1;
-CAST(COALESCE(a,a) AS CHAR)
+cast(COALESCE(a, a) as varchar)
 2000-01-01 00:00:00
+
+#SQL[@139,N51]Result[38, 13]
 SELECT CAST(COALESCE(a,a) AS DECIMAL(25,3)) FROM t1;
-cast(coalesce(a, a) as decimal(25, 3))
+cast(COALESCE(a, a) as decimal(25, 3))
 946684800.000
+
+#SQL[@140,N49]Result[38, 26]
 SELECT CAST(COALESCE(a,a) AS DATETIME(6)) FROM t1;
-CAST(COALESCE(a,a) AS DATETIME(6))
-2000-01-01 00:00:00
+cast(COALESCE(a, a) as datetime(6, 6))
+2000-01-01 00:00:00.000000
+
+#SQL[@142,N45]Result[34, 15]
 SELECT CAST(COALESCE(a,a) AS TIME(6)) FROM t1;
-CAST(COALESCE(a,a) AS TIME(6))
-00:00:00
+cast(COALESCE(a, a) as time(6, 6))
+00:00:00.000000
+
+#SQL[@144,N35]Error[53]
 SELECT ROUND(COALESCE(a,a)) FROM t1;
 invalid argument function round, bad value [DATETIME]
+
+#SQL[@145,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@148,N21]Result[14, 4]
 select coalesce(null);
 coalesce(null)
 null
+
+#SQL[@151,N71]Result[60, 13]
 SELECT COALESCE(NULL, NULL, NULL, 'W3Schools.com', NULL, 'Example.com');
-COALESCE(NULL, NULL, NULL, 'W3Schools.com', NULL, 'Example.com')
+COALESCE(null, null, null, W3Schools.com, null, Example.com)
 W3Schools.com
+
+#SQL[@154,N30]Result[25, 1]
 SELECT COALESCE(1)+COALESCE(1);
-COALESCE(1)+COALESCE(1)
+COALESCE(1) + COALESCE(1)
 2
+
+#SQL[@157,N23]Result[]
 drop table if exists t1;
+
+#SQL[@158,N27]Result[]
 create table t1(a datetime);
+
+#SQL[@159,N85]Result[]
 INSERT INTO t1 VALUES (NULL), ('2001-01-01 00:00:00.12'), ('2002-01-01 00:00:00.567');
+
+#SQL[@160,N59]Result[1, 19]
 select a from t1 group by a having COALESCE(a)<"2002-01-01";
 a
 2001-01-01 00:00:00
+
+#SQL[@161,N13]Result[]
 drop table t1;
+
+#SQL[@165,N23]Result[]
 drop table if exists t1;
+
+#SQL[@166,N23]Result[]
 drop table if exists t2;
+
+#SQL[@167,N39]Result[]
 create table t1(a INT,  b varchar(255));
+
+#SQL[@168,N39]Result[]
 create table t2(a INT,  b varchar(255));
+
+#SQL[@169,N49]Result[]
 insert into t1 values(1, "你好"), (3, "再见");
+
+#SQL[@170,N55]Result[]
 insert into t2 values(2, "日期时间"), (4, "明天");
+
+#SQL[@171,N86]Result[8, 8, 8]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (length(COALESCE(t1.b)) = length(COALESCE(t2.b)));
-a	a
-3	4
-1	4
+a  ¦  a
+1  ¦  4
+3  ¦  4
+
+#SQL[@172,N13]Result[]
 drop table t1;
+
+#SQL[@173,N13]Result[]
 drop table t2;
+
+#SQL[@176,N119]Result[108, 23]
 SELECT COALESCE(NULL, NULL, NULL, CAST('{"_id":"192312412512"}' AS JSON), NULL, CAST('{"_id":"192312412513"}' AS JSON));
-coalesce(null, null, null, cast({"_id":"192312412512"} as json), null, cast({"_id":"192312412513"} as json))
+COALESCE(null, null, null, cast({"_id":"192312412512"} as json), null, cast({"_id":"192312412513"} as json))
 {"_id": "192312412512"}
+
+#SQL[@178,N31]Result[]
 create table t1(a INT,  b json);
+
+#SQL[@179,N31]Result[]
 create table t2(a INT,  b json);
+
+#SQL[@180,N109]Result[]
 insert into t1 values(1, CAST('{"_id":"192312412512"}' AS JSON)), (3, CAST('{"_id":"192312412513"}' AS JSON));
+
+#SQL[@181,N109]Result[]
 insert into t2 values(2, CAST('{"_id":"192312412514"}' AS JSON)), (4, CAST('{"_id":"192312412515"}' AS JSON));
+
+#SQL[@182,N43]Result[8, 30, 30, 30, 30]
 select * from t1 union all select * from t2;
-a    b
-1    {"_id": "192312412512"}
-3    {"_id": "192312412513"}
-2    {"_id": "192312412514"}
-4    {"_id": "192312412515"}
+a  ¦  b
+2  ¦  {"_id": "192312412514"}
+4  ¦  {"_id": "192312412515"}
+1  ¦  {"_id": "192312412512"}
+3  ¦  {"_id": "192312412513"}
+
+#SQL[@183,N13]Result[]
 drop table t1;
+
+#SQL[@184,N13]Result[]
 drop table t2;
+
+#SQL[@187,N89]Result[78, 4]
 SELECT COALESCE(NULL, NULL, NULL, CAST('test' AS BLOB), NULL, CAST('1234589002' AS BLOB));
-coalesce(null, null, null, cast(test as blob), null, cast(1234589002 as blob))
+COALESCE(null, null, null, cast(test as blob), null, cast(1234589002 as blob))
 test
+
+#SQL[@189,N23]Result[]
 DROP table if exists t1;
+
+#SQL[@190,N23]Result[]
 DROP table if exists t2;
+
+#SQL[@191,N31]Result[]
 CREATE TABLE t1 (a INT, s BLOB);
+
+#SQL[@192,N33]Result[]
 INSERT INTO t1 VALUES (1, 'test');
+
+#SQL[@193,N31]Result[]
 CREATE TABLE t2 (b INT, s BLOB);
+
+#SQL[@194,N39]Result[]
 INSERT INTO t2 VALUES (2, '1234589002');
+
+#SQL[@195,N43]Result[8, 17, 11]
 select * from t1 union all select * from t2;
-a    s
-1    test
-2    1234589002
+a  ¦  s
+2  ¦  1234589002
+1  ¦  test
+
+#SQL[@196,N13]Result[]
 drop table t1;
+
+#SQL[@197,N13]Result[]
 drop table t2;
+
+#SQL[@200,N91]Result[80, 6]
 SELECT COALESCE(NULL, NULL, NULL, CAST('abcdef' AS text), NULL, CAST('1234589002' AS text));
-coalesce(null, null, null, cast(abcdef as text), null, cast(1234589002 as text))
+COALESCE(null, null, null, cast(abcdef as text), null, cast(1234589002 as text))
 abcdef
+
+#SQL[@202,N23]Result[]
 DROP table if exists t1;
+
+#SQL[@203,N23]Result[]
 DROP table if exists t2;
+
+#SQL[@204,N31]Result[]
 CREATE TABLE t1 (a INT, s text);
+
+#SQL[@205,N35]Result[]
 INSERT INTO t1 VALUES (1, 'abcdef');
+
+#SQL[@206,N31]Result[]
 CREATE TABLE t2 (b INT, s text);
+
+#SQL[@207,N37]Result[]
 INSERT INTO t2 VALUES (2, 'abcdefgh');
+
+#SQL[@208,N43]Result[8, 15, 13]
 select * from t1 union all select * from t2;
-a    s
-1    abcdef
-2    abcdefgh
+a  ¦  s
+2  ¦  abcdefgh
+1  ¦  abcdef
+
+#SQL[@209,N13]Result[]
 drop table t1;
+
+#SQL[@210,N13]Result[]
 drop table t2;
+

@@ -1,94 +1,190 @@
+#SQL[@1,N68]Result[6, 25]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat','Cat', 'Tiger') 'Result';
-Result 
+Result
 Tiger Dog Tiger Dog Tiger
+
+#SQL[@2,N69]Result[6, 19]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', 'Cow', 'Tiger') 'Result';
 Result
 Cat Dog Cat Dog Cat
+
+#SQL[@3,N75]Result[6, 21]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', 'Cat', 'Tiger', 1, 2) 'Result';
 Result
 Cat Dog Tiger Dog Cat
+
+#SQL[@4,N75]Result[6, 21]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', 'Cat', 'Tiger', 2, 1) 'Result';
-Result 
+Result
 Cat Dog Tiger Dog Cat
+
+#SQL[@5,N75]Result[6, 21]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', 'Cat', 'Tiger', 2, 2) 'Result';
 Result
 Cat Dog Cat Dog Tiger
+
+#SQL[@6,N75]Result[6, 25]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', 'Cat', 'Tiger', 1, 0) 'Result';
 Result
 Tiger Dog Tiger Dog Tiger
+
+#SQL[@7,N43]Result[32, 4]
 SELECT REGEXP_REPLACE(NULL, 'Cow', 'Tiger');
-regexp_replace(null, Cow, Tiger)
-NULL
+REGEXP_REPLACE(null, Cow, Tiger)
+null
+
+#SQL[@8,N59]Result[48, 4]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', NULL, 'Tiger');
-regexp_replace(Cat Dog Cat Dog Cat, null, Tiger)
-NULL
+REGEXP_REPLACE(Cat Dog Cat Dog Cat, null, Tiger)
+null
+
+#SQL[@9,N57]Result[46, 4]
 SELECT REGEXP_REPLACE('Cat Dog Cat Dog Cat', 'Cow', NULL);
-regexp_replace(Cat Dog Cat Dog Cat, Cow, null) 
-NULL
+REGEXP_REPLACE(Cat Dog Cat Dog Cat, Cow, null)
+null
+
+#SQL[@11,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@12,N68]Result[]
 insert into t1 values(1 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@13,N68]Result[]
 insert into t1 values(2 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@14,N68]Result[]
 insert into t1 values(3 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@15,N68]Result[]
 insert into t1 values(4 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@16,N68]Result[]
 insert into t1 values(5 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@17,N68]Result[]
 insert into t1 values(6 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@18,N68]Result[]
 insert into t1 values(7 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@19,N68]Result[]
 insert into t1 values(8 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@20,N51]Result[36, 58, 58, 58, 58, 58, 58, 58, 58]
 SELECT a, REGEXP_REPLACE(b, 'Cat', 'tiger') from t1;
-a    regexp_replace(b, Cat, tiger)
-1    tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
-2    tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
-3    tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
-4    tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
-5    Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
-6    Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
-7    Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
-8    Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
+a  ¦  REGEXP_REPLACE(b, Cat, tiger)
+1  ¦  tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
+2  ¦  tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
+3  ¦  tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
+4  ¦  tiger Dog tiger Dog tiger tiger Dog tiger Dog tiger
+5  ¦  Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
+6  ¦  Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
+7  ¦  Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
+8  ¦  Dog tiger Dog tiger tiger Dog tiger Dog tiger tiger
+
+#SQL[@21,N13]Result[]
 drop table t1;
+
+#SQL[@23,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@24,N68]Result[]
 insert into t1 values(1 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@25,N68]Result[]
 insert into t1 values(2 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@26,N68]Result[]
 insert into t1 values(3 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@27,N68]Result[]
 insert into t1 values(4 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@28,N68]Result[]
 insert into t1 values(5 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@29,N68]Result[]
 insert into t1 values(6 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@30,N68]Result[]
 insert into t1 values(7 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@31,N68]Result[]
 insert into t1 values(8 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@32,N52]Result[37, 46, 46, 46, 46, 46, 46, 46, 46]
 SELECT a, REGEXP_REPLACE(b, 'Cat', 'pig', 3) from t1;
-a    regexp_replace(b, Cat, pig, 3)
-1    pig Dog pig Dog pig pig Dog pig Dog pig
-2    pig Dog pig Dog pig pig Dog pig Dog pig
-3    pig Dog pig Dog pig pig Dog pig Dog pig
-4    pig Dog pig Dog pig pig Dog pig Dog pig
-5    Dog pig Dog pig pig Dog pig Dog pig pig
-6    Dog pig Dog pig pig Dog pig Dog pig pig
-7    Dog pig Dog pig pig Dog pig Dog pig pig
-8    Dog pig Dog pig pig Dog pig Dog pig pig
+a  ¦  REGEXP_REPLACE(b, Cat, pig, 3)
+1  ¦  pig Dog pig Dog pig pig Dog pig Dog pig
+2  ¦  pig Dog pig Dog pig pig Dog pig Dog pig
+3  ¦  pig Dog pig Dog pig pig Dog pig Dog pig
+4  ¦  pig Dog pig Dog pig pig Dog pig Dog pig
+5  ¦  Dog pig Dog pig pig Dog pig Dog pig pig
+6  ¦  Dog pig Dog pig pig Dog pig Dog pig pig
+7  ¦  Dog pig Dog pig pig Dog pig Dog pig pig
+8  ¦  Dog pig Dog pig pig Dog pig Dog pig pig
+
+#SQL[@33,N13]Result[]
 drop table t1;
+
+#SQL[@35,N38]Result[]
 create table t1(a int, b varchar(100));
+
+#SQL[@36,N68]Result[]
 insert into t1 values(1 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@37,N68]Result[]
 insert into t1 values(2 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@38,N68]Result[]
 insert into t1 values(3 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@39,N68]Result[]
 insert into t1 values(4 , 'Cat Dog Cat Dog Cat Cat Dog Cat Dog Cat');
+
+#SQL[@40,N68]Result[]
 insert into t1 values(5 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@41,N68]Result[]
 insert into t1 values(6 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@42,N68]Result[]
 insert into t1 values(7 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@43,N68]Result[]
 insert into t1 values(8 , 'Dog Cat Dog Cat Cat Dog Cat Dog Cat Cat');
+
+#SQL[@44,N55]Result[40, 46, 46, 46, 46, 46, 46, 46, 46]
 SELECT a, REGEXP_REPLACE(b, 'Cat', 'taC', 3, 2) from t1;
-a    regexp_replace(b, Cat, taC, 3, 2)
-1    Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
-2    Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
-3    Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
-4    Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
-5    Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
-6    Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
-7    Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
-8    Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
+a  ¦  REGEXP_REPLACE(b, Cat, taC, 3, 2)
+1  ¦  Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
+2  ¦  Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
+3  ¦  Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
+4  ¦  Cat Dog Cat Dog taC Cat Dog Cat Dog Cat
+5  ¦  Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
+6  ¦  Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
+7  ¦  Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
+8  ¦  Dog Cat Dog taC Cat Dog Cat Dog Cat Cat
+
+#SQL[@45,N13]Result[]
 drop table t1;
+
+#SQL[@47,N22]Result[]
 DROP TABLE IF EXISTS t;
+
+#SQL[@48,N47]Result[]
 CREATE TABLE t(str1 VARCHAR(20), str2 CHAR(20));
+
+#SQL[@49,N81]Result[]
 INSERT INTO t VALUES ('W * P', 'W + Z - O'), ('have has having', 'do does doing');
+
+#SQL[@50,N79]Result[]
 INSERT INTO t VALUES ('XV*XZ', 'PP-ZZ-DXA'), ('aa bbb cc ddd', 'k ii lll oooo');
+
+#SQL[@51,N78]Error[78]
 SELECT REGEXP_REPLACE(str1, '*', 'i'), REGEXP_REPLACE(str2,'hav','hiv') FROM t;
 invalid argument regexp_replace have invalid regexp pattern arg, bad value [*]
+
+#SQL[@52,N12]Result[]
 drop table t;
+

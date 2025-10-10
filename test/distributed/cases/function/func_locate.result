@@ -1,41 +1,70 @@
+#SQL[@1,N21]Result[]
 create database testx;
+
+#SQL[@2,N9]Result[]
 use testx;
+
+#SQL[@4,N56]Result[13, 4]
 SELECT LOCATE(null, "begtut.com", null) AS MatchPosition;
 MatchPosition
 null
+
+#SQL[@7,N57]Result[13, 4]
 SELECT LOCATE("com", "begtut.com", null) AS MatchPosition;
 MatchPosition
 null
+
+#SQL[@10,N46]Result[13, 4]
 SELECT LOCATE("com", null, 3) AS MatchPosition;
 MatchPosition
 null
+
+#SQL[@13,N45]Result[13, 4]
 SELECT LOCATE(NULL, null, 3) AS MatchPosition;
 MatchPosition
 null
+
+#SQL[@16,N44]Result[13, 1]
 SELECT LOCATE("com", "", 3) AS MatchPosition;
 MatchPosition
 0
+
+#SQL[@18,N43]Result[13, 1]
 SELECT LOCATE("", "cm", 3) AS MatchPosition;
 MatchPosition
 3
+
+#SQL[@21,N54]Result[13, 1]
 SELECT LOCATE("com", "begtut.com", 3) AS MatchPosition;
 MatchPosition
 8
+
+#SQL[@25,N51]Result[8, 1]
 SELECT LOCATE('lo', 'Hello, World!', 4) AS position;
 position
 4
+
+#SQL[@29,N51]Result[8, 1]
 SELECT LOCATE('lo', 'Hello, World!', 7) AS position;
 position
 0
+
+#SQL[@33,N125]Result[24, 8]
 SELECT LOCATE('is', 'This is a test string.', 6) AS position1,
-LOCATE('is', 'This is a test string.', 10) AS position2;
-position1    position2
-6    0
+       LOCATE('is', 'This is a test string.', 10) AS position2;
+position1  ¦  position2
+6  ¦  0
+
+#SQL[@38,N31]Result[]
 DROP TABLE IF EXISTS test_table;
+
+#SQL[@39,N97]Result[]
 CREATE TABLE test_table (
-id INT AUTO_INCREMENT PRIMARY KEY,
-my_string VARCHAR(200)
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      my_string VARCHAR(200)
 );
+
+#SQL[@45,N211]Result[]
 INSERT INTO test_table (my_string) VALUES
 ('Hello, World!'),
 ('This is a test string.'),
@@ -43,6 +72,8 @@ INSERT INTO test_table (my_string) VALUES
 ('The quick brown fox jumps over the lazy dog.'),
 ('Testing the LOCATE function.'),
 ('12345');
+
+#SQL[@54,N58]Result[8, 1, 1, 1, 1, 2, 1]
 SELECT LOCATE('lo', my_string) AS position FROM test_table;
 position
 4
@@ -51,6 +82,8 @@ position
 0
 13
 0
+
+#SQL[@58,N59]Result[8, 1, 1, 1, 1, 1, 1]
 SELECT LOCATE('xyz', my_string) AS position FROM test_table;
 position
 0
@@ -59,6 +92,8 @@ position
 0
 0
 0
+
+#SQL[@62,N58]Result[8, 1, 1, 1, 1, 1, 1]
 SELECT LOCATE('is', my_string) AS position FROM test_table;
 position
 0
@@ -67,6 +102,8 @@ position
 0
 0
 0
+
+#SQL[@66,N60]Result[8, 1, 2, 2, 1, 1, 1]
 SELECT LOCATE('test', my_string) AS position FROM test_table;
 position
 0
@@ -75,211 +112,355 @@ position
 0
 1
 0
+
+#SQL[@70,N21]Result[]
 DROP TABLE test_table;
+
+#SQL[@75,N41]Result[]
 DROP TABLE IF EXISTS mixed_language_table;
+
+#SQL[@76,N107]Result[]
 CREATE TABLE mixed_language_table (
-id INT AUTO_INCREMENT PRIMARY KEY,
-text_data VARCHAR(255)
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      text_data VARCHAR(255)
 );
+
+#SQL[@82,N163]Result[]
 INSERT INTO mixed_language_table (text_data) VALUES
 ('applebanana苹果orange香蕉'),
 ('grapepeach桃子mango'),
 ('西瓜猕猴桃watermelonkiwistrawberry草莓');
+
+#SQL[@88,N221]Result[83, 58, 50, 74]
 SELECT
-id,
-text_data,
-LOCATE('orange', text_data) AS orange_position,
-LOCATE('桃子', text_data) AS peach_position,
-LOCATE('strawberry', text_data) AS strawberry_position
+    id,
+    text_data,
+    LOCATE('orange', text_data) AS orange_position,
+    LOCATE('桃子', text_data) AS peach_position,
+    LOCATE('strawberry', text_data) AS strawberry_position
 FROM
-mixed_language_table;
-id    text_data    orange_position    peach_position    strawberry_position
-1    applebanana苹果orange香蕉    14    0    0
-2    grapepeach桃子mango    0    11    0
-3    西瓜猕猴桃watermelonkiwistrawberry草莓    0    0    20
+    mixed_language_table;
+id  ¦  text_data  ¦  orange_position  ¦  peach_position  ¦  strawberry_position
+1  ¦  applebanana苹果orange香蕉  ¦  14  ¦  0  ¦  0
+2  ¦  grapepeach桃子mango  ¦  0  ¦  11  ¦  0
+3  ¦  西瓜猕猴桃watermelonkiwistrawberry草莓  ¦  0  ¦  0  ¦  20
+
+#SQL[@97,N233]Result[83, 58, 49, 74]
 SELECT
-id,
-text_data,
-LOCATE('orange', text_data, 14) AS orange_position,
-LOCATE('桃子', text_data, 14) AS peach_position,
-LOCATE('strawberry', text_data, 14) AS strawberry_position
+    id,
+    text_data,
+    LOCATE('orange', text_data, 14) AS orange_position,
+    LOCATE('桃子', text_data, 14) AS peach_position,
+    LOCATE('strawberry', text_data, 14) AS strawberry_position
 FROM
-mixed_language_table;
-id    text_data    orange_position    peach_position    strawberry_position
-1    applebanana苹果orange香蕉    14    0    0
-2    grapepeach桃子mango    0    0    0
-3    西瓜猕猴桃watermelonkiwistrawberry草莓    0    0    20
+    mixed_language_table;
+id  ¦  text_data  ¦  orange_position  ¦  peach_position  ¦  strawberry_position
+1  ¦  applebanana苹果orange香蕉  ¦  14  ¦  0  ¦  0
+2  ¦  grapepeach桃子mango  ¦  0  ¦  0  ¦  0
+3  ¦  西瓜猕猴桃watermelonkiwistrawberry草莓  ¦  0  ¦  0  ¦  20
+
+#SQL[@106,N230]Result[83, 58, 50, 74]
 SELECT
-id,
-text_data,
-LOCATE('orange', text_data, 5) AS orange_position,
-LOCATE('桃子', text_data, 5) AS peach_position,
-LOCATE('strawberry', text_data, 5) AS strawberry_position
+    id,
+    text_data,
+    LOCATE('orange', text_data, 5) AS orange_position,
+    LOCATE('桃子', text_data, 5) AS peach_position,
+    LOCATE('strawberry', text_data, 5) AS strawberry_position
 FROM
-mixed_language_table;
-id    text_data    orange_position    peach_position    strawberry_position
-1    applebanana苹果orange香蕉    14    0    0
-2    grapepeach桃子mango    0    11    0
-3    西瓜猕猴桃watermelonkiwistrawberry草莓    0    0    20
+    mixed_language_table;
+id  ¦  text_data  ¦  orange_position  ¦  peach_position  ¦  strawberry_position
+1  ¦  applebanana苹果orange香蕉  ¦  14  ¦  0  ¦  0
+2  ¦  grapepeach桃子mango  ¦  0  ¦  11  ¦  0
+3  ¦  西瓜猕猴桃watermelonkiwistrawberry草莓  ¦  0  ¦  0  ¦  20
+
+#SQL[@115,N41]Result[]
 DROP TABLE IF EXISTS mixed_language_table;
+
+#SQL[@117,N30]Result[21, 1]
 select locate('he','hello',-2);
 locate(he, hello, -2)
 0
+
+#SQL[@118,N39]Result[30, 1]
 select locate('lo','hello',-4294967295);
 locate(lo, hello, -4294967295)
 0
+
+#SQL[@119,N38]Result[29, 1]
 select locate('lo','hello',4294967295);
 locate(lo, hello, 4294967295)
 0
+
+#SQL[@120,N39]Result[30, 1]
 select locate('lo','hello',-4294967296);
 locate(lo, hello, -4294967296)
 0
+
+#SQL[@121,N38]Result[29, 1]
 select locate('lo','hello',4294967296);
 locate(lo, hello, 4294967296)
 0
+
+#SQL[@122,N39]Result[30, 1]
 select locate('lo','hello',-4294967297);
 locate(lo, hello, -4294967297)
 0
+
+#SQL[@123,N38]Result[29, 1]
 select locate('lo','hello',4294967297);
 locate(lo, hello, 4294967297)
 0
+
+#SQL[@124,N36]Result[25, 1]
 select locate('DB', 'ewhDBfjiejwew');
 locate(DB, ewhDBfjiejwew)
 4
+
+#SQL[@125,N51]Result[40, 1]
 select locate('db', 'HHUHDNDBDBDBfewoiujfewqf vew');
 locate(db, HHUHDNDBDBDBfewoiujfewqf vew)
 7
+
+#SQL[@126,N45]Result[34, 2]
 select locate("3q", 'fwfwefw3rqfw3fqff3qwfw');
 locate(3q, fwfwefw3rqfw3fqff3qwfw)
 18
+
+#SQL[@127,N58]Result[6, 1]
 select locate("&&**", " ekwefw&&&**^^&3928u3f ") as result;
 result
 9
+
+#SQL[@128,N18]Result[12, 1]
 select locate(1,2);
 locate(1, 2)
 0
+
+#SQL[@129,N30]Result[23, 1]
 select locate(100, 2300100100);
 locate(100, 2300100100)
 5
+
+#SQL[@130,N34]Result[27, 1]
 select locate(-100, 3243211433100);
 locate(-100, 3243211433100)
 0
+
+#SQL[@132,N26]Result[17, 4]
 select locate('foo', null);
 locate(foo, null)
 null
+
+#SQL[@133,N24]Result[15, 4]
 select locate(null, 'o');
 locate(null, o)
 null
+
+#SQL[@134,N25]Result[18, 4]
 select locate(null, null);
 locate(null, null)
 null
+
+#SQL[@135,N34]Result[25, 4]
 select locate('foo', null) is null;
 locate(foo, null) is null
 true
+
+#SQL[@136,N32]Result[23, 4]
 select locate(null, 'o') is null;
 locate(null, o) is null
 true
+
+#SQL[@137,N33]Result[26, 4]
 select locate(null, null) is null;
 locate(null, null) is null
 true
+
+#SQL[@138,N34]Result[25, 4]
 select isnull(locate('foo', null));
 isnull(locate(foo, null))
 true
+
+#SQL[@139,N32]Result[23, 4]
 select isnull(locate(null, 'o'));
 isnull(locate(null, o))
 true
+
+#SQL[@140,N33]Result[26, 4]
 select isnull(locate(null, null));
 isnull(locate(null, null))
 true
+
+#SQL[@142,N39]Result[6, 1]
 select locate('lo','hello',3) as result;
 result
 4
+
+#SQL[@143,N75]Result[76, 24]
 select locate('he','hello',null),locate('he',null,2),locate(null,'hello',2);
-locate(he, hello, null)    locate(he, null, 2)    locate(null, hello, 2)
-null    null    null
+locate(he, hello, null)  ¦  locate(he, null, 2)  ¦  locate(null, hello, 2)
+null  ¦  null  ¦  null
+
+#SQL[@144,N55]Result[53, 14]
 select locate(null,'hello',null),locate('he',null,null);
-locate(null, hello, null)    locate(he, null, null)
-null    null
+locate(null, hello, null)  ¦  locate(he, null, null)
+null  ¦  null
+
+#SQL[@147,N46]Result[36, 1]
 select locate('abc',ltrim('   ueenjfwabc123'));
 locate(abc, ltrim(   ueenjfwabc123))
 8
+
+#SQL[@148,N53]Result[43, 2]
 select locate('123',rtrim('  3782dfw23123123123   '));
 locate(123, rtrim(  3782dfw23123123123   ))
 12
+
+#SQL[@149,N61]Result[51, 1]
 select locate('%^',trim('  32431 %^ 3829  3huicn2432g23   '));
 locate(%^, trim(  32431 %^ 3829  3huicn2432g23   ))
 7
+
+#SQL[@150,N52]Result[44, 2]
 select locate('12',substring('21214avewwe12 ',3,20));
 locate(12, substring(21214avewwe12 , 3, 20))
 10
+
+#SQL[@151,N59]Result[6, 2]
 select locate('kjs', reverse('sjkdakjevenjwvev')) as result;
 result
 14
+
+#SQL[@154,N29]Result[]
 drop table if exists locate01;
+
+#SQL[@155,N53]Result[]
 create table locate01(col1 char(5), col2 varchar(20));
+
+#SQL[@156,N77]Result[]
 insert into locate01 values ('da','database数据库DB数据库管理系统');
+
+#SQL[@157,N39]Result[]
 insert into locate01 values (null,null);
+
+#SQL[@158,N62]Error[112]
 insert into locate01 values ('ABCDF','GHIJKLMNabcdfeowejfwve');
 internal error: Can't cast 'GHIJKLMNabcdfeowejfwve' to VARCHAR type. Src length 22 is larger than Dest length 20
+
+#SQL[@159,N81]Error[121]
 insert into locate01 values ('圣诞节快乐','圣诞节快乐Merry Charismas!');
 internal error: Can't cast '圣诞节快乐Merry Charismas!' to VARCHAR type. Src length 31 is larger than Dest length 20
+
+#SQL[@160,N51]Result[]
 insert into locate01 values ('@#$', '^&**(&^$@@#$');
+
+#SQL[@161,N22]Result[14, 48, 14, 21]
 select * from locate01;
-col1    col2
-da    database数据库DB数据库管理系统
-null    null
-@#$    ^&**(&^$@@#$
+col1  ¦  col2
+da  ¦  database数据库DB数据库管理系统
+null  ¦  null
+@#$  ¦  ^&**(&^$@@#$
+
+#SQL[@162,N57]Result[]
 prepare s1 from 'select locate(col1, col2) from locate01';
+
+#SQL[@163,N10]Result[18, 1, 4, 2]
 execute s1;
 locate(col1, col2)
 1
 null
 10
+
+#SQL[@164,N65]Result[]
 prepare s2 from 'select isnull(locate(col1, col2)) from locate01';
+
+#SQL[@165,N10]Result[26, 5, 4, 5]
 execute s2;
 isnull(locate(col1, col2))
 false
 true
 false
+
+#SQL[@166,N19]Result[]
 drop table locate01;
+
+#SQL[@168,N29]Result[]
 drop table if exists locate02;
+
+#SQL[@169,N48]Result[]
 create table locate02 (col1 tinytext, col2 text);
+
+#SQL[@170,N388]Result[]
 insert into locate02 values ('融合异构分布式','MatrixOne 是一款超融合异构分布式数据库，通过云原生化和存储、计算、事务分离的架构构建 HSTAP 超融合数据引擎，实现单一数据库系统支持 OLTP、OLAP、流计算等多种业务负载，并且支持公有云、私有云、边缘云部署和使用，实现异构基础设施的兼容。');
+
+#SQL[@171,N396]Result[]
 insert into locate02 values (null, 'MatrixOne 具备实时 HTAP，多租户，流式计算，极致扩展性，高性价比，企业级高可用及 MySQL 高度兼容等重要特性，通过为用户提供一站式超融合数据解决方案，可以将过去由多个数据库完成的工作合并到一个数据库里，从而简化开发运维，消减数据碎片，提高开发敏捷度。');
+
+#SQL[@172,N47]Result[]
 insert into locate02 values ('分布式', null);
+
+#SQL[@173,N23]Result[14, 359, 368, 19]
 select *  from locate02;
-col1    col2
-融合异构分布式    MatrixOne 是一款超融合异构分布式数据库，通过云原生化和存储、计算、事务分离的架构构建 HSTAP 超融合数据引擎，实现单一数据库系统支持 OLTP、OLAP、流计算等多种业务负载，并且支持公有云、私有云、边缘云部署和使用，实现异构基础设施的兼容。
-null    MatrixOne 具备实时 HTAP，多租户，流式计算，极致扩展性，高性价比，企业级高可用及 MySQL 高度兼容等重要特性，通过为用户提供一站式超融合数据解决方案，可以将过去由多个数据库完成的工作合并到一个数据库里，从而简化开发运维，消减数据碎片，提高开发敏捷度。
-分布式    null
+col1  ¦  col2
+融合异构分布式  ¦  MatrixOne 是一款超融合异构分布式数据库，通过云原生化和存储、计算、事务分离的架构构建 HSTAP 超融合数据引擎，实现单一数据库系统支持 OLTP、OLAP、流计算等多种业务负载，并且支持公有云、私有云、边缘云部署和使用，实现异构基础设施的兼容。
+null  ¦  MatrixOne 具备实时 HTAP，多租户，流式计算，极致扩展性，高性价比，企业级高可用及 MySQL 高度兼容等重要特性，通过为用户提供一站式超融合数据解决方案，可以将过去由多个数据库完成的工作合并到一个数据库里，从而简化开发运维，消减数据碎片，提高开发敏捷度。
+分布式  ¦  null
+
+#SQL[@174,N39]Result[18, 2, 4, 4]
 select locate(col1, col2) from locate02;
 locate(col1, col2)
 15
 null
 null
+
+#SQL[@175,N43]Result[22, 2, 4, 4]
 select locate(col1, col2, 10) from locate02;
 locate(col1, col2, 10)
 15
 null
 null
+
+#SQL[@176,N44]Error[204]
 select locate(col1, col2, -10) form locate02;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 44 near " locate02;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 44 near \" locate02\";
+
+#SQL[@177,N19]Result[]
 drop table locate02;
+
+#SQL[@180,N29]Result[]
 drop table if exists locate03;
+
+#SQL[@181,N62]Result[]
 create temporary table locate03(col1 char(5), col2 mediumtext);
+
+#SQL[@182,N77]Result[]
 insert into locate03 values ('DB','database数据库DB数据库管理系统');
+
+#SQL[@183,N39]Result[]
 insert into locate03 values (null,null);
+
+#SQL[@184,N62]Result[]
 insert into locate03 values ('ABCDF','GHIJKLMNabcdfeowejfwve');
+
+#SQL[@185,N81]Result[]
 insert into locate03 values ('圣诞节快乐','圣诞节快乐Merry Charismas!');
+
+#SQL[@186,N51]Result[]
 insert into locate03 values ('@#$', '^&**(&^$@@#$');
+
+#SQL[@187,N22]Result[14, 48, 14, 33, 52, 21]
 select * from locate03;
-col1    col2
-DB    database数据库DB数据库管理系统
-null    null
-ABCDF    GHIJKLMNabcdfeowejfwve
-圣诞节快乐    圣诞节快乐Merry Charismas!
-@#$    ^&**(&^$@@#$
+col1  ¦  col2
+DB  ¦  database数据库DB数据库管理系统
+null  ¦  null
+ABCDF  ¦  GHIJKLMNabcdfeowejfwve
+圣诞节快乐  ¦  圣诞节快乐Merry Charismas!
+@#$  ¦  ^&**(&^$@@#$
+
+#SQL[@188,N57]Result[]
 prepare s1 from 'select locate(col1, col2) from locate03';
+
+#SQL[@189,N10]Result[18, 2, 4, 1, 1, 2]
 execute s1;
 locate(col1, col2)
 12
@@ -287,7 +468,11 @@ null
 9
 1
 10
+
+#SQL[@190,N65]Result[]
 prepare s2 from 'select isnull(locate(col1, col2)) from locate03';
+
+#SQL[@191,N10]Result[26, 5, 4, 5, 5, 5]
 execute s2;
 isnull(locate(col1, col2))
 false
@@ -295,5 +480,10 @@ true
 false
 false
 false
+
+#SQL[@192,N19]Result[]
 drop table locate03;
+
+#SQL[@193,N19]Result[]
 drop database testx;
+

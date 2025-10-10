@@ -1,34 +1,66 @@
+#SQL[@1,N32]Result[]
 create table t1(a INT,  b float);
+
+#SQL[@2,N60]Result[]
 insert into t1 values(12124, -4213.413), (12124, -42413.409);
+
+#SQL[@3,N29]Result[14, 2, 2]
 SELECT length(uuid()) FROM t1;
 length(uuid())
 36
 36
+
+#SQL[@4,N22]Error[50]
 SELECT uuid(1) FROM t1;
 invalid argument function uuid, bad value [BIGINT]
+
+#SQL[@5,N13]Result[]
 drop table t1;
+
+#SQL[@7,N92]Result[]
 CREATE TABLE namelists (
-id UUID DEFAULT uuid() PRIMARY KEY,
-name VARCHAR NOT NULL
+    id UUID DEFAULT uuid() PRIMARY KEY,
+    name VARCHAR NOT NULL
 );
+
+#SQL[@11,N62]Result[]
 INSERT INTO namelists (name) VALUES ('Tom'), ('Jane'), ('Bob');
+
+#SQL[@12,N23]Result[12, 45, 46, 45]
 SELECT * from namelists;
-id    name
-01921d93-c429-7966-a2f6-23890aee82ce    Tom
-01921d93-c429-796a-ae85-60871fd4579e    Jane
-01921d93-c429-796b-b67f-17b1a953026c    Bob
+id  ¦  name
+0199ccd9-c60e-78e1-8141-8cce787b977c  ¦  Tom
+0199ccd9-c60e-78e2-bc0c-73205491afd5  ¦  Jane
+0199ccd9-c60e-78e3-8da9-06a007864d83  ¦  Bob
+
+#SQL[@14,N88]Result[]
 INSERT INTO namelists (id, name) VALUES ('019213b0-d7bd-7271-a681-49e9d979d8d3', 'Jack');
+
+#SQL[@15,N88]Error[67]
 INSERT INTO namelists (id, name) VALUES ('019213b0-d7bd-7271-a681-49e9d979d8d3', 'Alan');
 Duplicate entry '019213b0-d7bd-7271-a681-49e9d979d8d3' for key 'id'
+
+#SQL[@16,N23]Result[12, 45, 46, 45, 46]
 SELECT * from namelists;
-id    name
-01921d93-c429-7966-a2f6-23890aee82ce    Tom
-01921d93-c429-796a-ae85-60871fd4579e    Jane
-01921d93-c429-796b-b67f-17b1a953026c    Bob
-019213b0-d7bd-7271-a681-49e9d979d8d3    Jack
+id  ¦  name
+0199ccd9-c60e-78e1-8141-8cce787b977c  ¦  Tom
+0199ccd9-c60e-78e2-bc0c-73205491afd5  ¦  Jane
+0199ccd9-c60e-78e3-8da9-06a007864d83  ¦  Bob
+019213b0-d7bd-7271-a681-49e9d979d8d3  ¦  Jack
+
+#SQL[@18,N20]Result[]
 Drop Table namelists;
+
+#SQL[@20,N53]Result[]
 create table tttt(a int default 0 primary key, b int);
+
+#SQL[@21,N30]Result[]
 insert into tttt (b) values(1);
+
+#SQL[@22,N30]Error[31]
 insert into tttt (b) values(1);
 Duplicate entry '0' for key 'a'
+
+#SQL[@23,N15]Result[]
 drop table tttt;
+

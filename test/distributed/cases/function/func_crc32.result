@@ -1,137 +1,253 @@
+#SQL[@1,N19]Result[10, 10]
 SELECT crc32('123');
 crc32(123)
 2286445522
+
+#SQL[@2,N18]Result[11, 4]
 SELECT crc32(null);
 crc32(null)
 null
+
+#SQL[@3,N22]Result[13, 9]
 SELECT crc32('123456');
 crc32(123456)
 158520161
+
+#SQL[@4,N41]Result[]
 CREATE TABLE crc32test(col1 varchar(100));
+
+#SQL[@5,N54]Result[]
 INSERT INTO crc32test VALUES ('123'),(NULL),('123456');
+
+#SQL[@6,N33]Result[11, 10, 4, 9]
 SELECT crc32(col1) FROM crc32test;
 crc32(col1)
 2286445522
 null
 158520161
+
+#SQL[@7,N50]Result[17, 10]
 SELECT CRC32('Hello, World!') AS crc32_hello_world;
 crc32_hello_world
 3964322768
+
+#SQL[@10,N16]Result[7, 1]
 select CRC32('');
 CRC32()
 0
+
+#SQL[@13,N28]Result[19, 8]
 select crc32('hello world!');
 crc32(hello world!)
 62177901
+
+#SQL[@14,N35]Result[26, 8]
 select crc32('euwpqeiwqpjvmrwqewq');
 crc32(euwpqeiwqpjvmrwqewq)
 12334261
+
+#SQL[@15,N63]Result[54, 9]
 select crc32('372913721ojgi132uio3jkel2m1kl3hi21fr41234321421');
 crc32(372913721ojgi132uio3jkel2m1kl3hi21fr41234321421)
 442562693
+
+#SQL[@16,N23]Result[14, 10]
 select crc32('aaaaaaa');
 crc32(aaaaaaa)
 1535844468
+
+#SQL[@19,N26]Result[17, 10]
 select CRC32('hello!@#$%');
 CRC32(hello!@#$%)
 3807139106
+
+#SQL[@20,N40]Result[31, 10]
 select crc32('$^*(&)(*)($%^$%#%^&(*&(*');
 crc32($^*(&)(*)($%^$%#%^&(*&(*)
 3521867048
+
+#SQL[@23,N75]Result[74, 73]
 select crc32('a'), crc32('ab'), CRC32('abc'), CRC32('abcd'), CRC32('abcde');
-crc32(a)    crc32(ab)    CRC32(abc)    CRC32(abcd)    CRC32(abcde)
-3904355907    2659403885    891568578    3984772369    2240272485
+crc32(a)  ¦  crc32(ab)  ¦  CRC32(abc)  ¦  CRC32(abcd)  ¦  CRC32(abcde)
+3904355907  ¦  2659403885  ¦  891568578  ¦  3984772369  ¦  2240272485
+
+#SQL[@24,N126]Error[222]
 select crc32('hello'), crc32('hello world'), crc32('hello multicolored world!')
+
+-- number string
 select crc32('-12809132123');
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 2 column 7 near "
-select crc32('-12809132123');";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 4 column 7 near \"select crc32('-12809132123')\";
+
+#SQL[@28,N42]Result[33, 10]
 select crc32('37291890239130039201840921');
 crc32(37291890239130039201840921)
 2450920968
+
+#SQL[@31,N37]Result[28, 10]
 select crc32('TYHQWHJNfjewkefhklwew');
 crc32(TYHQWHJNfjewkefhklwew)
 3847173571
+
+#SQL[@32,N70]Result[61, 10]
 select crc32('huejwkfnewnjfnfe4woipofemwkemvwkTYUJIWfjkqajefiowjvkew');
 crc32(huejwkfnewnjfnfe4woipofemwkemvwkTYUJIWfjkqajefiowjvkew)
 3995464941
+
+#SQL[@35,N28]Result[19, 10]
 select crc32('你好世界');
 crc32(你好世界)
 2943555529
+
+#SQL[@36,N34]Result[25, 10]
 select crc32('你好，数据库');
 crc32(你好，数据库)
 2347686311
+
+#SQL[@37,N82]Result[73, 10]
 select crc32('GitHub 上的 MatrixOne 社区充满活力、热情且知识渊博');
 crc32(GitHub 上的 MatrixOne 社区充满活力、热情且知识渊博)
 1919263296
+
+#SQL[@39,N28]Result[]
 drop database if exists test;
+
+#SQL[@40,N20]Result[]
 create database test;
+
+#SQL[@41,N8]Result[]
 use test;
+
+#SQL[@42,N23]Result[]
 drop table if exists t1;
+
+#SQL[@43,N41]Result[]
 create table t1 (col1 int, col2 char(10));
+
+#SQL[@44,N33]Result[]
 insert into t1 values(1,'abcdef');
+
+#SQL[@45,N33]Result[]
 insert into t1 values(2,'_bcdef');
+
+#SQL[@46,N33]Result[]
 insert into t1 values(3,'a_cdef');
+
+#SQL[@47,N33]Result[]
 insert into t1 values(4,'ab_def');
+
+#SQL[@48,N33]Result[]
 insert into t1 values(5,'abc_ef');
+
+#SQL[@49,N33]Result[]
 insert into t1 values(6,'abcd_f');
+
+#SQL[@50,N33]Result[]
 insert into t1 values(7,'abcde_');
+
+#SQL[@51,N31]Result[21, 17, 17, 16, 17, 17, 17, 16]
 select col1,crc32(col2) from t1;
-col1    crc32(col2)
-1    1267612143
-2    1979604786
-3    306136536
-4    4050878198
-5    1672491934
-6    1848108950
-7    344699367
+col1  ¦  crc32(col2)
+1  ¦  1267612143
+2  ¦  1979604786
+3  ¦  306136536
+4  ¦  4050878198
+5  ¦  1672491934
+6  ¦  1848108950
+7  ¦  344699367
+
+#SQL[@52,N13]Result[]
 drop table t1;
+
+#SQL[@55,N23]Result[]
 drop table if exists t1;
+
+#SQL[@56,N30]Result[]
 create table t1 (a json,b int);
+
+#SQL[@57,N38]Result[]
 insert into t1 values ('{"t1":"a"}',1);
+
+#SQL[@58,N38]Result[]
 insert into t1 values ('{"t1":"b"}',2);
+
+#SQL[@59,N38]Result[]
 insert into t1 values ('{"t1":"c"}',3);
+
+#SQL[@60,N25]Result[15, 17, 17, 16]
 select crc32(a),b from t1;
-crc32(a)    b
-3719146973    1
-1151663207    2
-866372849    3
+crc32(a)  ¦  b
+3719146973  ¦  1
+1151663207  ¦  2
+866372849  ¦  3
+
+#SQL[@63,N31]Result[]
 drop table if exists test_table;
+
+#SQL[@64,N96]Result[]
 create table test_table (
 id int auto_increment primary key,
 text_column varchar(255) not null
 );
+
+#SQL[@68,N61]Result[]
 insert into test_table (text_column) VALUES ('Hello, World!');
+
+#SQL[@69,N63]Result[]
 insert into test_table (text_column) VALUES ('Goodbye, World!');
+
+#SQL[@70,N54]Result[]
 insert into test_table (text_column) VALUES ('FooBar');
+
+#SQL[@72,N76]Result[39, 36, 38, 29]
 select id, text_column, CRC32(text_column) as crc32_checksum
 from test_table;
-id    text_column    crc32_checksum
-1    Hello, World!    3964322768
-2    Goodbye, World!    3962119163
-3    FooBar    2702662723
+id  ¦  text_column  ¦  crc32_checksum
+1  ¦  Hello, World!  ¦  3964322768
+2  ¦  Goodbye, World!  ¦  3962119163
+3  ¦  FooBar  ¦  2702662723
+
+#SQL[@75,N59]Result[]
 alter table test_table add column crc32_column int unsigned;
+
+#SQL[@77,N55]Result[]
 update test_table
 set crc32_column = CRC32(text_column);
+
+#SQL[@80,N52]Result[37, 36, 38, 29]
 select id, text_column, crc32_column
 FROM test_table;
-id    text_column    crc32_column
-1    Hello, World!    3964322768
-2    Goodbye, World!    3962119163
-3    FooBar    2702662723
+id  ¦  text_column  ¦  crc32_column
+1  ¦  Hello, World!  ¦  3964322768
+2  ¦  Goodbye, World!  ¦  3962119163
+3  ¦  FooBar  ¦  2702662723
+
+#SQL[@83,N24]Result[]
 set @a = 'External Data';
+
+#SQL[@84,N39]Result[19, 10]
 select CRC32(@a) as crc32_external_data;
 crc32_external_data
 1344405658
+
+#SQL[@86,N52]Result[37, 36, 38, 29]
 select id, text_column, crc32_column
 from test_table;
-id    text_column    crc32_column
-1    Hello, World!    3964322768
-2    Goodbye, World!    3962119163
-3    FooBar    2702662723
+id  ¦  text_column  ¦  crc32_column
+1  ¦  Hello, World!  ¦  3964322768
+2  ¦  Goodbye, World!  ¦  3962119163
+3  ¦  FooBar  ¦  2702662723
+
+#SQL[@88,N30]Error[224]
 where crc32_column = CRC32(@a);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 5 near "where crc32_column = CRC32(@a);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 5 near \"where crc32_column = CRC32(@a)\";
+
+#SQL[@89,N21]Result[]
 drop table test_table;
+
+#SQL[@92,N30]Result[]
 drop table if exists employees;
+
+#SQL[@93,N265]Result[]
 create table employees (
 employeeNumber int(11) not null,
 lastName text not null,
@@ -143,6 +259,8 @@ reportsTo int(11) DEFAULT NULL,
 jobTitle text not null,
 primary key (employeeNumber)
 );
+
+#SQL[@104,N1279]Result[]
 insert  into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values
 (1002,'Murphy','Diane','x5800','dmurphy@classicmodelcars.com','1',NULL,'President'),
 (1056,'Patterson','Mary','x4611','mpatterso@classicmodelcars.com','1',1002,'VP Sales'),
@@ -157,30 +275,42 @@ insert  into employees(employeeNumber,lastName,firstName,extension,email,officeC
 (1286,'Tseng','Foon Yue','x2248','ftseng@classicmodelcars.com','3',1143,'Sales Rep'),
 (1323,'Vanauf','George','x4102','gvanauf@classicmodelcars.com','3',1143,'Sales Rep'),
 (1337,'Bondur','Loui','x6493','lbondur@classicmodelcars.com','4',1102,'Sales Rep');
+
+#SQL[@118,N54]Result[37, 25, 25, 25, 26, 25, 25, 25, 25, 26, 26, 25, 26, 26]
 select crc32(lastName),crc32(firstName) from employees;
-crc32(lastName)    crc32(firstName)
-571277278    2731328500
-2394043142    905915399
-3776301682    210200258
-2394043142    1899246478
-2421462071    767038591
-2690323275    771904982
-4158277197    690678662
-3790627590    690678662
-3776301682    1084919846
-2394043142    1466775457
-344926845    2218917577
-2872212557    3508097174
-2421462071    3576422603
+crc32(lastName)  ¦  crc32(firstName)
+571277278  ¦  2731328500
+2394043142  ¦  905915399
+3776301682  ¦  210200258
+2394043142  ¦  1899246478
+2421462071  ¦  767038591
+2690323275  ¦  771904982
+4158277197  ¦  690678662
+3790627590  ¦  690678662
+3776301682  ¦  1084919846
+2394043142  ¦  1466775457
+344926845  ¦  2218917577
+2872212557  ¦  3508097174
+2421462071  ¦  3576422603
+
+#SQL[@119,N119]Result[7, 11]
 select (sum(crc32(concat_ws(lastName,firstName,extension)))) as `columns` from employees where 1=1 and reportsTo > 1000;
 columns
 30824959583
+
+#SQL[@120,N20]Result[]
 drop table employees;
+
+#SQL[@122,N25]Result[]
 drop table if exists jobs;
+
+#SQL[@123,N63]Result[]
 create table job(
 jobid int primary key,
 jobTitle varchar(50)
 );
+
+#SQL[@127,N189]Result[]
 insert into job values
 (1,'President'),
 (2,'VP Sales'),
@@ -190,6 +320,8 @@ insert into job values
 (6,'Sales Manager (NA)'),
 (7,'Sales Rep'),
 (8,'Marketing');
+
+#SQL[@136,N31]Result[15, 10, 10, 10, 9, 10, 10, 10, 9]
 select crc32(jobTitle) from job;
 crc32(jobTitle)
 3967439031
@@ -200,5 +332,10 @@ crc32(jobTitle)
 2887978121
 2622443617
 376497099
+
+#SQL[@137,N14]Result[]
 drop table job;
+
+#SQL[@139,N18]Result[]
 drop database test;
+

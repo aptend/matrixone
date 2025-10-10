@@ -1,237 +1,426 @@
+#SQL[@3,N29]Result[21, 9]
 SELECT MID('Quadratically',5);
-mid(Quadratically, 5)
+MID(Quadratically, 5)
 ratically
+
+#SQL[@4,N30]Result[17, 6]
 SELECT MID('foobarbar' FROM 4);
-mid(foobarbar, 4)
+MID(foobarbar, 4)
 barbar
+
+#SQL[@5,N31]Result[24, 6]
 SELECT MID('Quadratically',5,6);
-mid(Quadratically, 5, 6)
+MID(Quadratically, 5, 6)
 ratica
+
+#SQL[@6,N24]Result[15, 3]
 SELECT MID('Sakila', -3);
-mid(Sakila, -3)
+MID(Sakila, -3)
 ila
+
+#SQL[@7,N27]Result[18, 3]
 SELECT MID('Sakila', -5, 3);
-mid(Sakila, -5, 3)
+MID(Sakila, -5, 3)
 aki
+
+#SQL[@8,N34]Result[18, 2]
 SELECT MID('Sakila' FROM -4 FOR 2);
-mid(Sakila, -4, 2)
+MID(Sakila, -4, 2)
 ki
+
+#SQL[@9,N23]Result[16, 1]
 SELECT MID('monty',5,1);
-mid(monty, 5, 1)
+MID(monty, 5, 1)
 y
+
+#SQL[@10,N19]Result[12, 1]
 SELECT MID('a',1,2);
-mid(a, 1, 2)
+MID(a, 1, 2)
 a
+
+#SQL[@11,N25]Result[18, 2]
 select MID('abcdefg',3,2);
-mid(abcdefg, 3, 2)
+MID(abcdefg, 3, 2)
 cd
+
+#SQL[@12,N25]Result[18, 2]
 select MID('abcdefg',3,2);
-mid(abcdefg, 3, 2)
+MID(abcdefg, 3, 2)
 cd
+
+#SQL[@13,N26]Result[19, 2]
 select MID('abcdefg',-3,2);
-mid(abcdefg, -3, 2)
+MID(abcdefg, -3, 2)
 ef
+
+#SQL[@14,N26]Result[19, 1]
 select MID('abcdefg',-1,5);
-mid(abcdefg, -1, 5)
+MID(abcdefg, -1, 5)
 g
+
+#SQL[@15,N25]Result[18, 0]
 select MID('abcdefg',0,0);
-mid(abcdefg, 0, 0)
+MID(abcdefg, 0, 0)
 
+
+#SQL[@17,N27]Result[20, 0]
 select MID('abcdefg',-1,-1);
-mid(abcdefg, -1, -1)
+MID(abcdefg, -1, -1)
 
+
+#SQL[@18,N26]Result[19, 0]
 select MID('abcdefg',1,-1);
-mid(abcdefg, 1, -1)
+MID(abcdefg, 1, -1)
 
+
+#SQL[@19,N26]Result[17, 0]
 select mid('hello', 2, -1);
 mid(hello, 2, -1)
 
+
+#SQL[@21,N26]Result[17, 1]
 select mid('hello', -1, 1);
 mid(hello, -1, 1)
 o
+
+#SQL[@22,N26]Result[17, 1]
 select mid('hello', -2, 1);
 mid(hello, -2, 1)
 l
+
+#SQL[@23,N35]Result[26, 0]
 select mid('hello', -4294967295, 1);
 mid(hello, -4294967295, 1)
 
+
+#SQL[@24,N34]Result[25, 0]
 select mid('hello', 4294967295, 1);
 mid(hello, 4294967295, 1)
 
+
+#SQL[@25,N35]Result[26, 0]
 select mid('hello', -4294967296, 1);
 mid(hello, -4294967296, 1)
 
+
+#SQL[@26,N34]Result[25, 0]
 select mid('hello', 4294967296, 1);
 mid(hello, 4294967296, 1)
 
+
+#SQL[@27,N35]Result[26, 0]
 select mid('hello', -4294967297, 1);
 mid(hello, -4294967297, 1)
 
+
+#SQL[@28,N34]Result[25, 0]
 select mid('hello', 4294967297, 1);
 mid(hello, 4294967297, 1)
 
+
+#SQL[@30,N45]Error[65]
 select mid('hello', -18446744073709551615, 1);
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@31,N44]Error[64]
 select mid('hello', 18446744073709551615, 1);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@32,N45]Error[65]
 select mid('hello', -18446744073709551616, 1);
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@33,N44]Error[64]
 select mid('hello', 18446744073709551616, 1);
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@34,N45]Error[65]
 select mid('hello', -18446744073709551617, 1);
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@35,N44]Error[64]
 select mid('hello', 18446744073709551617, 1);
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@36,N26]Result[17, 0]
 select mid('hello', 1, -1);
 mid(hello, 1, -1)
 
+
+#SQL[@37,N35]Result[26, 0]
 select mid('hello', 1, -4294967295);
 mid(hello, 1, -4294967295)
 
+
+#SQL[@38,N34]Result[25, 5]
 select mid('hello', 1, 4294967295);
 mid(hello, 1, 4294967295)
 hello
+
+#SQL[@39,N35]Result[26, 0]
 select mid('hello', 1, -4294967296);
 mid(hello, 1, -4294967296)
 
+
+#SQL[@40,N34]Result[25, 5]
 select mid('hello', 1, 4294967296);
 mid(hello, 1, 4294967296)
 hello
+
+#SQL[@41,N35]Result[26, 0]
 select mid('hello', 1, -4294967297);
 mid(hello, 1, -4294967297)
 
+
+#SQL[@43,N34]Result[25, 5]
 select mid('hello', 1, 4294967297);
 mid(hello, 1, 4294967297)
 hello
+
+#SQL[@45,N45]Error[65]
 select mid('hello', 1, -18446744073709551615);
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@46,N44]Error[64]
 select mid('hello', 1, 18446744073709551615);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@47,N45]Error[65]
 select mid('hello', 1, -18446744073709551616);
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@48,N44]Error[64]
 select mid('hello', 1, 18446744073709551616);
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@49,N45]Error[65]
 select mid('hello', 1, -18446744073709551617);
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@50,N44]Error[64]
 select mid('hello', 1, 18446744073709551617);
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@51,N27]Result[18, 0]
 select mid('hello', -1, -1);
 mid(hello, -1, -1)
 
+
+#SQL[@53,N45]Result[36, 0]
 select mid('hello', -4294967295, -4294967295);
 mid(hello, -4294967295, -4294967295)
 
+
+#SQL[@54,N43]Result[34, 0]
 select mid('hello', 4294967295, 4294967295);
 mid(hello, 4294967295, 4294967295)
 
+
+#SQL[@55,N45]Result[36, 0]
 select mid('hello', -4294967296, -4294967296);
 mid(hello, -4294967296, -4294967296)
 
+
+#SQL[@56,N43]Result[34, 0]
 select mid('hello', 4294967296, 4294967296);
 mid(hello, 4294967296, 4294967296)
 
+
+#SQL[@57,N45]Result[36, 0]
 select mid('hello', -4294967297, -4294967297);
 mid(hello, -4294967297, -4294967297)
 
+
+#SQL[@58,N43]Result[34, 0]
 select mid('hello', 4294967297, 4294967297);
 mid(hello, 4294967297, 4294967297)
 
+
+#SQL[@60,N65]Error[65]
 select mid('hello', -18446744073709551615, -18446744073709551615);
-Data truncation: data out of range: data type int64, value '-18446744073709551615'
+data out of range: data type int64, value '-18446744073709551615'
+
+#SQL[@61,N63]Error[64]
 select mid('hello', 18446744073709551615, 18446744073709551615);
-Data truncation: data out of range: data type int64, value '18446744073709551615'
+data out of range: data type int64, value '18446744073709551615'
+
+#SQL[@62,N65]Error[65]
 select mid('hello', -18446744073709551616, -18446744073709551616);
-Data truncation: data out of range: data type int64, value '-18446744073709551616'
+data out of range: data type int64, value '-18446744073709551616'
+
+#SQL[@63,N63]Error[64]
 select mid('hello', 18446744073709551616, 18446744073709551616);
-Data truncation: data out of range: data type int64, value '18446744073709551616'
+data out of range: data type int64, value '18446744073709551616'
+
+#SQL[@64,N65]Error[65]
 select mid('hello', -18446744073709551617, -18446744073709551617);
-Data truncation: data out of range: data type int64, value '-18446744073709551617'
+data out of range: data type int64, value '-18446744073709551617'
+
+#SQL[@65,N63]Error[64]
 select mid('hello', 18446744073709551617, 18446744073709551617);
-Data truncation: data out of range: data type int64, value '18446744073709551617'
+data out of range: data type int64, value '18446744073709551617'
+
+#SQL[@67,N34]Result[18, 2]
 SELECT MID('Sakila' FROM -4 FOR 2);
-mid(Sakila, -4, 2)
+MID(Sakila, -4, 2)
 ki
+
+#SQL[@68,N30]Result[17, 6]
 SELECT MID('foobarbar' FROM 4);
-mid(foobarbar, 4)
+MID(foobarbar, 4)
 barbar
+
+#SQL[@71,N28]Result[21, 3]
 SELECT MID('w3resource',4,3);
-mid(w3resource, 4, 3)
+MID(w3resource, 4, 3)
 eso
+
+#SQL[@74,N42]Result[33, 2]
 select mid('abc', cast(2 as unsigned int));
 mid(abc, cast(2 as int unsigned))
 bc
+
+#SQL[@77,N32]Result[]
 create table t1(f1 varchar(255));
+
+#SQL[@78,N37]Result[]
 insert into t1 values ("123"),("456");
+
+#SQL[@79,N47]Result[13, 1, 1]
 select mid(f1,1,1) from t1 group by mid(f1,1,1);
 mid(f1, 1, 1)
 1
 4
+
+#SQL[@80,N37]Result[13, 1, 1]
 select mid(f1,1,1) from t1 group by 1;
 mid(f1, 1, 1)
 1
 4
+
+#SQL[@81,N13]Result[]
 drop table t1;
+
+#SQL[@86,N49]Result[38, 4]
 SELECT '1' IN ('1', MID(-9223372036854775809, 1));
-1 in (1, mid(-9223372036854775809, 1))
+1 in (1, MID(-9223372036854775809, 1))
 true
+
+#SQL[@89,N40]Result[31, 4]
 SELECT MID('1', year(FROM_UNIXTIME(-1)));
-mid(1, year(from_unixtime(-1)))
+MID(1, year(FROM_UNIXTIME(-1)))
 null
+
+#SQL[@90,N26]Result[21, 1]
 select reverse(mid(1,1,1));
 reverse(mid(1, 1, 1))
 1
+
+#SQL[@94,N28]Result[]
 CREATE TABLE t1(c1 CHAR(30));
+
+#SQL[@95,N36]Result[]
 INSERT INTO t1 VALUES('111'),('222');
+
+#SQL[@96,N46]Result[22, 3, 3]
 SELECT DISTINCT mid(c1, 1, 2147483647) FROM t1;
 mid(c1, 1, 2147483647)
 111
 222
+
+#SQL[@97,N46]Result[22, 3, 3]
 SELECT DISTINCT mid(c1, 1, 2147483648) FROM t1;
 mid(c1, 1, 2147483648)
 111
 222
+
+#SQL[@98,N47]Result[23, 1, 1]
 SELECT DISTINCT mid(c1, -1, 2147483648) FROM t1;
 mid(c1, -1, 2147483648)
 1
 2
+
+#SQL[@100,N56]Result[32, 0]
 SELECT DISTINCT mid(c1, -2147483647, 2147483648) FROM t1;
 mid(c1, -2147483647, 2147483648)
 
+
+#SQL[@102,N56]Result[32, 0]
 SELECT DISTINCT mid(c1, 9223372036854775807, 23) FROM t1;
 mid(c1, 9223372036854775807, 23)
 
+
+#SQL[@103,N13]Result[]
 DROP TABLE t1;
+
+#SQL[@113,N30]Result[]
 create table t1 (b varchar(5));
+
+#SQL[@114,N53]Result[]
 insert t1 values ('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@115,N75]Result[96, 43, 48, 54, 61]
 select *,mid(b,1),mid(b,-1),mid(b,-2),mid(b,-3),mid(b,-4),mid(b,-5) from t1;
-b    mid(b, 1)    mid(b, -1)    mid(b, -2)    mid(b, -3)    mid(b, -4)    mid(b, -5)
-ab    ab    b    ab            
-abc    abc    c    bc    abc        
-abcd    abcd    d    cd    bcd    abcd    
-abcde    abcde    e    de    cde    bcde    abcde
+b  ¦  mid(b, 1)  ¦  mid(b, -1)  ¦  mid(b, -2)  ¦  mid(b, -3)  ¦  mid(b, -4)  ¦  mid(b, -5)
+ab  ¦  ab  ¦  b  ¦  ab  ¦    ¦    ¦  
+abc  ¦  abc  ¦  c  ¦  bc  ¦  abc  ¦    ¦  
+abcd  ¦  abcd  ¦  d  ¦  cd  ¦  bcd  ¦  abcd  ¦  
+abcde  ¦  abcde  ¦  e  ¦  de  ¦  cde  ¦  bcde  ¦  abcde
+
+#SQL[@116,N93]Result[96, 43, 48, 54, 61]
 select * from (select *,mid(b,1),mid(b,-1),mid(b,-2),mid(b,-3),mid(b,-4),mid(b,-5) from t1) t;
-b    mid(b, 1)    mid(b, -1)    mid(b, -2)    mid(b, -3)    mid(b, -4)    mid(b, -5)
-ab    ab    b    ab            
-abc    abc    c    bc    abc        
-abcd    abcd    d    cd    bcd    abcd    
-abcde    abcde    e    de    cde    bcde    abcde
+b  ¦  mid(b, 1)  ¦  mid(b, -1)  ¦  mid(b, -2)  ¦  mid(b, -3)  ¦  mid(b, -4)  ¦  mid(b, -5)
+ab  ¦  ab  ¦  b  ¦  ab  ¦    ¦    ¦  
+abc  ¦  abc  ¦  c  ¦  bc  ¦  abc  ¦    ¦  
+abcd  ¦  abcd  ¦  d  ¦  cd  ¦  bcd  ¦  abcd  ¦  
+abcde  ¦  abcde  ¦  e  ¦  de  ¦  cde  ¦  bcde  ¦  abcde
+
+#SQL[@117,N13]Result[]
 drop table t1;
+
+#SQL[@120,N48]Result[]
 CREATE TABLE t1 (a varchar(2000), b varchar(10));
+
+#SQL[@121,N39]Result[]
 INSERT INTO t1 select space(1300),'one';
+
+#SQL[@122,N39]Result[]
 INSERT INTO t1 select space(1300),'two';
+
+#SQL[@125,N48]Result[28, 20]
 SELECT MID(a,1,10), LENGTH(a) FROM t1 GROUP BY a;
-mid(a, 1, 10)	length(a)
-          	1300
+MID(a, 1, 10)  ¦  LENGTH(a)
+            ¦  1300
+
+#SQL[@126,N13]Result[]
 drop table t1;
+
+#SQL[@127,N22]Result[]
 CREATE TABLE t1(a INT);
+
+#SQL[@128,N29]Result[]
 INSERT INTO t1 VALUES (0),(0);
+
+#SQL[@129,N38]Error[40]
 SELECT 1 FROM t1 GROUP BY MID('',1,'');
 invalid argument cast to int, bad value 
+
+#SQL[@130,N13]Result[]
 drop table t1;
+
+#SQL[@133,N35]Result[]
 create table t1 (email varchar(50));
+
+#SQL[@134,N113]Result[]
 insert into t1 values ('sasha@mysql.com'),('monty@mysql.com'),('foo@hotmail.com'),('foo@aol.com'),('bar@aol.com');
+
+#SQL[@135,N48]Result[]
 create table t2(id int not null, t2 varchar(50));
+
+#SQL[@136,N48]Result[]
 insert into t2 select 1, mid(email, 2,1) from t1;
+
+#SQL[@137,N17]Result[2, 1, 1, 1, 1, 1]
 select id from t2;
 id
 1
@@ -239,6 +428,8 @@ id
 1
 1
 1
+
+#SQL[@138,N17]Result[2, 1, 1, 1, 1, 1]
 select t2 from t2;
 t2
 a
@@ -246,74 +437,139 @@ o
 o
 o
 a
+
+#SQL[@139,N13]Result[]
 drop table t1;
+
+#SQL[@140,N13]Result[]
 drop table t2;
+
+#SQL[@145,N31]Result[]
 create table t1 (a varchar(50));
+
+#SQL[@146,N55]Result[]
 insert into t1 values("你好"), ("再见"), ("今天");
+
+#SQL[@147,N16]Result[1, 6, 6, 6]
 select * from t1;
 a
 你好
 再见
 今天
+
+#SQL[@148,N27]Result[12, 3, 3, 3]
 select mid(a, 1, 1) from t1;
 mid(a, 1, 1)
 你
 再
 今
+
+#SQL[@149,N13]Result[]
 drop table t1;
+
+#SQL[@152,N22]Result[15, 4]
 select mid(null, 1, 1);
 mid(null, 1, 1)
 null
+
+#SQL[@155,N30]Result[]
 create table t1 (b varchar(5));
+
+#SQL[@156,N53]Result[]
 insert t1 values ('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@157,N39]Result[1, 2, 3, 4, 5]
 select * from t1 where mid(b,1,1) = 'a';
 b
 ab
 abc
 abcd
 abcde
+
+#SQL[@158,N13]Result[]
 drop table t1;
+
+#SQL[@161,N23]Result[]
 drop table if exists t1;
+
+#SQL[@162,N29]Result[]
 create table t1(b varchar(5));
+
+#SQL[@163,N57]Result[]
 insert into t1 values('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@164,N54]Result[1, 2, 3, 4, 5]
 select b from t1 group by b having mid(b,1,1)+'a'='aa';
 b
 ab
 abc
 abcd
 abcde
+
+#SQL[@165,N13]Result[]
 drop table t1;
+
+#SQL[@168,N23]Result[]
 drop table if exists t1;
+
+#SQL[@169,N23]Result[]
 drop table if exists t2;
+
+#SQL[@170,N29]Result[]
 create table t1(a varchar(5));
+
+#SQL[@171,N30]Result[]
 create table t2(a varchar(20));
+
+#SQL[@172,N57]Result[]
 insert into t1 values('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@173,N98]Result[]
 insert into t2 values("2013-04-30"),("1994-10-04"),("2018-06-04"),("2012-10-12"), ("abc"),("abcd");
+
+#SQL[@174,N71]Result[8, 11, 12, 12, 13, 13, 14, 14, 15]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (mid(t1.a, 1,1) = mid(t2.a, 1,1 ));
-a    a
-ab    abc
-abc    abc
-abcd    abc
-abcde    abc
-ab    abcd
-abc    abcd
-abcd    abcd
-abcde    abcd
+a  ¦  a
+ab  ¦  abc
+ab  ¦  abcd
+abc  ¦  abc
+abc  ¦  abcd
+abcd  ¦  abc
+abcd  ¦  abcd
+abcde  ¦  abc
+abcde  ¦  abcd
+
+#SQL[@175,N13]Result[]
 drop table t1;
+
+#SQL[@176,N13]Result[]
 drop table t2;
+
+#SQL[@179,N23]Result[]
 drop table if exists t1;
+
+#SQL[@180,N23]Result[]
 create table t1(a blob);
+
+#SQL[@181,N57]Result[]
 insert into t1 values('ab'), ('abc'), ('abcd'), ('abcde');
+
+#SQL[@182,N47]Result[27, 9, 10, 11, 11]
 SELECT MID(a,1,4), LENGTH(a) FROM t1 GROUP BY a;
-mid(a, 1, 4)    length(a)
-ab    2
-abc    3
-abcd    4
-abcd    5
+MID(a, 1, 4)  ¦  LENGTH(a)
+ab  ¦  2
+abc  ¦  3
+abcd  ¦  4
+abcd  ¦  5
+
+#SQL[@183,N24]Result[10, 1, 1, 1, 1]
 SELECT MID(a,-1) FROM t1;
-mid(a, -1)
+MID(a, -1)
 b
 c
 d
 e
+
+#SQL[@184,N13]Result[]
 drop table t1;
+

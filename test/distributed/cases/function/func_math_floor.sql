@@ -129,7 +129,7 @@ SELECT DATE(FLOOR(20110512154559.616));
 
 #INSERT INTO, distinct
 CREATE table t1(a int, b float);
-insert into t1 select floor(12124.413), floor(-4213.413); 
+insert into t1 select floor(12124.413), floor(-4213.413);
 insert into t1 select floor(12124.123), floor(-42413.409);
 select distinct floor(a) from t1;
 drop table t1;
@@ -143,7 +143,7 @@ select floor(123.34)-floor(123.03);
 #WHERE
 drop table if exists t1;
 create table t1(a INT,  b float);
-insert into t1 select floor(12124.413), floor(-4213.413); 
+insert into t1 select floor(12124.413), floor(-4213.413);
 insert into t1 select floor(12124.123), floor(-42413.409);
 select * from t1 where floor(a)=12124;
 drop table t1;
@@ -152,7 +152,7 @@ drop table t1;
 #ON CONDITION
 create table t1(a INT,  b float);
 create table t2(a INT,  b float);
-insert into t1 select floor(12124.413), floor(-4213.413); 
+insert into t1 select floor(12124.413), floor(-4213.413);
 insert into t1 select floor(12124.123), floor(-42413.409);
 insert into t2 select floor(14124.413), floor(-4213.413);
 insert into t2 select floor(984798.123), floor(-980.409);
@@ -173,9 +173,9 @@ drop table t1;
 select floor(123.342, 1);
 select floor(123.45, -1);
 select floor(123.342124124214, 100);
--- @bvt:issue#9034
-select floor(-123.342124124214, -100);
--- @bvt:issue
+@issue(no=9034) {
+    select floor(-123.342124124214, -100);
+}
 
 select floor(123.342, null);
 

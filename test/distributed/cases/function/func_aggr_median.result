@@ -1,248 +1,484 @@
+#SQL[@1,N19]Result[12, 4]
 select median(null);
 median(null)
 null
+
+#SQL[@3,N23]Result[]
 drop table if exists t1;
+
+#SQL[@4,N29]Result[]
 create table t1 (a int,b int);
+
+#SQL[@5,N30]Result[]
 insert into t1 values (1,null);
+
+#SQL[@6,N24]Result[9, 4]
 select median(b) from t1;
 median(b)
 null
+
+#SQL[@7,N27]Result[]
 insert into t1 values (1,1);
+
+#SQL[@8,N24]Result[9, 1]
 select median(b) from t1;
 median(b)
-1.0
+1
+
+#SQL[@9,N27]Result[]
 insert into t1 values (1,2);
+
+#SQL[@10,N24]Result[9, 3]
 select median(b) from t1;
 median(b)
 1.5
+
+#SQL[@11,N46]Result[9, 3]
 select median(b) from t1 group by a order by a;
 median(b)
 1.5
+
+#SQL[@12,N45]Result[]
 insert into t1 values (2,1),(2,2),(2,3),(2,4);
+
+#SQL[@13,N46]Result[9, 3, 3]
 select median(b) from t1 group by a order by a;
 median(b)
 1.5
 2.5
+
+#SQL[@14,N30]Result[]
 insert into t1 values (2,null);
+
+#SQL[@15,N46]Result[9, 3, 3]
 select median(b) from t1 group by a order by a;
 median(b)
 1.5
 2.5
+
+#SQL[@17,N23]Result[]
 drop table if exists t1;
+
+#SQL[@18,N40]Result[]
 create table t1 (a int,b float,c double);
+
+#SQL[@19,N35]Result[]
 insert into t1 values (1,null,null);
+
+#SQL[@20,N34]Result[24, 14]
 select median(b),median(c) from t1;
-median(b)    median(c)
-null    null
+median(b)  ¦  median(c)
+null  ¦  null
+
+#SQL[@21,N33]Result[]
 insert into t1 values (1,1.1,1.1);
+
+#SQL[@22,N34]Result[24, 26]
 select median(b),median(c) from t1;
-median(b)    median(c)
-1.100000023841858    1.1
+median(b)  ¦  median(c)
+1.100000023841858  ¦  1.1
+
+#SQL[@23,N33]Result[]
 insert into t1 values (1,2.2,2.2);
+
+#SQL[@24,N34]Result[24, 42]
 select median(b),median(c) from t1;
-median(b)    median(c)
-1.6500000953674316    1.6500000000000001
+median(b)  ¦  median(c)
+1.6500000953674316  ¦  1.6500000000000001
+
+#SQL[@25,N56]Result[24, 42]
 select median(b),median(c) from t1 group by a order by a;
-median(b)    median(c)
-1.6500000953674316    1.6500000000000001
+median(b)  ¦  median(c)
+1.6500000953674316  ¦  1.6500000000000001
+
+#SQL[@26,N69]Result[]
 insert into t1 values (2,1.1,1.1),(2,2.2,2.2),(2,3.3,3.3),(2,4.4,4.4);
+
+#SQL[@27,N56]Result[24, 42, 14]
 select median(b),median(c) from t1 group by a order by a;
-median(b)    median(c)
-1.6500000953674316    1.6500000000000001
-2.75    2.75
+median(b)  ¦  median(c)
+1.6500000953674316  ¦  1.6500000000000001
+2.75  ¦  2.75
+
+#SQL[@28,N35]Result[]
 insert into t1 values (2,null,null);
+
+#SQL[@29,N56]Result[24, 42, 14]
 select median(b),median(c) from t1 group by a order by a;
-median(b)    median(c)
-1.6500000953674316    1.6500000000000001
-2.75    2.75
+median(b)  ¦  median(c)
+1.6500000953674316  ¦  1.6500000000000001
+2.75  ¦  2.75
+
+#SQL[@31,N23]Result[]
 drop table if exists t1;
+
+#SQL[@32,N56]Result[]
 create table t1 (a int,b decimal(10,2),c decimal(34,10));
+
+#SQL[@33,N35]Result[]
 insert into t1 values (1,null,null);
+
+#SQL[@34,N34]Result[24, 14]
 select median(b),median(c) from t1;
-median(b)    median(c)
-null    null
+median(b)  ¦  median(c)
+null  ¦  null
+
+#SQL[@35,N37]Result[]
 insert into t1 values (1,'1.1','1.1');
+
+#SQL[@36,N34]Result[24, 24]
 select median(b),median(c) from t1;
-median(b)    median(c)
-1.100    1.10000000000
+median(b)  ¦  median(c)
+1.100  ¦  1.10000000000
+
+#SQL[@37,N37]Result[]
 insert into t1 values (1,'2.2','2.2');
+
+#SQL[@38,N34]Result[24, 24]
 select median(b),median(c) from t1;
-median(b)    median(c)
-1.650    1.65000000000
+median(b)  ¦  median(c)
+1.650  ¦  1.65000000000
+
+#SQL[@39,N56]Result[24, 24]
 select median(b),median(c) from t1 group by a order by a;
-median(b)    median(c)
-1.650    1.65000000000
+median(b)  ¦  median(c)
+1.650  ¦  1.65000000000
+
+#SQL[@40,N91]Result[]
 insert into t1 values (2,'1.1','1.1'),('2','2.2','2.2'),('2','3.3','3.3'),('2','4.4','4.4');
+
+#SQL[@41,N56]Result[24, 24, 24]
 select median(b),median(c) from t1 group by a order by a;
-median(b)    median(c)
-1.650    1.65000000000
-2.750    2.75000000000
+median(b)  ¦  median(c)
+1.650  ¦  1.65000000000
+2.750  ¦  2.75000000000
+
+#SQL[@42,N35]Result[]
 insert into t1 values (2,null,null);
+
+#SQL[@43,N56]Result[24, 24, 24]
 select median(b),median(c) from t1 group by a order by a;
-median(b)    median(c)
-1.650    1.65000000000
-2.750    2.75000000000
+median(b)  ¦  median(c)
+1.650  ¦  1.65000000000
+2.750  ¦  2.75000000000
+
+#SQL[@45,N33]Error[38]
 select median(distinct a) from t1;
 not supported: median in distinct mode
+
+#SQL[@46,N23]Result[]
 drop table if exists t1;
+
+#SQL[@47,N37]Result[]
 create table t1 (a int,b varchar(10));
+
+#SQL[@48,N24]Error[63]
 select median(b) from t1;
 invalid argument aggregate function median, bad value [VARCHAR]
+
+#SQL[@57,N16]Result[9, 1]
 SELECT median(1);
 median(1)
-1.0
+1
+
+#SQL[@58,N22]Result[15, 8]
 SELECT median(-6372.2);
 median(-6372.2)
 -6372.20
+
+#SQL[@59,N19]Result[12, 4]
 SELECT median(NULL);
 median(null)
 null
+
+#SQL[@60,N23]Result[16, 2]
 SELECT median(ABS(-99));
 median(ABS(-99))
-99.0
+99
+
+#SQL[@61,N25]Result[18, 1]
 SELECT median(COS(0) + 2);
 median(COS(0) + 2)
-3.0
+3
+
+#SQL[@65,N20]Error[200]
 SELECT median(1,2,3);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 16 near ",2,3);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 16 near \",2,3)\";
+
+#SQL[@66,N25]Error[47]
 SELECT median(fekwelwfew);
 invalid input: column fekwelwfew does not exist
+
+#SQL[@67,N25]Error[47]
 SELECT median(3hewh32ioj);
 invalid input: column 3hewh32ioj does not exist
+
+#SQL[@68,N33]Error[63]
 SELECT median("ejwjlvd23232r43f");
 invalid argument aggregate function median, bad value [VARCHAR]
+
+#SQL[@69,N18]Error[63]
 SELECT median("4");
 invalid argument aggregate function median, bad value [VARCHAR]
+
+#SQL[@70,N17]Error[60]
 SELECT median('');
 invalid argument aggregate function median, bad value [CHAR]
+
+#SQL[@76,N30]Result[]
 DROP TABLE IF EXISTS median_01;
+
+#SQL[@77,N75]Result[]
 CREATE TABLE median_01(id int, d1 tinyint, d2 smallint unsigned, d3 bigint);
+
+#SQL[@78,N56]Result[]
 INSERT INTO median_01 VALUES(1, -128, 65534, 5554584122);
+
+#SQL[@79,N48]Result[]
 INSERT INTO median_01 VALUES(2, 0, 68, -7855122);
+
+#SQL[@80,N51]Result[]
 INSERT INTO median_01 VALUES(3, 45, 0, 67432648932);
+
+#SQL[@81,N44]Result[]
 INSERT INTO median_01 VALUES(4, 45, 5789, 0);
+
+#SQL[@82,N49]Result[]
 INSERT INTO median_01 VALUES(5, NULL, 3782, NULL);
+
+#SQL[@86,N56]Error[47]
 INSERT INTO median_01 VALUES(6, -129, 65534, 5554584122);
-Data truncation: data out of range: data type int8, value '-129'
+data out of range: data type int8, value '-129'
+
+#SQL[@89,N56]Error[50]
 INSERT INTO median_01 VALUES(7, -123, 89555, 5554584122);
-Data truncation: data out of range: data type uint16, value '89555'
+data out of range: data type uint16, value '89555'
+
+#SQL[@92,N61]Error[63]
 INSERT INTO median_01 VALUES(8, -62, 33, 9223372036854775808);
-Data truncation: data out of range: data type int64, value '9223372036854775808'
+data out of range: data type int64, value '9223372036854775808'
+
+#SQL[@95,N70]Error[54]
 INSERT INTO median_01 VALUES(2147483648, -62, 33, 9223372036854775808);
-Data truncation: data out of range: data type int32, value '2147483648'
+data out of range: data type int32, value '2147483648'
+
+#SQL[@99,N32]Result[10, 4]
 SELECT median(d2) from median_01;
 median(d2)
-3782.0
+3782
+
+#SQL[@100,N65]Result[58, 37]
 SELECT median(d1),median(d2),median(d3),median(id) from median_01;
-median(d1)    median(d2)    median(d3)    median(id)
-22.5    3782.0    2.777292061E9    3.0
+median(d1)  ¦  median(d2)  ¦  median(d3)  ¦  median(id)
+22.5  ¦  3782  ¦  2777292061  ¦  3
+
+#SQL[@101,N95]Result[10, 18]
 SELECT median(d1) + median(d2) as he, median(d2) * median(d3) as pr from median_01 where id = 2;
-he    pr
-68.0    -5.34148296E8
+he  ¦  pr
+68  ¦  -534148296
+
+#SQL[@102,N36]Result[14, 4]
 SELECT median(id) / 4 from median_01;
 median(id) / 4
 0.75
+
+#SQL[@103,N57]Result[10, 10]
 SELECT median(d3) FROM median_01 WHERE id BETWEEN 1 AND 4;
 median(d3)
-2.777292061E9
+2777292061
+
+#SQL[@104,N66]Result[42, 31, 23, 31, 24]
 SELECT median(d1),median(d2),median(d3) from median_01 GROUP by d1;
-median(d1)    median(d2)    median(d3)
--128.0    65534.0    5.554584122E9
-0.0    68.0    -7855122.0
-45.0    2894.5    3.3716324466E10
-null    3782.0    null
+median(d1)  ¦  median(d2)  ¦  median(d3)
+-128  ¦  65534  ¦  5554584122
+0  ¦  68  ¦  -7855122
+45  ¦  2894.5  ¦  33716324466
+null  ¦  3782  ¦  null
+
+#SQL[@105,N48]Error[65]
 SELECT d1, d2 FROM median_01 group by median(d1);
 invalid input: GROUP BY clause cannot contain aggregate functions
+
+#SQL[@106,N61]Result[10, 4]
 SELECT median(d1) FROM median_01 WHERE id = ABS(-1) + TAN(45);
 median(d1)
 null
+
+#SQL[@109,N60]Result[42, 11]
 SELECT ABS(median(d2)), FLOOR(median(id) * 3) from median_01;
-ABS(median(d2))    FLOOR(median(id) * 3)
-3782.0    9.0
+ABS(median(d2))  ¦  FLOOR(median(id) * 3)
+3782  ¦  9
+
+#SQL[@110,N71]Result[57, 68]
 SELECT SIN(median(d1)), COS(median(d2)), TAN(median(d2)) FROM median_01;
-SIN(median(d1))    COS(median(d2))    TAN(median(d2))
--0.4871745124605095    0.8881213562994406    -0.5175070078184374
+SIN(median(d1))  ¦  COS(median(d2))  ¦  TAN(median(d2))
+-0.4871745124605095  ¦  0.8881213562994406  ¦  -0.5175070078184374
+
+#SQL[@111,N76]Error[37]
 SELECT TAN(median(d2)), cot(median(d2) * 2), ACOS(median(d1)) FROM median_01;
 invalid argument acos, bad value 22.5
+
+#SQL[@112,N56]Result[38, 42]
 SELECT ATAN(median(d2)), SINH(median(id)) FROM median_01;
-ATAN(median(d2))    SINH(median(id))
-1.5705319164361722    10.017874927409903
+ATAN(median(d2))  ¦  SINH(median(id))
+1.5705319164361722  ¦  10.017874927409903
+
+#SQL[@113,N43]Result[21, 1]
 SELECT ROUND(median(id) / 2) from median_01;
 ROUND(median(id) / 2)
-2.0
+2
+
+#SQL[@114,N51]Result[16, 4]
 SELECT CEIL(median(d1)) FROM median_01 WHERE id = 1;
 CEIL(median(d1))
--128.0
+-128
+
+#SQL[@115,N41]Result[20, 2]
 SELECT power(median(id),3) FROM median_01;
 power(median(id), 3)
-27.0
+27
+
+#SQL[@116,N62]Result[8, 42]
 SELECT LOG(median(id)) AS a,LN(median(id)) AS b FROM median_01;
-a    b
-1.0986122886681096    1.0986122886681096
+a  ¦  b
+1.0986122886681096  ¦  1.0986122886681096
+
+#SQL[@117,N37]Result[15, 18]
 SELECT EXP(median(id)) FROM median_01;
 EXP(median(id))
 20.085536923187668
+
+#SQL[@123,N30]Result[]
 DROP TABLE IF EXISTS median_02;
+
+#SQL[@124,N72]Result[]
 CREATE TABLE median_02(id int PRIMARY KEY, d1 FLOAT, d2 DOUBLE NOT NULL);
+
+#SQL[@126,N60]Result[]
 INSERT INTO median_02 VALUES(1, 645545.11, 65534.5554584122);
+
+#SQL[@127,N47]Result[]
 INSERT INTO median_02 VALUES(2, NULL, 638239.1);
+
+#SQL[@128,N58]Result[]
 INSERT INTO median_02 VALUES(3, -32783, -56323298.8327382);
+
+#SQL[@129,N47]Result[]
 INSERT INTO median_02 VALUES(4, 0, 389283920.1);
+
+#SQL[@130,N39]Result[]
 INSERT INTO median_02 VALUES(5, 382, 0);
+
+#SQL[@135,N60]Error[219]
 INSERT INTO median_02 VALUES(6, 0, -1.8976931348623157E+308);
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 59 near "1.8976931348623157E+308);";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 59 near \"1.8976931348623157E+308)\";
+
+#SQL[@138,N63]Error[64]
 INSERT INTO median_02 VALUES(7, 4.402823466351E+38, 5554584122);
-Data truncation: data out of range: data type float32, value '4.402823466351e+38'
+data out of range: data type float32, value '4.402823466351e+38'
+
+#SQL[@141,N47]Error[48]
 INSERT INTO median_02 VALUES(8, -55845.0, NULL);
 constraint violation: Column 'd2' cannot be null
+
+#SQL[@143,N44]Result[26, 25]
 SELECT median(d1), median(d2) from median_02;
-median(d1)    median(d2)
-191.0    65534.5554584122
+median(d1)  ¦  median(d2)
+191  ¦  65534.5554584122
+
+#SQL[@144,N44]Result[10, 16, 8, 17, 11, 1]
 SELECT median(d2) from median_02 group by d2;
 median(d2)
 65534.5554584122
 638239.1
--5.63232988327382E7
-3.892839201E8
-0.0
+-56323298.8327382
+389283920.1
+0
+
+#SQL[@145,N57]Result[10, 8]
 SELECT median(d2) from median_02 WHERE id BETWEEN 2 AND 4;
 median(d2)
 638239.1
+
+#SQL[@147,N98]Result[10, 10]
 SELECT median(d1) from median_02 WHERE id = (SELECT id from median_02 where d2 = 65534.5554584122);
 median(d1)
 645545.125
+
+#SQL[@150,N38]Error[49]
 SELECT ACOS(median(d2)) from median_02;
 invalid argument acos, bad value 65534.5554584122
+
+#SQL[@151,N57]Result[39, 16]
 SELECT CEIL(median(d2)), FLOOR(median(d2)) from median_02;
-CEIL(median(d2))    FLOOR(median(d2))
-65535.0    65534.0
+CEIL(median(d2))  ¦  FLOOR(median(d2))
+65535  ¦  65534
+
+#SQL[@152,N41]Result[20, 18]
 SELECT power(median(d2),2) from median_02;
 power(median(d2), 2)
-4.2947779591317043E9
+4294777959.1317043
+
+#SQL[@157,N30]Result[]
 DROP TABLE IF EXISTS median_03;
+
+#SQL[@158,N30]Result[]
 DROP TABLE IF EXISTS median_04;
+
+#SQL[@160,N142]Result[]
 CREATE TABLE median_03(id int, ch smallint NOT NULL, ma bigint unsigned NOT NULL, en FLOAT, ph double,
-PRIMARY KEY(id));
+                       PRIMARY KEY(id));
+
+#SQL[@162,N57]Result[]
 INSERT INTO median_03 VALUES(1, 88, 99999, -99.98, 88.99);
+
+#SQL[@163,N54]Result[]
 INSERT INTO median_03 VALUES(2, 65, 744515, 0, 78.789);
+
+#SQL[@164,N55]Result[]
 INSERT INTO median_03 VALUES(3, 76, 21, 893293.1, NULL);
+
+#SQL[@165,N52]Result[]
 INSERT INTO median_03 VALUES(4, -367, 3298, NULL, 0);
+
+#SQL[@166,N57]Result[]
 INSERT INTO median_03 VALUES(5, 674, 432, 8767687.0, 0.1);
+
+#SQL[@168,N131]Result[]
 CREATE TABLE median_04(id int, name VARCHAR(10), ch smallint, ma bigint, en FLOAT not NULL,
-PRIMARY KEY(id));
+                       PRIMARY KEY(id));
+
+#SQL[@170,N60]Result[]
 INSERT INTO median_04 VALUES(1, 'Alice', 327, 45451, 3232.1);
+
+#SQL[@171,N56]Result[]
 INSERT INTO median_04 VALUES(2, 'Bob', 3728, -8889, 899);
+
+#SQL[@172,N54]Result[]
 INSERT INTO median_04 VALUES(3, 'Grace', 0, NULL, 0.1);
+
+#SQL[@173,N57]Result[]
 INSERT INTO median_04 VALUES(4, 'Vicky', 88, 99, 88888.0);
+
+#SQL[@174,N55]Result[]
 INSERT INTO median_04 VALUES(5, 'John', 10, 23211, -78);
+
+#SQL[@179,N87]Result[20, 2]
 SELECT median(median_04.ch) from median_03, median_04 where median_03.id = median_04.id;
 median(median_04.ch)
-88.0
+88
+
+#SQL[@180,N120]Result[8, 14]
 SELECT median(median_03.ma) AS a, median(median_04.ma) AS b from median_03 join median_04 ON median_03.ph = median_04.en;
-a    b
-null    null
+a  ¦  b
+null  ¦  null
+
+#SQL[@181,N79]Result[46, 18]
 SELECT median(median_03.ch),median(median_03.en) from median_03 WHERE id % 2 =1;
-median(median_03.ch)    median(median_03.en)
-88.0    893293.125
+median(median_03.ch)  ¦  median(median_03.en)
+88  ¦  893293.125
+
+#SQL[@182,N68]Error[62]
 SELECT median(median_03.ch) from median_04 WHERE left(name,2) = 'Al';
 invalid input: missing FROM-clause entry for table 'median_03'
+

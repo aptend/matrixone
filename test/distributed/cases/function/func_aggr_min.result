@@ -1,164 +1,278 @@
+#SQL[@2,N16]Result[9, 4]
 SELECT min(null);
 min(null)
 null
+
+#SQL[@5,N164]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19), i DATE, k datetime, l TIMESTAMP, m char(255), n varchar(255));
+
+#SQL[@6,N136]Result[]
 insert into t1 values(1, 1, 2, 43, 5, 35.5, 31.133, 14.314, "2012-03-10", "2012-03-12 10:03:12", "2022-03-12 13:03:12", "ab23c", "d5cf");
+
+#SQL[@7,N137]Result[]
 insert into t1 values(71, 1, 2, 34, 5, 5.5, 341.13, 15.314, "2012-03-22", "2013-03-12 10:03:12", "2032-03-12 13:04:12", "abr23c", "3dcf");
+
+#SQL[@8,N137]Result[]
 insert into t1 values(1, 1, 21, 4, 54, 53.5, 431.13, 14.394, "2011-03-12", "2015-03-12 10:03:12", "2002-03-12 13:03:12", "afbc", "dct5f");
+
+#SQL[@9,N138]Result[]
 insert into t1 values(1, 71, 2, 34, 5, 5.5, 31.313, 124.314, "2012-01-12", "2019-03-12 10:03:12", "2013-03-12 13:03:12", "3abd1c", "dcvf");
+
+#SQL[@10,N21]Result[6, 1]
 select min(a) from t1;
 min(a)
 1
+
+#SQL[@11,N21]Result[6, 1]
 select min(b) from t1;
 min(b)
 1
+
+#SQL[@12,N21]Result[6, 1]
 select min(c) from t1;
 min(c)
 2
+
+#SQL[@13,N21]Result[6, 1]
 select min(d) from t1;
 min(d)
 4
+
+#SQL[@14,N21]Result[6, 1]
 select min(e) from t1;
 min(e)
 5
+
+#SQL[@15,N21]Result[6, 3]
 select min(f) from t1;
 min(f)
 5.5
+
+#SQL[@16,N21]Result[6, 6]
 select min(g) from t1;
 min(g)
 31.133
+
+#SQL[@17,N21]Result[6, 22]
 select min(h) from t1;
 min(h)
 14.3140000000000000000
+
+#SQL[@18,N21]Result[6, 10]
 select min(i) from t1;
 min(i)
 2011-03-12
+
+#SQL[@19,N21]Result[6, 19]
 select min(k) from t1;
 min(k)
 2012-03-12 10:03:12
+
+#SQL[@20,N21]Result[6, 19]
 select min(l) from t1;
 min(l)
 2002-03-12 13:03:12
+
+#SQL[@21,N21]Result[6, 6]
 select min(m) from t1;
 min(m)
 3abd1c
+
+#SQL[@22,N21]Result[6, 4]
 select min(n) from t1;
 min(n)
 3dcf
+
+#SQL[@23,N13]Result[]
 drop table t1;
+
+#SQL[@36,N35]Result[28, 23]
 select min(99999999999999999.99999);
 min(99999999999999999.99999)
 99999999999999999.99999
+
+#SQL[@37,N42]Result[35, 30]
 select min(999999999999999933193939.99999);
 min(999999999999999933193939.99999)
 999999999999999933193939.99999
+
+#SQL[@38,N60]Result[53, 39]
 select min(9999999999999999999999999999999999.9999999999999);
 min(9999999999999999999999999999999999.9999999999999)
-9999999999999999999999999999999999.9999999999999
+10000000000000000000000000000000000.000
+
+#SQL[@39,N36]Result[29, 24]
 select min(-99999999999999999.99999);
 min(-99999999999999999.99999)
 -99999999999999999.99999
+
+#SQL[@40,N43]Result[36, 31]
 select min(-999999999999999933193939.99999);
 min(-999999999999999933193939.99999)
 -999999999999999933193939.99999
+
+#SQL[@41,N61]Result[54, 40]
 select min(-9999999999999999999999999999999999.9999999999999);
 min(-9999999999999999999999999999999999.9999999999999)
--9999999999999999999999999999999999.9999999999999
-create table t1(a bigint);
-select min(a) from t1;
-min(a)
-null
-insert into t1 values(null),(null),(null),(null);
-select min(a) from t1;
-min(a)
-null
-insert into t1 values(12417249128419),(124124125124151),(5124125151415),(124125152651515);
-select min(a) from t1;
-min(a)
-5124125151415
-drop table t1;
+-10000000000000000000000000000000000.000
+
+#SQL[@53,N56]Result[]
 create table t1 ( a int not null default 1, big bigint );
+
+#SQL[@54,N85]Result[]
 insert into t1 (big) values (-1),(1234567890167),(92233720368547),(18446744073709515);
+
+#SQL[@55,N16]Result[10, 9, 20, 21, 24]
 select * from t1;
-a	big
-1	-1
-1	1234567890167
-1	92233720368547
-1	18446744073709515
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+
+#SQL[@56,N43]Result[40, 33]
 select min(big),max(big),min(big)-1 from t1;
-min(big)	max(big)	min(big)-1
--1	18446744073709515	-2
+min(big)  ¦  max(big)  ¦  min(big) - 1
+-1  ¦  18446744073709515  ¦  -2
+
+#SQL[@57,N54]Result[40, 33]
 select min(big),max(big),min(big)-1 from t1 group by a;
-min(big)	max(big)	min(big)-1
--1	18446744073709515	-2
+min(big)  ¦  max(big)  ¦  min(big) - 1
+-1  ¦  18446744073709515  ¦  -2
+
+#SQL[@58,N45]Result[]
 insert into t1 (big) values (184467440737615);
+
+#SQL[@59,N16]Result[10, 9, 20, 21, 24, 22]
 select * from t1;
-a	big
-1	-1
-1	1234567890167
-1	92233720368547
-1	18446744073709515
-1	184467440737615
+a  ¦  big
+1  ¦  -1
+1  ¦  1234567890167
+1  ¦  92233720368547
+1  ¦  18446744073709515
+1  ¦  184467440737615
+
+#SQL[@60,N43]Result[40, 33]
 select min(big),max(big),min(big)-1 from t1;
-min(big)	max(big)	min(big)-1
--1	18446744073709515	-2
+min(big)  ¦  max(big)  ¦  min(big) - 1
+-1  ¦  18446744073709515  ¦  -2
+
+#SQL[@61,N54]Result[40, 33]
 select min(big),max(big),min(big)-1 from t1 group by a;
-min(big)	max(big)	min(big)-1
--1	18446744073709515	-2
-drop table t1;
-CREATE TABLE t1 (Fld1 int(11) default NULL,Fld2 int(11) default NULL);
-INSERT INTO t1 VALUES (1,10),(1,20),(2,NULL),(2,NULL),(3,50);
-select Fld1,  min( Fld2) as q from t1 group by Fld1 having q is not null;
-fld1    q
-1    10
-3    50
-select Fld1, min(Fld2) from t1 group by Fld1 having min(Fld2) is not null;
-Fld1	min(Fld2)
-1	10
-3	50
-select Fld1, min(Fld2) from t1 group by Fld1 having avg(Fld2) is not null;
-Fld1	min(Fld2)
-1	10
-3	50
-select Fld1, min(Fld2) from t1 group by Fld1 having std(Fld2) is not null;
-Fld1	min(Fld2)
-1	10
-3	50
-select Fld1, min(Fld2) from t1 group by Fld1 having variance(Fld2) is not null;
-Fld1	min(Fld2)
-1	10
-3	50
-drop table t1;
-SELECT min(1)<min(2);
-min(1)<min(2)
-true
-create table t1 (grp int, a bigint unsigned, c char(10) not null);
-insert into t1 values (1,1,"a");
-insert into t1 values (2,2,"b");
-insert into t1 values (2,3,"c");
-insert into t1 values (3,4,"E");
-insert into t1 values (3,5,"C");
-insert into t1 values (3,6,"D");
-select min(distinct a),min(distinct grp) from t1;
-min(distinct a)	    min(distinct grp)
-1	1
-insert into t1 values (null,null,'');
-select min(distinct a),min(distinct grp) from t1;
-min(distinct a)	    min(distinct grp)
-1	1
+min(big)  ¦  max(big)  ¦  min(big) - 1
+-1  ¦  18446744073709515  ¦  -2
+
+#SQL[@62,N13]Result[]
 drop table t1;
 
+#SQL[@66,N69]Result[]
+CREATE TABLE t1 (Fld1 int(11) default NULL,Fld2 int(11) default NULL);
+
+#SQL[@67,N60]Result[]
+INSERT INTO t1 VALUES (1,10),(1,20),(2,NULL),(2,NULL),(3,50);
+
+#SQL[@69,N72]Result[11, 9, 9]
+select Fld1,  min( Fld2) as q from t1 group by Fld1 having q is not null;
+Fld1  ¦  q
+1  ¦  10
+3  ¦  50
+
+#SQL[@70,N73]Result[19, 9, 9]
+select Fld1, min(Fld2) from t1 group by Fld1 having min(Fld2) is not null;
+Fld1  ¦  min(Fld2)
+1  ¦  10
+3  ¦  50
+
+#SQL[@71,N73]Result[19, 9, 9]
+select Fld1, min(Fld2) from t1 group by Fld1 having avg(Fld2) is not null;
+Fld1  ¦  min(Fld2)
+1  ¦  10
+3  ¦  50
+
+#SQL[@72,N73]Result[19, 9, 9]
+select Fld1, min(Fld2) from t1 group by Fld1 having std(Fld2) is not null;
+Fld1  ¦  min(Fld2)
+1  ¦  10
+3  ¦  50
+
+#SQL[@73,N78]Result[19, 9, 9]
+select Fld1, min(Fld2) from t1 group by Fld1 having variance(Fld2) is not null;
+Fld1  ¦  min(Fld2)
+1  ¦  10
+3  ¦  50
+
+#SQL[@74,N13]Result[]
+drop table t1;
+
+#SQL[@77,N20]Result[15, 4]
+SELECT min(1)<min(2);
+min(1) < min(2)
+true
+
+#SQL[@79,N65]Result[]
+create table t1 (grp int, a bigint unsigned, c char(10) not null);
+
+#SQL[@80,N31]Result[]
+insert into t1 values (1,1,"a");
+
+#SQL[@81,N31]Result[]
+insert into t1 values (2,2,"b");
+
+#SQL[@82,N31]Result[]
+insert into t1 values (2,3,"c");
+
+#SQL[@83,N31]Result[]
+insert into t1 values (3,4,"E");
+
+#SQL[@84,N31]Result[]
+insert into t1 values (3,5,"C");
+
+#SQL[@85,N31]Result[]
+insert into t1 values (3,6,"D");
+
+#SQL[@86,N48]Result[38, 8]
+select min(distinct a),min(distinct grp) from t1;
+min(distinct a)  ¦  min(distinct grp)
+1  ¦  1
+
+#SQL[@87,N36]Result[]
+insert into t1 values (null,null,'');
+
+#SQL[@88,N48]Result[38, 8]
+select min(distinct a),min(distinct grp) from t1;
+min(distinct a)  ¦  min(distinct grp)
+1  ¦  1
+
+#SQL[@89,N13]Result[]
+drop table t1;
+
+#SQL[@91,N23]Result[]
 CREATE TABLE t1 (a INT);
+
+#SQL[@92,N61]Result[]
 INSERT INTO t1 SELECT result FROM generate_series(1,100000) g;
+
+#SQL[@93,N21]Result[6, 1]
 SELECT MIN(a) FROM t1;
-min(a)
+MIN(a)
 1
+
+#SQL[@94,N29]Result[]
 DELETE FROM t1 WHERE a<=50000;
+
+#SQL[@95,N21]Result[6, 5]
 SELECT MIN(a) FROM t1;
-min(a)
+MIN(a)
 50001
+
+#SQL[@96,N26]Result[]
 DELETE FROM t1 WHERE a%2=1;
+
+#SQL[@97,N21]Result[6, 5]
 SELECT MIN(a) FROM t1;
-min(a)
+MIN(a)
 50002
+
+#SQL[@98,N13]Result[]
 DROP TABLE t1;
+

@@ -1,123 +1,196 @@
+#SQL[@1,N23]Result[12, 2]
 select strcmp('a', 'b');
 strcmp(a, b)
 -1
+
+#SQL[@2,N27]Result[16, 2]
 select strcmp('abc', 'acd');
 strcmp(abc, acd)
 -1
+
+#SQL[@3,N24]Result[15, 4]
 select strcmp('a', null);
 strcmp(a, null)
 null
+
+#SQL[@4,N24]Result[13, 1]
 select strcmp('a ', 'a');
 strcmp(a , a)
 1
+
+#SQL[@5,N23]Result[12, 1]
 select strcmp('a', 'a');
 strcmp(a, a)
 0
+
+#SQL[@6,N37]Result[28, 1]
 select strcmp(BINARY 'a', BINARY 'A');
 strcmp(BINARY(a), BINARY(A))
 1
+
+#SQL[@7,N21]Result[14, 2]
 select strcmp(65, 97);
 strcmp(65, 97)
 -1
+
+#SQL[@10,N31]Result[20, 1]
 SELECT STRCMP('apple', 'apple');
 STRCMP(apple, apple)
 0
+
+#SQL[@11,N32]Result[21, 1]
 SELECT STRCMP('banana', 'apple');
 STRCMP(banana, apple)
 1
+
+#SQL[@12,N32]Result[21, 2]
 SELECT STRCMP('apple', 'banana');
 STRCMP(apple, banana)
 -1
+
+#SQL[@14,N31]Result[20, 2]
 SELECT STRCMP('Apple', 'apple');
 STRCMP(Apple, apple)
 -1
+
+#SQL[@15,N31]Result[20, 1]
 SELECT STRCMP('apple', 'Apple');
 STRCMP(apple, Apple)
 1
+
+#SQL[@16,N31]Result[20, 1]
 SELECT STRCMP('apple', 'Apple');
 STRCMP(apple, Apple)
 1
+
+#SQL[@17,N569]Result[558, 1]
 SELECT STRCMP('这样就实现了按与指定字符串的字典顺序升序排列的效果。如果想降序排列，只需要把 ORDER BY子句改成 ORDER BY STRCMP(name, "banana") DESC即可，原理是一样的：比较结果大的（正数大的）会排在前面，小的排在后面', '这样就实现了按与指定字符串的字典顺序升序排列的效果。如果想降序排列，只需要把 ORDER BY子句改成 ORDER BY STRCMP(name, "banana") DESC即可，原理是一样的：比较结果大的（正数大的）会排在前面，小的排在后面');
 STRCMP(这样就实现了按与指定字符串的字典顺序升序排列的效果。如果想降序排列，只需要把 ORDER BY子句改成 ORDER BY STRCMP(name, "banana") DESC即可，原理是一样的：比较结果大的（正数大的）会排在前面，小的排在后面, 这样就实现了按与指定字符串的字典顺序升序排列的效果。如果想降序排列，只需要把 ORDER BY子句改成 ORDER BY STRCMP(name, "banana") DESC即可，原理是一样的：比较结果大的（正数大的）会排在前面，小的排在后面)
 0
+
+#SQL[@21,N97]Result[36, 9]
 SELECT STRCMP('banana', 'apple') AS banana_vs_apple, STRCMP('apple', 'banana') AS apple_vs_banana;
-banana_vs_apple    apple_vs_banana
-1    -1
+banana_vs_apple  ¦  apple_vs_banana
+1  ¦  -1
+
+#SQL[@25,N116]Result[51, 16]
 SELECT STRCMP('10', '10') AS equal_numbers, STRCMP('11', '10') AS eleven_vs_ten, STRCMP('10', '11') AS ten_vs_eleven;
-equal_numbers    eleven_vs_ten    ten_vs_eleven
-0    1    -1
+equal_numbers  ¦  eleven_vs_ten  ¦  ten_vs_eleven
+0  ¦  1  ¦  -1
+
+#SQL[@29,N45]Result[34, 1]
 SELECT STRCMP(LOWER('Apple'), LOWER('apple'));
 STRCMP(LOWER(Apple), LOWER(apple))
 0
+
+#SQL[@30,N109]Result[50, 9]
 SELECT STRCMP('Apple', 'apple') AS uppercase_vs_lowercase, STRCMP('apple', 'Apple') AS lowercase_vs_uppercase;
-uppercase_vs_lowercase    lowercase_vs_uppercase
--1    1
+uppercase_vs_lowercase  ¦  lowercase_vs_uppercase
+-1  ¦  1
+
+#SQL[@34,N21]Result[10, 1]
 SELECT STRCMP('', '');
 STRCMP(, )
 0
+
+#SQL[@35,N23]Result[12, 1]
 SELECT STRCMP(' ', ' ');
 STRCMP( ,  )
 0
+
+#SQL[@36,N133]Result[50, 24]
 SELECT
-STRCMP('apple', NULL) AS apple_vs_null,
-STRCMP(NULL, 'apple') AS null_vs_apple,
-STRCMP(NULL, NULL) AS null_vs_null;
-apple_vs_null    null_vs_apple    null_vs_null
-null    null    null
+    STRCMP('apple', NULL) AS apple_vs_null,
+    STRCMP(NULL, 'apple') AS null_vs_apple,
+    STRCMP(NULL, NULL) AS null_vs_null;
+apple_vs_null  ¦  null_vs_apple  ¦  null_vs_null
+null  ¦  null  ¦  null
+
+#SQL[@43,N111]Result[50, 10]
 SELECT
-STRCMP('😊', '😢') AS emoji_comparison,
-STRCMP('你', '好') AS chinese_character_comparison;
-emoji_comparison    chinese_character_comparison
--1    -1
+    STRCMP('😊', '😢') AS emoji_comparison,
+    STRCMP('你', '好') AS chinese_character_comparison;
+emoji_comparison  ¦  chinese_character_comparison
+-1  ¦  -1
+
+#SQL[@49,N107]Result[36, 9]
 SELECT
-STRCMP('苹果', '香蕉') AS apple_vs_banana,
-STRCMP('香蕉', '苹果') AS banana_vs_apple;
-apple_vs_banana    banana_vs_apple
--1    1
+    STRCMP('苹果', '香蕉') AS apple_vs_banana,
+    STRCMP('香蕉', '苹果') AS banana_vs_apple;
+apple_vs_banana  ¦  banana_vs_apple
+-1  ¦  1
+
+#SQL[@55,N28]Result[]
 drop database if exists test;
+
+#SQL[@56,N20]Result[]
 create database test;
+
+#SQL[@57,N8]Result[]
 use test;
+
+#SQL[@58,N27]Result[]
 drop table if exists fruits;
+
+#SQL[@59,N92]Result[]
 CREATE TABLE fruits (
-id INT PRIMARY KEY AUTO_INCREMENT,
-name VARCHAR(50) NOT NULL
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL
 );
+
+#SQL[@63,N76]Result[]
 INSERT INTO fruits (name) VALUES ('apple'), ('banana'), ('cherry'), ('date');
+
+#SQL[@65,N54]Result[12, 12, 13, 11]
 SELECT * FROM fruits WHERE STRCMP(name, 'banana') != 0;
-id    name
-1    apple
-3    cherry
-4    date
+id  ¦  name
+1  ¦  apple
+3  ¦  cherry
+4  ¦  date
+
+#SQL[@66,N53]Result[12, 13]
 SELECT * FROM fruits WHERE STRCMP(name, 'banana') = 0;
-id    name
-2    banana
+id  ¦  name
+2  ¦  banana
+
+#SQL[@67,N55]Result[4, 5, 6, 6, 4]
 SELECT name FROM fruits ORDER BY STRCMP(name, 'banana');
 name
 apple
 banana
 cherry
 date
+
+#SQL[@68,N111]Result[27, 13, 13, 13, 11]
 SELECT
-name,
-STRCMP(name, 'banana') AS comparison_result
+    name,
+    STRCMP(name, 'banana') AS comparison_result
 FROM
-fruits
+    fruits
 ORDER BY
-comparison_result;
-name    comparison_result
-apple    -1
-banana    0
-cherry    1
-date    1
+    comparison_result;
+name  ¦  comparison_result
+apple  ¦  -1
+banana  ¦  0
+cherry  ¦  1
+date  ¦  1
+
+#SQL[@75,N17]Result[]
 drop table fruits;
+
+#SQL[@77,N34]Result[]
 drop table if exists t_strcmp_test;
+
+#SQL[@78,N188]Result[]
 CREATE TEMPORARY TABLE t_strcmp_test(
-id          INT AUTO_INCREMENT PRIMARY KEY,
-s1          VARCHAR(100),
-s2          VARCHAR(100),
-expect      INT,
-actual      INT
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    s1          VARCHAR(100),
+    s2          VARCHAR(100),
+    expect      INT,
+    actual      INT
 );
+
+#SQL[@86,N279]Result[]
 INSERT INTO t_strcmp_test(s1, s2, expect) VALUES
 ('abc', 'abc', 0),
 ('MySQL', 'mysql', 0),
@@ -130,37 +203,64 @@ INSERT INTO t_strcmp_test(s1, s2, expect) VALUES
 ('2', '10', 1),
 ('数据库', '数据', 1),
 ('数据库', '数锯', -1);
+
+#SQL[@99,N48]Result[]
 UPDATE t_strcmp_test
 SET actual = STRCMP(s1, s2);
+
+#SQL[@101,N61]Result[34, 26, 31, 28, 27, 20, 33, 33, 28, 23, 35, 37]
 SELECT  s1, s2, expect, actual
 FROM t_strcmp_test
 ORDER BY id;
-s1    s2    expect    actual
-abc    abc    0    0
-MySQL    mysql    0    -1
-abc     abc    -1    1
-abc     abc    1    1
-        0    0
-null    abc    null    null
-abc    null    null    null
-123    0123    -1    1
-2    10    1    1
-数据库    数据    1    1
-数据库    数锯    -1    -1
+s1  ¦  s2  ¦  expect  ¦  actual
+abc  ¦  abc  ¦  0  ¦  0
+MySQL  ¦  mysql  ¦  0  ¦  -1
+abc  ¦   abc  ¦  -1  ¦  1
+abc   ¦  abc  ¦  1  ¦  1
+  ¦    ¦  0  ¦  0
+null  ¦  abc  ¦  null  ¦  null
+abc  ¦  null  ¦  null  ¦  null
+123  ¦  0123  ¦  -1  ¦  1
+2  ¦  10  ¦  1  ¦  1
+数据库  ¦  数据  ¦  1  ¦  1
+数据库  ¦  数锯  ¦  -1  ¦  -1
+
+#SQL[@104,N24]Result[]
 drop table t_strcmp_test;
+
+#SQL[@107,N33]Result[]
 drop table if exists varchar_test;
+
+#SQL[@108,N56]Result[]
 create table varchar_test (a varchar(30), b varchar(30));
+
+#SQL[@109,N51]Result[]
 insert into varchar_test values('abcdef', 'abcdef');
+
+#SQL[@110,N51]Result[]
 insert into varchar_test values('_bcdef', '_bcdef');
+
+#SQL[@111,N85]Result[]
 insert into varchar_test values('mo是云原生数据库', 'Mo是云原生数据库');
+
+#SQL[@112,N158]Result[]
 insert into varchar_test values('STRCMP函数的作用是比较两个字符串的字典序列','STRCMP函数的作用是比较两个字符串的字典序列');
+
+#SQL[@113,N50]Result[8, 52]
 SELECT * FROM varchar_test WHERE STRCMP(a, b) != 0;
-a    b
-mo是云原生数据库    Mo是云原生数据库
+a  ¦  b
+mo是云原生数据库  ¦  Mo是云原生数据库
+
+#SQL[@114,N49]Result[8, 18, 18, 126]
 SELECT * FROM varchar_test WHERE STRCMP(a, b) = 0;
-a    b
-abcdef    abcdef
-_bcdef    _bcdef
-STRCMP函数的作用是比较两个字符串的字典序列    STRCMP函数的作用是比较两个字符串的字典序列
+a  ¦  b
+abcdef  ¦  abcdef
+_bcdef  ¦  _bcdef
+STRCMP函数的作用是比较两个字符串的字典序列  ¦  STRCMP函数的作用是比较两个字符串的字典序列
+
+#SQL[@115,N23]Result[]
 drop table varchar_test;
+
+#SQL[@117,N18]Result[]
 drop database test;
+

@@ -42,7 +42,6 @@ SELECT weekday('2015-0') as weekday;
 
 SELECT weekday('2015-09.30 12') as weekday;
 SELECT weekday('2015-09-26 08:09:22') AS weekday;
--- @bvt:issue
 
 #EXTREME VALUE
 

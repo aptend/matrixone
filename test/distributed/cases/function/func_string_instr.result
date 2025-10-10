@@ -1,96 +1,155 @@
+#SQL[@1,N23]Result[13, 1]
 select instr('aaa','a');
 instr(aaa, a)
 1
+
+#SQL[@2,N24]Result[14, 1]
 select instr('aaa','ax');
 instr(aaa, ax)
 0
+
+#SQL[@3,N24]Result[14, 1]
 select instr('aaa','aa');
 instr(aaa, aa)
 1
+
+#SQL[@4,N21]Result[13, 1]
 select instr('aaa',1);
 instr(aaa, 1)
 0
+
+#SQL[@5,N23]Result[13, 1]
 select instr('aaa','b');
 instr(aaa, b)
 0
+
+#SQL[@6,N22]Result[14, 4]
 select instr(null,'a');
 instr(null, a)
 null
+
+#SQL[@7,N20]Result[14, 4]
 select instr(1,null);
 instr(1, null)
 null
+
+#SQL[@8,N23]Result[17, 4]
 select instr(null,null);
 instr(null, null)
 null
+
+#SQL[@9,N22]Result[14, 4]
 select instr(null,'a');
 instr(null, a)
 null
+
+#SQL[@10,N22]Result[12, 1]
 select instr('','啊');
 instr(, 啊)
 0
+
+#SQL[@11,N20]Result[10, 1]
 select instr('','a');
 instr(, a)
 0
+
+#SQL[@12,N20]Result[10, 1]
 select instr('',' ');
 instr(,  )
 0
+
+#SQL[@13,N19]Result[9, 1]
 select instr('','');
 instr(, )
 1
+
+#SQL[@14,N22]Result[12, 1]
 select instr('啊','');
 instr(啊, )
 1
+
+#SQL[@15,N23]Result[13, 1]
 select instr('啊',' ');
 instr(啊,  )
 0
+
+#SQL[@16,N25]Result[15, 1]
 select instr('啊','啊');
 instr(啊, 啊)
 1
+
+#SQL[@17,N26]Result[16, 1]
 select instr('x啊','啊');
 instr(x啊, 啊)
 2
+
+#SQL[@18,N44]Result[34, 1]
 select instr('x啊啦啦啦啦啦的','啦');
 instr(x啊啦啦啦啦啦的, 啦)
 3
+
+#SQL[@19,N45]Result[35, 1]
 select instr('x啊啦啦啦啦啦的q','的');
 instr(x啊啦啦啦啦啦的q, 的)
 8
+
+#SQL[@20,N43]Result[33, 1]
 select instr('x啊啦啦啦啦啦的q','q');
 instr(x啊啦啦啦啦啦的q, q)
 9
+
+#SQL[@21,N36]Result[]
 create table t1(a varchar,b varchar);
+
+#SQL[@22,N63]Result[]
 insert into t1 values('axa','x'),('abababa','qq'),('qwer','er');
+
+#SQL[@23,N25]Result[11, 1, 1, 1]
 select instr(a,b) from t1;
 instr(a, b)
 2
 0
 3
+
+#SQL[@24,N28]Result[14, 4, 4, 4]
 select instr(a,null) from t1;
 instr(a, null)
 null
 null
 null
+
+#SQL[@25,N28]Result[14, 4, 4, 4]
 select instr(null,b) from t1;
 instr(null, b)
 null
 null
 null
+
+#SQL[@26,N31]Result[13, 1, 1, 1]
 select instr('axa','x') from t1;
 instr(axa, x)
 2
 2
 2
+
+#SQL[@27,N28]Result[12, 1, 1, 1]
 select instr(a,'qw') from t1;
 instr(a, qw)
 0
 0
 1
+
+#SQL[@28,N30]Result[14, 1, 1, 1]
 select instr('qwer',b) from t1;
 instr(qwer, b)
 0
 0
 3
+
+#SQL[@29,N208]Result[]
 insert into t1 values('','啊'),('','a'),('',' '),('',''),('啊',''),('啊',' '),('啊','啊'),('x啊','啊'),('x啊啦啦啦啦啦的','啦'),('x啊啦啦啦啦啦的q','的'),('x啊啦啦啦啦啦的q','q');
+
+#SQL[@30,N25]Result[11, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 select instr(a,b) from t1;
 instr(a, b)
 2
@@ -107,3 +166,4 @@ instr(a, b)
 3
 8
 9
+

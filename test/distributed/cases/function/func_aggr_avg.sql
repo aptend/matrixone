@@ -130,9 +130,9 @@ DROP TABLE t1;
 
 
 CREATE TABLE t1 (id int(11),value1 float(10,2));
-INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00); 
-CREATE TABLE t2 (id int(11),name char(20)); 
-INSERT INTO t2 VALUES (1,'Set One'),(2,'Set Two'); 
+INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00);
+CREATE TABLE t2 (id int(11),name char(20));
+INSERT INTO t2 VALUES (1,'Set One'),(2,'Set Two');
 select id, avg(value1), std(value1), variance(value1) from t1 group by id;
 select any_value(name), avg(value1), std(value1), variance(value1) from t1, t2 where t1.id = t2.id group by t1.id;
 drop table t1;
@@ -225,9 +225,9 @@ insert into t1 values (2,3,"c");
 insert into t1 values (3,4,"E");
 insert into t1 values (3,5,"C");
 insert into t1 values (3,6,"D");
--- @bvt:issue#3344
-select sum(all a),count(all a),avg(all a),std(all a),variance(all a),bit_or(all a),bit_and(all a),min(all a),max(all a),min(all c),max(all c) from t1;
--- @bvt:issue
+@issue(no=3344) {
+    select sum(all a),count(all a),avg(all a),std(all a),variance(all a),bit_or(all a),bit_and(all a),min(all a),max(all a),min(all c),max(all c) from t1;
+}
 select grp, sum(a),count(a),avg(a),std(a),variance(a),bit_or(a),bit_and(a),min(a),max(a),min(c),max(c) from t1 group by grp;
 select grp, sum(a)+count(a)+avg(a)+std(a)+variance(a)+bit_or(a)+bit_and(a)+min(a)+max(a)+min(c)+max(c) as sum from t1 group by grp;
 create table t2 (grp int, a bigint unsigned, c char(10));
@@ -237,7 +237,7 @@ drop table t1;
 drop table t2;
 
 
-#GROUP BY ERROR 
+#GROUP BY ERROR
 CREATE TABLE t1(a DOUBLE);
 INSERT INTO t1 VALUES (10), (20);
 SELECT AVG(min(a)) FROM t1 group by a;
@@ -246,9 +246,9 @@ DROP TABLE t1;
 
 #group by error
 CREATE TABLE t1 (id int(11),value1 float(10,2));
-INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00); 
-CREATE TABLE t2 (id int(11),name char(20)); 
-INSERT INTO t2 VALUES (1,'Set One'),(2,'Set Two'); 
+INSERT INTO t1 VALUES (1,0.00),(1,1.00), (1,2.00), (2,10.00), (2,11.00), (2,12.00);
+CREATE TABLE t2 (id int(11),name char(20));
+INSERT INTO t2 VALUES (1,'Set One'),(2,'Set Two');
 select name, avg(value1), std(value1), variance(value1) from t1, t2 where t1.id = t2.id group by t1.id;
 drop table t1;
 drop table t2;

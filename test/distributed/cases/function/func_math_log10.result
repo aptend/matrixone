@@ -1,74 +1,150 @@
+#SQL[@2,N43]Result[41, 25]
 select log10(log10(10000)),log10(log10(10));
-log10(log10(10000))    log10(log10(10))
-0.6020599913279624    0.0
+log10(log10(10000))  ¦  log10(log10(10))
+0.6020599913279624  ¦  0
+
+#SQL[@5,N18]Result[11, 1]
 SELECT log10(1000);
 log10(1000)
-3.0
+3
+
+#SQL[@6,N17]Error[37]
 SELECT log10(-10);
 invalid argument log10, bad value -10
+
+#SQL[@7,N15]Error[35]
 SELECT log10(0);
 invalid argument log10, bad value 0
+
+#SQL[@12,N33]Result[26, 3]
 select log10(0.00000000000000001);
 log10(0.00000000000000001)
--17.0
+-17
+
+#SQL[@13,N17]Result[10, 17]
 select log10(2e2);
 log10(2e2)
 2.301029995663981
+
+#SQL[@14,N31]Result[24, 19]
 select log10(0.141241241241313);
 log10(0.141241241241313)
 -0.8500384744714139
+
+#SQL[@15,N36]Error[57]
 select log10(-124314124124.12412341);
 invalid argument log10, bad value -1.2431412412412413e+11
+
+#SQL[@19,N18]Result[11, 4]
 select log10(null);
 log10(null)
 null
+
+#SQL[@22,N25]Result[]
 CREATE TABLE t1(a DOUBLE);
+
+#SQL[@23,N33]Result[]
 INSERT INTO t1 select (log10(56));
+
+#SQL[@24,N34]Result[]
 INSERT INTO t1 select (log10(100));
+
+#SQL[@25,N27]Result[1, 18, 1]
 SELECT * FROM t1 ORDER BY a;
 a
 1.7481880270062005
-2.0
+2
+
+#SQL[@26,N13]Result[]
 drop table t1;
+
+#SQL[@29,N102]Result[]
 create table t1(a tinyint, b SMALLINT, c bigint, d INT, e BIGINT, f FLOAT, g DOUBLE, h decimal(38,19));
+
+#SQL[@30,N56]Result[]
 insert into t1 values(1, 1, 2, 4, 5, 5.5, 31.13, 14.314);
+
+#SQL[@31,N86]Result[106, 152]
 select log10(a),log10(b),log10(c),log10(d),log10(e),log10(f),log10(g),log10(h) from t1;
-log10(a)    log10(b)    log10(c)    log10(d)    log10(e)    log10(f)    log10(g)    log10(h)
-0.0    0.0    0.3010299956639812    0.6020599913279624    0.6989700043360187    0.7403626894942439    1.4931791206825151    1.1557610128779234
+log10(a)  ¦  log10(b)  ¦  log10(c)  ¦  log10(d)  ¦  log10(e)  ¦  log10(f)  ¦  log10(g)  ¦  log10(h)
+0  ¦  0  ¦  0.3010299956639812  ¦  0.6020599913279624  ¦  0.6989700043360187  ¦  0.7403626894942439  ¦  1.4931791206825151  ¦  1.1557610128779234
+
+#SQL[@32,N13]Result[]
 drop table t1;
+
+#SQL[@35,N27]Result[22, 19]
 select log10(123.54-123.03);
 log10(123.54 - 123.03)
 -0.2924298239020636
+
+#SQL[@36,N25]Result[20, 16]
 select log10(123.54*0.34);
 log10(123.54 * 0.34)
 1.62328651404393
+
+#SQL[@37,N28]Result[23, 20]
 select log10(134)-log10(194);
 log10(134) - log10(194)
 -0.16069693156541875
+
+#SQL[@41,N23]Result[]
 drop table if exists t1;
+
+#SQL[@42,N22]Result[]
 create table t1(a int);
+
+#SQL[@43,N32]Result[]
 insert into t1 values(10), (100);
+
+#SQL[@44,N42]Result[1, 2, 3]
 select distinct * from t1 where log10(a)>0;
 a
 10
 100
+
+#SQL[@45,N13]Result[]
 drop table t1;
+
+#SQL[@48,N29]Result[]
 create table t1(a INT, b int);
+
+#SQL[@49,N29]Result[]
 create table t2(a INT, b int);
+
+#SQL[@50,N36]Result[]
 insert into t1 values(2,4), (100,23);
+
+#SQL[@51,N37]Result[]
 insert into t2 values(10,100), (4,41);
+
+#SQL[@52,N65]Result[8, 9, 8, 11, 10]
 SELECT t1.a, t2.a FROM t1 JOIN t2 ON (log10(t1.a) <> log10(t2.a));
-a    a
-2    10
-2    4
-100    10
-100    4
+a  ¦  a
+2  ¦  10
+2  ¦  4
+100  ¦  10
+100  ¦  4
+
+#SQL[@53,N13]Result[]
 drop table t1;
+
+#SQL[@54,N13]Result[]
 drop table t2;
+
+#SQL[@59,N23]Result[]
 drop table if exists t1;
+
+#SQL[@60,N34]Result[]
 create table t1(a float,  b float);
+
+#SQL[@61,N53]Result[]
 insert into t1 values(14.413, 43.413), (8.123, 0.409);
+
+#SQL[@62,N45]Result[1, 6]
 select b from t1 group by b having log10(b)>0;
 b
 43.413
+
+#SQL[@63,N13]Result[]
 drop table t1;
+

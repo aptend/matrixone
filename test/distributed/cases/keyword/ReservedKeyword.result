@@ -1,123 +1,467 @@
+#SQL[@1,N28]Result[]
 drop database if exists test;
+
+#SQL[@2,N20]Result[]
 create database test;
+
+#SQL[@3,N8]Result[]
+use test;
+
+#SQL[@5,N30]Result[]
 drop table if exists `_binary`;
+
+#SQL[@6,N137]Result[]
 create table `_binary` (`add` int, `all` bigint, `alter` smallint, `analyze` decimal, `and` char, `as` varchar, `asc` int, `begin` float);
+
+#SQL[@7,N27]Result[23, 288]
 show create table `_binary`;
-Table    Create Table
-_binary    CREATE TABLE `_binary` (\n  `add` int DEFAULT NULL,\n  `all` bigint DEFAULT NULL,\n  `alter` smallint DEFAULT NULL,\n  `analyze` decimal(38,0) DEFAULT NULL,\n  `and` char(1) DEFAULT NULL,\n  `as` varchar(65535) DEFAULT NULL,\n  `asc` int DEFAULT NULL,\n  `begin` float DEFAULT NULL\n)
+Table  ¦  Create Table
+_binary  ¦  CREATE TABLE `_binary` (
+  `add` int DEFAULT NULL,
+  `all` bigint DEFAULT NULL,
+  `alter` smallint DEFAULT NULL,
+  `analyze` decimal(38,0) DEFAULT NULL,
+  `and` char(1) DEFAULT NULL,
+  `as` varchar(65535) DEFAULT NULL,
+  `asc` int DEFAULT NULL,
+  `begin` float DEFAULT NULL
+)
+
+#SQL[@8,N20]Result[]
 drop table `_binary`;
+
+#SQL[@10,N30]Result[]
 drop table if exists `between`;
+
+#SQL[@11,N145]Result[]
 create table `between` (`binary` int, `both` bigint, `by` smallint, `call` decimal, `case` char, `change` varchar, `char` int, `character` float);
+
+#SQL[@12,N27]Result[23, 296]
 show create table `between`;
-Table    Create Table
-between    CREATE TABLE `between` (\n  `binary` int DEFAULT NULL,\n  `both` bigint DEFAULT NULL,\n  `by` smallint DEFAULT NULL,\n  `call` decimal(38,0) DEFAULT NULL,\n  `case` char(1) DEFAULT NULL,\n  `change` varchar(65535) DEFAULT NULL,\n  `char` int DEFAULT NULL,\n  `character` float DEFAULT NULL\n)
+Table  ¦  Create Table
+between  ¦  CREATE TABLE `between` (
+  `binary` int DEFAULT NULL,
+  `both` bigint DEFAULT NULL,
+  `by` smallint DEFAULT NULL,
+  `call` decimal(38,0) DEFAULT NULL,
+  `case` char(1) DEFAULT NULL,
+  `change` varchar(65535) DEFAULT NULL,
+  `char` int DEFAULT NULL,
+  `character` float DEFAULT NULL
+)
+
+#SQL[@13,N20]Result[]
 drop table `between`;
+
+#SQL[@15,N28]Result[]
 drop table if exists `check`;
+
+#SQL[@16,N138]Result[]
 create table `check` (`collate` int, `column` bigint, `config` decimal, `constraint` char, `convert` varchar, `create` int, `cross` float);
+
+#SQL[@17,N25]Result[23, 272]
 show create table `check`;
-Table    Create Table
-check    CREATE TABLE `check` (\n  `collate` int DEFAULT NULL,\n  `column` bigint DEFAULT NULL,\n  `config` decimal(38,0) DEFAULT NULL,\n  `constraint` char(1) DEFAULT NULL,\n  `convert` varchar(65535) DEFAULT NULL,\n  `create` int DEFAULT NULL,\n  `cross` float DEFAULT NULL\n)
+Table  ¦  Create Table
+check  ¦  CREATE TABLE `check` (
+  `collate` int DEFAULT NULL,
+  `column` bigint DEFAULT NULL,
+  `config` decimal(38,0) DEFAULT NULL,
+  `constraint` char(1) DEFAULT NULL,
+  `convert` varchar(65535) DEFAULT NULL,
+  `create` int DEFAULT NULL,
+  `cross` float DEFAULT NULL
+)
+
+#SQL[@18,N18]Result[]
 drop table `check`;
+
+#SQL[@20,N35]Result[]
 drop table if exists `current_date`;
+
+#SQL[@21,N204]Result[]
 create table `current_date` (`current_role` int, `current_time` bigint, `current_timestamp` smallint, `current_user` decimal, `database` char, `databases` varchar, `day_hour` int, `day_microsecond` float);
+
+#SQL[@22,N32]Result[23, 360]
 show create table `current_date`;
-Table    Create Table
-current_date    CREATE TABLE `current_date` (\n  `current_role` int DEFAULT NULL,\n  `current_time` bigint DEFAULT NULL,\n  `current_timestamp` smallint DEFAULT NULL,\n  `current_user` decimal(38,0) DEFAULT NULL,\n  `database` char(1) DEFAULT NULL,\n  `databases` varchar(65535) DEFAULT NULL,\n  `day_hour` int DEFAULT NULL,\n  `day_microsecond` float DEFAULT NULL\n)
+Table  ¦  Create Table
+current_date  ¦  CREATE TABLE `current_date` (
+  `current_role` int DEFAULT NULL,
+  `current_time` bigint DEFAULT NULL,
+  `current_timestamp` smallint DEFAULT NULL,
+  `current_user` decimal(38,0) DEFAULT NULL,
+  `database` char(1) DEFAULT NULL,
+  `databases` varchar(65535) DEFAULT NULL,
+  `day_hour` int DEFAULT NULL,
+  `day_microsecond` float DEFAULT NULL
+)
+
+#SQL[@23,N25]Result[]
 drop table `current_date`;
+
+#SQL[@25,N33]Result[]
 drop table if exists `day_minute`;
+
+#SQL[@26,N168]Result[]
 create table `day_minute` (`day_second` int, `declare` bigint, `default` smallint, `delayed` decimal, `delete` char, `dense_rank` varchar, `desc` int, `describe` float);
+
+#SQL[@27,N30]Result[23, 322]
 show create table `day_minute`;
-Table    Create Table
-day_minute    CREATE TABLE `day_minute` (\n  `day_second` int DEFAULT NULL,\n  `declare` bigint DEFAULT NULL,\n  `default` smallint DEFAULT NULL,\n  `delayed` decimal(38,0) DEFAULT NULL,\n  `delete` char(1) DEFAULT NULL,\n  `dense_rank` varchar(65535) DEFAULT NULL,\n  `desc` int DEFAULT NULL,\n  `describe` float DEFAULT NULL\n)
+Table  ¦  Create Table
+day_minute  ¦  CREATE TABLE `day_minute` (
+  `day_second` int DEFAULT NULL,
+  `declare` bigint DEFAULT NULL,
+  `default` smallint DEFAULT NULL,
+  `delayed` decimal(38,0) DEFAULT NULL,
+  `delete` char(1) DEFAULT NULL,
+  `dense_rank` varchar(65535) DEFAULT NULL,
+  `desc` int DEFAULT NULL,
+  `describe` float DEFAULT NULL
+)
+
+#SQL[@28,N23]Result[]
 drop table `day_minute`;
+
+#SQL[@30,N31]Result[]
 drop table if exists `distinct`;
+
+#SQL[@31,N148]Result[]
 create table `distinct` (`div` int, `drop` bigint, `else` smallint, `elseif` decimal, `enclosed` char, `end` varchar, `escape` int, `escaped` float);
+
+#SQL[@32,N28]Result[23, 300]
 show create table `distinct`;
-Table    Create Table
-distinct    CREATE TABLE `distinct` (\n  `div` int DEFAULT NULL,\n  `drop` bigint DEFAULT NULL,\n  `else` smallint DEFAULT NULL,\n  `elseif` decimal(38,0) DEFAULT NULL,\n  `enclosed` char(1) DEFAULT NULL,\n  `end` varchar(65535) DEFAULT NULL,\n  `escape` int DEFAULT NULL,\n  `escaped` float DEFAULT NULL\n)
+Table  ¦  Create Table
+distinct  ¦  CREATE TABLE `distinct` (
+  `div` int DEFAULT NULL,
+  `drop` bigint DEFAULT NULL,
+  `else` smallint DEFAULT NULL,
+  `elseif` decimal(38,0) DEFAULT NULL,
+  `enclosed` char(1) DEFAULT NULL,
+  `end` varchar(65535) DEFAULT NULL,
+  `escape` int DEFAULT NULL,
+  `escaped` float DEFAULT NULL
+)
+
+#SQL[@33,N21]Result[]
 drop table `distinct`;
+
+#SQL[@35,N29]Result[]
 drop table if exists `except`;
+
+#SQL[@36,N150]Result[]
 create table `except` (`exists` int, `explain` bigint, `false` smallint, `for` decimal, `force` char, `foreign` varchar, `from` int, `fulltext` float);
+
+#SQL[@37,N26]Result[23, 300]
 show create table `except`;
-Table    Create Table
-except    CREATE TABLE `except` (\n  `exists` int DEFAULT NULL,\n  `explain` bigint DEFAULT NULL,\n  `false` smallint DEFAULT NULL,\n  `for` decimal(38,0) DEFAULT NULL,\n  `force` char(1) DEFAULT NULL,\n  `foreign` varchar(65535) DEFAULT NULL,\n  `from` int DEFAULT NULL,\n  `fulltext` float DEFAULT NULL\n)
+Table  ¦  Create Table
+except  ¦  CREATE TABLE `except` (
+  `exists` int DEFAULT NULL,
+  `explain` bigint DEFAULT NULL,
+  `false` smallint DEFAULT NULL,
+  `for` decimal(38,0) DEFAULT NULL,
+  `force` char(1) DEFAULT NULL,
+  `foreign` varchar(65535) DEFAULT NULL,
+  `from` int DEFAULT NULL,
+  `fulltext` float DEFAULT NULL
+)
+
+#SQL[@38,N19]Result[]
 drop table `except`;
+
+#SQL[@40,N31]Result[]
 drop table if exists `function`;
+
+#SQL[@41,N177]Result[]
 create table `function` (`group` int, `groups` bigint, `having` smallint, `high_priority` decimal, `hour_microsecond` char, `hour_minute` varchar, `hour_second` int, `if` float);
+
+#SQL[@42,N28]Result[23, 329]
 show create table `function`;
-Table    Create Table
-function    CREATE TABLE `function` (\n  `group` int DEFAULT NULL,\n  `groups` bigint DEFAULT NULL,\n  `having` smallint DEFAULT NULL,\n  `high_priority` decimal(38,0) DEFAULT NULL,\n  `hour_microsecond` char(1) DEFAULT NULL,\n  `hour_minute` varchar(65535) DEFAULT NULL,\n  `hour_second` int DEFAULT NULL,\n  `if` float DEFAULT NULL\n)
+Table  ¦  Create Table
+function  ¦  CREATE TABLE `function` (
+  `group` int DEFAULT NULL,
+  `groups` bigint DEFAULT NULL,
+  `having` smallint DEFAULT NULL,
+  `high_priority` decimal(38,0) DEFAULT NULL,
+  `hour_microsecond` char(1) DEFAULT NULL,
+  `hour_minute` varchar(65535) DEFAULT NULL,
+  `hour_second` int DEFAULT NULL,
+  `if` float DEFAULT NULL
+)
+
+#SQL[@43,N21]Result[]
 drop table `function`;
+
+#SQL[@45,N29]Result[]
 drop table if exists `ignore`;
+
+#SQL[@46,N143]Result[]
 create table `ignore` (`ilike` int, `in` bigint, `index` smallint, `infile` decimal, `inner` char, `inout` varchar, `insert` int, `int1` float);
+
+#SQL[@47,N26]Result[23, 293]
 show create table `ignore`;
-Table    Create Table
-ignore    CREATE TABLE `ignore` (\n  `ilike` int DEFAULT NULL,\n  `in` bigint DEFAULT NULL,\n  `index` smallint DEFAULT NULL,\n  `infile` decimal(38,0) DEFAULT NULL,\n  `inner` char(1) DEFAULT NULL,\n  `inout` varchar(65535) DEFAULT NULL,\n  `insert` int DEFAULT NULL,\n  `int1` float DEFAULT NULL\n)
+Table  ¦  Create Table
+ignore  ¦  CREATE TABLE `ignore` (
+  `ilike` int DEFAULT NULL,
+  `in` bigint DEFAULT NULL,
+  `index` smallint DEFAULT NULL,
+  `infile` decimal(38,0) DEFAULT NULL,
+  `inner` char(1) DEFAULT NULL,
+  `inout` varchar(65535) DEFAULT NULL,
+  `insert` int DEFAULT NULL,
+  `int1` float DEFAULT NULL
+)
+
+#SQL[@48,N19]Result[]
 drop table `ignore`;
+
+#SQL[@50,N27]Result[]
 drop table if exists `int2`;
+
+#SQL[@51,N145]Result[]
 create table `int2` (`int3` int, `int4` bigint, `int8` smallint, `intersect` decimal, `interval` char, `into` varchar, `is` int, `iterate` float);
+
+#SQL[@52,N24]Result[23, 293]
 show create table `int2`;
-Table    Create Table
-int2    CREATE TABLE `int2` (\n  `int3` int DEFAULT NULL,\n  `int4` bigint DEFAULT NULL,\n  `int8` smallint DEFAULT NULL,\n  `intersect` decimal(38,0) DEFAULT NULL,\n  `interval` char(1) DEFAULT NULL,\n  `into` varchar(65535) DEFAULT NULL,\n  `is` int DEFAULT NULL,\n  `iterate` float DEFAULT NULL\n)
+Table  ¦  Create Table
+int2  ¦  CREATE TABLE `int2` (
+  `int3` int DEFAULT NULL,
+  `int4` bigint DEFAULT NULL,
+  `int8` smallint DEFAULT NULL,
+  `intersect` decimal(38,0) DEFAULT NULL,
+  `interval` char(1) DEFAULT NULL,
+  `into` varchar(65535) DEFAULT NULL,
+  `is` int DEFAULT NULL,
+  `iterate` float DEFAULT NULL
+)
+
+#SQL[@53,N17]Result[]
 drop table `int2`;
+
+#SQL[@55,N27]Result[]
 drop table if exists `join`;
+
+#SQL[@56,N140]Result[]
 create table `join` (`key` int, `kill` bigint, `leading` smallint, `leave` decimal, `left` char, `like` varchar, `limit` int, `lines` float);
+
+#SQL[@57,N24]Result[23, 288]
 show create table `join`;
-Table    Create Table
-join    CREATE TABLE `join` (\n  `key` int DEFAULT NULL,\n  `kill` bigint DEFAULT NULL,\n  `leading` smallint DEFAULT NULL,\n  `leave` decimal(38,0) DEFAULT NULL,\n  `left` char(1) DEFAULT NULL,\n  `like` varchar(65535) DEFAULT NULL,\n  `limit` int DEFAULT NULL,\n  `lines` float DEFAULT NULL\n)
+Table  ¦  Create Table
+join  ¦  CREATE TABLE `join` (
+  `key` int DEFAULT NULL,
+  `kill` bigint DEFAULT NULL,
+  `leading` smallint DEFAULT NULL,
+  `leave` decimal(38,0) DEFAULT NULL,
+  `left` char(1) DEFAULT NULL,
+  `like` varchar(65535) DEFAULT NULL,
+  `limit` int DEFAULT NULL,
+  `lines` float DEFAULT NULL
+)
+
+#SQL[@58,N17]Result[]
 drop table `join`;
+
+#SQL[@60,N27]Result[]
 drop table if exists `load`;
+
+#SQL[@61,N164]Result[]
 create table `load` (`localtime` int, `localtimestamp` bigint, `lock` smallint, `loop` decimal, `low_priority` char, `match` varchar, `maxvalue` int, `minus` float);
+
+#SQL[@62,N24]Result[23, 312]
 show create table `load`;
-Table    Create Table
-load    CREATE TABLE `load` (\n  `localtime` int DEFAULT NULL,\n  `localtimestamp` bigint DEFAULT NULL,\n  `lock` smallint DEFAULT NULL,\n  `loop` decimal(38,0) DEFAULT NULL,\n  `low_priority` char(1) DEFAULT NULL,\n  `match` varchar(65535) DEFAULT NULL,\n  `maxvalue` int DEFAULT NULL,\n  `minus` float DEFAULT NULL\n)
+Table  ¦  Create Table
+load  ¦  CREATE TABLE `load` (
+  `localtime` int DEFAULT NULL,
+  `localtimestamp` bigint DEFAULT NULL,
+  `lock` smallint DEFAULT NULL,
+  `loop` decimal(38,0) DEFAULT NULL,
+  `low_priority` char(1) DEFAULT NULL,
+  `match` varchar(65535) DEFAULT NULL,
+  `maxvalue` int DEFAULT NULL,
+  `minus` float DEFAULT NULL
+)
+
+#SQL[@63,N17]Result[]
 drop table `load`;
+
+#SQL[@65,N41]Result[]
 drop table if exists `minute_microsecond`;
+
+#SQL[@66,N161]Result[]
 create table `minute_microsecond` (`minute_second` int, `mod` bigint, `natural` smallint, `not` decimal, `null` char, `on` varchar, `optionally` int, `or` float);
+
+#SQL[@67,N38]Result[23, 323]
 show create table `minute_microsecond`;
-Table    Create Table
-minute_microsecond    CREATE TABLE `minute_microsecond` (\n  `minute_second` int DEFAULT NULL,\n  `mod` bigint DEFAULT NULL,\n  `natural` smallint DEFAULT NULL,\n  `not` decimal(38,0) DEFAULT NULL,\n  `null` char(1) DEFAULT NULL,\n  `on` varchar(65535) DEFAULT NULL,\n  `optionally` int DEFAULT NULL,\n  `or` float DEFAULT NULL\n)
+Table  ¦  Create Table
+minute_microsecond  ¦  CREATE TABLE `minute_microsecond` (
+  `minute_second` int DEFAULT NULL,
+  `mod` bigint DEFAULT NULL,
+  `natural` smallint DEFAULT NULL,
+  `not` decimal(38,0) DEFAULT NULL,
+  `null` char(1) DEFAULT NULL,
+  `on` varchar(65535) DEFAULT NULL,
+  `optionally` int DEFAULT NULL,
+  `or` float DEFAULT NULL
+)
+
+#SQL[@68,N31]Result[]
 drop table `minute_microsecond`;
+
+#SQL[@70,N28]Result[]
 drop table if exists `order`;
+
+#SQL[@71,N148]Result[]
 create table `order` (`out` int, `outer` bigint, `outfile` smallint, `over` decimal, `partition` char, `primary` varchar, `quick` int, `rank` float);
+
+#SQL[@72,N25]Result[23, 297]
 show create table `order`;
-Table    Create Table
-order    CREATE TABLE `order` (\n  `out` int DEFAULT NULL,\n  `outer` bigint DEFAULT NULL,\n  `outfile` smallint DEFAULT NULL,\n  `over` decimal(38,0) DEFAULT NULL,\n  `partition` char(1) DEFAULT NULL,\n  `primary` varchar(65535) DEFAULT NULL,\n  `quick` int DEFAULT NULL,\n  `rank` float DEFAULT NULL\n)
+Table  ¦  Create Table
+order  ¦  CREATE TABLE `order` (
+  `out` int DEFAULT NULL,
+  `outer` bigint DEFAULT NULL,
+  `outfile` smallint DEFAULT NULL,
+  `over` decimal(38,0) DEFAULT NULL,
+  `partition` char(1) DEFAULT NULL,
+  `primary` varchar(65535) DEFAULT NULL,
+  `quick` int DEFAULT NULL,
+  `rank` float DEFAULT NULL
+)
+
+#SQL[@73,N18]Result[]
 drop table `order`;
+
+#SQL[@75,N32]Result[]
 drop table if exists `recursive`;
+
+#SQL[@76,N162]Result[]
 create table `recursive` (`references` int, `regexp` bigint, `reindex` smallint, `rename` decimal, `repeat` char, `replace` varchar, `require` int, `right` float);
+
+#SQL[@77,N29]Result[23, 315]
 show create table `recursive`;
-Table    Create Table
-recursive    CREATE TABLE `recursive` (\n  `references` int DEFAULT NULL,\n  `regexp` bigint DEFAULT NULL,\n  `reindex` smallint DEFAULT NULL,\n  `rename` decimal(38,0) DEFAULT NULL,\n  `repeat` char(1) DEFAULT NULL,\n  `replace` varchar(65535) DEFAULT NULL,\n  `require` int DEFAULT NULL,\n  `right` float DEFAULT NULL\n)
+Table  ¦  Create Table
+recursive  ¦  CREATE TABLE `recursive` (
+  `references` int DEFAULT NULL,
+  `regexp` bigint DEFAULT NULL,
+  `reindex` smallint DEFAULT NULL,
+  `rename` decimal(38,0) DEFAULT NULL,
+  `repeat` char(1) DEFAULT NULL,
+  `replace` varchar(65535) DEFAULT NULL,
+  `require` int DEFAULT NULL,
+  `right` float DEFAULT NULL
+)
+
+#SQL[@78,N22]Result[]
 drop table `recursive`;
+
+#SQL[@80,N28]Result[]
 drop table if exists `rlike`;
+
+#SQL[@81,N167]Result[]
 create table `rlike` (`row` int, `row_number` bigint, `rows` smallint, `schema` decimal, `schemas` char, `second_microsecond` varchar, `select` int, `separator` float);
+
+#SQL[@82,N25]Result[23, 316]
 show create table `rlike`;
-Table    Create Table
-rlike    CREATE TABLE `rlike` (\n  `row` int DEFAULT NULL,\n  `row_number` bigint DEFAULT NULL,\n  `rows` smallint DEFAULT NULL,\n  `schema` decimal(38,0) DEFAULT NULL,\n  `schemas` char(1) DEFAULT NULL,\n  `second_microsecond` varchar(65535) DEFAULT NULL,\n  `select` int DEFAULT NULL,\n  `separator` float DEFAULT NULL\n)
+Table  ¦  Create Table
+rlike  ¦  CREATE TABLE `rlike` (
+  `row` int DEFAULT NULL,
+  `row_number` bigint DEFAULT NULL,
+  `rows` smallint DEFAULT NULL,
+  `schema` decimal(38,0) DEFAULT NULL,
+  `schemas` char(1) DEFAULT NULL,
+  `second_microsecond` varchar(65535) DEFAULT NULL,
+  `select` int DEFAULT NULL,
+  `separator` float DEFAULT NULL
+)
+
+#SQL[@83,N18]Result[]
 drop table `rlike`;
+
+#SQL[@85,N26]Result[]
 drop table if exists `set`;
+
+#SQL[@86,N182]Result[]
 create table `set` (`show` int, `sql_big_result` bigint, `sql_buffer_result` smallint, `sql_small_result` decimal, `ssl` char, `starting` varchar, `straight_join` int, `table` float);
+
+#SQL[@87,N23]Result[23, 329]
 show create table `set`;
-Table    Create Table
-set    CREATE TABLE `set` (\n  `show` int DEFAULT NULL,\n  `sql_big_result` bigint DEFAULT NULL,\n  `sql_buffer_result` smallint DEFAULT NULL,\n  `sql_small_result` decimal(38,0) DEFAULT NULL,\n  `ssl` char(1) DEFAULT NULL,\n  `starting` varchar(65535) DEFAULT NULL,\n  `straight_join` int DEFAULT NULL,\n  `table` float DEFAULT NULL\n)
+Table  ¦  Create Table
+set  ¦  CREATE TABLE `set` (
+  `show` int DEFAULT NULL,
+  `sql_big_result` bigint DEFAULT NULL,
+  `sql_buffer_result` smallint DEFAULT NULL,
+  `sql_small_result` decimal(38,0) DEFAULT NULL,
+  `ssl` char(1) DEFAULT NULL,
+  `starting` varchar(65535) DEFAULT NULL,
+  `straight_join` int DEFAULT NULL,
+  `table` float DEFAULT NULL
+)
+
+#SQL[@88,N16]Result[]
 drop table `set`;
+
+#SQL[@90,N32]Result[]
 drop table if exists `temporary`;
+
+#SQL[@91,N152]Result[]
 create table `temporary` (`terminated` int, `then` bigint, `to` smallint, `trailing` decimal, `true` char, `union` varchar, `unique` int, `until` float);
+
+#SQL[@92,N29]Result[23, 305]
 show create table `temporary`;
-Table    Create Table
-temporary    CREATE TABLE `temporary` (\n  `terminated` int DEFAULT NULL,\n  `then` bigint DEFAULT NULL,\n  `to` smallint DEFAULT NULL,\n  `trailing` decimal(38,0) DEFAULT NULL,\n  `true` char(1) DEFAULT NULL,\n  `union` varchar(65535) DEFAULT NULL,\n  `unique` int DEFAULT NULL,\n  `until` float DEFAULT NULL\n)
+Table  ¦  Create Table
+temporary  ¦  CREATE TABLE `temporary` (
+  `terminated` int DEFAULT NULL,
+  `then` bigint DEFAULT NULL,
+  `to` smallint DEFAULT NULL,
+  `trailing` decimal(38,0) DEFAULT NULL,
+  `true` char(1) DEFAULT NULL,
+  `union` varchar(65535) DEFAULT NULL,
+  `unique` int DEFAULT NULL,
+  `until` float DEFAULT NULL
+)
+
+#SQL[@93,N22]Result[]
 drop table `temporary`;
+
+#SQL[@95,N29]Result[]
 drop table if exists `update`;
+
+#SQL[@96,N157]Result[]
 create table `update` (`usage` int, `use` bigint, `using` smallint, `utc_date` decimal, `utc_time` char, `utc_timestamp` varchar, `values` int, `when` float);
+
+#SQL[@97,N26]Result[23, 307]
 show create table `update`;
-Table    Create Table
-update    CREATE TABLE `update` (\n  `usage` int DEFAULT NULL,\n  `use` bigint DEFAULT NULL,\n  `using` smallint DEFAULT NULL,\n  `utc_date` decimal(38,0) DEFAULT NULL,\n  `utc_time` char(1) DEFAULT NULL,\n  `utc_timestamp` varchar(65535) DEFAULT NULL,\n  `values` int DEFAULT NULL,\n  `when` float DEFAULT NULL\n)
+Table  ¦  Create Table
+update  ¦  CREATE TABLE `update` (
+  `usage` int DEFAULT NULL,
+  `use` bigint DEFAULT NULL,
+  `using` smallint DEFAULT NULL,
+  `utc_date` decimal(38,0) DEFAULT NULL,
+  `utc_time` char(1) DEFAULT NULL,
+  `utc_timestamp` varchar(65535) DEFAULT NULL,
+  `values` int DEFAULT NULL,
+  `when` float DEFAULT NULL
+)
+
+#SQL[@98,N19]Result[]
 drop table `update`;
+
+#SQL[@100,N28]Result[]
 drop table if exists `where`;
+
+#SQL[@101,N87]Result[]
 create table `where` (`while` int, `with` bigint, `xor` smallint, `year_month` decimal);
+
+#SQL[@102,N25]Result[23, 166]
 show create table `where`;
-Table    Create Table
-where    CREATE TABLE `where` (\n  `while` int DEFAULT NULL,\n  `with` bigint DEFAULT NULL,\n  `xor` smallint DEFAULT NULL,\n  `year_month` decimal(38,0) DEFAULT NULL\n)
+Table  ¦  Create Table
+where  ¦  CREATE TABLE `where` (
+  `while` int DEFAULT NULL,
+  `with` bigint DEFAULT NULL,
+  `xor` smallint DEFAULT NULL,
+  `year_month` decimal(38,0) DEFAULT NULL
+)
+
+#SQL[@103,N18]Result[]
 drop table `where`;
+
+#SQL[@105,N18]Result[]
 drop database test;
+

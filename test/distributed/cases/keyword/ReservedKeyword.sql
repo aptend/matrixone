@@ -1,5 +1,6 @@
 drop database if exists test;
 create database test;
+use test;
 
 drop table if exists `_binary`;
 create table `_binary` (`add` int, `all` bigint, `alter` smallint, `analyze` decimal, `and` char, `as` varchar, `asc` int, `begin` float);

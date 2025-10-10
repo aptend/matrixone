@@ -1,141 +1,280 @@
+#SQL[@1,N33]Result[]
 set experimental_fulltext_index=1;
+
+#SQL[@2,N35]Result[]
 set ft_relevancy_algorithm="TF-IDF";
+
+#SQL[@3,N28]Result[]
 drop database if exists test;
+
+#SQL[@4,N20]Result[]
 create database test;
+
+#SQL[@5,N8]Result[]
 use test;
+
+#SQL[@6,N129]Result[]
 create table articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200), body TEXT, FULLTEXT (title,body));
+
+#SQL[@7,N26]Result[23, 200]
 show create table articles;
-Table    Create Table
-articles    CREATE TABLE `articles` (\n  `id` int unsigned NOT NULL AUTO_INCREMENT,\n  `title` varchar(200) DEFAULT NULL,\n  `body` text DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT (`title`,`body`)\n)
+Table  ¦  Create Table
+articles  ¦  CREATE TABLE `articles` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) DEFAULT NULL,
+  `body` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT (`title`,`body`)
+)
+
+#SQL[@8,N19]Result[]
 drop table articles;
+
+#SQL[@10,N106]Result[]
 create table articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200), body TEXT);
+
+#SQL[@11,N53]Result[]
 create fulltext index fdx_01 on articles(title, body);
+
+#SQL[@12,N29]Result[]
 drop index fdx_01 on articles;
+
+#SQL[@13,N47]Result[]
 create fulltext index fdx_02 on articles(title);
+
+#SQL[@14,N30]Result[]
 drop  index fdx_02 on articles;
+
+#SQL[@15,N44]Error[81]
 create fulltext index fdx_03 on articles(id);
 not supported: fulltext index only support char, varchar, text, datalink and json
+
+#SQL[@16,N61]Error[226]
 drop  index fdx_04 on articles(title, body) with PARSER ngram;
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 31 near "(title, body) with PARSER ngram;";
+SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 31 near \"(title, body) with PARSER ngram\";
+
+#SQL[@17,N30]Error[39]
 drop  index fdx_04 on articles;
 internal error: not found index: fdx_04
+
+#SQL[@18,N19]Result[]
 drop table articles;
+
+#SQL[@20,N64]Result[]
 create table src (id bigint primary key, json1 json, json2 json);
+
+#SQL[@21,N59]Result[]
 create fulltext index ftidx1 on src(json1) with parser json;
+
+#SQL[@22,N21]Result[23, 180]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `json1` json DEFAULT NULL,\n  `json2` json DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT `ftidx1`(`json1`) WITH PARSER json\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `json1` json DEFAULT NULL,
+  `json2` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT `ftidx1`(`json1`) WITH PARSER json
+)
+
+#SQL[@23,N33]Result[]
 alter table src drop column json1;
+
+#SQL[@24,N14]Result[]
 drop table src;
+
+#SQL[@26,N106]Result[]
 create table articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200), body TEXT);
+
+#SQL[@27,N592]Result[]
 insert into articles (title,body) VALUES ('MySQL Tutorial','DBMS stands for DataBase ...'),
-('How To Use MySQL Well','After you went through a ...'),
-('Optimizing MySQL','In this tutorial, we show ...'),
-('1001 MySQL Tricks','1. Never run mysqld as root. 2. ...'),
-('MySQL vs. YourSQL','In the following database comparison ...'),
-('MySQL Security','When configured properly, MySQL ...');
+                                         ('How To Use MySQL Well','After you went through a ...'),
+                                         ('Optimizing MySQL','In this tutorial, we show ...'),
+                                         ('1001 MySQL Tricks','1. Never run mysqld as root. 2. ...'),
+                                         ('MySQL vs. YourSQL','In the following database comparison ...'),
+                                         ('MySQL Security','When configured properly, MySQL ...');
+
+#SQL[@33,N71]Result[]
 create fulltext index fdx_01 on articles(title, body) with parser ngram;
+
+#SQL[@34,N204]Result[23, 55, 70]
 select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE) union select * from articles where match(title,body)  AGAINST ('YourSQL' IN NATURAL LANGUAGE MODE) order by id;
-id    title    body
-1    MySQL Tutorial    DBMS stands for DataBase ...
-5    MySQL vs. YourSQL    In the following database comparison ...
+id  ¦  title  ¦  body
+1  ¦  MySQL Tutorial  ¦  DBMS stands for DataBase ...
+5  ¦  MySQL vs. YourSQL  ¦  In the following database comparison ...
+
+#SQL[@35,N29]Result[]
 drop index fdx_01 on articles;
+
+#SQL[@36,N204]Error[141]
 select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE) union select * from articles where match(title,body)  AGAINST ('YourSQL' IN NATURAL LANGUAGE MODE) order by id;
 not supported: MATCH() AGAINST() function cannot be replaced by FULLTEXT INDEX and full table scan with fulltext search is not supported yet.
+
+#SQL[@37,N53]Result[]
 create fulltext index fdx_01 on articles(title, body);
+
+#SQL[@38,N204]Result[23, 55, 70]
 select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE) union select * from articles where match(title,body)  AGAINST ('YourSQL' IN NATURAL LANGUAGE MODE) order by id;
-id    title    body
-1    MySQL Tutorial    DBMS stands for DataBase ...
-5    MySQL vs. YourSQL    In the following database comparison ...
+id  ¦  title  ¦  body
+1  ¦  MySQL Tutorial  ¦  DBMS stands for DataBase ...
+5  ¦  MySQL vs. YourSQL  ¦  In the following database comparison ...
+
+#SQL[@39,N116]Result[8, 1]
 select count(*) from (select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE));
 count(*)
 2
+
+#SQL[@40,N19]Result[]
 drop table articles;
+
+#SQL[@42,N106]Result[]
 create table articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title VARCHAR(200), body TEXT);
+
+#SQL[@43,N967]Result[]
 insert into articles (title,body) VALUES ('神雕侠侣 第一回 风月无情','越女采莲秋水畔，窄袖轻罗，暗露双金钏 ...'),
-('神雕侠侣 第二回 故人之子','正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ...'),
-('神雕侠侣 第三回 投师终南','郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ...'),
-('神雕侠侣 第四回 全真门下','郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ...'),
-('神雕侠侣 第五回 活死人墓','杨过摔下山坡，滚入树林长草丛中，便即昏晕 ...'),
-('神雕侠侣 第六回 玉女心经','小龙女从怀里取出一个瓷瓶，交在杨过手里 ...');
+                                         ('神雕侠侣 第二回 故人之子','正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ...'),
+                                         ('神雕侠侣 第三回 投师终南','郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ...'),
+                                         ('神雕侠侣 第四回 全真门下','郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ...'),
+                                         ('神雕侠侣 第五回 活死人墓','杨过摔下山坡，滚入树林长草丛中，便即昏晕 ...'),
+                                         ('神雕侠侣 第六回 玉女心经','小龙女从怀里取出一个瓷瓶，交在杨过手里 ...');
+
+#SQL[@49,N71]Result[]
 create fulltext index fdx_01 on articles(title, body) with parser ngram;
+
+#SQL[@50,N97]Result[23, 106]
 select * from articles where match(title,body)  AGAINST ('风月无情' IN NATURAL LANGUAGE MODE);
-id    title    body
-1    神雕侠侣 第一回 风月无情    越女采莲秋水畔，窄袖轻罗，暗露双金钏 ...
+id  ¦  title  ¦  body
+1  ¦  神雕侠侣 第一回 风月无情  ¦  越女采莲秋水畔，窄袖轻罗，暗露双金钏 ...
+
+#SQL[@51,N91]Result[23, 112, 109]
 select * from articles where match(title,body)  AGAINST ('杨过' IN NATURAL LANGUAGE MODE);
-id    title    body
-5    神雕侠侣 第五回 活死人墓    杨过摔下山坡，滚入树林长草丛中，便即昏晕 ...
-6    神雕侠侣 第六回 玉女心经    小龙女从怀里取出一个瓷瓶，交在杨过手里 ...
+id  ¦  title  ¦  body
+5  ¦  神雕侠侣 第五回 活死人墓  ¦  杨过摔下山坡，滚入树林长草丛中，便即昏晕 ...
+6  ¦  神雕侠侣 第六回 玉女心经  ¦  小龙女从怀里取出一个瓷瓶，交在杨过手里 ...
+
+#SQL[@52,N94]Result[23, 166, 109]
 select * from articles where match(title,body)  AGAINST ('小龙女' IN NATURAL LANGUAGE MODE);
-id    title    body
-2    神雕侠侣 第二回 故人之子    正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ...
-6    神雕侠侣 第六回 玉女心经    小龙女从怀里取出一个瓷瓶，交在杨过手里 ...
+id  ¦  title  ¦  body
+2  ¦  神雕侠侣 第二回 故人之子  ¦  正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ...
+6  ¦  神雕侠侣 第六回 玉女心经  ¦  小龙女从怀里取出一个瓷瓶，交在杨过手里 ...
+
+#SQL[@53,N97]Result[23, 106, 166, 121, 133, 112, 109]
 select * from articles where match(title,body)  AGAINST ('神雕侠侣' IN NATURAL LANGUAGE MODE);
-id    title    body
-1    神雕侠侣 第一回 风月无情    越女采莲秋水畔，窄袖轻罗，暗露双金钏 ...
-2    神雕侠侣 第二回 故人之子    正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ...
-3    神雕侠侣 第三回 投师终南    郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ...
-4    神雕侠侣 第四回 全真门下    郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ...
-5    神雕侠侣 第五回 活死人墓    杨过摔下山坡，滚入树林长草丛中，便即昏晕 ...
-6    神雕侠侣 第六回 玉女心经    小龙女从怀里取出一个瓷瓶，交在杨过手里 ...
+id  ¦  title  ¦  body
+1  ¦  神雕侠侣 第一回 风月无情  ¦  越女采莲秋水畔，窄袖轻罗，暗露双金钏 ...
+2  ¦  神雕侠侣 第二回 故人之子  ¦  正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ...
+3  ¦  神雕侠侣 第三回 投师终南  ¦  郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ...
+4  ¦  神雕侠侣 第四回 全真门下  ¦  郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ...
+5  ¦  神雕侠侣 第五回 活死人墓  ¦  杨过摔下山坡，滚入树林长草丛中，便即昏晕 ...
+6  ¦  神雕侠侣 第六回 玉女心经  ¦  小龙女从怀里取出一个瓷瓶，交在杨过手里 ...
+
+#SQL[@54,N19]Result[]
 drop table articles;
+
+#SQL[@56,N98]Result[]
 create table articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title json, body json);
+
+#SQL[@57,N731]Result[]
 insert into articles (title,body) VALUES ('{"title": "MySQL Tutorial"}','{"body":"DBMS stands for DataBase ..."}'),
-('{"title":"How To Use MySQL Well"}','{"body":"After you went through a ..."}'),
-('{"title":"Optimizing MySQL"}','{"body":"In this tutorial, we show ..."}'),
-('{"title":"1001 MySQL Tricks"}','{"body":"1. Never run mysqld as root. 2. ..."}'),
-('{"title":"MySQL vs. YourSQL"}','{"body":"In the following database comparison ..."}'),
-('{"title":"MySQL Security"}','{"body":"When configured properly, MySQL ..."}');
+                                         ('{"title":"How To Use MySQL Well"}','{"body":"After you went through a ..."}'),
+                                         ('{"title":"Optimizing MySQL"}','{"body":"In this tutorial, we show ..."}'),
+                                         ('{"title":"1001 MySQL Tricks"}','{"body":"1. Never run mysqld as root. 2. ..."}'),
+                                         ('{"title":"MySQL vs. YourSQL"}','{"body":"In the following database comparison ..."}'),
+                                         ('{"title":"MySQL Security"}','{"body":"When configured properly, MySQL ..."}');
+
+#SQL[@63,N70]Result[]
 create fulltext index fdx_01 on articles(title, body) with parser json;
+
+#SQL[@64,N204]Result[23, 80, 95]
 select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE) union select * from articles where match(title,body)  AGAINST ('YourSQL' IN NATURAL LANGUAGE MODE) order by id;
-id    title    body
-1    {"title": "MySQL Tutorial"}    {"body": "DBMS stands for DataBase ..."}
-5    {"title": "MySQL vs. YourSQL"}    {"body": "In the following database comparison ..."}
+id  ¦  title  ¦  body
+1  ¦  {"title": "MySQL Tutorial"}  ¦  {"body": "DBMS stands for DataBase ..."}
+5  ¦  {"title": "MySQL vs. YourSQL"}  ¦  {"body": "In the following database comparison ..."}
+
+#SQL[@65,N29]Result[]
 drop index fdx_01 on articles;
+
+#SQL[@66,N204]Error[141]
 select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE) union select * from articles where match(title,body)  AGAINST ('YourSQL' IN NATURAL LANGUAGE MODE) order by id;
 not supported: MATCH() AGAINST() function cannot be replaced by FULLTEXT INDEX and full table scan with fulltext search is not supported yet.
+
+#SQL[@67,N53]Result[]
 create fulltext index fdx_01 on articles(title, body);
+
+#SQL[@68,N204]Result[23, 80, 95]
 select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE) union select * from articles where match(title,body)  AGAINST ('YourSQL' IN NATURAL LANGUAGE MODE) order by id;
-id    title    body
-1    {"title": "MySQL Tutorial"}    {"body": "DBMS stands for DataBase ..."}
-5    {"title": "MySQL vs. YourSQL"}    {"body": "In the following database comparison ..."}
+id  ¦  title  ¦  body
+1  ¦  {"title": "MySQL Tutorial"}  ¦  {"body": "DBMS stands for DataBase ..."}
+5  ¦  {"title": "MySQL vs. YourSQL"}  ¦  {"body": "In the following database comparison ..."}
+
+#SQL[@69,N116]Result[8, 1]
 select count(*) from (select * from articles where match(title,body)  AGAINST ('database' IN NATURAL LANGUAGE MODE));
 count(*)
 2
+
+#SQL[@70,N19]Result[]
 drop table articles;
+
+#SQL[@72,N98]Result[]
 create table articles (id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY, title json, body json);
+
+#SQL[@73,N1106]Result[]
 insert into articles (title,body) VALUES ('{"title": "神雕侠侣 第一回 风月无情"}','{"body":"越女采莲秋水畔，窄袖轻罗，暗露双金钏 ..."}'),
-('{"title":"神雕侠侣 第二回 故人之子"}','{"body":"正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ..."}'),
-('{"title":"神雕侠侣 第三回 投师终南"}','{"body":"郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ..."}'),
-('{"title":"神雕侠侣 第四回 全真门下"}','{"body":"郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ..."}'),
-('{"title":"神雕侠侣 第五回 活死人墓"}','{"body":"杨过摔下山坡，滚入树林长草丛中，便即昏晕 ..."}'),
-('{"title":"神雕侠侣 第六回 玉女心经"}','{"body":"小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}');
+                                         ('{"title":"神雕侠侣 第二回 故人之子"}','{"body":"正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ..."}'),
+                                         ('{"title":"神雕侠侣 第三回 投师终南"}','{"body":"郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ..."}'),
+                                         ('{"title":"神雕侠侣 第四回 全真门下"}','{"body":"郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ..."}'),
+                                         ('{"title":"神雕侠侣 第五回 活死人墓"}','{"body":"杨过摔下山坡，滚入树林长草丛中，便即昏晕 ..."}'),
+                                         ('{"title":"神雕侠侣 第六回 玉女心经"}','{"body":"小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}');
+
+#SQL[@79,N70]Result[]
 create fulltext index fdx_01 on articles(title, body) with parser json;
+
+#SQL[@80,N97]Result[23, 131]
 select * from articles where match(title,body)  AGAINST ('风月无情' IN NATURAL LANGUAGE MODE);
-id    title    body
-1    {"title": "神雕侠侣 第一回 风月无情"}    {"body": "越女采莲秋水畔，窄袖轻罗，暗露双金钏 ..."}
+id  ¦  title  ¦  body
+1  ¦  {"title": "神雕侠侣 第一回 风月无情"}  ¦  {"body": "越女采莲秋水畔，窄袖轻罗，暗露双金钏 ..."}
+
+#SQL[@81,N91]Result[23, 137, 134]
 select * from articles where match(title,body)  AGAINST ('杨过' IN NATURAL LANGUAGE MODE);
-id    title    body
-5    {"title": "神雕侠侣 第五回 活死人墓"}    {"body": "杨过摔下山坡，滚入树林长草丛中，便即昏晕 ..."}
-6    {"title": "神雕侠侣 第六回 玉女心经"}    {"body": "小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}
+id  ¦  title  ¦  body
+5  ¦  {"title": "神雕侠侣 第五回 活死人墓"}  ¦  {"body": "杨过摔下山坡，滚入树林长草丛中，便即昏晕 ..."}
+6  ¦  {"title": "神雕侠侣 第六回 玉女心经"}  ¦  {"body": "小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}
+
+#SQL[@82,N94]Result[23, 191, 134]
 select * from articles where match(title,body)  AGAINST ('小龙女' IN NATURAL LANGUAGE MODE);
-id    title    body
-2    {"title": "神雕侠侣 第二回 故人之子"}    {"body": "正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ..."}
-6    {"title": "神雕侠侣 第六回 玉女心经"}    {"body": "小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}
+id  ¦  title  ¦  body
+2  ¦  {"title": "神雕侠侣 第二回 故人之子"}  ¦  {"body": "正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ..."}
+6  ¦  {"title": "神雕侠侣 第六回 玉女心经"}  ¦  {"body": "小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}
+
+#SQL[@83,N97]Result[23, 131, 191, 146, 158, 137, 134]
 select * from articles where match(title,body)  AGAINST ('神雕侠侣' IN NATURAL LANGUAGE MODE);
-id    title    body
-1    {"title": "神雕侠侣 第一回 风月无情"}    {"body": "越女采莲秋水畔，窄袖轻罗，暗露双金钏 ..."}
-2    {"title": "神雕侠侣 第二回 故人之子"}    {"body": "正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ..."}
-3    {"title": "神雕侠侣 第三回 投师终南"}    {"body": "郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ..."}
-4    {"title": "神雕侠侣 第四回 全真门下"}    {"body": "郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ..."}
-5    {"title": "神雕侠侣 第五回 活死人墓"}    {"body": "杨过摔下山坡，滚入树林长草丛中，便即昏晕 ..."}
-6    {"title": "神雕侠侣 第六回 玉女心经"}    {"body": "小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}
+id  ¦  title  ¦  body
+1  ¦  {"title": "神雕侠侣 第一回 风月无情"}  ¦  {"body": "越女采莲秋水畔，窄袖轻罗，暗露双金钏 ..."}
+2  ¦  {"title": "神雕侠侣 第二回 故人之子"}  ¦  {"body": "正自发痴，忽听左首屋中传出一人喝道：“这是在人家府上，你又提小龙女干什么？” ..."}
+3  ¦  {"title": "神雕侠侣 第三回 投师终南"}  ¦  {"body": "郭靖在舟中潜运神功，数日间伤势便已痊愈了大半。 ..."}
+4  ¦  {"title": "神雕侠侣 第四回 全真门下"}  ¦  {"body": "郭靖摆脱众道纠缠，提气向重阳宫奔去，忽听得钟声镗镗响起 ..."}
+5  ¦  {"title": "神雕侠侣 第五回 活死人墓"}  ¦  {"body": "杨过摔下山坡，滚入树林长草丛中，便即昏晕 ..."}
+6  ¦  {"title": "神雕侠侣 第六回 玉女心经"}  ¦  {"body": "小龙女从怀里取出一个瓷瓶，交在杨过手里 ..."}
+
+#SQL[@84,N19]Result[]
 drop table articles;
+
+#SQL[@86,N23]Result[]
 drop table if exists t1;
+
+#SQL[@87,N57]Result[]
 create table t1(a int primary key, b varchar(200), c int);
+
+#SQL[@88,N107]Result[]
 insert into t1(a,b,c) select result, "test create big fulltext index" ,result from generate_series(10000) g;
+
+#SQL[@89,N37]Result[]
 create fulltext index ftidx on t1 (b);
+
+#SQL[@90,N29]Result[]
 create index index2 on t1 (c);
+
+#SQL[@92,N38]Result[13, 7, 10, 24, 34, 37, 46, 39, 45, 40, 54, 44, 50]
 explain select * from t1 where c = 100;
 TP QUERY PLAN
 Project
@@ -150,5 +289,10 @@ Project
         ->  Index Table Scan on t1.index2 [ForceOneCN]
               Filter Cond: prefix_eq(#[0,0])
               Block Filter Cond: prefix_eq(#[0,0])
+
+#SQL[@93,N13]Result[]
 drop table t1;
+
+#SQL[@95,N18]Result[]
 drop database test;
+

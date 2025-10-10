@@ -1,156 +1,380 @@
+#SQL[@1,N38]Result[]
 drop database if exists fk_self_refer2;
+
+#SQL[@2,N30]Result[]
 create database fk_self_refer2;
+
+#SQL[@3,N18]Result[]
 use fk_self_refer2;
+
+#SQL[@5,N23]Result[]
 drop table if exists t1;
+
+#SQL[@8,N185]Result[]
 create table t1(a int primary key,b int,c int,
-constraint `c1` foreign key fk1(b) references t1(a),
-constraint `c2` foreign key fk2(c) references t1(a)
+                constraint `c1` foreign key fk1(b) references t1(a),
+                constraint `c2` foreign key fk2(c) references t1(a)
 );
+
+#SQL[@12,N20]Result[23, 311]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int NOT NULL,\n  `b` int DEFAULT NULL,\n  `c` int DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  CONSTRAINT `c1` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `c2` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int NOT NULL,
+  `b` int DEFAULT NULL,
+  `c` int DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  CONSTRAINT `c1` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `c2` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@15,N29]Error[64]
 insert into t1 values (1,2,3);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@18,N29]Result[]
 insert into t1 values (1,1,1);
+
+#SQL[@21,N29]Result[]
 insert into t1 values (2,2,1);
+
+#SQL[@24,N29]Result[]
 insert into t1 values (3,3,2);
+
+#SQL[@27,N29]Result[]
 insert into t1 values (4,3,1);
+
+#SQL[@30,N29]Error[64]
 insert into t1 values (5,6,1);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@33,N32]Result[]
 insert into t1 values (6,NULL,1);
+
+#SQL[@36,N32]Error[64]
 insert into t1 values (7,NULL,8);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@39,N35]Result[]
 insert into t1 values (8,NULL,NULL);
+
+#SQL[@42,N26]Error[84]
 delete from t1 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@45,N26]Error[84]
 delete from t1 where a = 2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@48,N26]Error[84]
 delete from t1 where a = 3;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@51,N26]Result[]
 delete from t1 where a = 4;
+
+#SQL[@54,N26]Result[]
 delete from t1 where a = 6;
+
+#SQL[@56,N30]Result[]
 update t1 set b = 8 where a= 3;
+
+#SQL[@59,N26]Error[84]
 delete from t1 where a = 8;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@62,N26]Result[]
 delete from t1 where a = 3;
+
+#SQL[@65,N26]Result[]
 delete from t1 where a = 8;
+
+#SQL[@68,N31]Error[84]
 update t1 set a = 3 where a = 2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@71,N34]Result[]
 update t1 set b = NULL where a = 2;
+
+#SQL[@74,N26]Result[]
 delete from t1 where  a= 2;
+
+#SQL[@77,N34]Result[]
 update t1 set b = NULL where a = 1;
+
+#SQL[@80,N26]Error[84]
 delete from t1 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@83,N34]Result[]
 update t1 set c = NULL where a = 1;
+
+#SQL[@86,N26]Result[]
 delete from t1 where a = 1;
+
+#SQL[@89,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 0
+
+#SQL[@92,N23]Result[]
 drop table if exists t1;
+
+#SQL[@95,N184]Result[]
 create table t1(a int unique key,b int,c int,
-constraint `c1` foreign key fk1(b) references t1(a),
-constraint `c2` foreign key fk2(c) references t1(a)
+                constraint `c1` foreign key fk1(b) references t1(a),
+                constraint `c2` foreign key fk2(c) references t1(a)
 );
+
+#SQL[@99,N20]Result[23, 318]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int DEFAULT NULL,\n  `b` int DEFAULT NULL,\n  `c` int DEFAULT NULL,\n  UNIQUE KEY `a` (`a`),\n  CONSTRAINT `c1` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `c2` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int DEFAULT NULL,
+  `b` int DEFAULT NULL,
+  `c` int DEFAULT NULL,
+  UNIQUE KEY `a` (`a`),
+  CONSTRAINT `c1` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `c2` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@102,N38]Result[]
 insert into t1 values (NULL,NULL,NULL);
+
+#SQL[@105,N29]Result[]
 insert into t1 values (1,1,1);
+
+#SQL[@108,N29]Result[]
 insert into t1 values (2,1,1);
+
+#SQL[@111,N34]Result[]
 update t1 set a = NULL where a = 2;
+
+#SQL[@114,N26]Error[84]
 delete from t1 where c = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@120,N29]Result[]
 insert into t1 values (2,2,1);
+
+#SQL[@123,N29]Result[]
 insert into t1 values (3,3,2);
+
+#SQL[@126,N29]Result[]
 insert into t1 values (4,3,1);
+
+#SQL[@129,N29]Error[64]
 insert into t1 values (5,6,1);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@132,N32]Result[]
 insert into t1 values (6,NULL,1);
+
+#SQL[@135,N32]Error[64]
 insert into t1 values (7,NULL,8);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@138,N35]Result[]
 insert into t1 values (8,NULL,NULL);
+
+#SQL[@141,N26]Error[84]
 delete from t1 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@144,N26]Error[84]
 delete from t1 where a = 2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@147,N26]Error[84]
 delete from t1 where a = 3;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@150,N26]Result[]
 delete from t1 where a = 4;
+
+#SQL[@153,N26]Result[]
 delete from t1 where a = 6;
+
+#SQL[@155,N31]Result[]
 update t1 set b = 8 where a = 3;
+
+#SQL[@158,N31]Error[64]
 update t1 set b = 6 where a = 3;
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@161,N26]Error[84]
 delete from t1 where a = 8;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@164,N26]Result[]
 delete from t1 where a = 3;
+
+#SQL[@167,N26]Result[]
 delete from t1 where a = 8;
+
+#SQL[@170,N31]Error[84]
 update t1 set a = 3 where a = 2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@173,N34]Result[]
 update t1 set b = NULL where a = 2;
+
+#SQL[@176,N31]Result[]
 update t1 set a = 3 where a = 2;
+
+#SQL[@179,N27]Result[]
 delete from t1 where  a = 2;
+
+#SQL[@181,N27]Result[]
 delete from t1 where  a = 3;
+
+#SQL[@184,N34]Result[]
 update t1 set b = NULL where a = 1;
+
+#SQL[@187,N26]Error[84]
 delete from t1 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@190,N34]Result[]
 update t1 set c = NULL where a = 1;
+
+#SQL[@193,N26]Error[84]
 delete from t1 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@195,N47]Result[]
 update t1 set b = null,c = NULL where a is null;
+
+#SQL[@197,N26]Result[]
 delete from t1 where a = 1;
+
+#SQL[@199,N30]Result[]
 delete from t1 where a is null;
+
+#SQL[@202,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 0
+
+#SQL[@205,N23]Result[]
 drop table if exists t1;
+
+#SQL[@208,N230]Result[]
 create table t1(a int primary key,
-b int unique key,
-c int,
-constraint `c1` foreign key fk1(c) references t1(a),
-constraint `c2` foreign key fk2(c) references t1(b)
+                b int unique key,
+                c int,
+                constraint `c1` foreign key fk1(c) references t1(a),
+                constraint `c2` foreign key fk2(c) references t1(b)
 );
+
+#SQL[@214,N20]Result[23, 335]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int NOT NULL,\n  `b` int DEFAULT NULL,\n  `c` int DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  UNIQUE KEY `b` (`b`),\n  CONSTRAINT `c1` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `c2` FOREIGN KEY (`c`) REFERENCES `t1` (`b`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int NOT NULL,
+  `b` int DEFAULT NULL,
+  `c` int DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  UNIQUE KEY `b` (`b`),
+  CONSTRAINT `c1` FOREIGN KEY (`c`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `c2` FOREIGN KEY (`c`) REFERENCES `t1` (`b`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@217,N29]Result[]
 insert into t1 values (1,1,1);
+
+#SQL[@220,N29]Error[64]
 insert into t1 values (2,2,3);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@223,N29]Error[64]
 insert into t1 values (3,2,3);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@226,N32]Result[]
 insert into t1 values (2,2,NULL);
+
+#SQL[@229,N29]Result[]
 insert into t1 values (3,3,2);
+
+#SQL[@232,N29]Error[64]
 insert into t1 values (4,5,4);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@235,N32]Result[]
 insert into t1 values (4,5,NULL);
+
+#SQL[@238,N29]Result[]
 insert into t1 values (5,6,5);
+
+#SQL[@241,N26]Error[84]
 delete from t1 where a = 4;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@244,N29]Error[64]
 insert into t1 values (8,7,7);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@247,N25]Error[84]
 delete from t1 where a= 2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@250,N34]Error[64]
 update t1 set b = NULL where a = 2;
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@253,N26]Result[]
 delete from t1 where a = 3;
+
+#SQL[@256,N26]Result[]
 delete from t1 where a = 2;
+
+#SQL[@259,N26]Error[84]
 delete from t1 where a = 4;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@262,N26]Error[84]
 delete from t1 where a = 5;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@265,N31]Result[]
 update t1 set c = 1 where a = 5;
+
+#SQL[@268,N26]Result[]
 delete from t1 where a = 5;
+
+#SQL[@271,N26]Result[]
 delete from t1 where a = 4;
+
+#SQL[@274,N26]Error[84]
 delete from t1 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@277,N34]Error[64]
 update t1 set b = NULL where a = 1;
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@280,N31]Error[84]
 update t1 set b = 2 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@283,N34]Result[]
 update t1 set c = NULL where a = 1;
+
+#SQL[@286,N31]Result[]
 update t1 set b = 2 where a = 1;
+
+#SQL[@289,N26]Result[]
 delete from t1 where a = 1;
+
+#SQL[@292,N23]Result[8, 1]
 select count(*) from t1;
 count(*)
 0
+
+#SQL[@294,N23]Result[]
 drop table if exists t1;
+
+#SQL[@295,N38]Result[]
 drop database if exists fk_self_refer2;
+

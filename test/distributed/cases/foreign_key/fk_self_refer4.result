@@ -1,115 +1,280 @@
+#SQL[@1,N38]Result[]
 drop database if exists fk_self_refer4;
+
+#SQL[@2,N30]Result[]
 create database fk_self_refer4;
+
+#SQL[@3,N18]Result[]
 use fk_self_refer4;
+
+#SQL[@5,N23]Result[]
 drop table if exists t1;
+
+#SQL[@7,N40]Result[]
 create table t1(a int primary key,b int);
+
+#SQL[@8,N11]Result[24, 2]
 show tables;
 Tables_in_fk_self_refer4
 t1
+
+#SQL[@9,N20]Result[23, 93]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int NOT NULL,\n  `b` int DEFAULT NULL,\n  PRIMARY KEY (`a`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int NOT NULL,
+  `b` int DEFAULT NULL,
+  PRIMARY KEY (`a`)
+)
+
+#SQL[@10,N39]Result[]
 insert into t1 values (1,2),(3,4),(5,6);
+
+#SQL[@13,N66]Error[64]
 alter table t1 add constraint fk1 foreign key (b) references t1(a);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@15,N14]Result[]
 delete from t1;
+
+#SQL[@16,N39]Result[]
 insert into t1 values (1,1),(2,3),(3,2);
+
+#SQL[@19,N66]Result[]
 alter table t1 add constraint fk1 foreign key (b) references t1(a);
+
+#SQL[@22,N51]Result[]
 alter table t1 add foreign key (b) references t1(a);
+
+#SQL[@25,N66]Error[43]
 alter table t1 add constraint fk1 foreign key (b) references t1(a);
 Duplicate foreign key constraint name 'fk1'
+
+#SQL[@27,N39]Result[]
 insert into t1 values (4,4),(6,5),(5,6);
+
+#SQL[@30,N27]Error[64]
 insert into t1 values (7,8);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@36,N35]Result[]
 alter table t1 drop foreign key fk1;
+
+#SQL[@39,N27]Error[64]
 insert into t1 values (7,8);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@41,N23]Result[]
 drop table if exists t1;
+
+#SQL[@42,N22]Result[]
 create table t2(a int);
+
+#SQL[@43,N33]Result[]
 insert into t2 values (1),(2),(3);
+
+#SQL[@46,N66]Error[31]
 alter table t2 add constraint fk1 foreign key (a) references t1(a);
 no such table fk_self_refer4.t1
+
+#SQL[@49,N66]Error[31]
 alter table t2 add constraint fk1 foreign key (a) references t1(a);
 no such table fk_self_refer4.t1
+
+#SQL[@52,N20]Result[23, 52]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` int DEFAULT NULL\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` int DEFAULT NULL
+)
+
+#SQL[@55,N25]Result[]
 insert into t2 values (7);
+
+#SQL[@58,N25]Result[]
 insert into t2 values (6);
+
+#SQL[@61,N35]Error[62]
 alter table t2 drop foreign key fk1;
 internal error: Can't DROP 'fk1'; check that column/key exists
+
+#SQL[@63,N20]Result[23, 52]
 show create table t2;
-Table    Create Table
-t2    CREATE TABLE `t2` (\n  `a` int DEFAULT NULL\n)
+Table  ¦  Create Table
+t2  ¦  CREATE TABLE `t2` (
+  `a` int DEFAULT NULL
+)
+
+#SQL[@66,N25]Result[]
 insert into t2 values (7);
+
+#SQL[@69,N66]Error[31]
 alter table t2 add constraint fk1 foreign key (a) references t1(a);
 no such table fk_self_refer4.t1
+
+#SQL[@72,N66]Error[57]
 alter table t2 add constraint fk1 foreign key (a) references t2(a);
 internal error: foreign key a can not reference to itself
+
+#SQL[@74,N26]Result[]
 delete from t2 where a = 7;
+
+#SQL[@77,N66]Error[31]
 alter table t2 add constraint fk1 foreign key (a) references t1(a);
 no such table fk_self_refer4.t1
+
+#SQL[@80,N31]Result[]
 update t2 set a = 7 where a = 6;
+
+#SQL[@82,N16]Error[45]
 select * from t1;
-SQL parser error: table "t1" does not exist
+SQL parser error: table \"t1\" does not exist
+
+#SQL[@85,N26]Error[31]
 delete from t1 where a = 6;
 no such table fk_self_refer4.t1
+
+#SQL[@87,N34]Error[31]
 update t1 set b = NULL where a = 5;
 no such table fk_self_refer4.t1
+
+#SQL[@89,N16]Error[45]
 select * from t1;
-SQL parser error: table "t1" does not exist
+SQL parser error: table \"t1\" does not exist
+
+#SQL[@91,N34]Result[]
 update t2 set a = NULL where a = 6;
+
+#SQL[@93,N16]Result[1, 1, 1, 1, 1]
 select * from t2;
 a
 1
 2
 3
 7
+
+#SQL[@96,N26]Error[31]
 delete from t1 where a = 6;
 no such table fk_self_refer4.t1
+
+#SQL[@98,N16]Error[45]
 select * from t1;
-SQL parser error: table "t1" does not exist
+SQL parser error: table \"t1\" does not exist
+
+#SQL[@101,N13]Error[31]
 drop table t1;
 no such table fk_self_refer4.t1
+
+#SQL[@104,N13]Result[]
 drop table t2;
+
+#SQL[@107,N13]Error[31]
 drop table t1;
 no such table fk_self_refer4.t1
+
+#SQL[@109,N41]Result[]
 create table t1(a int primary key ,b int);
+
+#SQL[@111,N68]Result[]
 alter table t1 add constraint `fk1` foreign key (b) references t1(a);
+
+#SQL[@112,N68]Result[]
 alter table t1 add constraint `fk2` foreign key (b) references t1(a);
+
+#SQL[@113,N68]Result[]
 alter table t1 add constraint `fk3` foreign key (b) references t1(a);
+
+#SQL[@114,N68]Result[]
 alter table t1 add constraint `fk4` foreign key (b) references t1(a);
+
+#SQL[@115,N68]Result[]
 alter table t1 add constraint `fk5` foreign key (b) references t1(a);
+
+#SQL[@117,N20]Result[23, 583]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `a` int NOT NULL,\n  `b` int DEFAULT NULL,\n  PRIMARY KEY (`a`),\n  CONSTRAINT `fk5` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `fk4` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `fk3` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `fk2` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,\n  CONSTRAINT `fk1` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `a` int NOT NULL,
+  `b` int DEFAULT NULL,
+  PRIMARY KEY (`a`),
+  CONSTRAINT `fk5` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk4` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk3` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk2` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `fk1` FOREIGN KEY (`b`) REFERENCES `t1` (`a`) ON DELETE RESTRICT ON UPDATE RESTRICT
+)
+
+#SQL[@121,N51]Result[]
 insert into t1 values (1,4),(2,3),(3,2),(4,1),(5,5);
+
+#SQL[@124,N26]Error[84]
 delete from t1 where a = 4;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@127,N26]Error[84]
 delete from t1 where a = 5;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@130,N35]Result[]
 alter table t1 drop foreign key fk1;
+
+#SQL[@131,N35]Result[]
 alter table t1 drop foreign key fk2;
+
+#SQL[@132,N35]Result[]
 alter table t1 drop foreign key fk3;
+
+#SQL[@133,N35]Result[]
 alter table t1 drop foreign key fk4;
+
+#SQL[@136,N26]Error[84]
 delete from t1 where a = 4;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@139,N26]Error[84]
 delete from t1 where a = 5;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@141,N35]Result[]
 alter table t1 drop foreign key fk5;
+
+#SQL[@144,N26]Result[]
 delete from t1 where a = 4;
+
+#SQL[@147,N26]Result[]
 delete from t1 where a = 5;
+
+#SQL[@150,N26]Result[]
 delete from t1 where a = 1;
+
+#SQL[@152,N68]Result[]
 alter table t1 add constraint `fk1` foreign key (b) references t1(a);
+
+#SQL[@155,N79]Error[62]
 alter table t1 drop foreign key fk1, drop foreign key fk2, drop foreign key fk1;
 internal error: Can't DROP 'fk2'; check that column/key exists
+
+#SQL[@158,N141]Error[43]
 alter table t1 add constraint fk1 foreign key (b) references t1(a), drop foreign key fk1, add constraint fk1 foreign key (b) references t1(a);
 Duplicate foreign key constraint name 'fk1'
+
+#SQL[@161,N79]Result[]
 alter table t1 drop foreign key fk1, drop foreign key fk1, drop foreign key fk1;
+
+#SQL[@164,N141]Error[62]
 alter table t1 add constraint fk1 foreign key (b) references t1(a), drop foreign key fk1, add constraint fk1 foreign key (b) references t1(a);
 internal error: Can't DROP 'fk1'; check that column/key exists
+
+#SQL[@167,N119]Error[43]
 alter table t1 add constraint fk1 foreign key (b) references t1(a), add constraint fk1 foreign key (b) references t1(a);
 Duplicate foreign key constraint name 'fk1'
+
+#SQL[@170,N68]Result[]
 alter table t1 add constraint `fk1` foreign key (b) references t1(a);
+
+#SQL[@173,N34]Result[]
 alter table t1 drop constraint fk1;
+
+#SQL[@175,N38]Result[]
 drop database if exists fk_self_refer4;
+

@@ -1,382 +1,828 @@
+#SQL[@1,N41]Result[]
 create table f1(b int, a int primary key);
+
+#SQL[@2,N46]Result[]
 create table f2(b int, aa varchar primary key);
+
+#SQL[@3,N67]Error[50]
 create table c1 (a int, b int, foreign key f_a(a) references f1(c));
 internal error: column 'c' no exists in table 'f1'
+
+#SQL[@4,N67]Error[56]
 create table c1 (a int, b int, foreign key f_a(a) references f1(b));
 internal error: failed to add the foreign key constraint
+
+#SQL[@5,N68]Error[73]
 create table c1 (a int, b int, foreign key f_a(a) references f2(aa));
 internal error: type of reference column 'aa' is not match for column 'a'
+
+#SQL[@6,N67]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a));
+
+#SQL[@7,N16]Result[]
 select * from f1;
-a	b
+
+#SQL[@8,N16]Result[]
 select * from c1;
-a	b
+
+#SQL[@9,N13]Error[81]
 drop table f1;
 internal error: can not drop table 'f1' referenced by some foreign key constraint
+
+#SQL[@10,N11]Error[85]
 truncate f1;
 internal error: can not truncate table 'f1' referenced by some foreign key constraint
+
+#SQL[@11,N11]Result[]
 truncate c1;
+
+#SQL[@12,N13]Error[81]
 drop table f1;
 internal error: can not drop table 'f1' referenced by some foreign key constraint
+
+#SQL[@13,N13]Result[]
 drop table c1;
+
+#SQL[@14,N13]Result[]
 drop table f1;
+
+#SQL[@15,N13]Result[]
 drop table f2;
+
+#SQL[@17,N52]Result[]
 create table f1(a int primary key, b int unique key);
+
+#SQL[@18,N67]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a));
+
+#SQL[@19,N41]Result[]
 insert into f1 values (1,1), (2,2), (3,3);
+
+#SQL[@20,N41]Result[]
 insert into c1 values (1,1), (2,2), (3,3);
+
+#SQL[@21,N26]Error[84]
 delete from f1 where a > 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@22,N13]Result[]
 drop table c1;
+
+#SQL[@23,N86]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a) on delete set null);
+
+#SQL[@24,N41]Result[]
 insert into c1 values (1,1), (2,2), (3,3);
+
+#SQL[@25,N26]Result[]
 delete from f1 where a > 1;
+
+#SQL[@26,N16]Result[8, 8, 11, 11]
 select * from c1;
-a	b
-1	1
-NULL	2
-NULL	3
+a  ¦  b
+1  ¦  1
+null  ¦  2
+null  ¦  3
+
+#SQL[@27,N13]Result[]
 drop table c1;
+
+#SQL[@28,N34]Result[]
 insert into f1 values (2,2), (3,3);
+
+#SQL[@29,N85]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a) on delete cascade);
+
+#SQL[@30,N41]Result[]
 insert into c1 values (1,1), (2,2), (3,3);
+
+#SQL[@31,N26]Result[]
 delete from f1 where a > 1;
+
+#SQL[@32,N16]Result[8, 8]
 select * from c1;
-a	b
-1	1
+a  ¦  b
+1  ¦  1
+
+#SQL[@33,N13]Result[]
 drop table c1;
+
+#SQL[@34,N13]Result[]
 drop table f1;
+
+#SQL[@36,N52]Result[]
 create table f1(a int primary key, b int unique key);
+
+#SQL[@37,N67]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a));
+
+#SQL[@38,N41]Result[]
 insert into f1 values (1,1), (2,2), (3,3);
+
+#SQL[@39,N41]Result[]
 insert into c1 values (1,1), (2,2), (3,3);
+
+#SQL[@40,N32]Error[84]
 update f1 set a = 11 where b = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@41,N32]Error[80]
 update c1 set a = 11 where b = 1;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@42,N34]Result[]
 update c1 set a = null where b = 1;
+
+#SQL[@43,N27]Result[8, 11, 8, 8]
 select * from c1 order by b;
-a	b
-NULL	1
-2	2
-3	3
+a  ¦  b
+null  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@44,N31]Result[]
 update c1 set a = 3 where b = 2;
+
+#SQL[@45,N27]Result[8, 11, 8, 8]
 select * from c1 order by b;
-a	b
-NULL	1
-3	2
-3	3
+a  ¦  b
+null  ¦  1
+3  ¦  2
+3  ¦  3
+
+#SQL[@46,N13]Result[]
 drop table c1;
+
+#SQL[@47,N86]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a) on update set null);
+
+#SQL[@48,N41]Result[]
 insert into c1 values (1,1), (2,2), (3,3);
+
+#SQL[@49,N28]Result[]
 update f1 set a=11 where a=1;
+
+#SQL[@50,N27]Result[8, 11, 8, 8]
 select * from c1 order by b;
-a	b
-NULL	1
-2	2
-3	3
+a  ¦  b
+null  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@51,N13]Result[]
 drop table c1;
+
+#SQL[@52,N13]Result[]
 drop table f1;
+
+#SQL[@53,N52]Result[]
 create table f1(a int primary key, b int unique key);
+
+#SQL[@54,N85]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a) on update cascade);
+
+#SQL[@55,N41]Result[]
 insert into f1 values (1,1), (2,2), (3,3);
+
+#SQL[@56,N41]Result[]
 insert into c1 values (1,1), (2,2), (3,3);
+
+#SQL[@57,N27]Error[31]
 update f1 set a=0 where b>1;
 Duplicate entry '0' for key 'a'
+
+#SQL[@58,N27]Result[]
 update f1 set a=0 where b=1;
+
+#SQL[@59,N27]Result[8, 8, 8, 8]
 select * from c1 order by b;
-a	b
-0	1
-2	2
-3	3
+a  ¦  b
+0  ¦  1
+2  ¦  2
+3  ¦  3
+
+#SQL[@60,N13]Result[]
 drop table c1;
+
+#SQL[@61,N13]Result[]
 drop table f1;
+
+#SQL[@64,N27]Result[]
 drop table if exists t_dept;
+
+#SQL[@65,N107]Result[]
 CREATE TABLE t_dept
 (
-id INT(11) PRIMARY KEY,
-name VARCHAR(22) NOT NULL,
-location VARCHAR(50)
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(22) NOT NULL,
+    location VARCHAR(50)
 );
+
+#SQL[@72,N54]Result[]
 INSERT INTO t_dept VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@73,N50]Result[]
 INSERT INTO t_dept VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@74,N48]Result[]
 INSERT INTO t_dept VALUES (30,'SALES','CHICAGO');
+
+#SQL[@75,N52]Result[]
 INSERT INTO t_dept VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@78,N26]Result[]
 drop table if exists t_emp;
+
+#SQL[@79,N179]Result[]
 CREATE TABLE t_emp
 (
-id INT(11) PRIMARY KEY,
-name VARCHAR(25),
-deptId INT(11),
-salary FLOAT,
-CONSTRAINT fk_emp_dept FOREIGN KEY(deptId) REFERENCES t_dept(id)
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(25),
+    deptId INT(11),
+    salary FLOAT,
+    CONSTRAINT fk_emp_dept FOREIGN KEY(deptId) REFERENCES t_dept(id)
 );
+
+#SQL[@88,N50]Result[]
 INSERT INTO t_emp VALUES (7369,'SMITH',20,1300.00);
+
+#SQL[@89,N50]Result[]
 INSERT INTO t_emp VALUES (7499,'ALLEN',30,1600.00);
+
+#SQL[@90,N50]Result[]
 INSERT INTO t_emp VALUES (7521,'WARD ',30,1250.00);
+
+#SQL[@91,N50]Result[]
 INSERT INTO t_emp VALUES (7566,'JONES',20,3475.00);
+
+#SQL[@92,N50]Result[]
 INSERT INTO t_emp VALUES (1234,'MEIXI',30,1250.00);
+
+#SQL[@93,N50]Result[]
 INSERT INTO t_emp VALUES (7698,'BLAKE',30,2850.00);
+
+#SQL[@94,N50]Result[]
 INSERT INTO t_emp VALUES (7782,'CLARK',10,2950.00);
+
+#SQL[@95,N50]Result[]
 INSERT INTO t_emp VALUES (7788,'SCOTT',20,3500.00);
+
+#SQL[@97,N51]Error[84]
 update t_dept set id = 50 where name = 'ACCOUNTING';
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@98,N44]Error[84]
 delete from t_dept where name = 'ACCOUNTING';
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@99,N49]Error[80]
 update t_emp set deptId = 50 where salary <  1500;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@100,N51]Result[]
 update t_emp set deptId = null where salary <  1500;
+
+#SQL[@101,N35]Result[36, 35, 35, 35, 33, 33, 33, 33, 33]
 select * from t_emp order by salary;
-id    name    deptid    salary
-7521    WARD     null    1250.0
-1234    MEIXI    null    1250.0
-7369    SMITH    null    1300.0
-7499    ALLEN    30    1600.0
-7698    BLAKE    30    2850.0
-7782    CLARK    10    2950.0
-7566    JONES    20    3475.0
-7788    SCOTT    20    3500.0
+id  ¦  name  ¦  deptid  ¦  salary
+7521  ¦  WARD   ¦  null  ¦  1250
+1234  ¦  MEIXI  ¦  null  ¦  1250
+7369  ¦  SMITH  ¦  null  ¦  1300
+7499  ¦  ALLEN  ¦  30  ¦  1600
+7698  ¦  BLAKE  ¦  30  ¦  2850
+7782  ¦  CLARK  ¦  10  ¦  2950
+7566  ¦  JONES  ¦  20  ¦  3475
+7788  ¦  SCOTT  ¦  20  ¦  3500
+
+#SQL[@102,N20]Result[26, 32, 28, 26, 30]
 select * from t_dept;
-id    name    location
-10    ACCOUNTING    NEW YORK
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
+id  ¦  name  ¦  location
+10  ¦  ACCOUNTING  ¦  NEW YORK
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+
+#SQL[@103,N16]Result[]
 drop table t_emp;
+
+#SQL[@104,N17]Result[]
 drop table t_dept;
+
+#SQL[@107,N28]Result[]
 drop table if exists t_dept1;
+
+#SQL[@108,N108]Result[]
 CREATE TABLE t_dept1
 (
-id INT(11) PRIMARY KEY,
-name VARCHAR(22) NOT NULL,
-location VARCHAR(50)
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(22) NOT NULL,
+    location VARCHAR(50)
 );
+
+#SQL[@115,N55]Result[]
 INSERT INTO t_dept1 VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@116,N51]Result[]
 INSERT INTO t_dept1 VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@117,N49]Result[]
 INSERT INTO t_dept1 VALUES (30,'SALES','CHICAGO');
+
+#SQL[@118,N53]Result[]
 INSERT INTO t_dept1 VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@121,N27]Result[]
 drop table if exists t_emp1;
+
+#SQL[@122,N218]Result[]
 CREATE TABLE t_emp1
 (
-id INT(11) PRIMARY KEY,
-name VARCHAR(25),
-deptId INT(11),
-salary FLOAT,
-CONSTRAINT fk_emp_dept1 FOREIGN KEY(deptId) REFERENCES t_dept1(id) ON DELETE CASCADE ON UPDATE CASCADE
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(25),
+    deptId INT(11),
+    salary FLOAT,
+    CONSTRAINT fk_emp_dept1 FOREIGN KEY(deptId) REFERENCES t_dept1(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+#SQL[@131,N51]Result[]
 INSERT INTO t_emp1 VALUES (7369,'SMITH',20,1300.00);
+
+#SQL[@132,N51]Result[]
 INSERT INTO t_emp1 VALUES (7499,'ALLEN',30,1600.00);
+
+#SQL[@133,N51]Result[]
 INSERT INTO t_emp1 VALUES (7521,'WARD ',30,1250.00);
+
+#SQL[@134,N51]Result[]
 INSERT INTO t_emp1 VALUES (7566,'JONES',20,3475.00);
+
+#SQL[@135,N51]Result[]
 INSERT INTO t_emp1 VALUES (1234,'MEIXI',30,1250.00);
+
+#SQL[@136,N51]Result[]
 INSERT INTO t_emp1 VALUES (7698,'BLAKE',30,2850.00);
+
+#SQL[@137,N51]Result[]
 INSERT INTO t_emp1 VALUES (7782,'CLARK',10,2950.00);
+
+#SQL[@138,N51]Result[]
 INSERT INTO t_emp1 VALUES (7788,'SCOTT',20,3500.00);
+
+#SQL[@140,N52]Result[]
 update t_dept1 set id = 50 where name = 'ACCOUNTING';
+
+#SQL[@141,N21]Result[26, 28, 26, 30, 32]
 select * from t_dept1;
-id    name    location
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
-50    ACCOUNTING    NEW YORK
+id  ¦  name  ¦  location
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+50  ¦  ACCOUNTING  ¦  NEW YORK
+
+#SQL[@142,N20]Result[36, 33, 33, 33, 33, 33, 33, 33, 33]
 select * from t_emp1;
-id    name    deptid    salary
-7369    SMITH    20    1300.0
-7499    ALLEN    30    1600.0
-7521    WARD     30    1250.0
-7566    JONES    20    3475.0
-1234    MEIXI    30    1250.0
-7698    BLAKE    30    2850.0
-7788    SCOTT    20    3500.0
-7782    CLARK    50    2950.0
+id  ¦  name  ¦  deptid  ¦  salary
+7369  ¦  SMITH  ¦  20  ¦  1300
+7499  ¦  ALLEN  ¦  30  ¦  1600
+7521  ¦  WARD   ¦  30  ¦  1250
+7566  ¦  JONES  ¦  20  ¦  3475
+1234  ¦  MEIXI  ¦  30  ¦  1250
+7698  ¦  BLAKE  ¦  30  ¦  2850
+7788  ¦  SCOTT  ¦  20  ¦  3500
+7782  ¦  CLARK  ¦  50  ¦  2950
+
+#SQL[@144,N45]Result[]
 delete from t_dept1 where name = 'ACCOUNTING';
+
+#SQL[@145,N21]Result[26, 28, 26, 30]
 select * from t_dept1;
-id    name    location
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
+id  ¦  name  ¦  location
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+
+#SQL[@146,N20]Result[36, 33, 33, 33, 33, 33, 33, 33]
 select * from t_emp1;
-id    name    deptid    salary
-7369    SMITH    20    1300.0
-7499    ALLEN    30    1600.0
-7521    WARD     30    1250.0
-7566    JONES    20    3475.0
-1234    MEIXI    30    1250.0
-7698    BLAKE    30    2850.0
-7788    SCOTT    20    3500.0
+id  ¦  name  ¦  deptid  ¦  salary
+7369  ¦  SMITH  ¦  20  ¦  1300
+7499  ¦  ALLEN  ¦  30  ¦  1600
+7521  ¦  WARD   ¦  30  ¦  1250
+7566  ¦  JONES  ¦  20  ¦  3475
+1234  ¦  MEIXI  ¦  30  ¦  1250
+7698  ¦  BLAKE  ¦  30  ¦  2850
+7788  ¦  SCOTT  ¦  20  ¦  3500
+
+#SQL[@148,N49]Error[80]
 update t_emp1 set deptId = 50 where salary < 1500;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@149,N51]Result[]
 update t_emp1 set deptId = null where salary < 1500;
+
+#SQL[@151,N17]Result[]
 drop table t_emp1;
+
+#SQL[@152,N18]Result[]
 drop table t_dept1;
+
+#SQL[@155,N28]Result[]
 drop table if exists t_dept2;
+
+#SQL[@156,N108]Result[]
 CREATE TABLE t_dept2
 (
-id INT(11) PRIMARY KEY,
-name VARCHAR(22) NOT NULL,
-location VARCHAR(50)
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(22) NOT NULL,
+    location VARCHAR(50)
 );
+
+#SQL[@163,N55]Result[]
 INSERT INTO t_dept2 VALUES (10,'ACCOUNTING','NEW YORK');
+
+#SQL[@164,N51]Result[]
 INSERT INTO t_dept2 VALUES (20,'RESEARCH','DALLAS');
+
+#SQL[@165,N49]Result[]
 INSERT INTO t_dept2 VALUES (30,'SALES','CHICAGO');
+
+#SQL[@166,N53]Result[]
 INSERT INTO t_dept2 VALUES (40,'OPERATIONS','BOSTON');
+
+#SQL[@168,N27]Result[]
 drop table if exists t_emp2;
+
+#SQL[@169,N220]Result[]
 CREATE TABLE t_emp2
 (
-id INT(11) PRIMARY KEY,
-name VARCHAR(25),
-deptId INT(11),
-salary FLOAT,
-CONSTRAINT fk_emp_dept1 FOREIGN KEY(deptId) REFERENCES t_dept2(id) ON DELETE SET NULL ON UPDATE SET NULL
+    id INT(11) PRIMARY KEY,
+    name VARCHAR(25),
+    deptId INT(11),
+    salary FLOAT,
+    CONSTRAINT fk_emp_dept1 FOREIGN KEY(deptId) REFERENCES t_dept2(id) ON DELETE SET NULL ON UPDATE SET NULL
 );
+
+#SQL[@178,N51]Result[]
 INSERT INTO t_emp2 VALUES (7369,'SMITH',20,1300.00);
+
+#SQL[@179,N51]Result[]
 INSERT INTO t_emp2 VALUES (7499,'ALLEN',30,1600.00);
+
+#SQL[@180,N51]Result[]
 INSERT INTO t_emp2 VALUES (7521,'WARD ',30,1250.00);
+
+#SQL[@181,N51]Result[]
 INSERT INTO t_emp2 VALUES (7566,'JONES',20,3475.00);
+
+#SQL[@182,N51]Result[]
 INSERT INTO t_emp2 VALUES (1234,'MEIXI',30,1250.00);
+
+#SQL[@183,N51]Result[]
 INSERT INTO t_emp2 VALUES (7698,'BLAKE',30,2850.00);
+
+#SQL[@184,N51]Result[]
 INSERT INTO t_emp2 VALUES (7782,'CLARK',10,2950.00);
+
+#SQL[@185,N51]Result[]
 INSERT INTO t_emp2 VALUES (7788,'SCOTT',20,3500.00);
+
+#SQL[@187,N52]Result[]
 update t_dept2 set id = 50 where name = 'ACCOUNTING';
+
+#SQL[@188,N21]Result[26, 28, 26, 30, 32]
 select * from t_dept2;
-id    name    location
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
-50    ACCOUNTING    NEW YORK
+id  ¦  name  ¦  location
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+50  ¦  ACCOUNTING  ¦  NEW YORK
+
+#SQL[@189,N20]Result[36, 33, 33, 33, 33, 33, 33, 33, 35]
 select * from t_emp2;
-id    name    deptid    salary
-7369    SMITH    20    1300.0
-7499    ALLEN    30    1600.0
-7521    WARD     30    1250.0
-7566    JONES    20    3475.0
-1234    MEIXI    30    1250.0
-7698    BLAKE    30    2850.0
-7788    SCOTT    20    3500.0
-7782    CLARK    null    2950.0
+id  ¦  name  ¦  deptid  ¦  salary
+7369  ¦  SMITH  ¦  20  ¦  1300
+7499  ¦  ALLEN  ¦  30  ¦  1600
+7521  ¦  WARD   ¦  30  ¦  1250
+7566  ¦  JONES  ¦  20  ¦  3475
+1234  ¦  MEIXI  ¦  30  ¦  1250
+7698  ¦  BLAKE  ¦  30  ¦  2850
+7788  ¦  SCOTT  ¦  20  ¦  3500
+7782  ¦  CLARK  ¦  null  ¦  2950
+
+#SQL[@191,N45]Result[]
 delete from t_dept2 where name = 'ACCOUNTING';
+
+#SQL[@192,N21]Result[26, 28, 26, 30]
 select * from t_dept2;
-id    name    location
-20    RESEARCH    DALLAS
-30    SALES    CHICAGO
-40    OPERATIONS    BOSTON
+id  ¦  name  ¦  location
+20  ¦  RESEARCH  ¦  DALLAS
+30  ¦  SALES  ¦  CHICAGO
+40  ¦  OPERATIONS  ¦  BOSTON
+
+#SQL[@193,N20]Result[36, 33, 33, 33, 33, 33, 33, 33, 35]
 select * from t_emp2;
-id    name    deptid    salary
-7369    SMITH    20    1300.0
-7499    ALLEN    30    1600.0
-7521    WARD     30    1250.0
-7566    JONES    20    3475.0
-1234    MEIXI    30    1250.0
-7698    BLAKE    30    2850.0
-7788    SCOTT    20    3500.0
-7782    CLARK    null    2950.0
+id  ¦  name  ¦  deptid  ¦  salary
+7369  ¦  SMITH  ¦  20  ¦  1300
+7499  ¦  ALLEN  ¦  30  ¦  1600
+7521  ¦  WARD   ¦  30  ¦  1250
+7566  ¦  JONES  ¦  20  ¦  3475
+1234  ¦  MEIXI  ¦  30  ¦  1250
+7698  ¦  BLAKE  ¦  30  ¦  2850
+7788  ¦  SCOTT  ¦  20  ¦  3500
+7782  ¦  CLARK  ¦  null  ¦  2950
+
+#SQL[@195,N49]Error[80]
 update t_emp2 set deptId = 50 where salary < 1500;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@196,N51]Result[]
 update t_emp2 set deptId = null where salary < 1500;
+
+#SQL[@198,N17]Result[]
 drop table t_emp2;
+
+#SQL[@199,N18]Result[]
 drop table t_dept2;
+
+#SQL[@201,N52]Result[]
 create table f1(a int primary key, b int unique key);
+
+#SQL[@202,N54]Result[]
 create table f2(aa int primary key, bb int unique key);
+
+#SQL[@203,N113]Result[]
 create table c1 (aaa int, bbb int, foreign key f_a(aaa) references f1(a), foreign key f_b(bbb) references f2(aa));
+
+#SQL[@204,N41]Result[]
 insert into f1 values (1,1), (2,2), (3,3);
+
+#SQL[@205,N47]Result[]
 insert into f2 values (11,11), (22,22), (33,33);
+
+#SQL[@206,N44]Result[]
 insert into c1 values (1,11), (2,22), (3,33);
+
+#SQL[@207,N40]Error[80]
 update c1 set aaa=2, bbb=12 where bbb=11;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@208,N40]Error[80]
 update c1 set aaa=4, bbb=22 where bbb=11;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@209,N40]Result[]
 update c1 set aaa=2, bbb=33 where bbb=11;
+
+#SQL[@210,N29]Result[12, 9, 9, 9]
 select * from c1 order by bbb;
-aaa	bbbb
-2	22
-3	33
-2	33
+aaa  ¦  bbb
+2  ¦  22
+3  ¦  33
+2  ¦  33
+
+#SQL[@212,N13]Result[]
 drop table c1;
+
+#SQL[@213,N13]Result[]
 drop table f2;
+
+#SQL[@214,N13]Result[]
 drop table f1;
+
+#SQL[@215,N52]Result[]
 create table f1(a int primary key, b int unique key);
+
+#SQL[@216,N67]Result[]
 create table c1 (a int, b int, foreign key f_a(a) references f1(a));
+
+#SQL[@217,N41]Result[]
 insert into f1 values (1,1), (2,2), (3,3);
+
+#SQL[@218,N29]Error[80]
 insert into c1 values (11,11);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@219,N35]Error[80]
 insert into c1 values (1,1),(11,11);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@220,N27]Result[]
 insert into c1 values (1,1);
+
+#SQL[@221,N13]Result[]
 drop table c1;
+
+#SQL[@222,N13]Result[]
 drop table f1;
+
+#SQL[@224,N41]Result[]
 create table f1(b int, a int primary key);
+
+#SQL[@225,N108]Result[]
 create table c1( a int primary key, b int unique key, c int not null, d int,foreign key(d) references f1(a));
+
+#SQL[@226,N41]Result[]
 insert into f1 values (1,1), (2,2), (3,3);
+
+#SQL[@227,N30]Result[]
 insert into c1 values(1,2,1,1);
+
+#SQL[@228,N30]Error[48]
 insert into c1 values(2,2,1,1);
 Duplicate entry '2' for key '__mo_index_idx_col'
+
+#SQL[@229,N13]Result[]
 drop table c1;
+
+#SQL[@230,N13]Result[]
 drop table f1;
+
+#SQL[@232,N66]Result[]
 create table fk_01(a int,b varchar(20),c tinyint,primary key(a,b));
+
+#SQL[@233,N155]Result[]
 create table fk_02(col1 int,col2 varchar(25),col3 tinyint,constraint ck foreign key(col1,col2) REFERENCES fk_01(a,b) on delete RESTRICT on update RESTRICT);
+
+#SQL[@234,N148]Result[]
 create table fk_03(col1 int,col2 varchar(25),col3 tinyint,constraint ck foreign key(col1) REFERENCES fk_01(a) on delete RESTRICT on update RESTRICT);
+
+#SQL[@235,N148]Result[]
 create table fk_04(col1 int,col2 varchar(25),col3 tinyint,constraint ck foreign key(col2) REFERENCES fk_01(b) on delete RESTRICT on update RESTRICT);
+
+#SQL[@236,N16]Result[]
 drop table fk_04;
+
+#SQL[@237,N16]Result[]
 drop table fk_03;
+
+#SQL[@238,N16]Result[]
 drop table fk_02;
+
+#SQL[@239,N16]Result[]
 drop table fk_01;
+
+#SQL[@241,N48]Result[]
 create table f1(a int, b int, primary key (a,b));
+
+#SQL[@242,N110]Result[]
 create table c1(id int primary key, aa int, bb int, CONSTRAINT `fk_aa` FOREIGN KEY(`aa`) REFERENCES `f1`(`a`));
+
+#SQL[@243,N27]Result[]
 insert into f1 values (1,1);
+
+#SQL[@244,N29]Result[]
 insert into c1 values (1,1,1);
+
+#SQL[@245,N17]Result[]
 update f1 set a=a;
+
+#SQL[@246,N17]Result[]
 update f1 set a=1;
+
+#SQL[@247,N22]Result[]
 update f1 set a=a, b=2;
+
+#SQL[@248,N17]Error[84]
 update f1 set a=2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@249,N13]Result[]
 drop table c1;
+
+#SQL[@250,N13]Result[]
 drop table f1;
+
+#SQL[@252,N48]Result[]
 create table f1(a int, b int, primary key (a,b));
+
+#SQL[@253,N119]Result[]
 create table c1(id int primary key, aa int, bb int, CONSTRAINT `fk_aa` FOREIGN KEY(`aa`,`bb`) REFERENCES `f1`(`a`,`b`));
+
+#SQL[@254,N27]Result[]
 insert into f1 values (1,1);
+
+#SQL[@255,N29]Result[]
 insert into c1 values (1,1,1);
+
+#SQL[@256,N17]Result[]
 update f1 set a=a;
+
+#SQL[@257,N22]Result[]
 update f1 set a=a, b=1;
+
+#SQL[@258,N22]Result[]
 update f1 set b=1, a=a;
+
+#SQL[@259,N22]Error[84]
 update f1 set a=a, b=2;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@260,N13]Result[]
 drop table c1;
+
+#SQL[@261,N13]Result[]
 drop table f1;
+
+#SQL[@263,N27]Result[]
 drop database if exists db1;
+
+#SQL[@264,N19]Result[]
 create database db1;
+
+#SQL[@265,N7]Result[]
 use db1;
+
+#SQL[@266,N41]Result[]
 create table f1(b int, a int primary key);
+
+#SQL[@267,N30]Result[]
 create table t1 (a int, b int);
+
+#SQL[@268,N36]Result[]
 create table t2(b int, a int unique);
+
+#SQL[@269,N17]Result[]
 truncate table f1;
+
+#SQL[@270,N17]Result[]
 drop database db1;
+
+#SQL[@271,N19]Result[]
 create database db1;
+
+#SQL[@272,N7]Result[]
 use db1;
+
+#SQL[@273,N11]Result[]
 show tables;
-Tables_in_db1
+
+#SQL[@274,N17]Result[]
 drop database db1;
+
+#SQL[@277,N60]Result[]
 create account acc1 ADMIN_NAME 'root' IDENTIFIED BY '123456';
+
+#SQL[@279,N19]Result[]
 create database db2;
+
+#SQL[@280,N7]Result[]
 use db2;
+
+#SQL[@281,N41]Result[]
 create table f1(b int, a int primary key);
+
+#SQL[@282,N30]Result[]
 create table t1 (a int, b int);
+
+#SQL[@283,N36]Result[]
 create table t2(b int, a int unique);
+
+#SQL[@284,N17]Result[]
 truncate table f1;
+
+#SQL[@285,N17]Result[]
 drop database db2;
+
+#SQL[@286,N19]Result[]
 create database db2;
+
+#SQL[@287,N7]Result[]
 use db2;
+
+#SQL[@288,N11]Result[]
 show tables;
-Tables_in_db2
+
+#SQL[@289,N17]Result[]
 drop database db2;
+
+#SQL[@291,N27]Result[]
 drop account if exists acc1;
+
+#SQL[@293,N27]Result[]
 drop database if exists db1;
+
+#SQL[@294,N19]Result[]
 create database db1;
+
+#SQL[@295,N7]Result[]
 use db1;
+
+#SQL[@296,N34]Result[]
 create table t1(a int primary key);
+
+#SQL[@297,N41]Result[]
 create table t2(a int primary key, b int);
+
+#SQL[@298,N127]Error[48]
 alter table t2 add constraint fk_t2_t1 foreign key(b) references t1(a), add constraint fk_t2_t1 foreign key(b) references t1(a);
 Duplicate foreign key constraint name 'fk_t2_t1'
+
+#SQL[@299,N70]Result[]
 alter table t2 add constraint fk_t2_t1 foreign key(b) references t1(a);
+
+#SQL[@300,N70]Error[48]
 alter table t2 add constraint fk_t2_t1 foreign key(b) references t1(a);
 Duplicate foreign key constraint name 'fk_t2_t1'
+
+#SQL[@301,N17]Result[]
 drop database db1;
+

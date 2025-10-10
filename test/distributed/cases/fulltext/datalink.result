@@ -1,25 +1,54 @@
+#SQL[@1,N33]Result[]
 set experimental_fulltext_index=1;
+
+#SQL[@2,N35]Result[]
 set ft_relevancy_algorithm="TF-IDF";
+
+#SQL[@4,N55]Result[]
 create stage ftstage URL='file:///$resources/fulltext/';
+
+#SQL[@6,N77]Result[]
 create table datasrc (id bigint primary key, fpath datalink, fulltext(fpath));
-insert into datasrc values (0, 'stage://ftstage/mo.pdf'), (1, 'file:///$resources/fulltext/chinese.pdf'),
-(2, 'file:///$resources/fulltext/file-sample_100kB.docx');
+
+#SQL[@8,N162]Result[]
+insert into datasrc values (0, 'stage://ftstage/mo.pdf'), (1, 'file:///$resources/fulltext/chinese.pdf'),(2, 'file:///$resources/fulltext/file-sample_100kB.docx');
+
+#SQL[@10,N62]Result[2, 1]
 select id from datasrc where match(fpath) against('matrixone');
 id
 0
+
+#SQL[@12,N87]Result[2, 1]
 select id from datasrc where match(fpath) against('慢慢地' in natural language mode);
 id
 1
+
+#SQL[@14,N92]Result[2, 1]
 select id from datasrc where match(fpath) against('Nulla facilisi' in natural language mode);
 id
 2
+
+#SQL[@16,N18]Result[]
 drop table datasrc;
+
+#SQL[@18,N102]Result[]
 create table datasrc (id bigint primary key, fpath datalink, fpath2 datalink, fulltext(fpath, fpath2));
+
+#SQL[@20,N99]Result[]
 insert into datasrc values (0, 'stage://ftstage/mo.pdf', 'file:///$resources/fulltext/chinese.pdf');
+
+#SQL[@22,N98]Result[2, 1]
 select id from datasrc where match(fpath, fpath2) against('+matrixone +慢慢地' in boolean mode);
 id
 0
+
+#SQL[@24,N66]Error[30]
 update datasrc set fpath='stage://ftstage/notexist.pdf' where id=0;
 file notexist.pdf is not found
+
+#SQL[@26,N18]Result[]
 drop table datasrc;
+
+#SQL[@28,N18]Result[]
 drop stage ftstage;
+

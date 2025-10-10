@@ -1,201 +1,395 @@
+#SQL[@1,N45]Result[]
 drop database if exists fk_foreign_key_checks;
+
+#SQL[@2,N37]Result[]
 create database fk_foreign_key_checks;
+
+#SQL[@3,N25]Result[]
 use fk_foreign_key_checks;
+
+#SQL[@5,N24]Result[]
 SET FOREIGN_KEY_CHECKS=0;
+
+#SQL[@9,N23]Result[]
 drop table if exists t1;
+
+#SQL[@10,N79]Result[]
 create table t1( b int, constraint `c1` foreign key `fk1` (b) references t2(a));
+
+#SQL[@12,N23]Result[]
 drop table if exists t2;
+
+#SQL[@13,N40]Result[]
 create table t2(a int primary key,b int);
+
+#SQL[@16,N39]Result[]
 insert into t2 values (1,1),(2,2),(3,3);
+
+#SQL[@17,N33]Result[]
 insert into t1 values (1),(2),(3);
+
+#SQL[@19,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@22,N26]Error[84]
 delete from t2 where a = 1;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@25,N25]Error[80]
 insert into t1 values (4);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@28,N33]Result[]
 insert into t2 values (4,4),(5,5);
+
+#SQL[@31,N25]Result[]
 insert into t1 values (4);
+
+#SQL[@34,N26]Error[84]
 delete from t2 where a = 4;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@37,N26]Result[]
 delete from t2 where a = 5;
+
+#SQL[@40,N23]Result[]
 drop table if exists t3;
+
+#SQL[@41,N79]Result[]
 create table t3( b int, constraint `c1` foreign key `fk1` (b) references t2(a));
+
+#SQL[@44,N37]Result[]
 insert into t3 values (1),(2),(3),(4);
+
+#SQL[@47,N25]Error[80]
 insert into t3 values (5);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@50,N26]Error[84]
 delete from t2 where a = 3;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@53,N13]Error[81]
 drop table t2;
 internal error: can not drop table 't2' referenced by some foreign key constraint
+
+#SQL[@55,N24]Result[]
 SET FOREIGN_KEY_CHECKS=0;
+
+#SQL[@58,N25]Result[]
 insert into t1 values (5);
+
+#SQL[@59,N25]Result[]
 insert into t3 values (5);
+
+#SQL[@62,N26]Result[]
 delete from t2 where a = 3;
+
+#SQL[@65,N13]Result[]
 drop table t2;
+
+#SQL[@68,N25]Result[]
 insert into t1 values (6);
+
+#SQL[@69,N25]Result[]
 insert into t3 values (6);
+
+#SQL[@71,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@74,N25]Result[]
 insert into t1 values (7);
+
+#SQL[@75,N25]Result[]
 insert into t3 values (7);
+
+#SQL[@77,N40]Result[]
 create table t2(a int primary key,b int);
+
+#SQL[@80,N25]Error[80]
 insert into t1 values (8);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@81,N25]Error[80]
 insert into t3 values (8);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@83,N69]Result[]
 insert into t2 values (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8);
+
+#SQL[@86,N25]Result[]
 insert into t1 values (8);
+
+#SQL[@87,N25]Result[]
 insert into t3 values (8);
+
+#SQL[@90,N25]Error[80]
 insert into t1 values (9);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@91,N25]Error[80]
 insert into t3 values (9);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@94,N26]Error[84]
 delete from t2 where a = 3;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@97,N26]Result[]
 delete from t1 where b = 3;
+
+#SQL[@98,N26]Result[]
 delete from t3 where b = 3;
+
+#SQL[@101,N26]Result[]
 delete from t2 where a = 3;
+
+#SQL[@104,N13]Error[81]
 drop table t2;
 internal error: can not drop table 't2' referenced by some foreign key constraint
+
+#SQL[@107,N13]Result[]
 drop table t1;
+
+#SQL[@110,N13]Error[81]
 drop table t2;
 internal error: can not drop table 't2' referenced by some foreign key constraint
+
+#SQL[@113,N25]Error[80]
 insert into t3 values (9);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@116,N25]Error[80]
 insert into t3 values (3);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@119,N27]Result[]
 insert into t2 values (3,3);
+
+#SQL[@122,N25]Error[80]
 insert into t3 values (9);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@125,N25]Result[]
 insert into t3 values (3);
+
+#SQL[@128,N13]Error[81]
 drop table t2;
 internal error: can not drop table 't2' referenced by some foreign key constraint
+
+#SQL[@130,N24]Result[]
 SET FOREIGN_KEY_CHECKS=0;
+
+#SQL[@133,N13]Result[]
 drop table t2;
+
+#SQL[@136,N25]Result[]
 insert into t3 values (9);
+
+#SQL[@138,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@140,N40]Result[]
 create table t2(a int primary key,b int);
+
+#SQL[@143,N26]Error[80]
 insert into t3 values (10);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@146,N75]Result[]
 insert into t2 values (1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9);
+
+#SQL[@149,N29]Result[]
 insert into t2 values (10,10);
+
+#SQL[@152,N26]Result[]
 insert into t3 values (10);
+
+#SQL[@155,N27]Error[84]
 delete from t2 where a = 10;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@158,N13]Error[81]
 drop table t2;
 internal error: can not drop table 't2' referenced by some foreign key constraint
+
+#SQL[@160,N13]Result[]
 drop table t3;
+
+#SQL[@163,N27]Result[]
 delete from t2 where a = 10;
+
+#SQL[@166,N13]Result[]
 drop table t2;
+
+#SQL[@168,N24]Result[]
 SET FOREIGN_KEY_CHECKS=0;
+
+#SQL[@170,N40]Result[]
 create table t2(a int primary key,b int);
+
+#SQL[@172,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@174,N33]Result[]
 insert into t2 values (1,1),(2,2);
+
+#SQL[@177,N26]Result[]
 delete from t2 where a = 2;
+
+#SQL[@180,N23]Result[]
 drop table if exists t1;
+
+#SQL[@181,N23]Result[]
 drop table if exists t3;
+
+#SQL[@182,N23]Result[]
 drop table if exists t2;
+
+#SQL[@183,N45]Result[]
 drop database if exists fk_foreign_key_checks;
+
+#SQL[@185,N44]Result[]
 create database if not exists qrtz_fk_testdb;
+
+#SQL[@186,N18]Result[]
 use qrtz_fk_testdb;
+
+#SQL[@187,N24]Result[]
 set FOREIGN_KEY_CHECKS=0;
+
+#SQL[@189,N44]Result[]
 DROP TABLE IF EXISTS `qrtz_simprop_triggers`;
+
+#SQL[@190,N992]Result[]
 CREATE TABLE `qrtz_simprop_triggers`
 (
-`sched_name`    VARCHAR(120) NOT NULL,
-`trigger_name`  VARCHAR(190) NOT NULL,
-`trigger_group` VARCHAR(190) NOT NULL,
-`str_prop_1`    VARCHAR(512)   DEFAULT null,
-`str_prop_2`    VARCHAR(512)   DEFAULT null,
-`str_prop_3`    VARCHAR(512)   DEFAULT null,
-`int_prop_1`    INT            DEFAULT null,
-`int_prop_2`    INT            DEFAULT null,
-`long_prop_1`   BIGINT         DEFAULT null,
-`long_prop_2`   BIGINT         DEFAULT null,
-`dec_prop_1`    DECIMAL(13, 4) DEFAULT null,
-`dec_prop_2`    DECIMAL(13, 4) DEFAULT null,
-`bool_prop_1`   VARCHAR(1)     DEFAULT null,
-`bool_prop_2`   VARCHAR(1)     DEFAULT null,
-PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
-CONSTRAINT `qrtz_simprop_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `qrtz_triggers` (`sched_name`, `trigger_name`, `trigger_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    `sched_name`    VARCHAR(120) NOT NULL,
+    `trigger_name`  VARCHAR(190) NOT NULL,
+    `trigger_group` VARCHAR(190) NOT NULL,
+    `str_prop_1`    VARCHAR(512)   DEFAULT null,
+    `str_prop_2`    VARCHAR(512)   DEFAULT null,
+    `str_prop_3`    VARCHAR(512)   DEFAULT null,
+    `int_prop_1`    INT            DEFAULT null,
+    `int_prop_2`    INT            DEFAULT null,
+    `long_prop_1`   BIGINT         DEFAULT null,
+    `long_prop_2`   BIGINT         DEFAULT null,
+    `dec_prop_1`    DECIMAL(13, 4) DEFAULT null,
+    `dec_prop_2`    DECIMAL(13, 4) DEFAULT null,
+    `bool_prop_1`   VARCHAR(1)     DEFAULT null,
+    `bool_prop_2`   VARCHAR(1)     DEFAULT null,
+    PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
+    CONSTRAINT `qrtz_simprop_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `qrtz_triggers` (`sched_name`, `trigger_name`, `trigger_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+#SQL[@210,N43]Result[]
 DROP TABLE IF EXISTS `qrtz_simple_triggers`;
+
+#SQL[@211,N592]Result[]
 CREATE TABLE `qrtz_simple_triggers`
 (
-`sched_name`      VARCHAR(120) NOT NULL,
-`trigger_name`    VARCHAR(190) NOT NULL,
-`trigger_group`   VARCHAR(190) NOT NULL,
-`repeat_count`    BIGINT       NOT NULL,
-`repeat_interval` BIGINT       NOT NULL,
-`times_triggered` BIGINT       NOT NULL,
-PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
-CONSTRAINT `qrtz_simple_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `qrtz_triggers` (`sched_name`, `trigger_name`, `trigger_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    `sched_name`      VARCHAR(120) NOT NULL,
+    `trigger_name`    VARCHAR(190) NOT NULL,
+    `trigger_group`   VARCHAR(190) NOT NULL,
+    `repeat_count`    BIGINT       NOT NULL,
+    `repeat_interval` BIGINT       NOT NULL,
+    `times_triggered` BIGINT       NOT NULL,
+    PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
+    CONSTRAINT `qrtz_simple_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `qrtz_triggers` (`sched_name`, `trigger_name`, `trigger_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+#SQL[@224,N41]Result[]
 DROP TABLE IF EXISTS `qrtz_blob_triggers`;
+
+#SQL[@225,N566]Result[]
 CREATE TABLE `qrtz_blob_triggers`
 (
-`sched_name`    VARCHAR(120) NOT NULL,
-`trigger_name`  VARCHAR(190) NOT NULL,
-`trigger_group` VARCHAR(190) NOT NULL,
-`blob_data`     BLOB DEFAULT NULL,
-PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
-KEY             `sched_name` (`sched_name`,`trigger_name`,`trigger_group`),
-CONSTRAINT `qrtz_blob_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `qrtz_triggers` (`sched_name`, `trigger_name`, `trigger_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    `sched_name`    VARCHAR(120) NOT NULL,
+    `trigger_name`  VARCHAR(190) NOT NULL,
+    `trigger_group` VARCHAR(190) NOT NULL,
+    `blob_data`     BLOB DEFAULT NULL,
+    PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
+    KEY             `sched_name` (`sched_name`,`trigger_name`,`trigger_group`),
+    CONSTRAINT `qrtz_blob_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `trigger_name`, `trigger_group`) REFERENCES `qrtz_triggers` (`sched_name`, `trigger_name`, `trigger_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+#SQL[@236,N36]Result[]
 DROP TABLE IF EXISTS `qrtz_triggers`;
+
+#SQL[@237,N2091]Result[]
 CREATE TABLE `qrtz_triggers`
 (
-`sched_name`     VARCHAR(120) NOT NULL,
-`trigger_name`   VARCHAR(190) NOT NULL,
-`trigger_group`  VARCHAR(190) NOT NULL,
-`job_name`       VARCHAR(190) NOT NULL,
-`job_group`      VARCHAR(190) NOT NULL,
-`description`    VARCHAR(250) DEFAULT null,
-`next_fire_time` BIGINT       DEFAULT null,
-`prev_fire_time` BIGINT       DEFAULT null,
-`priority`       INT          DEFAULT null,
-`trigger_state`  VARCHAR(16)  NOT NULL,
-`trigger_type`   VARCHAR(8)   NOT NULL,
-`start_time`     BIGINT       NOT NULL,
-`end_time`       BIGINT       DEFAULT null,
-`calendar_name`  VARCHAR(190) DEFAULT null,
-`misfire_instr`  SMALLINT     DEFAULT null,
-`job_data`       BLOB         DEFAULT NULL,
-PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
-KEY              `idx_qrtz_t_j` (`sched_name`,`job_name`,`job_group`),
-KEY              `idx_qrtz_t_jg` (`sched_name`,`job_group`),
-KEY              `idx_qrtz_t_c` (`sched_name`,`calendar_name`),
-KEY              `idx_qrtz_t_g` (`sched_name`,`trigger_group`),
-KEY              `idx_qrtz_t_state` (`sched_name`,`trigger_state`),
-KEY              `idx_qrtz_t_n_state` (`sched_name`,`trigger_name`,`trigger_group`,`trigger_state`),
-KEY              `idx_qrtz_t_n_g_state` (`sched_name`,`trigger_group`,`trigger_state`),
-KEY              `idx_qrtz_t_next_fire_time` (`sched_name`,`next_fire_time`),
-KEY              `idx_qrtz_t_nft_st` (`sched_name`,`trigger_state`,`next_fire_time`),
-KEY              `idx_qrtz_t_nft_misfire` (`sched_name`,`misfire_instr`,`next_fire_time`),
-KEY              `idx_qrtz_t_nft_st_misfire` (`sched_name`,`misfire_instr`,`next_fire_time`,`trigger_state`),
-KEY              `idx_qrtz_t_nft_st_misfire_grp` (`sched_name`,`misfire_instr`,`next_fire_time`,`trigger_group`,`trigger_state`),
-CONSTRAINT `qrtz_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `job_name`, `job_group`) REFERENCES `qrtz_job_details` (`sched_name`, `job_name`, `job_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
+    `sched_name`     VARCHAR(120) NOT NULL,
+    `trigger_name`   VARCHAR(190) NOT NULL,
+    `trigger_group`  VARCHAR(190) NOT NULL,
+    `job_name`       VARCHAR(190) NOT NULL,
+    `job_group`      VARCHAR(190) NOT NULL,
+    `description`    VARCHAR(250) DEFAULT null,
+    `next_fire_time` BIGINT       DEFAULT null,
+    `prev_fire_time` BIGINT       DEFAULT null,
+    `priority`       INT          DEFAULT null,
+    `trigger_state`  VARCHAR(16)  NOT NULL,
+    `trigger_type`   VARCHAR(8)   NOT NULL,
+    `start_time`     BIGINT       NOT NULL,
+    `end_time`       BIGINT       DEFAULT null,
+    `calendar_name`  VARCHAR(190) DEFAULT null,
+    `misfire_instr`  SMALLINT     DEFAULT null,
+    `job_data`       BLOB         DEFAULT NULL,
+    PRIMARY KEY (`sched_name`, `trigger_name`, `trigger_group`),
+    KEY              `idx_qrtz_t_j` (`sched_name`,`job_name`,`job_group`),
+    KEY              `idx_qrtz_t_jg` (`sched_name`,`job_group`),
+    KEY              `idx_qrtz_t_c` (`sched_name`,`calendar_name`),
+    KEY              `idx_qrtz_t_g` (`sched_name`,`trigger_group`),
+    KEY              `idx_qrtz_t_state` (`sched_name`,`trigger_state`),
+    KEY              `idx_qrtz_t_n_state` (`sched_name`,`trigger_name`,`trigger_group`,`trigger_state`),
+    KEY              `idx_qrtz_t_n_g_state` (`sched_name`,`trigger_group`,`trigger_state`),
+    KEY              `idx_qrtz_t_next_fire_time` (`sched_name`,`next_fire_time`),
+    KEY              `idx_qrtz_t_nft_st` (`sched_name`,`trigger_state`,`next_fire_time`),
+    KEY              `idx_qrtz_t_nft_misfire` (`sched_name`,`misfire_instr`,`next_fire_time`),
+    KEY              `idx_qrtz_t_nft_st_misfire` (`sched_name`,`misfire_instr`,`next_fire_time`,`trigger_state`),
+    KEY              `idx_qrtz_t_nft_st_misfire_grp` (`sched_name`,`misfire_instr`,`next_fire_time`,`trigger_group`,`trigger_state`),
+    CONSTRAINT `qrtz_triggers_ibfk_1` FOREIGN KEY (`sched_name`, `job_name`, `job_group`) REFERENCES `qrtz_job_details` (`sched_name`, `job_name`, `job_group`) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
+
+#SQL[@271,N39]Result[]
 DROP TABLE IF EXISTS `qrtz_job_details`;
+
+#SQL[@272,N724]Result[]
 CREATE TABLE `qrtz_job_details`
 (
-`sched_name`        VARCHAR(120) NOT NULL,
-`job_name`          VARCHAR(190) NOT NULL,
-`job_group`         VARCHAR(190) NOT NULL,
-`description`       VARCHAR(250) DEFAULT null,
-`job_class_name`    VARCHAR(250) NOT NULL,
-`is_durable`        VARCHAR(1)   NOT NULL,
-`is_nonconcurrent`  VARCHAR(1)   NOT NULL,
-`is_update_data`    VARCHAR(1)   NOT NULL,
-`requests_recovery` VARCHAR(1)   NOT NULL,
-`job_data`          BLOB         DEFAULT NULL,
-PRIMARY KEY (`sched_name`, `job_name`, `job_group`),
-KEY                 `idx_qrtz_j_req_recovery` (`sched_name`,`requests_recovery`),
-KEY                 `idx_qrtz_j_grp` (`sched_name`,`job_group`)
+    `sched_name`        VARCHAR(120) NOT NULL,
+    `job_name`          VARCHAR(190) NOT NULL,
+    `job_group`         VARCHAR(190) NOT NULL,
+    `description`       VARCHAR(250) DEFAULT null,
+    `job_class_name`    VARCHAR(250) NOT NULL,
+    `is_durable`        VARCHAR(1)   NOT NULL,
+    `is_nonconcurrent`  VARCHAR(1)   NOT NULL,
+    `is_update_data`    VARCHAR(1)   NOT NULL,
+    `requests_recovery` VARCHAR(1)   NOT NULL,
+    `job_data`          BLOB         DEFAULT NULL,
+    PRIMARY KEY (`sched_name`, `job_name`, `job_group`),
+    KEY                 `idx_qrtz_j_req_recovery` (`sched_name`,`requests_recovery`),
+    KEY                 `idx_qrtz_j_grp` (`sched_name`,`job_group`)
 );
+
+#SQL[@288,N27]Result[]
 drop table qrtz_job_details;
+
+#SQL[@289,N24]Result[]
 drop table qrtz_triggers;
+
+#SQL[@290,N29]Result[]
 drop table qrtz_blob_triggers;
+
+#SQL[@291,N31]Result[]
 drop table qrtz_simple_triggers;
+
+#SQL[@292,N32]Result[]
 drop table qrtz_simprop_triggers;
+
+#SQL[@293,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@294,N28]Result[]
 drop database qrtz_fk_testdb;
+

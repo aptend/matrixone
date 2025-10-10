@@ -1,28 +1,70 @@
+#SQL[@1,N38]Result[]
 drop database if exists fk_self_refer5;
+
+#SQL[@2,N30]Result[]
 create database fk_self_refer5;
+
+#SQL[@3,N18]Result[]
 use fk_self_refer5;
+
+#SQL[@6,N123]Result[]
 create table names(id int PRIMARY KEY,name VARCHAR(255),age int,b int,constraint `c1` foreign key (b) references names(id));
+
+#SQL[@9,N59]Result[]
 replace into names(id, name, age, b) values(1,"Abby", 24,1);
+
+#SQL[@12,N59]Error[64]
 replace into names(id, name, age, b) values(3,"Abby", 24,2);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@15,N59]Result[]
 replace into names(id, name, age, b) values(3,"Abby", 24,1);
+
+#SQL[@18,N55]Error[84]
 replace into names(id, name, age) values(1,"Bobby", 25);
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@21,N44]Result[]
 replace into names set id = 2, name = "Ciro";
+
+#SQL[@24,N51]Result[]
 replace into names set id = 2, name = "Ciro", b = 3;
+
+#SQL[@27,N51]Error[64]
 replace into names set id = 2, name = "Ciro", b = 5;
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@30,N45]Result[]
 replace INTO names values (2, "Bob", 19,NULL);
+
+#SQL[@33,N43]Error[64]
 replace INTO names values (2, "Bobx", 19,4);
 Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@36,N43]Error[84]
 replace INTO names values (1, "Bobx", 19,2);
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@39,N43]Result[]
 replace INTO names values (2, "Bobx", 19,3);
+
+#SQL[@42,N43]Result[]
 replace INTO names values (2, "Bobx", 19,1);
+
+#SQL[@45,N43]Result[]
 replace INTO names values (2, "Bobx", 19,3);
+
+#SQL[@48,N43]Error[84]
 replace INTO names values (3, "Jack", 19,2);
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@51,N43]Error[84]
 replace INTO names values (1, "Join", 19,2);
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@53,N26]Result[]
 drop table if exists names;
+
+#SQL[@54,N38]Result[]
 drop database if exists fk_self_refer5;
+

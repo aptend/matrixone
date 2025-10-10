@@ -24,7 +24,7 @@ create fulltext index ftidx on src (body, title);
 create fulltext index ftidx02 on src (body, title);
 select * from src where match(body) against('red');
 select * from src where match(body,title) against('+]]]');
-select * from src where match(body,title) against('+I'm');
+select * from src where match(body,title) against("+I'm");
 
 select match(body) against('red') from src;
 
@@ -189,7 +189,7 @@ drop table src2;
 
 -- bytejson parser
 create table src (id bigint primary key, json1 json, json2 json);
-insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'), 
+insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red blue"}', '{"d":"兒童中文"}');
 
@@ -432,7 +432,7 @@ alter table articles drop column title;
 -- #21678
 drop table if exists src;
 create table src (id bigint primary key, body varchar, FULLTEXT(body));
-insert into src values (0, 'SGB11型号的检验报告在对素材文件进行搜索时'), (1, '读书会 提效 社群 案例 运营 因为现在生产'), 
+insert into src values (0, 'SGB11型号的检验报告在对素材文件进行搜索时'), (1, '读书会 提效 社群 案例 运营 因为现在生产'),
 (2, '使用全文索引会肥胖的原因都是因为摄入脂肪多导致的吗测试背景说明'),
 (3, '索引肥胖的原因都是因为摄入fat多导致的吗说明');
 

@@ -1,9 +1,20 @@
+#SQL[@1,N35]Result[]
 SET experimental_fulltext_index = 0;
+
+#SQL[@2,N84]Error[58]
 create table fulltext_index_00(a bigint primary key, b varchar, c text, FULLTEXT(b));
 internal error: experimental_fulltext_index is not enabled
+
+#SQL[@7,N33]Result[]
 set experimental_fulltext_index=1;
+
+#SQL[@8,N35]Result[]
 set ft_relevancy_algorithm="TF-IDF";
+
+#SQL[@10,N66]Result[]
 create table src (id bigint primary key, body varchar, title text);
+
+#SQL[@12,N871]Result[]
 insert into src values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy car'), (2, 'sky is blue', 'no limit'), (3, 'blue is not red', 'colorful'),
 (4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
 (5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
@@ -12,96 +23,157 @@ insert into src values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy ca
 (8, NULL, 'NOT INCLUDED'),
 (9, 'NOT INCLUDED BODY', NULL),
 (10, NULL, NULL);
+
+#SQL[@21,N48]Result[]
 create fulltext index ftidx on src (body, title);
+
+#SQL[@24,N50]Error[68]
 create fulltext index ftidx02 on src (body, title);
 not supported: Fulltext index are not allowed to use the same column
+
+#SQL[@25,N50]Error[141]
 select * from src where match(body) against('red');
 not supported: MATCH() AGAINST() function cannot be replaced by FULLTEXT INDEX and full table scan with fulltext search is not supported yet.
+
+#SQL[@26,N57]Error[85]
 select * from src where match(body,title) against('+]]]');
 internal error: Invalid input search string.  search string onverted to empty pattern
-select * from src where match(body,title) against('+I'm');
-SQL parser error: You have an error in your SQL syntax; check the manual that corresponds to your MatrixOne server version for the right syntax to use. syntax error at line 1 column 55 near "m');";
+
+#SQL[@27,N57]Result[]
+select * from src where match(body,title) against("+I'm");
+
+#SQL[@29,N42]Error[141]
 select match(body) against('red') from src;
 not supported: MATCH() AGAINST() function cannot be replaced by FULLTEXT INDEX and full table scan with fulltext search is not supported yet.
+
+#SQL[@32,N48]Result[]
 alter table src add fulltext index ftidx2 (body);
+
+#SQL[@33,N43]Error[68]
 create fulltext index ftidx03 on src (body);
 not supported: Fulltext index are not allowed to use the same column
+
+#SQL[@34,N50]Error[68]
 create fulltext index ftidx03 on src (body, title);
 not supported: Fulltext index are not allowed to use the same column
+
+#SQL[@37,N57]Result[23, 27, 36]
 select * from src where match(body, title) against('red');
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@39,N89]Result[34, 42]
 select *, match(body, title) against('is red' in natural language mode) as score from src;
-id    body    title    score
-0    color is red    t1    1.6311431
+id  ¦  body  ¦  title  ¦  score
+0  ¦  color is red  ¦  t1  ¦  1.6311431
+
+#SQL[@41,N66]Result[23, 261]
 select * from src where match(body, title) against('教學指引');
-id    body    title
-6    各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。    中文短篇小說
+id  ¦  body  ¦  title
+6  ¦  各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。  ¦  中文短篇小說
+
+#SQL[@43,N85]Result[23, 157]
 select * from src where match(body, title) against('彩圖' in natural language mode);
-id    body    title
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@45,N85]Result[23, 156, 157]
 select * from src where match(body, title) against('遠東' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@47,N94]Result[23, 156]
 select * from src where match(body, title) against('版一、二冊' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+
+#SQL[@49,N101]Result[34, 171, 173]
 select *, match(body, title) against('遠東兒童中文' in natural language mode) as score from src;
-id    body    title    score
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文    1.4499049
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文    0.72495246
+id  ¦  body  ¦  title  ¦  score
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文  ¦  1.4499049
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文  ¦  0.72495246
+
+#SQL[@51,N94]Result[34, 171]
 select *, match(body) against('遠東兒童中文' in natural language mode) as score from src;
-id    body    title    score
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文    1.8211576
+id  ¦  body  ¦  title  ¦  score
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文  ¦  1.8211576
+
+#SQL[@54,N79]Result[23, 36, 27]
 select * from src where match(body, title) against('+red blue' in boolean mode);
-id    body    title
-3    blue is not red    colorful
-0    color is red    t1
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+0  ¦  color is red  ¦  t1
+
+#SQL[@56,N73]Result[23, 27, 36]
 select * from src where match(body, title) against('re*' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@58,N80]Result[23, 27]
 select * from src where match(body, title) against('+red -blue' in boolean mode);
-id    body    title
-0    color is red    t1
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+
+#SQL[@60,N80]Result[23, 36]
 select * from src where match(body, title) against('+red +blue' in boolean mode);
-id    body    title
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@62,N80]Result[23, 27, 36]
 select * from src where match(body, title) against('+red ~blue' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@64,N87]Result[]
 select * from src where match(body, title) against('+red -(<blue >is)' in boolean mode);
-id    body    title
+
+#SQL[@66,N87]Result[23, 36, 27]
 select * from src where match(body, title) against('+red +(<blue >is)' in boolean mode);
-id    body    title
-3    blue is not red    colorful
-0    color is red    t1
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+0  ¦  color is red  ¦  t1
+
+#SQL[@68,N82]Result[23, 36]
 select * from src where match(body, title) against('"is not red"' in boolean mode);
-id    body    title
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@70,N75]Result[23, 27, 36]
 select * from src where match(body, title) against('"red"' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@73,N97]Result[23, 261]
 select * from src where match(body, title) against('+教學指引 +短篇小說' in boolean mode);
-id    body    title
-6    各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。    中文短篇小說
+id  ¦  body  ¦  title
+6  ¦  各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。  ¦  中文短篇小說
+
+#SQL[@74,N97]Result[]
 select * from src where match(body, title) against('+教學指引 -短篇小說' in boolean mode);
-id    body    title
+
+#SQL[@77,N83]Result[]
 select * from src where match(body, title) against('"is  not red"' in boolean mode);
-id    body    title
+
+#SQL[@80,N83]Result[]
 select * from src where match(body, title) against('"blue is red"' in boolean mode);
-id    body    title
+
+#SQL[@83,N57]Result[63, 48, 52]
 select src.*, match(body, title) against('blue') from src;
-id    body    title    MATCH (body, title) AGAINST (blue)
-2    sky is blue    no limit    0.36247623
-3    blue is not red    colorful    0.36247623
+id  ¦  body  ¦  title  ¦  MATCH (body, title) AGAINST (blue)
+2  ¦  sky is blue  ¦  no limit  ¦  0.36247623
+3  ¦  blue is not red  ¦  colorful  ¦  0.36247623
+
+#SQL[@86,N64]Result[8, 1]
 select count(*) from src where match(title, body) against('red');
 count(*)
 2
+
+#SQL[@90,N97]Result[13, 7, 10, 48, 16, 30, 62, 43, 44, 48, 55]
 explain select match(body, title) against('red') from src where match(body, title) against('red');
 TP QUERY PLAN
 Project
@@ -114,11 +186,17 @@ Project
               ->  Table Scan on fulltext.src
                     Runtime Filter Probe: src.id
               ->  Table Function on fulltext_index_scan
+
+#SQL[@93,N15]Result[]
 delete from src;
+
+#SQL[@96,N50]Result[]
 select * from src where match(body) against('red');
-id    body    title
+
+#SQL[@98,N57]Result[]
 select * from src where match(body, title) against('red');
-id    body    title
+
+#SQL[@102,N872]Result[]
 insert into src values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy car'), (2, 'sky is blue', 'no limit'), (3, 'blue is not red', 'colorful'),
 (4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
 (5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
@@ -127,75 +205,116 @@ insert into src values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy ca
 (8, NULL, 'NOT INCLUDED'),
 (9, 'NOT INCLUDED BODY', NULL),
 (10, NULL, NULL);
+
+#SQL[@111,N50]Result[23, 27, 36]
 select * from src where match(body) against('red');
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@113,N42]Result[26, 10, 10]
 select match(body) against('red') from src;
 MATCH (body) AGAINST (red)
 0.42668658
 0.42668658
+
+#SQL[@116,N57]Result[23, 27, 36]
 select * from src where match(body, title) against('red');
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@118,N89]Result[34, 42]
 select *, match(body, title) against('is red' in natural language mode) as score from src;
-id    body    title    score
-0    color is red    t1    1.6311431
+id  ¦  body  ¦  title  ¦  score
+0  ¦  color is red  ¦  t1  ¦  1.6311431
+
+#SQL[@120,N66]Result[23, 262]
 select * from src where match(body, title) against('教學指引');
-id    body    title
-6    各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。    中文短>篇小說
+id  ¦  body  ¦  title
+6  ¦  各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。  ¦  中文短>篇小說
+
+#SQL[@122,N85]Result[23, 157]
 select * from src where match(body, title) against('彩圖' in natural language mode);
-id    body    title
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@124,N85]Result[23, 156, 157]
 select * from src where match(body, title) against('遠東' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@126,N94]Result[23, 156]
 select * from src where match(body, title) against('版一、二冊' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+
+#SQL[@128,N101]Result[34, 171, 173]
 select *, match(body, title) against('遠東兒童中文' in natural language mode) as score from src;
-id    body    title    score
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文    1.4499049
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文    0.72495246
+id  ¦  body  ¦  title  ¦  score
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文  ¦  1.4499049
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文  ¦  0.72495246
+
+#SQL[@130,N94]Result[34, 171]
 select *, match(body) against('遠東兒童中文' in natural language mode) as score from src;
-id    body    title    score
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文    1.8211576
+id  ¦  body  ¦  title  ¦  score
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文  ¦  1.8211576
+
+#SQL[@133,N79]Result[23, 36, 27]
 select * from src where match(body, title) against('+red blue' in boolean mode);
-id    body    title
-3    blue is not red    colorful
-0    color is red    t1
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+0  ¦  color is red  ¦  t1
+
+#SQL[@135,N73]Result[23, 27, 36]
 select * from src where match(body, title) against('re*' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@137,N80]Result[23, 27]
 select * from src where match(body, title) against('+red -blue' in boolean mode);
-id    body    title
-0    color is red    t1
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+
+#SQL[@139,N80]Result[23, 36]
 select * from src where match(body, title) against('+red +blue' in boolean mode);
-id    body    title
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@141,N80]Result[23, 27, 36]
 select * from src where match(body, title) against('+red ~blue' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@143,N87]Result[]
 select * from src where match(body, title) against('+red -(<blue >is)' in boolean mode);
-id    body    title
+
+#SQL[@145,N87]Result[23, 36, 27]
 select * from src where match(body, title) against('+red +(<blue >is)' in boolean mode);
-id    body    title
-3    blue is not red    colorful
-0    color is red    t1
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+0  ¦  color is red  ¦  t1
+
+#SQL[@147,N82]Result[23, 36]
 select * from src where match(body, title) against('"is not red"' in boolean mode);
-id    body    title
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@150,N57]Result[63, 48, 52]
 select src.*, match(body, title) against('blue') from src;
-id    body    title    MATCH (body, title) AGAINST (blue)
-2    sky is blue    no limit    0.36247623
-3    blue is not red    colorful    0.36247623
+id  ¦  body  ¦  title  ¦  MATCH (body, title) AGAINST (blue)
+2  ¦  sky is blue  ¦  no limit  ¦  0.36247623
+3  ¦  blue is not red  ¦  colorful  ¦  0.36247623
+
+#SQL[@153,N64]Result[8, 1]
 select count(*) from src where match(title, body) against('red');
 count(*)
 2
+
+#SQL[@157,N97]Result[13, 7, 10, 48, 16, 30, 62, 43, 44, 48, 55]
 explain select match(body, title) against('red') from src where match(body, title) against('red');
 TP QUERY PLAN
 Project
@@ -208,99 +327,201 @@ Project
               ->  Table Scan on fulltext.src
                     Runtime Filter Probe: src.id
               ->  Table Function on fulltext_index_scan
+
+#SQL[@159,N8]Result[71, 57, 64, 55]
 desc src;
-Field    Type    Null    Key    Default    Extra    Comment
-id    BIGINT(64)    NO    PRI    null        
-body    VARCHAR(65535)    YES    MUL    null        
-title    TEXT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+body  ¦  VARCHAR(65535)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+title  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@160,N21]Result[23, 206]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `body` varchar(65535) DEFAULT NULL,\n  `title` text DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT `ftidx`(`body`,`title`),\n FULLTEXT `ftidx2`(`body`)\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `body` varchar(65535) DEFAULT NULL,
+  `title` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT `ftidx`(`body`,`title`),
+ FULLTEXT `ftidx2`(`body`)
+)
+
+#SQL[@162,N14]Result[]
 drop table src;
+
+#SQL[@165,N95]Result[]
 create table src2 (id1 varchar, id2 bigint, body char(128), title text, primary key (id1, id2));
+
+#SQL[@167,N131]Result[]
 insert into src2 values ('id0', 0, 'red', 't1'), ('id1', 1, 'yellow', 't2'), ('id2', 2, 'blue', 't3'), ('id3', 3, 'blue red', 't4');
+
+#SQL[@169,N50]Result[]
 create fulltext index ftidx2 on src2 (body, title);
+
+#SQL[@170,N58]Result[33, 27, 32]
 select * from src2 where match(body, title) against('red');
-id1    id2    body    title
-id0    0    red    t1
-id3    3    blue red    t4
+id1  ¦  id2  ¦  body  ¦  title
+id0  ¦  0  ¦  red  ¦  t1
+id3  ¦  3  ¦  blue red  ¦  t4
+
+#SQL[@171,N59]Result[73, 44, 48]
 select src2.*, match(body, title) against('blue') from src2;
-id1    id2    body    title    MATCH (body, title) AGAINST (blue)
-id2    2    blue    t3    0.09061906
-id3    3    blue red    t4    0.09061906
+id1  ¦  id2  ¦  body  ¦  title  ¦  MATCH (body, title) AGAINST (blue)
+id2  ¦  2  ¦  blue  ¦  t3  ¦  0.09061906
+id3  ¦  3  ¦  blue red  ¦  t4  ¦  0.09061906
+
+#SQL[@173,N47]Result[]
 update src2 set body = 'orange' where id1='id0';
+
+#SQL[@175,N58]Result[33, 32]
 select * from src2 where match(body, title) against('red');
-id1    id2    body    title
-id3    3    blue red    t4
+id1  ¦  id2  ¦  body  ¦  title
+id3  ¦  3  ¦  blue red  ¦  t4
+
+#SQL[@177,N32]Result[]
 delete from src2 where id1='id3';
+
+#SQL[@179,N57]Result[]
 select * from src2 where match(body, title) against('t4');
-id1    id2    body    title
+
+#SQL[@181,N55]Result[]
 insert into src2 values ('id4', 4, 'light brown', 't5');
+
+#SQL[@183,N57]Result[33, 35]
 select * from src2 where match(body, title) against('t5');
-id1    id2    body    title
-id4    4    light brown    t5
+id1  ¦  id2  ¦  body  ¦  title
+id4  ¦  4  ¦  light brown  ¦  t5
+
+#SQL[@185,N8]Error[26]
 desc src;
 no such table fulltext.src
+
+#SQL[@186,N21]Error[26]
 show create table src;
 no such table fulltext.src
+
+#SQL[@188,N15]Result[]
 drop table src2;
+
+#SQL[@191,N64]Result[]
 create table src (id bigint primary key, json1 json, json2 json);
+
+#SQL[@192,N231]Result[]
 insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red blue"}', '{"d":"兒童中文"}');
+
+#SQL[@196,N59]Result[]
 create fulltext index ftidx on src (json1) with parser json;
+
+#SQL[@198,N67]Result[24, 71, 59]
 select * from src where match(json1) against('red' in boolean mode);
-id    json1    json2
-0    {"a": 1, "b": "red"}    {"d": "happy birthday", "f": "winter"}
-2    {"a": 3, "b": "red blue"}    {"d": "兒童中文"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a": 1, "b": "red"}  ¦  {"d": "happy birthday", "f": "winter"}
+2  ¦  {"a": 3, "b": "red blue"}  ¦  {"d": "兒童中文"}
+
+#SQL[@200,N91]Result[24, 87]
 select * from src where match(json1) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@202,N67]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json;
+
+#SQL[@203,N83]Result[24, 71]
 select * from src where match(json1, json2) against('+red +winter' in boolean mode);
-id    json1    json2
-0    {"a": 1, "b": "red"}    {"d": "happy birthday", "f": "winter"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a": 1, "b": "red"}  ¦  {"d": "happy birthday", "f": "winter"}
+
+#SQL[@205,N98]Result[24, 87]
 select * from src where match(json1, json2) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@207,N8]Result[71, 57, 58, 55]
 desc src;
-Field    Type    Null    Key    Default    Extra    Comment
-id    BIGINT(64)    NO    PRI    null        
-json1    JSON(0)    YES    MUL    null        
-json2    JSON(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+json1  ¦  JSON(0)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+json2  ¦  JSON(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@208,N21]Result[23, 233]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `json1` json DEFAULT NULL,\n  `json2` json DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT `ftidx`(`json1`) WITH PARSER json,\n FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `json1` json DEFAULT NULL,
+  `json2` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT `ftidx`(`json1`) WITH PARSER json,
+ FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json
+)
+
+#SQL[@210,N14]Result[]
 drop table src;
+
+#SQL[@213,N67]Result[]
 create table src (id bigint primary key, json1 text, json2 varchar);
+
+#SQL[@214,N231]Result[]
 insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red blue"}', '{"d":"兒童中文"}');
+
+#SQL[@218,N59]Result[]
 create fulltext index ftidx on src (json1) with parser json;
+
+#SQL[@220,N67]Result[24, 68, 56]
 select * from src where match(json1) against('red' in boolean mode);
-id    json1    json2
-0    {"a":1, "b":"red"}    {"d": "happy birthday", "f":"winter"}
-2    {"a":3, "b":"red blue"}    {"d":"兒童中文"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a":1, "b":"red"}  ¦  {"d": "happy birthday", "f":"winter"}
+2  ¦  {"a":3, "b":"red blue"}  ¦  {"d":"兒童中文"}
+
+#SQL[@222,N92]Result[24, 85]
 select * from src where match(json1) against('中文學習教材' in natural language  mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@224,N67]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json;
+
+#SQL[@225,N83]Result[24, 68]
 select * from src where match(json1, json2) against('+red +winter' in boolean mode);
-id    json1    json2
-0    {"a":1, "b":"red"}    {"d": "happy birthday", "f":"winter"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a":1, "b":"red"}  ¦  {"d": "happy birthday", "f":"winter"}
+
+#SQL[@227,N98]Result[24, 85]
 select * from src where match(json1, json2) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@229,N8]Result[71, 57, 58, 62]
 desc src;
-Field    Type    Null    Key    Default    Extra    Comment
-id    BIGINT(64)    NO    PRI    null        
-json1    TEXT(0)    YES    MUL    null        
-json2    VARCHAR(65535)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+json1  ¦  TEXT(0)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+json2  ¦  VARCHAR(65535)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@230,N21]Result[23, 243]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `json1` text DEFAULT NULL,\n  `json2` varchar(65535) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT `ftidx`(`json1`) WITH PARSER json,\n FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `json1` text DEFAULT NULL,
+  `json2` varchar(65535) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT `ftidx`(`json1`) WITH PARSER json,
+ FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json
+)
+
+#SQL[@232,N14]Result[]
 drop table src;
+
+#SQL[@235,N89]Result[]
 create table src (id bigint primary key, body varchar, title text, FULLTEXT(title, body));
+
+#SQL[@236,N872]Result[]
 insert into src values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy car'), (2, 'sky is blue', 'no limit'), (3, 'blue is not red', 'colorful'),
 (4, '遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。', '遠東兒童中文'),
 (5, '每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。', '遠東兒童中文'),
@@ -310,70 +531,112 @@ insert into src values (0, 'color is red', 't1'), (1, 'car is yellow', 'crazy ca
 (8, NULL, 'NOT INCLUDED'),
 (9, 'NOT INCLUDED BODY', NULL),
 (10, NULL, NULL);
+
+#SQL[@247,N94]Error[141]
 select *, match(body) against('遠東兒童中文' in natural language mode) as score from src;
 not supported: MATCH() AGAINST() function cannot be replaced by FULLTEXT INDEX and full table scan with fulltext search is not supported yet.
+
+#SQL[@248,N104]Error[31]
 select *, match(title, body) against('+Windows +(<"Photo" >defender)' in boolean mode) as score from src;
 internal error: double operator
+
+#SQL[@249,N98]Error[31]
 select *, match(title, body) against('+CC_BY +(<-1.0 >-SA-1.0)' in boolean mode) as score from src;
 internal error: double operator
+
+#SQL[@252,N57]Result[23, 27, 36]
 select * from src where match(body, title) against('red');
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@254,N89]Result[34, 42]
 select *, match(body, title) against('is red' in natural language mode) as score from src;
-id    body    title    score
-0    color is red    t1    1.6311431
+id  ¦  body  ¦  title  ¦  score
+0  ¦  color is red  ¦  t1  ¦  1.6311431
+
+#SQL[@256,N66]Result[23, 262]
 select * from src where match(body, title) against('教學指引');
-id    body    title
-6    各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。    中文短篇小說\n
+id  ¦  body  ¦  title
+6  ¦  各個單元主題內容涵蓋中華文化及生活應用的介紹。本套教材含課本、教學指引、生字卡、學生作業本與CD，中英對照，精美大字版。本系列有繁體字及簡體字兩種版本印行。  ¦  中文短篇小說
+
+
+#SQL[@258,N85]Result[23, 157]
 select * from src where match(body, title) against('彩圖' in natural language mode);
-id    body    title
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@260,N85]Result[23, 156, 157]
 select * from src where match(body, title) against('遠東' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文
+
+#SQL[@262,N94]Result[23, 156]
 select * from src where match(body, title) against('版一、二冊' in natural language mode);
-id    body    title
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文
+id  ¦  body  ¦  title
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文
+
+#SQL[@264,N101]Result[34, 171, 173]
 select *, match(body, title) against('遠東兒童中文' in natural language mode) as score from src;
-id    body    title    score
-4    遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。    遠東兒童中文    1.4499049
-5    每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。    遠東兒童中文    0.72495246
+id  ¦  body  ¦  title  ¦  score
+4  ¦  遠東兒童中文是針對6到9歲的小朋友精心設計的中文學習教材，共三冊，目前已出版一、二冊。  ¦  遠東兒童中文  ¦  1.4499049
+5  ¦  每冊均採用近百張全幅彩圖及照片，生動活潑、自然真實，加深兒童學習印象，洋溢學習樂趣。  ¦  遠東兒童中文  ¦  0.72495246
+
+#SQL[@268,N79]Result[23, 36, 27]
 select * from src where match(body, title) against('+red blue' in boolean mode);
-id    body    title
-3    blue is not red    colorful
-0    color is red    t1
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+0  ¦  color is red  ¦  t1
+
+#SQL[@270,N73]Result[23, 27, 36]
 select * from src where match(body, title) against('re*' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@272,N80]Result[23, 27]
 select * from src where match(body, title) against('+red -blue' in boolean mode);
-id    body    title
-0    color is red    t1
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+
+#SQL[@274,N80]Result[23, 36]
 select * from src where match(body, title) against('+red +blue' in boolean mode);
-id    body    title
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@276,N80]Result[23, 27, 36]
 select * from src where match(body, title) against('+red ~blue' in boolean mode);
-id    body    title
-0    color is red    t1
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+0  ¦  color is red  ¦  t1
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@278,N87]Result[]
 select * from src where match(body, title) against('+red -(<blue >is)' in boolean mode);
-id    body    title
+
+#SQL[@280,N87]Result[23, 36, 27]
 select * from src where match(body, title) against('+red +(<blue >is)' in boolean mode);
-id    body    title
-3    blue is not red    colorful
-0    color is red    t1
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+0  ¦  color is red  ¦  t1
+
+#SQL[@282,N82]Result[23, 36]
 select * from src where match(body, title) against('"is not red"' in boolean mode);
-id    body    title
-3    blue is not red    colorful
+id  ¦  body  ¦  title
+3  ¦  blue is not red  ¦  colorful
+
+#SQL[@285,N57]Result[63, 48, 52]
 select src.*, match(body, title) against('blue') from src;
-id    body    title    MATCH (body, title) AGAINST (blue)
-2    sky is blue    no limit    0.36247623
-3    blue is not red    colorful    0.36247623
+id  ¦  body  ¦  title  ¦  MATCH (body, title) AGAINST (blue)
+2  ¦  sky is blue  ¦  no limit  ¦  0.36247623
+3  ¦  blue is not red  ¦  colorful  ¦  0.36247623
+
+#SQL[@288,N64]Result[8, 1]
 select count(*) from src where match(title, body) against('red');
 count(*)
 2
+
+#SQL[@292,N97]Result[13, 7, 10, 48, 16, 30, 62, 43, 44, 48, 55]
 explain select match(body, title) against('red') from src where match(body, title) against('red');
 TP QUERY PLAN
 Project
@@ -386,181 +649,380 @@ Project
               ->  Table Scan on fulltext.src
                     Runtime Filter Probe: src.id
               ->  Table Function on fulltext_index_scan
+
+#SQL[@296,N47]Result[]
 update src set body='color is brown' where id=0;
+
+#SQL[@298,N59]Result[23, 29]
 select * from src where match(body, title) against('brown');
-id    body    title
-0    color is brown    t1
+id  ¦  body  ¦  title
+0  ¦  color is brown  ¦  t1
+
+#SQL[@302,N28]Result[]
 delete from src where id = 0;
+
+#SQL[@303,N59]Result[]
 select * from src where match(body, title) against('brown');
-id    body    title
+
+#SQL[@306,N56]Result[]
 insert into src (id, body) values (11, 'color is brown');
+
+#SQL[@307,N59]Result[]
 select * from src where match(body, title) against('brown');
-id    body    title
+
+#SQL[@308,N47]Result[]
 update src set title='a good title' where id=11;
+
+#SQL[@309,N59]Result[23, 40]
 select * from src where match(body, title) against('brown');
-id    body    title
-11    color is brown    a good title
+id  ¦  body  ¦  title
+11  ¦  color is brown  ¦  a good title
+
+#SQL[@312,N15]Result[]
 delete from src;
+
+#SQL[@313,N24]Result[8, 1]
 select count(*) from src;
 count(*)
 0
+
+#SQL[@315,N8]Result[71, 57, 61, 58]
 desc src;
-Field    Type    Null    Key    Default    Extra    Comment
-id    BIGINT(64)    NO    PRI    null        
-body    VARCHAR(65535)    YES        null        
-title    TEXT(0)    YES    MUL    null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+body  ¦  VARCHAR(65535)  ¦  YES  ¦    ¦  null  ¦    ¦  
+title  ¦  TEXT(0)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+
+#SQL[@316,N21]Result[23, 171]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `body` varchar(65535) DEFAULT NULL,\n  `title` text DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT (`title`,`body`)\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `body` varchar(65535) DEFAULT NULL,
+  `title` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT (`title`,`body`)
+)
+
+#SQL[@319,N14]Result[]
 drop table src;
+
+#SQL[@322,N118]Result[]
 create table src2 (id1 varchar, id2 bigint, body char(128), title text, primary key (id1, id2), FULLTEXT(body, title));
+
+#SQL[@323,N131]Result[]
 insert into src2 values ('id0', 0, 'red', 't1'), ('id1', 1, 'yellow', 't2'), ('id2', 2, 'blue', 't3'), ('id3', 3, 'blue red', 't4');
+
+#SQL[@325,N58]Result[33, 27, 32]
 select * from src2 where match(body, title) against('red');
-id1    id2    body    title
-id0    0    red    t1
-id3    3    blue red    t4
+id1  ¦  id2  ¦  body  ¦  title
+id0  ¦  0  ¦  red  ¦  t1
+id3  ¦  3  ¦  blue red  ¦  t4
+
+#SQL[@326,N59]Result[73, 44, 48]
 select src2.*, match(body, title) against('blue') from src2;
-id1    id2    body    title    MATCH (body, title) AGAINST (blue)
-id2    2    blue    t3    0.09061906
-id3    3    blue red    t4    0.09061906
+id1  ¦  id2  ¦  body  ¦  title  ¦  MATCH (body, title) AGAINST (blue)
+id2  ¦  2  ¦  blue  ¦  t3  ¦  0.09061906
+id3  ¦  3  ¦  blue red  ¦  t4  ¦  0.09061906
+
+#SQL[@328,N9]Result[71, 62, 58, 59, 55]
 desc src2;
-Field    Type    Null    Key    Default    Extra    Comment
-id1    VARCHAR(65535)    NO    PRI    null        
-id2    BIGINT(64)    NO    PRI    null        
-body    CHAR(128)    YES    MUL    null        
-title    TEXT(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id1  ¦  VARCHAR(65535)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+id2  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+body  ¦  CHAR(128)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+title  ¦  TEXT(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@329,N22]Result[23, 209]
 show create table src2;
-Table    Create Table
-src2    CREATE TABLE `src2` (\n  `id1` varchar(65535) NOT NULL,\n  `id2` bigint NOT NULL,\n  `body` char(128) DEFAULT NULL,\n  `title` text DEFAULT NULL,\n  PRIMARY KEY (`id1`,`id2`),\n FULLTEXT (`body`,`title`)\n)
+Table  ¦  Create Table
+src2  ¦  CREATE TABLE `src2` (
+  `id1` varchar(65535) NOT NULL,
+  `id2` bigint NOT NULL,
+  `body` char(128) DEFAULT NULL,
+  `title` text DEFAULT NULL,
+  PRIMARY KEY (`id1`,`id2`),
+ FULLTEXT (`body`,`title`)
+)
+
+#SQL[@331,N15]Result[]
 drop table src2;
+
+#SQL[@334,N98]Result[]
 create table src (id bigint primary key, json1 json, json2 json, FULLTEXT(json1) with parser json);
+
+#SQL[@335,N231]Result[]
 insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red blue"}', '{"d":"兒童中文"}');
+
+#SQL[@339,N67]Result[24, 71, 59]
 select * from src where match(json1) against('red' in boolean mode);
-id    json1    json2
-0    {"a": 1, "b": "red"}    {"d": "happy birthday", "f": "winter"}
-2    {"a": 3, "b": "red blue"}    {"d": "兒童中文"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a": 1, "b": "red"}  ¦  {"d": "happy birthday", "f": "winter"}
+2  ¦  {"a": 3, "b": "red blue"}  ¦  {"d": "兒童中文"}
+
+#SQL[@341,N91]Result[24, 87]
 select * from src where match(json1) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@343,N67]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json;
+
+#SQL[@344,N83]Result[24, 71]
 select * from src where match(json1, json2) against('+red +winter' in boolean mode);
-id    json1    json2
-0    {"a": 1, "b": "red"}    {"d": "happy birthday", "f": "winter"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a": 1, "b": "red"}  ¦  {"d": "happy birthday", "f": "winter"}
+
+#SQL[@346,N98]Result[24, 87]
 select * from src where match(json1, json2) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@348,N53]Result[]
 update src set json1='{"c":"update json"}' where id=0;
+
+#SQL[@350,N8]Result[71, 57, 58, 55]
 desc src;
-Field    Type    Null    Key    Default    Extra    Comment
-id    BIGINT(64)    NO    PRI    null        
-json1    JSON(0)    YES    MUL    null        
-json2    JSON(0)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+json1  ¦  JSON(0)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+json2  ¦  JSON(0)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@351,N21]Result[23, 226]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `json1` json DEFAULT NULL,\n  `json2` json DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT (`json1`) WITH PARSER json,\n FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `json1` json DEFAULT NULL,
+  `json2` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT (`json1`) WITH PARSER json,
+ FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json
+)
+
+#SQL[@353,N14]Result[]
 drop table src;
+
+#SQL[@356,N101]Result[]
 create table src (id bigint primary key, json1 text, json2 varchar, fulltext(json1) with parser json);
+
+#SQL[@357,N231]Result[]
 insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red blue"}', '{"d":"兒童中文"}');
+
+#SQL[@361,N67]Result[24, 68, 56]
 select * from src where match(json1) against('red' in boolean mode);
-id    json1    json2
-0    {"a":1, "b":"red"}    {"d": "happy birthday", "f":"winter"}
-2    {"a":3, "b":"red blue"}    {"d":"兒童中文"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a":1, "b":"red"}  ¦  {"d": "happy birthday", "f":"winter"}
+2  ¦  {"a":3, "b":"red blue"}  ¦  {"d":"兒童中文"}
+
+#SQL[@363,N91]Result[24, 85]
 select * from src where match(json1) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@365,N67]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json;
+
+#SQL[@366,N83]Result[24, 68]
 select * from src where match(json1, json2) against('+red +winter' in boolean mode);
-id    json1    json2
-0    {"a":1, "b":"red"}    {"d": "happy birthday", "f":"winter"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a":1, "b":"red"}  ¦  {"d": "happy birthday", "f":"winter"}
+
+#SQL[@368,N98]Result[24, 85]
 select * from src where match(json1, json2) against('中文學習教材' in natural language mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@370,N53]Result[]
 update src set json1='{"c":"update json"}' where id=0;
+
+#SQL[@372,N84]Result[24, 69]
 select * from src where match(json1, json2) against('"update json"' in boolean mode);
-id    json1    json2
-0    {"c":"update json"}    {"d": "happy birthday", "f":"winter"}
+id  ¦  json1  ¦  json2
+0  ¦  {"c":"update json"}  ¦  {"d": "happy birthday", "f":"winter"}
+
+#SQL[@374,N8]Result[71, 57, 58, 62]
 desc src;
-Field    Type    Null    Key    Default    Extra    Comment
-id    BIGINT(64)    NO    PRI    null        
-json1    TEXT(0)    YES    MUL    null        
-json2    VARCHAR(65535)    YES        null        
+Field  ¦  Type  ¦  Null  ¦  Key  ¦  Default  ¦  Extra  ¦  Comment
+id  ¦  BIGINT(64)  ¦  NO  ¦  PRI  ¦  null  ¦    ¦  
+json1  ¦  TEXT(0)  ¦  YES  ¦  MUL  ¦  null  ¦    ¦  
+json2  ¦  VARCHAR(65535)  ¦  YES  ¦    ¦  null  ¦    ¦  
+
+#SQL[@375,N21]Result[23, 236]
 show create table src;
-Table    Create Table
-src    CREATE TABLE `src` (\n  `id` bigint NOT NULL,\n  `json1` text DEFAULT NULL,\n  `json2` varchar(65535) DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT (`json1`) WITH PARSER json,\n FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json\n)
+Table  ¦  Create Table
+src  ¦  CREATE TABLE `src` (
+  `id` bigint NOT NULL,
+  `json1` text DEFAULT NULL,
+  `json2` varchar(65535) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT (`json1`) WITH PARSER json,
+ FULLTEXT `ftidx2`(`json1`,`json2`) WITH PARSER json
+)
+
+#SQL[@377,N14]Result[]
 drop table src;
+
+#SQL[@379,N23]Result[]
 drop table if exists t1;
+
+#SQL[@380,N50]Result[]
 create table t1(a int primary key, b varchar(200));
+
+#SQL[@381,N94]Result[]
 insert into t1 select result, "test create big fulltext index" from generate_series(3840001) g;
+
+#SQL[@382,N37]Result[]
 create fulltext index ftidx on t1 (b);
+
+#SQL[@383,N87]Result[8, 7]
 select count(*) from t1 where match(b) against ('test create' in natural language mode);
 count(*)
 3840001
+
+#SQL[@384,N13]Result[]
 drop table t1;
+
+#SQL[@387,N198]Result[]
 CREATE TABLE IF NOT EXISTS nation (
-`n_nationkey`  INT,
-`n_name`       CHAR(25),
-`n_regionkey`  INT,
-`n_comment`    VARCHAR(152),
-`n_dummy`      VARCHAR(10),
-PRIMARY KEY (`n_nationkey`));
+  `n_nationkey`  INT,
+  `n_name`       CHAR(25),
+  `n_regionkey`  INT,
+  `n_comment`    VARCHAR(152),
+  `n_dummy`      VARCHAR(10),
+  PRIMARY KEY (`n_nationkey`));
+
+#SQL[@395,N110]Result[]
 insert into nation values (0, 'china', 1, 'china beijing', 'dummy'), (1, 'korea', 2, 'korea noodle', 'dummmy');
+
+#SQL[@397,N48]Result[]
 create fulltext index ftidx on nation(n_comment);
+
+#SQL[@399,N60]Result[68, 49]
 select * from nation where match(n_comment) against('china');
-n_nationkey    n_name    n_regionkey    n_comment    n_dummy
-0    china    1    china beijing    dummy
+n_nationkey  ¦  n_name  ¦  n_regionkey  ¦  n_comment  ¦  n_dummy
+0  ¦  china  ¦  1  ¦  china beijing  ¦  dummy
+
+#SQL[@401,N40]Result[]
 delete from nation where n_nationkey = 0;
+
+#SQL[@403,N60]Result[]
 select * from nation where match(n_comment) against('china');
-n_nationkey    n_name    n_regionkey    n_comment    n_dummy
+
+#SQL[@405,N17]Result[]
 drop table nation;
+
+#SQL[@409,N23]Result[]
 drop table if exists t1;
+
+#SQL[@410,N50]Result[]
 create table t1(a int primary key, b varchar(200));
+
+#SQL[@411,N84]Result[]
 insert into t1 select result, "pushdown limit is fast" from generate_series(30001) g;
+
+#SQL[@412,N37]Result[]
 create fulltext index ftidx on t1 (b);
+
+#SQL[@414,N83]Result[8, 5]
 select count(*) from t1 where match(b) against ('+pushdown +limit' in boolean mode);
 count(*)
 30001
+
+#SQL[@416,N91]Result[8, 5]
 select count(*) from t1 where match(b) against ('+pushdown +limit' in boolean mode) limit 1;
 count(*)
 30001
+
+#SQL[@418,N13]Result[]
 drop table t1;
+
+#SQL[@421,N29]Result[]
 drop table if exists articles;
+
+#SQL[@422,N92]Result[]
 create table articles (id int auto_increment not null primary key, title varchar, body text);
+
+#SQL[@423,N53]Result[]
 create fulltext index ftidx on articles (title, body);
+
+#SQL[@424,N38]Result[]
 alter table articles drop column title;
+
+#SQL[@427,N29]Result[]
 drop table if exists articles;
+
+#SQL[@428,N92]Result[]
 create table articles (id int auto_increment not null primary key, title varchar, body text);
+
+#SQL[@429,N47]Result[]
 create fulltext index ftidx on articles (title);
+
+#SQL[@430,N38]Result[]
 alter table articles drop column title;
+
+#SQL[@433,N24]Result[]
 drop table if exists src;
+
+#SQL[@434,N70]Result[]
 create table src (id bigint primary key, body varchar, FULLTEXT(body));
+
+#SQL[@435,N328]Result[]
 insert into src values (0, 'SGB11型号的检验报告在对素材文件进行搜索时'), (1, '读书会 提效 社群 案例 运营 因为现在生产'),
 (2, '使用全文索引会肥胖的原因都是因为摄入脂肪多导致的吗测试背景说明'),
 (3, '索引肥胖的原因都是因为摄入fat多导致的吗说明');
+
+#SQL[@439,N91]Result[2, 1]
 select id from src where match(body) against('+SGB11型号的检验报告' IN BOOLEAN MODE);
 id
 0
+
+#SQL[@441,N127]Result[2, 1]
 select id from src where match(body) against('肥胖的原因都是因为摄入脂肪多导致的吗' IN NATURAL LANGUAGE MODE);
 id
 2
+
+#SQL[@443,N106]Result[2, 1]
 select id from src where match(body) against('+读书会 +提效 +社群 +案例 +运营' IN BOOLEAN MODE);
 id
 1
+
+#SQL[@445,N124]Result[2, 1]
 select id from src where match(body) against('肥胖的原因都是因为摄入fat多导致的吗' IN NATURAL LANGUAGE MODE);
 id
 3
+
+#SQL[@446,N99]Result[]
 CREATE TABLE example_table (id INT PRIMARY KEY,english_text TEXT, chinese_text TEXT,json_data JSON);
+
+#SQL[@447,N315]Result[]
 INSERT INTO example_table (id, english_text, chinese_text, json_data) VALUES(1, 'Hello, world!', '你好世界', '{"name": "Alice", "age": 30}'),(2, 'This is a test.', '这是一个测试', '{"name": "Bob", "age": 25}'),(3, 'Full-text search is powerful.', '全文搜索很强大', '{"name": "Charlie", "age": 35}');
+
+#SQL[@448,N70]Result[]
 CREATE FULLTEXT INDEX idx_english_text ON example_table (english_text);
+
+#SQL[@449,N244]Result[53, 78, 78]
 (with t as (SELECT * FROM example_table WHERE MATCH(english_text) AGAINST('+test' IN BOOLEAN MODE)) select * from t) union all (with t as (SELECT * FROM example_table WHERE MATCH(english_text) AGAINST('+test' IN BOOLEAN MODE)) select * from t) ;
-id    english_text    chinese_text    json_data
-2    This is a test.    这是一个测试    {"age": 25, "name": "Bob"}
-2    This is a test.    这是一个测试    {"age": 25, "name": "Bob"}
+id  ¦  english_text  ¦  chinese_text  ¦  json_data
+2  ¦  This is a test.  ¦  这是一个测试  ¦  {"age": 25, "name": "Bob"}
+2  ¦  This is a test.  ¦  这是一个测试  ¦  {"age": 25, "name": "Bob"}
+
+#SQL[@451,N106]Result[]
 create table empty_fulltext(a int primary key, b varchar, c varchar, fulltext `ftc` (c) WITH PARSER ngram);
+
+#SQL[@452,N90]Result[]
 insert into empty_fulltext select result, 'so long',null from generate_series(1, 300000) g;
+
+#SQL[@453,N80]Result[]
 insert into empty_fulltext values (300001, 'this is the end of our story', null);
+
+#SQL[@455,N49]Result[]
 delete from empty_fulltext where b like '%story%';
+
+#SQL[@456,N25]Result[]
 drop table empty_fulltext;
+

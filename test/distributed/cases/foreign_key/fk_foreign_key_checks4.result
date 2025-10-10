@@ -1,185 +1,475 @@
+#SQL[@1,N46]Result[]
 drop database if exists fk_foreign_key_checks4;
+
+#SQL[@2,N38]Result[]
 create database fk_foreign_key_checks4;
+
+#SQL[@3,N26]Result[]
 use fk_foreign_key_checks4;
+
+#SQL[@5,N34]Result[]
 create table t1(a int primary key);
+
+#SQL[@7,N70]Result[]
 create table t2(b int, constraint c1 foreign key (b) references t1(a));
+
+#SQL[@9,N33]Result[]
 insert into t1 values (1),(2),(3);
+
+#SQL[@11,N33]Result[]
 insert into t2 values (1),(2),(3);
+
+#SQL[@14,N25]Error[80]
 insert into t2 values (4);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@17,N28]Result[]
 alter table t1 RENAME t1copy;
+
+#SQL[@20,N25]Error[80]
 insert into t2 values (4);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@23,N29]Result[]
 insert into t1copy values (4);
+
+#SQL[@26,N25]Result[]
 insert into t2 values (4);
+
+#SQL[@29,N28]Result[]
 alter table t2 RENAME t2copy;
+
+#SQL[@32,N29]Error[80]
 insert into t2copy values (5);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@35,N29]Result[]
 insert into t1copy values (5);
+
+#SQL[@38,N29]Result[]
 insert into t2copy values (5);
+
+#SQL[@41,N28]Result[]
 alter table t1copy RENAME t1;
+
+#SQL[@44,N29]Error[80]
 insert into t2copy values (6);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@47,N25]Result[]
 insert into t1 values (6);
+
+#SQL[@50,N29]Result[]
 insert into t2copy values (6);
+
+#SQL[@53,N28]Result[]
 alter table t2copy RENAME t2;
+
+#SQL[@56,N25]Error[80]
 insert into t2 values (7);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@59,N25]Result[]
 insert into t1 values (7);
+
+#SQL[@62,N25]Result[]
 insert into t2 values (7);
+
+#SQL[@65,N39]Result[]
 alter table t1 RENAME COLUMN a to acopy;
+
+#SQL[@68,N25]Error[80]
 insert into t2 values (8);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@71,N25]Result[]
 insert into t1 values (8);
+
+#SQL[@74,N25]Result[]
 insert into t2 values (8);
+
+#SQL[@77,N39]Result[]
 alter table t2 RENAME COLUMN b to bcopy;
+
+#SQL[@81,N25]Error[80]
 insert into t2 values (9);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@84,N25]Result[]
 insert into t1 values (9);
+
+#SQL[@87,N25]Result[]
 insert into t2 values (9);
+
+#SQL[@91,N39]Result[]
 alter table t2 RENAME COLUMN bcopy to b;
+
+#SQL[@94,N26]Error[80]
 insert into t2 values (10);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@97,N26]Result[]
 insert into t1 values (10);
+
+#SQL[@100,N26]Result[]
 insert into t2 values (10);
+
+#SQL[@103,N40]Error[26]
 alter table t1 change column a acopy int;
 Unknown column 'a' in 't1'
+
+#SQL[@106,N26]Error[80]
 insert into t2 values (11);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@109,N26]Result[]
 insert into t1 values (11);
+
+#SQL[@112,N26]Result[]
 insert into t2 values (11);
+
+#SQL[@115,N40]Result[]
 alter table t2 change column b bcopy int;
+
+#SQL[@118,N26]Error[80]
 insert into t2 values (12);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@121,N26]Result[]
 insert into t1 values (12);
+
+#SQL[@124,N26]Result[]
 insert into t2 values (12);
+
+#SQL[@128,N40]Result[]
 alter table t1 change column acopy a int;
+
+#SQL[@131,N26]Error[80]
 insert into t2 values (13);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@134,N26]Result[]
 insert into t1 values (13);
+
+#SQL[@137,N26]Result[]
 insert into t2 values (13);
+
+#SQL[@141,N40]Result[]
 alter table t2 change column bcopy b int;
+
+#SQL[@144,N26]Error[80]
 insert into t2 values (14);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@147,N26]Result[]
 insert into t1 values (14);
+
+#SQL[@150,N26]Result[]
 insert into t2 values (14);
+
+#SQL[@153,N38]Result[]
 alter table t1 add column c int unique;
+
+#SQL[@156,N70]Result[]
 create table t3(c int, constraint c1 foreign key (c) references t1(c));
+
+#SQL[@157,N70]Result[]
 create table t4(b int, constraint c1 foreign key (b) references t1(a));
+
+#SQL[@160,N28]Result[]
 alter table t1 RENAME t1copy;
+
+#SQL[@163,N26]Error[80]
 insert into t2 values (15);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@164,N26]Error[80]
 insert into t3 values (15);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@165,N26]Error[80]
 insert into t4 values (15);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@168,N33]Result[]
 insert into t1copy values (15,15);
+
+#SQL[@171,N26]Result[]
 insert into t2 values (15);
+
+#SQL[@172,N26]Result[]
 insert into t3 values (15);
+
+#SQL[@173,N26]Result[]
 insert into t4 values (15);
+
+#SQL[@176,N69]Result[]
 alter table t1copy RENAME COLUMN a TO acopy, RENAME COLUMN c TO ccopy;
+
+#SQL[@180,N26]Error[80]
 insert into t2 values (16);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@181,N26]Error[80]
 insert into t3 values (16);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@182,N26]Error[80]
 insert into t4 values (16);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@185,N33]Result[]
 insert into t1copy values (16,16);
+
+#SQL[@188,N26]Result[]
 insert into t2 values (16);
+
+#SQL[@189,N26]Result[]
 insert into t3 values (16);
+
+#SQL[@190,N26]Result[]
 insert into t4 values (16);
+
+#SQL[@193,N39]Result[]
 alter table t3 RENAME COLUMN c TO ccopy;
+
+#SQL[@196,N39]Result[]
 alter table t4 RENAME COLUMN b TO bcopy;
+
+#SQL[@199,N26]Error[80]
 insert into t2 values (17);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@200,N26]Error[80]
 insert into t3 values (17);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@201,N26]Error[80]
 insert into t4 values (17);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@204,N33]Result[]
 insert into t1copy values (17,17);
+
+#SQL[@207,N26]Result[]
 insert into t2 values (17);
+
+#SQL[@208,N26]Result[]
 insert into t3 values (17);
+
+#SQL[@209,N26]Result[]
 insert into t4 values (17);
+
+#SQL[@212,N28]Result[]
 alter table t3 RENAME t3copy;
+
+#SQL[@213,N28]Result[]
 alter table t4 RENAME t4copy;
+
+#SQL[@216,N26]Error[80]
 insert into t2 values (18);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@217,N30]Error[80]
 insert into t3copy values (18);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@218,N30]Error[80]
 insert into t4copy values (18);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@221,N33]Result[]
 insert into t1copy values (18,18);
+
+#SQL[@224,N26]Result[]
 insert into t2 values (18);
+
+#SQL[@225,N30]Result[]
 insert into t3copy values (18);
+
+#SQL[@226,N30]Result[]
 insert into t4copy values (18);
+
+#SQL[@230,N28]Result[]
 alter table t3copy RENAME t3;
+
+#SQL[@231,N39]Result[]
 alter table t3 RENAME COLUMN ccopy TO c;
+
+#SQL[@234,N26]Error[80]
 insert into t2 values (19);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@235,N26]Error[80]
 insert into t3 values (19);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@236,N30]Error[80]
 insert into t4copy values (19);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@239,N33]Result[]
 insert into t1copy values (19,19);
+
+#SQL[@242,N26]Result[]
 insert into t2 values (19);
+
+#SQL[@243,N26]Result[]
 insert into t3 values (19);
+
+#SQL[@244,N30]Result[]
 insert into t4copy values (19);
+
+#SQL[@247,N28]Result[]
 alter table t1copy RENAME t1;
+
+#SQL[@248,N65]Result[]
 alter table t1 RENAME COLUMN acopy TO a, RENAME COLUMN ccopy TO c;
+
+#SQL[@251,N26]Error[80]
 insert into t2 values (20);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@252,N26]Error[80]
 insert into t3 values (20);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@253,N30]Error[80]
 insert into t4copy values (20);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@256,N29]Result[]
 insert into t1 values (20,20);
+
+#SQL[@259,N26]Result[]
 insert into t2 values (20);
+
+#SQL[@260,N26]Result[]
 insert into t3 values (20);
+
+#SQL[@261,N30]Result[]
 insert into t4copy values (20);
+
+#SQL[@264,N28]Result[]
 alter table t4copy RENAME t4;
+
+#SQL[@265,N39]Result[]
 alter table t4 RENAME COLUMN bcopy TO b;
+
+#SQL[@268,N26]Error[80]
 insert into t2 values (21);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@269,N26]Error[80]
 insert into t3 values (21);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@270,N26]Error[80]
 insert into t4 values (21);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@273,N29]Result[]
 insert into t1 values (21,21);
+
+#SQL[@276,N26]Result[]
 insert into t2 values (21);
+
+#SQL[@277,N26]Result[]
 insert into t3 values (21);
+
+#SQL[@278,N26]Result[]
 insert into t4 values (21);
+
+#SQL[@281,N13]Error[81]
 drop table t1;
 internal error: can not drop table 't1' referenced by some foreign key constraint
+
+#SQL[@284,N34]Result[]
 alter table t2 drop foreign key c1;
+
+#SQL[@287,N13]Error[81]
 drop table t1;
 internal error: can not drop table 't1' referenced by some foreign key constraint
+
+#SQL[@290,N26]Result[]
 insert into t2 values (22);
+
+#SQL[@292,N26]Error[80]
 insert into t3 values (22);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@293,N26]Error[80]
 insert into t4 values (22);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@296,N29]Result[]
 insert into t1 values (22,22);
+
+#SQL[@299,N26]Result[]
 insert into t2 values (22);
+
+#SQL[@300,N26]Result[]
 insert into t3 values (22);
+
+#SQL[@301,N26]Result[]
 insert into t4 values (22);
+
+#SQL[@304,N34]Result[]
 alter table t3 drop foreign key c1;
+
+#SQL[@307,N13]Error[81]
 drop table t1;
 internal error: can not drop table 't1' referenced by some foreign key constraint
+
+#SQL[@310,N26]Result[]
 insert into t2 values (23);
+
+#SQL[@311,N26]Result[]
 insert into t3 values (23);
+
+#SQL[@313,N26]Error[80]
 insert into t4 values (23);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@316,N29]Result[]
 insert into t1 values (23,23);
+
+#SQL[@319,N26]Result[]
 insert into t2 values (23);
+
+#SQL[@320,N26]Result[]
 insert into t3 values (23);
+
+#SQL[@321,N26]Result[]
 insert into t4 values (23);
+
+#SQL[@324,N34]Result[]
 alter table t4 drop foreign key c1;
+
+#SQL[@327,N26]Result[]
 insert into t2 values (24);
+
+#SQL[@328,N26]Result[]
 insert into t3 values (24);
+
+#SQL[@329,N26]Result[]
 insert into t4 values (24);
+
+#SQL[@332,N13]Result[]
 drop table t1;
+
+#SQL[@334,N23]Result[]
 drop table if exists t1;
+
+#SQL[@335,N23]Result[]
 drop table if exists t2;
+
+#SQL[@336,N23]Result[]
 drop table if exists t3;
+
+#SQL[@337,N23]Result[]
 drop table if exists t4;
+
+#SQL[@339,N46]Result[]
 drop database if exists fk_foreign_key_checks4;
+

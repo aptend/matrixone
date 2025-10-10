@@ -1,3 +1,4 @@
+#SQL[@1,N356]Result[]
 CREATE TABLE part_fk(
 P_PARTKEY     INTEGER NOT NULL,
 P_NAME        VARCHAR(55) NOT NULL,
@@ -10,14 +11,22 @@ P_RETAILPRICE DECIMAL(15,2) NOT NULL,
 P_COMMENT     VARCHAR(23) NOT NULL,
 PRIMARY KEY (P_PARTKEY)
 );
+
+#SQL[@13,N164]Result[]
 insert into part_fk values(199,"pink wheat powder burlywood snow","Manufacturer#5","Brand#52","MEDIUM BURNISHED BRASS",49,"LG BOX",2097.99,". special deposits hag");
+
+#SQL[@15,N141]Result[]
 CREATE TABLE region_fk(
 R_REGIONKEY  INTEGER NOT NULL,
 R_NAME       CHAR(25) NOT NULL,
 R_COMMENT    VARCHAR(152),
 PRIMARY KEY (R_REGIONKEY)
 );
+
+#SQL[@21,N72]Result[]
 insert into region_fk values(2,"ASIA","ges. thinly even pinto beans ca");
+
+#SQL[@23,N247]Result[]
 CREATE TABLE NATION_fk(
 N_NATIONKEY  INTEGER NOT NULL,
 N_NAME       CHAR(25) NOT NULL,
@@ -25,7 +34,11 @@ N_REGIONKEY  INTEGER NOT NULL,
 N_COMMENT    VARCHAR(152),
 PRIMARY KEY (N_NATIONKEY),constraint fk_n foreign key(N_REGIONKEY) REFERENCES region_fk(R_REGIONKEY)
 );
+
+#SQL[@30,N92]Result[]
 insert into nation_fk values(13,"VIETNAM",2,"hely enticingly express accounts. even, final");
+
+#SQL[@32,N367]Result[]
 CREATE TABLE supplier_fk(
 S_SUPPKEY     INTEGER NOT NULL,
 S_NAME        CHAR(25) NOT NULL,
@@ -36,7 +49,11 @@ S_ACCTBAL     DECIMAL(15,2) NOT NULL,
 S_COMMENT     VARCHAR(101) NOT NULL,
 PRIMARY KEY (S_SUPPKEY),constraint fk_s foreign key(S_NATIONKEY) REFERENCES nation_fk(N_NATIONKEY)
 );
+
+#SQL[@42,N138]Result[]
 insert into supplier_fk values(9991,"Supplier#000009991","RnP1Z uvwftshFtf",13,"23-451-948-8464",6785.10,". furiously pending accounts b");
+
+#SQL[@44,N387]Result[]
 CREATE TABLE PARTSUPP_fk(
 PS_PARTKEY     INTEGER NOT NULL,
 PS_SUPPKEY     INTEGER NOT NULL,
@@ -45,7 +62,11 @@ PS_SUPPLYCOST  DECIMAL(15,2)  NOT NULL,
 PS_COMMENT     VARCHAR(199) NOT NULL,
 PRIMARY KEY (PS_PARTKEY, PS_SUPPKEY),constraint fk_p1 foreign key(PS_PARTKEY) REFERENCES part_fk(P_PARTKEY),constraint fk_p2 foreign key(PS_SUPPKEY) REFERENCES supplier_fk(S_SUPPKEY)
 );
+
+#SQL[@52,N130]Result[]
 insert into PARTSUPP_fk values (199,9991,7872,606.64," according to the final pinto beans: carefully silent requests sleep final");
+
+#SQL[@54,N405]Result[]
 CREATE TABLE customer_fk(
 C_CUSTKEY     INTEGER NOT NULL,
 C_NAME        VARCHAR(25) NOT NULL,
@@ -57,7 +78,11 @@ C_MKTSEGMENT  CHAR(10) NOT NULL,
 C_COMMENT     VARCHAR(117) NOT NULL,
 PRIMARY KEY (C_CUSTKEY),constraint fk_c foreign key(C_NATIONKEY) REFERENCES nation_fk(N_NATIONKEY)
 );
+
+#SQL[@65,N207]Result[]
 insert into customer_fk values(12,"Customer#000149992","iwjVf1MZno1",13,"16-684-999-8810",3417.45,"AUTOMOBILE","luffily final requests integrate slyly. furiously special warhorses are furiously alongside o");
+
+#SQL[@67,N445]Result[]
 CREATE TABLE orders_fk(
 O_ORDERKEY       BIGINT NOT NULL,
 O_CUSTKEY        INTEGER NOT NULL,
@@ -69,7 +94,11 @@ O_CLERK          CHAR(15) NOT NULL,
 O_SHIPPRIORITY   INTEGER NOT NULL,
 O_COMMENT        VARCHAR(79) NOT NULL,
 PRIMARY KEY (O_ORDERKEY),constraint fk_o foreign key(O_CUSTKEY) REFERENCES customer_fk(C_CUSTKEY));
+
+#SQL[@78,N120]Result[]
 insert into orders_fk values(5999968,12,"F",354575.46,"1992-12-24","3-MEDIUM","Clerk#000000736",0, "cajole blithely ag");
+
+#SQL[@80,N827]Result[]
 CREATE TABLE lineitem_fk(
 L_ORDERKEY    BIGINT NOT NULL,
 L_PARTKEY     INTEGER NOT NULL,
@@ -88,132 +117,258 @@ L_SHIPINSTRUCT CHAR(25) NOT NULL,
 L_SHIPMODE     CHAR(10) NOT NULL,
 L_COMMENT      VARCHAR(44) NOT NULL,
 PRIMARY KEY (L_ORDERKEY, L_LINENUMBER),constraint fk_l1 foreign key(L_ORDERKEY) REFERENCES ORDERS_fk(o_orderkey),constraint fk_l2 foreign key(L_PARTKEY) REFERENCES PART_fk(P_PARTKEY),constraint fk_l3 foreign key(L_SUPPKEY) REFERENCES SUPPLIER_fk(S_SUPPKEY));
+
+#SQL[@98,N155]Result[]
 insert into lineitem_fk values(5999968,199,9991,2,46,63179.16,0.08,0.06,"R","F","1993-09-16","1993-09-21","1993-10-02","COLLECT COD","RAIL","dolites wake");
+
+#SQL[@101,N56]Error[84]
 update nation_fk set n_nationkey=10 where n_nationkey=13;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@102,N55]Error[80]
 update lineitem_fk set l_partkey=2 where l_suppkey=9991;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@103,N36]Error[80]
 update PARTSUPP_fk set PS_PARTKEY=40;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@104,N52]Error[84]
 update orders_fk set O_ORDERKEY=1 where O_CUSTKEY=12;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@105,N56]Error[84]
 update supplier_fk set s_suppkey=11 where s_nationkey=13;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@106,N36]Error[80]
 update customer_fk set c_nationkey=6;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@107,N60]Error[84]
 update part_fk set p_partkey=200 where P_RETAILPRICE=2097.99;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@108,N54]Error[84]
 update region_fk set r_regionkey=5 where r_name="ASIA";
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@111,N42]Error[84]
 delete from nation_fk where n_nationkey=13;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@112,N25]Result[96, 128]
 select * from SUPPLIER_fk;
-s_suppkey    s_name    s_address    s_nationkey    s_phone    s_acctbal    s_comment
-9991    Supplier#000009991    RnP1Z uvwftshFtf    13    23-451-948-8464    6785.10    . furiously pending accounts b
+s_suppkey  ¦  s_name  ¦  s_address  ¦  s_nationkey  ¦  s_phone  ¦  s_acctbal  ¦  s_comment
+9991  ¦  Supplier#000009991  ¦  RnP1Z uvwftshFtf  ¦  13  ¦  23-451-948-8464  ¦  6785.10  ¦  . furiously pending accounts b
+
+#SQL[@113,N25]Result[114, 200]
 select * from CUSTOMER_fk;
-c_custkey    c_name    c_address    c_nationkey    c_phone    c_acctbal    c_mktsegment    c_comment
-12    Customer#000149992    iwjVf1MZno1    13    16-684-999-8810    3417.45    AUTOMOBILE    luffily final requests integrate slyly. furiously special warhorses are furiously alongside o
+c_custkey  ¦  c_name  ¦  c_address  ¦  c_nationkey  ¦  c_phone  ¦  c_acctbal  ¦  c_mktsegment  ¦  c_comment
+12  ¦  Customer#000149992  ¦  iwjVf1MZno1  ¦  13  ¦  16-684-999-8810  ¦  3417.45  ¦  AUTOMOBILE  ¦  luffily final requests integrate slyly. furiously special warhorses are furiously alongside o
+
+#SQL[@114,N44]Result[]
 delete from lineitem_fk where l_suppkey=9991;
+
+#SQL[@115,N25]Result[78, 115]
 select * from partsupp_fk;
-ps_partkey    ps_suppkey    ps_availqty    ps_supplycost    ps_comment
-199    9991    7872    606.64     according to the final pinto beans: carefully silent requests sleep final
+ps_partkey  ¦  ps_suppkey  ¦  ps_availqty  ¦  ps_supplycost  ¦  ps_comment
+199  ¦  9991  ¦  7872  ¦  606.64  ¦   according to the final pinto beans: carefully silent requests sleep final
+
+#SQL[@116,N23]Result[148, 119]
 select * from orders_fk;
-o_orderkey    o_custkey    o_orderstatus    o_totalprice    o_orderdate    o_orderpriority    o_clerk    o_shippriority    o_comment
-5999968    12    F    354575.46    1992-12-24    3-MEDIUM    Clerk#000000736    0    cajole blithely ag
+o_orderkey  ¦  o_custkey  ¦  o_orderstatus  ¦  o_totalprice  ¦  o_orderdate  ¦  o_orderpriority  ¦  o_clerk  ¦  o_shippriority  ¦  o_comment
+5999968  ¦  12  ¦  F  ¦  354575.46  ¦  1992-12-24  ¦  3-MEDIUM  ¦  Clerk#000000736  ¦  0  ¦  cajole blithely ag
+
+#SQL[@117,N155]Result[]
 insert into lineitem_fk values(5999968,199,9991,2,46,63179.16,0.08,0.06,"R","F","1993-09-16","1993-09-21","1993-10-02","COLLECT COD","RAIL","dolites wake");
+
+#SQL[@118,N25]Result[262, 185]
 select * from lineitem_fk;
-l_orderkey    l_partkey    l_suppkey    l_linenumber    l_quantity    l_extendedprice    l_discount    l_tax    l_returnflag    l_linestatus    l_shipdate    l_commitdate    l_receiptdate    l_shipinstruct    l_shipmode    l_comment
-5999968    199    9991    2    46.00    63179.16    0.08    0.06    R    F    1993-09-16    1993-09-21    1993-10-02    COLLECT COD    RAIL    dolites wake
+l_orderkey  ¦  l_partkey  ¦  l_suppkey  ¦  l_linenumber  ¦  l_quantity  ¦  l_extendedprice  ¦  l_discount  ¦  l_tax  ¦  l_returnflag  ¦  l_linestatus  ¦  l_shipdate  ¦  l_commitdate  ¦  l_receiptdate  ¦  l_shipinstruct  ¦  l_shipmode  ¦  l_comment
+5999968  ¦  199  ¦  9991  ¦  2  ¦  46.00  ¦  63179.16  ¦  0.08  ¦  0.06  ¦  R  ¦  F  ¦  1993-09-16  ¦  1993-09-21  ¦  1993-10-02  ¦  COLLECT COD  ¦  RAIL  ¦  dolites wake
+
+#SQL[@119,N23]Result[]
 delete from PARTSUPP_fk;
+
+#SQL[@120,N21]Result[121, 164]
 select * from part_fk;
-p_partkey    p_name    p_mfgr    p_brand    p_type    p_size    p_container    p_retailprice    p_comment
-199    pink wheat powder burlywood snow    Manufacturer#5    Brand#52    MEDIUM BURNISHED BRASS    49    LG BOX    2097.99    . special deposits hag
+p_partkey  ¦  p_name  ¦  p_mfgr  ¦  p_brand  ¦  p_type  ¦  p_size  ¦  p_container  ¦  p_retailprice  ¦  p_comment
+199  ¦  pink wheat powder burlywood snow  ¦  Manufacturer#5  ¦  Brand#52  ¦  MEDIUM BURNISHED BRASS  ¦  49  ¦  LG BOX  ¦  2097.99  ¦  . special deposits hag
+
+#SQL[@121,N25]Result[262, 185]
 select * from LINEITEM_fk;
-l_orderkey    l_partkey    l_suppkey    l_linenumber    l_quantity    l_extendedprice    l_discount    l_tax    l_returnflag    l_linestatus    l_shipdate    l_commitdate    l_receiptdate    l_shipinstruct    l_shipmode    l_comment
-5999968    199    9991    2    46.00    63179.16    0.08    0.06    R    F    1993-09-16    1993-09-21    1993-10-02    COLLECT COD    RAIL    dolites wake
+l_orderkey  ¦  l_partkey  ¦  l_suppkey  ¦  l_linenumber  ¦  l_quantity  ¦  l_extendedprice  ¦  l_discount  ¦  l_tax  ¦  l_returnflag  ¦  l_linestatus  ¦  l_shipdate  ¦  l_commitdate  ¦  l_receiptdate  ¦  l_shipinstruct  ¦  l_shipmode  ¦  l_comment
+5999968  ¦  199  ¦  9991  ¦  2  ¦  46.00  ¦  63179.16  ¦  0.08  ¦  0.06  ¦  R  ¦  F  ¦  1993-09-16  ¦  1993-09-21  ¦  1993-10-02  ¦  COLLECT COD  ¦  RAIL  ¦  dolites wake
+
+#SQL[@122,N130]Result[]
 insert into PARTSUPP_fk values (199,9991,7872,606.64," according to the final pinto beans: carefully silent requests sleep final");
+
+#SQL[@123,N25]Result[78, 115]
 select * from PARTSUPP_fk;
-ps_partkey    ps_suppkey    ps_availqty    ps_supplycost    ps_comment
-199    9991    7872    606.64     according to the final pinto beans: carefully silent requests sleep final
+ps_partkey  ¦  ps_suppkey  ¦  ps_availqty  ¦  ps_supplycost  ¦  ps_comment
+199  ¦  9991  ¦  7872  ¦  606.64  ¦   according to the final pinto beans: carefully silent requests sleep final
+
+#SQL[@124,N41]Error[84]
 delete from orders_fk  where O_CUSTKEY=12;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@125,N25]Result[148, 119]
 select * from  orders_fk ;
-o_orderkey    o_custkey    o_orderstatus    o_totalprice    o_orderdate    o_orderpriority    o_clerk    o_shippriority    o_comment
-5999968    12    F    354575.46    1992-12-24    3-MEDIUM    Clerk#000000736    0    cajole blithely ag
+o_orderkey  ¦  o_custkey  ¦  o_orderstatus  ¦  o_totalprice  ¦  o_orderdate  ¦  o_orderpriority  ¦  o_clerk  ¦  o_shippriority  ¦  o_comment
+5999968  ¦  12  ¦  F  ¦  354575.46  ¦  1992-12-24  ¦  3-MEDIUM  ¦  Clerk#000000736  ¦  0  ¦  cajole blithely ag
+
+#SQL[@126,N25]Result[114, 200]
 select * from customer_fk;
-c_custkey    c_name    c_address    c_nationkey    c_phone    c_acctbal    c_mktsegment    c_comment
-12    Customer#000149992    iwjVf1MZno1    13    16-684-999-8810    3417.45    AUTOMOBILE    luffily final requests integrate slyly. furiously special warhorses are furiously alongside o
+c_custkey  ¦  c_name  ¦  c_address  ¦  c_nationkey  ¦  c_phone  ¦  c_acctbal  ¦  c_mktsegment  ¦  c_comment
+12  ¦  Customer#000149992  ¦  iwjVf1MZno1  ¦  13  ¦  16-684-999-8810  ¦  3417.45  ¦  AUTOMOBILE  ¦  luffily final requests integrate slyly. furiously special warhorses are furiously alongside o
+
+#SQL[@127,N23]Result[148, 119]
 select * from orders_fk;
-o_orderkey    o_custkey    o_orderstatus    o_totalprice    o_orderdate    o_orderpriority    o_clerk    o_shippriority    o_comment
-5999968    12    F    354575.46    1992-12-24    3-MEDIUM    Clerk#000000736    0    cajole blithely ag
+o_orderkey  ¦  o_custkey  ¦  o_orderstatus  ¦  o_totalprice  ¦  o_orderdate  ¦  o_orderpriority  ¦  o_clerk  ¦  o_shippriority  ¦  o_comment
+5999968  ¦  12  ¦  F  ¦  354575.46  ¦  1992-12-24  ¦  3-MEDIUM  ¦  Clerk#000000736  ¦  0  ¦  cajole blithely ag
+
+#SQL[@128,N45]Error[84]
 delete from supplier_fk  where s_nationkey=13;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@129,N25]Result[78, 115]
 select * from partsupp_fk;
-ps_partkey    ps_suppkey    ps_availqty    ps_supplycost    ps_comment
-199    9991    7872    606.64     according to the final pinto beans: carefully silent requests sleep final
+ps_partkey  ¦  ps_suppkey  ¦  ps_availqty  ¦  ps_supplycost  ¦  ps_comment
+199  ¦  9991  ¦  7872  ¦  606.64  ¦   according to the final pinto beans: carefully silent requests sleep final
+
+#SQL[@130,N23]Result[55, 73]
 select * from nation_fk;
-n_nationkey    n_name    n_regionkey    n_comment
-13    VIETNAM    2    hely enticingly express accounts. even, final
+n_nationkey  ¦  n_name  ¦  n_regionkey  ¦  n_comment
+13  ¦  VIETNAM  ¦  2  ¦  hely enticingly express accounts. even, final
+
+#SQL[@131,N25]Result[96, 128]
 select * from supplier_fk;
-s_suppkey    s_name    s_address    s_nationkey    s_phone    s_acctbal    s_comment
-9991    Supplier#000009991    RnP1Z uvwftshFtf    13    23-451-948-8464    6785.10    . furiously pending accounts b
+s_suppkey  ¦  s_name  ¦  s_address  ¦  s_nationkey  ¦  s_phone  ¦  s_acctbal  ¦  s_comment
+9991  ¦  Supplier#000009991  ¦  RnP1Z uvwftshFtf  ¦  13  ¦  23-451-948-8464  ¦  6785.10  ¦  . furiously pending accounts b
+
+#SQL[@132,N23]Error[84]
 delete from customer_fk;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@133,N23]Result[55, 73]
 select * from nation_fk;
-n_nationkey    n_name    n_regionkey    n_comment
-13    VIETNAM    2    hely enticingly express accounts. even, final
+n_nationkey  ¦  n_name  ¦  n_regionkey  ¦  n_comment
+13  ¦  VIETNAM  ¦  2  ¦  hely enticingly express accounts. even, final
+
+#SQL[@134,N23]Result[148, 119]
 select * from orders_fk;
-o_orderkey    o_custkey    o_orderstatus    o_totalprice    o_orderdate    o_orderpriority    o_clerk    o_shippriority    o_comment
-5999968    12    F    354575.46    1992-12-24    3-MEDIUM    Clerk#000000736    0    cajole blithely ag
+o_orderkey  ¦  o_custkey  ¦  o_orderstatus  ¦  o_totalprice  ¦  o_orderdate  ¦  o_orderpriority  ¦  o_clerk  ¦  o_shippriority  ¦  o_comment
+5999968  ¦  12  ¦  F  ¦  354575.46  ¦  1992-12-24  ¦  3-MEDIUM  ¦  Clerk#000000736  ¦  0  ¦  cajole blithely ag
+
+#SQL[@135,N47]Error[84]
 delete from part_fk where P_RETAILPRICE=2097.99;
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@136,N25]Result[78, 115]
 select * from PARTSUPP_fk;
-ps_partkey    ps_suppkey    ps_availqty    ps_supplycost    ps_comment
-199    9991    7872    606.64     according to the final pinto beans: carefully silent requests sleep final
+ps_partkey  ¦  ps_suppkey  ¦  ps_availqty  ¦  ps_supplycost  ¦  ps_comment
+199  ¦  9991  ¦  7872  ¦  606.64  ¦   according to the final pinto beans: carefully silent requests sleep final
+
+#SQL[@137,N42]Error[84]
 delete from region_fk  where r_name="ASIA";
 internal error: Cannot delete or update a parent row: a foreign key constraint fails
+
+#SQL[@138,N23]Result[55, 73]
 select * from nation_fk;
-n_nationkey    n_name    n_regionkey    n_comment
-13    VIETNAM    2    hely enticingly express accounts. even, final
+n_nationkey  ¦  n_name  ¦  n_regionkey  ¦  n_comment
+13  ¦  VIETNAM  ¦  2  ¦  hely enticingly express accounts. even, final
+
+#SQL[@141,N72]Result[]
 insert into region_fk values(3,"ASIA","ges. thinly even pinto beans ca");
+
+#SQL[@142,N23]Result[38, 48, 48]
 select * from region_fk;
-r_regionkey    r_name    r_comment
-2    ASIA    ges. thinly even pinto beans ca
-3    ASIA    ges. thinly even pinto beans ca
+r_regionkey  ¦  r_name  ¦  r_comment
+2  ¦  ASIA  ¦  ges. thinly even pinto beans ca
+3  ¦  ASIA  ¦  ges. thinly even pinto beans ca
+
+#SQL[@143,N91]Result[]
 insert into nation_fk values(1,"VIETNAM",2,"hely enticingly express accounts. even, final");
+
+#SQL[@144,N164]Result[]
 insert into part_fk values(200,"pink wheat powder burlywood snow","Manufacturer#5","Brand#52","MEDIUM BURNISHED BRASS",49,"LG BOX",2097.99,". special deposits hag");
+
+#SQL[@145,N139]Error[80]
 insert into supplier_fk values(10000,"Supplier#000009991","RnP1Z uvwftshFtf",14,"23-451-948-8464",6785.10,". furiously pending accounts b");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@146,N131]Error[80]
 insert into PARTSUPP_fk values (200,10000,7872,606.64," according to the final pinto beans: carefully silent requests sleep final");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@147,N207]Error[80]
 insert into customer_fk values(14,"Customer#000149992","iwjVf1MZno1",15,"16-684-999-8810",3417.45,"AUTOMOBILE","luffily final requests integrate slyly. furiously special warhorses are furiously alongside o");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@148,N114]Error[80]
 insert into orders_fk values(1,14,"F",354575.46,"1992-12-24","3-MEDIUM","Clerk#000000736",0, "cajole blithely ag");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@149,N150]Error[80]
 insert into lineitem_fk values(1,200,10000,2,46,63179.16,0.08,0.06,"R","F","1993-09-16","1993-09-21","1993-10-02","COLLECT COD","RAIL","dolites wake");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@152,N30]Error[88]
 drop table if exists region_fk;
 internal error: can not drop table 'region_fk' referenced by some foreign key constraint
+
+#SQL[@153,N30]Error[88]
 drop table if exists nation_fk;
 internal error: can not drop table 'nation_fk' referenced by some foreign key constraint
+
+#SQL[@154,N28]Error[86]
 drop table if exists part_fk;
 internal error: can not drop table 'part_fk' referenced by some foreign key constraint
+
+#SQL[@155,N32]Error[90]
 drop table if exists supplier_fk;
 internal error: can not drop table 'supplier_fk' referenced by some foreign key constraint
+
+#SQL[@156,N32]Result[]
 drop table if exists partsupp_fk;
+
+#SQL[@157,N32]Error[90]
 drop table if exists customer_fk;
 internal error: can not drop table 'customer_fk' referenced by some foreign key constraint
+
+#SQL[@158,N30]Error[88]
 drop table if exists orders_fk;
 internal error: can not drop table 'orders_fk' referenced by some foreign key constraint
+
+#SQL[@159,N32]Result[]
 drop table if exists lineitem_fk;
+
+#SQL[@161,N32]Result[]
 drop table if exists lineitem_fk;
+
+#SQL[@162,N30]Result[]
 drop table if exists orders_fk;
+
+#SQL[@163,N32]Result[]
 drop table if exists partsupp_fk;
+
+#SQL[@164,N32]Result[]
 drop table if exists customer_fk;
+
+#SQL[@165,N32]Result[]
 drop table if exists supplier_fk;
+
+#SQL[@166,N30]Result[]
 drop table if exists nation_fk;
+
+#SQL[@167,N30]Result[]
 drop table if exists region_fk;
+
+#SQL[@168,N28]Result[]
 drop table if exists part_fk;
+
+#SQL[@170,N356]Result[]
 CREATE TABLE part_fk(
 P_PARTKEY     INTEGER NOT NULL,
 P_NAME        VARCHAR(55) NOT NULL,
@@ -226,14 +381,22 @@ P_RETAILPRICE DECIMAL(15,2) NOT NULL,
 P_COMMENT     VARCHAR(23) NOT NULL,
 PRIMARY KEY (P_PARTKEY)
 );
+
+#SQL[@182,N164]Result[]
 insert into part_fk values(199,"pink wheat powder burlywood snow","Manufacturer#5","Brand#52","MEDIUM BURNISHED BRASS",49,"LG BOX",2097.99,". special deposits hag");
+
+#SQL[@184,N141]Result[]
 CREATE TABLE region_fk(
 R_REGIONKEY  INTEGER NOT NULL,
 R_NAME       CHAR(25) NOT NULL,
 R_COMMENT    VARCHAR(152),
 PRIMARY KEY (R_REGIONKEY)
 );
+
+#SQL[@190,N72]Result[]
 insert into region_fk values(2,"ASIA","ges. thinly even pinto beans ca");
+
+#SQL[@192,N282]Result[]
 CREATE TABLE NATION_fk(
 N_NATIONKEY  INTEGER NOT NULL,
 N_NAME       CHAR(25) NOT NULL,
@@ -241,7 +404,11 @@ N_REGIONKEY  INTEGER NOT NULL,
 N_COMMENT    VARCHAR(152),
 PRIMARY KEY (N_NATIONKEY),constraint fk_n foreign key(N_REGIONKEY) REFERENCES region_fk(R_REGIONKEY)on delete CASCADE on update CASCADE
 );
+
+#SQL[@199,N92]Result[]
 insert into nation_fk values(13,"VIETNAM",2,"hely enticingly express accounts. even, final");
+
+#SQL[@201,N402]Result[]
 CREATE TABLE supplier_fk(
 S_SUPPKEY     INTEGER NOT NULL,
 S_NAME        CHAR(25) NOT NULL,
@@ -252,7 +419,11 @@ S_ACCTBAL     DECIMAL(15,2) NOT NULL,
 S_COMMENT     VARCHAR(101) NOT NULL,
 PRIMARY KEY (S_SUPPKEY),constraint fk_s foreign key(S_NATIONKEY) REFERENCES nation_fk(N_NATIONKEY)on delete CASCADE on update CASCADE
 );
+
+#SQL[@211,N138]Result[]
 insert into supplier_fk values(9991,"Supplier#000009991","RnP1Z uvwftshFtf",13,"23-451-948-8464",6785.10,". furiously pending accounts b");
+
+#SQL[@213,N458]Result[]
 CREATE TABLE PARTSUPP_fk(
 PS_PARTKEY     INTEGER NOT NULL,
 PS_SUPPKEY     INTEGER NOT NULL,
@@ -261,7 +432,11 @@ PS_SUPPLYCOST  DECIMAL(15,2)  NOT NULL,
 PS_COMMENT     VARCHAR(199) NOT NULL,
 PRIMARY KEY (PS_PARTKEY, PS_SUPPKEY),constraint fk_p1 foreign key(PS_PARTKEY) REFERENCES part_fk(P_PARTKEY)on delete CASCADE on update CASCADE,constraint fk_p2 foreign key(PS_SUPPKEY) REFERENCES supplier_fk(S_SUPPKEY) on delete CASCADE on update CASCADE
 );
+
+#SQL[@221,N130]Result[]
 insert into PARTSUPP_fk values (199,9991,7872,606.64," according to the final pinto beans: carefully silent requests sleep final");
+
+#SQL[@223,N441]Result[]
 CREATE TABLE customer_fk(
 C_CUSTKEY     INTEGER NOT NULL,
 C_NAME        VARCHAR(25) NOT NULL,
@@ -273,7 +448,11 @@ C_MKTSEGMENT  CHAR(10) NOT NULL,
 C_COMMENT     VARCHAR(117) NOT NULL,
 PRIMARY KEY (C_CUSTKEY),constraint fk_c foreign key(C_NATIONKEY) REFERENCES nation_fk(N_NATIONKEY) on delete CASCADE on update CASCADE
 );
+
+#SQL[@234,N207]Result[]
 insert into customer_fk values(12,"Customer#000149992","iwjVf1MZno1",13,"16-684-999-8810",3417.45,"AUTOMOBILE","luffily final requests integrate slyly. furiously special warhorses are furiously alongside o");
+
+#SQL[@236,N481]Result[]
 CREATE TABLE orders_fk(
 O_ORDERKEY       BIGINT NOT NULL,
 O_CUSTKEY        INTEGER NOT NULL,
@@ -285,7 +464,11 @@ O_CLERK          CHAR(15) NOT NULL,
 O_SHIPPRIORITY   INTEGER NOT NULL,
 O_COMMENT        VARCHAR(79) NOT NULL,
 PRIMARY KEY (O_ORDERKEY),constraint fk_o foreign key(O_CUSTKEY) REFERENCES customer_fk(C_CUSTKEY) on delete CASCADE on update CASCADE);
+
+#SQL[@247,N120]Result[]
 insert into orders_fk values(5999968,12,"F",354575.46,"1992-12-24","3-MEDIUM","Clerk#000000736",0, "cajole blithely ag");
+
+#SQL[@249,N850]Result[]
 CREATE TABLE lineitem_fk(
 L_ORDERKEY    BIGINT NOT NULL,
 L_PARTKEY     INTEGER NOT NULL,
@@ -304,125 +487,246 @@ L_SHIPINSTRUCT CHAR(25) NOT NULL,
 L_SHIPMODE     CHAR(10) NOT NULL,
 L_COMMENT      VARCHAR(44) NOT NULL,
 PRIMARY KEY (L_ORDERKEY, L_LINENUMBER),constraint fk_l1 foreign key(L_ORDERKEY) REFERENCES ORDERS_fk(o_orderkey)on delete CASCADE on update CASCADE,constraint fk_l2 foreign key(L_PARTKEY,L_SUPPKEY) REFERENCES PARTSUPP_fk(PS_PARTKEY,PS_SUPPKEY) on delete CASCADE on update CASCADE);
+
+#SQL[@267,N155]Result[]
 insert into lineitem_fk values(5999968,199,9991,2,46,63179.16,0.08,0.06,"R","F","1993-09-16","1993-09-21","1993-10-02","COLLECT COD","RAIL","dolites wake");
+
+#SQL[@270,N56]Result[]
 update nation_fk set n_nationkey=10 where n_nationkey=13;
+
+#SQL[@271,N25]Result[96, 128]
 select * from supplier_fk;
-s_suppkey    s_name    s_address    s_nationkey    s_phone    s_acctbal    s_comment
-9991    Supplier#000009991    RnP1Z uvwftshFtf    10    23-451-948-8464    6785.10    . furiously pending accounts b
+s_suppkey  ¦  s_name  ¦  s_address  ¦  s_nationkey  ¦  s_phone  ¦  s_acctbal  ¦  s_comment
+9991  ¦  Supplier#000009991  ¦  RnP1Z uvwftshFtf  ¦  10  ¦  23-451-948-8464  ¦  6785.10  ¦  . furiously pending accounts b
+
+#SQL[@272,N25]Result[114, 200]
 select * from customer_fk;
-c_custkey    c_name    c_address    c_nationkey    c_phone    c_acctbal    c_mktsegment    c_comment
-12    Customer#000149992    iwjVf1MZno1    10    16-684-999-8810    3417.45    AUTOMOBILE    luffily final requests integrate slyly. furiously special warhorses are furiously alongside o
+c_custkey  ¦  c_name  ¦  c_address  ¦  c_nationkey  ¦  c_phone  ¦  c_acctbal  ¦  c_mktsegment  ¦  c_comment
+12  ¦  Customer#000149992  ¦  iwjVf1MZno1  ¦  10  ¦  16-684-999-8810  ¦  3417.45  ¦  AUTOMOBILE  ¦  luffily final requests integrate slyly. furiously special warhorses are furiously alongside o
+
+#SQL[@273,N55]Error[80]
 update lineitem_fk set l_partkey=2 where l_suppkey=9991;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@274,N25]Result[78, 115]
 select * from PARTSUPP_fk;
-ps_partkey    ps_suppkey    ps_availqty    ps_supplycost    ps_comment
-199    9991    7872    606.64     according to the final pinto beans: carefully silent requests sleep final
+ps_partkey  ¦  ps_suppkey  ¦  ps_availqty  ¦  ps_supplycost  ¦  ps_comment
+199  ¦  9991  ¦  7872  ¦  606.64  ¦   according to the final pinto beans: carefully silent requests sleep final
+
+#SQL[@275,N36]Error[80]
 update PARTSUPP_fk set PS_PARTKEY=40;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@276,N25]Result[262, 185]
 select * from lineitem_fk;
-l_orderkey    l_partkey    l_suppkey    l_linenumber    l_quantity    l_extendedprice    l_discount    l_tax    l_returnflag    l_linestatus    l_shipdate    l_commitdate    l_receiptdate    l_shipinstruct    l_shipmode    l_comment
-5999968    199    9991    2    46.00    63179.16    0.08    0.06    R    F    1993-09-16    1993-09-21    1993-10-02    COLLECT COD    RAIL    dolites wake
+l_orderkey  ¦  l_partkey  ¦  l_suppkey  ¦  l_linenumber  ¦  l_quantity  ¦  l_extendedprice  ¦  l_discount  ¦  l_tax  ¦  l_returnflag  ¦  l_linestatus  ¦  l_shipdate  ¦  l_commitdate  ¦  l_receiptdate  ¦  l_shipinstruct  ¦  l_shipmode  ¦  l_comment
+5999968  ¦  199  ¦  9991  ¦  2  ¦  46.00  ¦  63179.16  ¦  0.08  ¦  0.06  ¦  R  ¦  F  ¦  1993-09-16  ¦  1993-09-21  ¦  1993-10-02  ¦  COLLECT COD  ¦  RAIL  ¦  dolites wake
+
+#SQL[@277,N52]Result[]
 update orders_fk set O_ORDERKEY=1 where O_CUSTKEY=12;
+
+#SQL[@278,N25]Result[262, 179]
 select * from lineitem_fk;
-l_orderkey    l_partkey    l_suppkey    l_linenumber    l_quantity    l_extendedprice    l_discount    l_tax    l_returnflag    l_linestatus    l_shipdate    l_commitdate    l_receiptdate    l_shipinstruct    l_shipmode    l_comment
-1    199    9991    2    46.00    63179.16    0.08    0.06    R    F    1993-09-16    1993-09-21    1993-10-02    COLLECT COD    RAIL    dolites wake
+l_orderkey  ¦  l_partkey  ¦  l_suppkey  ¦  l_linenumber  ¦  l_quantity  ¦  l_extendedprice  ¦  l_discount  ¦  l_tax  ¦  l_returnflag  ¦  l_linestatus  ¦  l_shipdate  ¦  l_commitdate  ¦  l_receiptdate  ¦  l_shipinstruct  ¦  l_shipmode  ¦  l_comment
+1  ¦  199  ¦  9991  ¦  2  ¦  46.00  ¦  63179.16  ¦  0.08  ¦  0.06  ¦  R  ¦  F  ¦  1993-09-16  ¦  1993-09-21  ¦  1993-10-02  ¦  COLLECT COD  ¦  RAIL  ¦  dolites wake
+
+#SQL[@279,N56]Result[]
 update supplier_fk set s_suppkey=11 where s_nationkey=10;
+
+#SQL[@280,N25]Result[96, 126]
 select * from supplier_fk;
-s_suppkey    s_name    s_address    s_nationkey    s_phone    s_acctbal    s_comment
-11    Supplier#000009991    RnP1Z uvwftshFtf    10    23-451-948-8464    6785.10    . furiously pending accounts b
+s_suppkey  ¦  s_name  ¦  s_address  ¦  s_nationkey  ¦  s_phone  ¦  s_acctbal  ¦  s_comment
+11  ¦  Supplier#000009991  ¦  RnP1Z uvwftshFtf  ¦  10  ¦  23-451-948-8464  ¦  6785.10  ¦  . furiously pending accounts b
+
+#SQL[@281,N35]Result[10, 2]
 select PS_SUPPKEY from PARTSUPP_fk ;
-ps_suppkey
+PS_SUPPKEY
 11
+
+#SQL[@282,N37]Error[80]
 update customer_fk set c_nationkey=20;
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@283,N60]Result[]
 update part_fk set p_partkey=200 where P_RETAILPRICE=2097.99;
+
+#SQL[@284,N34]Result[10, 3]
 select PS_PARTKEY from PARTSUPP_fk;
-ps_partkey
+PS_PARTKEY
 200
+
+#SQL[@285,N54]Result[]
 update region_fk set r_regionkey=5 where r_name="ASIA";
+
+#SQL[@286,N33]Result[11, 1]
 select N_REGIONKEY from NATION_fk;
-n_regionkey
+N_REGIONKEY
 5
+
+#SQL[@289,N23]Result[55, 73]
 select * from nation_fk;
-n_nationkey    n_name    n_regionkey    n_comment
-10    VIETNAM    5    hely enticingly express accounts. even, final
+n_nationkey  ¦  n_name  ¦  n_regionkey  ¦  n_comment
+10  ¦  VIETNAM  ¦  5  ¦  hely enticingly express accounts. even, final
+
+#SQL[@290,N42]Result[]
 delete from nation_fk where n_nationkey=10;
+
+#SQL[@291,N25]Result[]
 select * from SUPPLIER_fk;
-S_SUPPKEY    S_NAME    S_ADDRESS    S_NATIONKEY    S_PHONE    S_ACCTBAL    S_COMMENT
+
+#SQL[@292,N25]Result[]
 select * from CUSTOMER_fk;
-C_CUSTKEY    C_NAME    C_ADDRESS    C_NATIONKEY    C_PHONE    C_ACCTBAL    C_MKTSEGMENT    C_COMMENT
+
+#SQL[@293,N25]Result[]
 select * from lineitem_fk;
-L_ORDERKEY    L_PARTKEY    L_SUPPKEY    L_LINENUMBER    L_QUANTITY    L_EXTENDEDPRICE    L_DISCOUNT    L_TAX    L_RETURNFLAG    L_LINESTATUS    L_SHIPDATE    L_COMMITDATE    L_RECEIPTDATE    L_SHIPINSTRUCT    L_SHIPMODE    L_COMMENT
+
+#SQL[@294,N44]Result[]
 delete from lineitem_fk where l_suppkey=9991;
+
+#SQL[@295,N25]Result[]
 select * from partsupp_fk;
-PS_PARTKEY    PS_SUPPKEY    PS_AVAILQTY    PS_SUPPLYCOST    PS_COMMENT
+
+#SQL[@296,N23]Result[]
 select * from orders_fk;
-O_ORDERKEY    O_CUSTKEY    O_ORDERSTATUS    O_TOTALPRICE    O_ORDERDATE    O_ORDERPRIORITY    O_CLERK    O_SHIPPRIORITY    O_COMMENT
+
+#SQL[@297,N155]Error[80]
 insert into lineitem_fk values(5999968,199,9991,2,46,63179.16,0.08,0.06,"R","F","1993-09-16","1993-09-21","1993-10-02","COLLECT COD","RAIL","dolites wake");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@298,N23]Result[]
 delete from PARTSUPP_fk;
+
+#SQL[@299,N21]Result[121, 164]
 select * from part_fk;
-P_PARTKEY    P_NAME    P_MFGR    P_BRAND    P_TYPE    P_SIZE    P_CONTAINER    P_RETAILPRICE    P_COMMENT
-200    pink wheat powder burlywood snow    Manufacturer#5    Brand#52    MEDIUM BURNISHED BRASS    49    LG BOX    2097.99    . special deposits hag
+p_partkey  ¦  p_name  ¦  p_mfgr  ¦  p_brand  ¦  p_type  ¦  p_size  ¦  p_container  ¦  p_retailprice  ¦  p_comment
+200  ¦  pink wheat powder burlywood snow  ¦  Manufacturer#5  ¦  Brand#52  ¦  MEDIUM BURNISHED BRASS  ¦  49  ¦  LG BOX  ¦  2097.99  ¦  . special deposits hag
+
+#SQL[@300,N25]Result[]
 select * from LINEITEM_fk;
-L_ORDERKEY    L_PARTKEY    L_SUPPKEY    L_LINENUMBER    L_QUANTITY    L_EXTENDEDPRICE    L_DISCOUNT    L_TAX    L_RETURNFLAG    L_LINESTATUS    L_SHIPDATE    L_COMMITDATE    L_RECEIPTDATE    L_SHIPINSTRUCT    L_SHIPMODE    L_COMMENT
+
+#SQL[@301,N130]Error[80]
 insert into PARTSUPP_fk values (199,9991,7872,606.64," according to the final pinto beans: carefully silent requests sleep final");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@302,N41]Result[]
 delete from orders_fk  where O_CUSTKEY=12;
+
+#SQL[@303,N25]Result[]
 select * from customer_fk;
-C_CUSTKEY    C_NAME    C_ADDRESS    C_NATIONKEY    C_PHONE    C_ACCTBAL    C_MKTSEGMENT    C_COMMENT
+
+#SQL[@304,N25]Result[]
 select * from lineitem_fk;
-L_ORDERKEY    L_PARTKEY    L_SUPPKEY    L_LINENUMBER    L_QUANTITY    L_EXTENDEDPRICE    L_DISCOUNT    L_TAX    L_RETURNFLAG    L_LINESTATUS    L_SHIPDATE    L_COMMITDATE    L_RECEIPTDATE    L_SHIPINSTRUCT    L_SHIPMODE    L_COMMENT
+
+#SQL[@305,N120]Error[80]
 insert into orders_fk values(5999968,12,"F",354575.46,"1992-12-24","3-MEDIUM","Clerk#000000736",0, "cajole blithely ag");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@306,N23]Result[]
 select * from orders_fk;
-O_ORDERKEY    O_CUSTKEY    O_ORDERSTATUS    O_TOTALPRICE    O_ORDERDATE    O_ORDERPRIORITY    O_CLERK    O_SHIPPRIORITY    O_COMMENT
+
+#SQL[@307,N45]Result[]
 delete from supplier_fk  where s_nationkey=10;
+
+#SQL[@308,N25]Result[]
 select * from partsupp_fk;
-PS_PARTKEY    PS_SUPPKEY    PS_AVAILQTY    PS_SUPPLYCOST    PS_COMMENT
+
+#SQL[@309,N23]Result[]
 select * from nation_fk;
-N_NATIONKEY    N_NAME    N_REGIONKEY    N_COMMENT
+
+#SQL[@310,N25]Result[]
 select * from supplier_fk;
-S_SUPPKEY    S_NAME    S_ADDRESS    S_NATIONKEY    S_PHONE    S_ACCTBAL    S_COMMENT
+
+#SQL[@311,N139]Error[80]
 insert into supplier_fk values(10000,"Supplier#000009991","RnP1Z uvwftshFtf",13,"23-451-948-8464",6785.10,". furiously pending accounts b");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@312,N23]Result[]
 delete from customer_fk;
+
+#SQL[@313,N23]Result[]
 select * from nation_fk;
-N_NATIONKEY    N_NAME    N_REGIONKEY    N_COMMENT
+
+#SQL[@314,N23]Result[]
 select * from orders_fk;
-O_ORDERKEY    O_CUSTKEY    O_ORDERSTATUS    O_TOTALPRICE    O_ORDERDATE    O_ORDERPRIORITY    O_CLERK    O_SHIPPRIORITY    O_COMMENT
+
+#SQL[@315,N207]Error[80]
 insert into customer_fk values(12,"Customer#000149992","iwjVf1MZno1",13,"16-684-999-8810",3417.45,"AUTOMOBILE","luffily final requests integrate slyly. furiously special warhorses are furiously alongside o");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@316,N47]Result[]
 delete from part_fk where P_RETAILPRICE=2097.99;
+
+#SQL[@317,N25]Result[]
 select * from PARTSUPP_fk;
-PS_PARTKEY    PS_SUPPKEY    PS_AVAILQTY    PS_SUPPLYCOST    PS_COMMENT
+
+#SQL[@318,N164]Result[]
 insert into part_fk values(199,"pink wheat powder burlywood snow","Manufacturer#5","Brand#52","MEDIUM BURNISHED BRASS",49,"LG BOX",2097.99,". special deposits hag");
+
+#SQL[@319,N42]Result[]
 delete from region_fk  where r_name="ASIA";
+
+#SQL[@320,N23]Result[]
 select * from nation_fk;
-N_NATIONKEY    N_NAME    N_REGIONKEY    N_COMMENT
+
+#SQL[@321,N72]Result[]
 insert into region_fk values(2,"ASIA","ges. thinly even pinto beans ca");
+
+#SQL[@322,N72]Result[]
 insert into region_fk values(3,"ASIA","ges. thinly even pinto beans ca");
+
+#SQL[@323,N23]Result[38, 48, 48]
 select * from region_fk;
-r_regionkey    r_name    r_comment
-2    ASIA    ges. thinly even pinto beans ca
-3    ASIA    ges. thinly even pinto beans ca
+r_regionkey  ¦  r_name  ¦  r_comment
+2  ¦  ASIA  ¦  ges. thinly even pinto beans ca
+3  ¦  ASIA  ¦  ges. thinly even pinto beans ca
+
+#SQL[@324,N91]Result[]
 insert into nation_fk values(1,"VIETNAM",2,"hely enticingly express accounts. even, final");
+
+#SQL[@325,N164]Result[]
 insert into part_fk values(200,"pink wheat powder burlywood snow","Manufacturer#5","Brand#52","MEDIUM BURNISHED BRASS",49,"LG BOX",2097.99,". special deposits hag");
+
+#SQL[@327,N139]Error[80]
 insert into supplier_fk values(10000,"Supplier#000009991","RnP1Z uvwftshFtf",14,"23-451-948-8464",6785.10,". furiously pending accounts b");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@328,N131]Error[80]
 insert into PARTSUPP_fk values (200,10000,7872,606.64," according to the final pinto beans: carefully silent requests sleep final");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@329,N207]Error[80]
 insert into customer_fk values(14,"Customer#000149992","iwjVf1MZno1",15,"16-684-999-8810",3417.45,"AUTOMOBILE","luffily final requests integrate slyly. furiously special warhorses are furiously alongside o");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@330,N114]Error[80]
 insert into orders_fk values(1,14,"F",354575.46,"1992-12-24","3-MEDIUM","Clerk#000000736",0, "cajole blithely ag");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@331,N150]Error[80]
 insert into lineitem_fk values(1,200,10000,2,46,63179.16,0.08,0.06,"R","F","1993-09-16","1993-09-21","1993-10-02","COLLECT COD","RAIL","dolites wake");
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@332,N32]Result[]
 drop table if exists lineitem_fk;
+
+#SQL[@333,N32]Result[]
 drop table if exists partsupp_fk;
+
+#SQL[@334,N30]Result[]
 drop table if exists orders_fk;
+
+#SQL[@335,N28]Result[]
 drop table if exists part_fk;
+
+#SQL[@336,N32]Result[]
 drop table if exists supplier_fk;
+
+#SQL[@337,N32]Result[]
 drop table if exists customer_fk;
+
+#SQL[@338,N30]Result[]
 drop table if exists nation_fk;
+
+#SQL[@339,N30]Result[]
 drop table if exists region_fk;
+

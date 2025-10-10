@@ -1,54 +1,140 @@
+#SQL[@1,N46]Result[]
 drop database if exists fk_foreign_key_checks3;
+
+#SQL[@2,N38]Result[]
 create database fk_foreign_key_checks3;
+
+#SQL[@3,N26]Result[]
 use fk_foreign_key_checks3;
+
+#SQL[@5,N24]Result[]
 SET FOREIGN_KEY_CHECKS=0;
+
+#SQL[@7,N247]Result[]
 create table t1( b int,
-c int,
-constraint `c1` foreign key `fk1` (b) references fk_foreign_key_checks3_db0.t2(a),
-constraint `c2` foreign key `fk2` (c) references fk_foreign_key_checks3_db1.t3(c));
+                 c int,
+                 constraint `c1` foreign key `fk1` (b) references fk_foreign_key_checks3_db0.t2(a),
+                 constraint `c2` foreign key `fk2` (c) references fk_foreign_key_checks3_db1.t3(c));
+
+#SQL[@12,N50]Result[]
 drop database if exists fk_foreign_key_checks3_db0;
+
+#SQL[@13,N42]Result[]
 create database fk_foreign_key_checks3_db0;
+
+#SQL[@14,N67]Result[]
 create table fk_foreign_key_checks3_db0.t2(a int primary key,b int);
+
+#SQL[@16,N50]Result[]
 drop database if exists fk_foreign_key_checks3_db1;
+
+#SQL[@17,N42]Result[]
 create database fk_foreign_key_checks3_db1;
+
+#SQL[@18,N67]Result[]
 create table fk_foreign_key_checks3_db1.t3(c int primary key,d int);
+
+#SQL[@21,N27]Result[]
 insert into t1 values (2,2);
+
+#SQL[@23,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@26,N27]Error[80]
 insert into t1 values (1,1);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@28,N54]Result[]
 insert into fk_foreign_key_checks3_db0.t2 values (1,1);
+
+#SQL[@29,N54]Result[]
 insert into fk_foreign_key_checks3_db1.t3 values (1,1);
+
+#SQL[@32,N27]Result[]
 insert into t1 values (1,1);
+
+#SQL[@35,N40]Error[81]
 drop table fk_foreign_key_checks3_db0.t2;
 internal error: can not drop table 't2' referenced by some foreign key constraint
+
+#SQL[@36,N40]Error[81]
 drop table fk_foreign_key_checks3_db1.t3;
 internal error: can not drop table 't3' referenced by some foreign key constraint
+
+#SQL[@39,N40]Error[77]
 drop database fk_foreign_key_checks3_db0;
 internal error: can not drop database. It has been referenced by foreign keys
+
+#SQL[@40,N40]Error[77]
 drop database fk_foreign_key_checks3_db1;
 internal error: can not drop database. It has been referenced by foreign keys
+
+#SQL[@42,N24]Result[]
 SET FOREIGN_KEY_CHECKS=0;
+
+#SQL[@45,N40]Result[]
 drop database fk_foreign_key_checks3_db0;
+
+#SQL[@48,N40]Result[]
 drop database fk_foreign_key_checks3_db1;
+
+#SQL[@51,N27]Result[]
 insert into t1 values (3,3);
+
+#SQL[@53,N24]Result[]
 SET FOREIGN_KEY_CHECKS=1;
+
+#SQL[@56,N27]Result[]
 insert into t1 values (3,3);
+
+#SQL[@59,N42]Result[]
 create database fk_foreign_key_checks3_db0;
+
+#SQL[@60,N67]Result[]
 create table fk_foreign_key_checks3_db0.t2(a int primary key,b int);
+
+#SQL[@63,N42]Result[]
 create database fk_foreign_key_checks3_db1;
+
+#SQL[@64,N67]Result[]
 create table fk_foreign_key_checks3_db1.t3(c int primary key,d int);
+
+#SQL[@67,N27]Error[80]
 insert into t1 values (3,3);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@70,N27]Error[80]
 insert into t1 values (4,4);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@73,N54]Result[]
 insert into fk_foreign_key_checks3_db0.t2 values (4,4);
+
+#SQL[@74,N54]Result[]
 insert into fk_foreign_key_checks3_db1.t3 values (4,4);
+
+#SQL[@77,N27]Result[]
 insert into t1 values (4,4);
+
+#SQL[@80,N27]Error[80]
 insert into t1 values (3,3);
 internal error: Cannot add or update a child row: a foreign key constraint fails
+
+#SQL[@82,N36]Result[]
 drop table fk_foreign_key_checks3.t1;
+
+#SQL[@85,N40]Result[]
 drop table fk_foreign_key_checks3_db0.t2;
+
+#SQL[@86,N40]Result[]
 drop table fk_foreign_key_checks3_db1.t3;
+
+#SQL[@89,N40]Result[]
 drop database fk_foreign_key_checks3_db0;
+
+#SQL[@90,N40]Result[]
 drop database fk_foreign_key_checks3_db1;
+
+#SQL[@92,N46]Result[]
 drop database if exists fk_foreign_key_checks3;
+

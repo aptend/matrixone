@@ -1,21 +1,61 @@
+#SQL[@1,N46]Result[]
 drop database if exists fk_foreign_key_checks5;
+
+#SQL[@2,N38]Result[]
 create database fk_foreign_key_checks5;
+
+#SQL[@4,N50]Result[]
 drop database if exists fk_foreign_key_checks5_db0;
+
+#SQL[@5,N42]Result[]
 create database fk_foreign_key_checks5_db0;
+
+#SQL[@7,N50]Result[]
 drop database if exists fk_foreign_key_checks5_db1;
+
+#SQL[@8,N42]Result[]
 create database fk_foreign_key_checks5_db1;
+
+#SQL[@10,N61]Result[]
 create table fk_foreign_key_checks5_db0.t1(a int primary key);
+
+#SQL[@12,N124]Result[]
 create table fk_foreign_key_checks5_db1.t2(b int, constraint c1 foreign key (b) references fk_foreign_key_checks5_db0.t1(a));
+
+#SQL[@15,N40]Error[77]
 drop database fk_foreign_key_checks5_db0;
 internal error: can not drop database. It has been referenced by foreign keys
+
+#SQL[@17,N50]Result[]
 drop database if exists fk_foreign_key_checks5_db2;
+
+#SQL[@18,N42]Result[]
 create database fk_foreign_key_checks5_db2;
+
+#SQL[@20,N61]Result[]
 create table fk_foreign_key_checks5_db2.t1(a int primary key);
+
+#SQL[@21,N124]Result[]
 create table fk_foreign_key_checks5_db2.t2(b int, constraint c1 foreign key (b) references fk_foreign_key_checks5_db2.t1(a));
+
+#SQL[@24,N40]Result[]
 drop database fk_foreign_key_checks5_db2;
+
+#SQL[@26,N40]Result[]
 drop table fk_foreign_key_checks5_db1.t2;
+
+#SQL[@29,N40]Result[]
 drop database fk_foreign_key_checks5_db0;
+
+#SQL[@31,N46]Result[]
 drop database if exists fk_foreign_key_checks5;
+
+#SQL[@32,N50]Result[]
 drop database if exists fk_foreign_key_checks5_db0;
+
+#SQL[@33,N50]Result[]
 drop database if exists fk_foreign_key_checks5_db1;
+
+#SQL[@34,N50]Result[]
 drop database if exists fk_foreign_key_checks5_db2;
+

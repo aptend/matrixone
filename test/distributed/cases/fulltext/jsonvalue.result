@@ -1,79 +1,155 @@
+#SQL[@3,N33]Result[]
 set experimental_fulltext_index=1;
+
+#SQL[@4,N35]Result[]
 set ft_relevancy_algorithm="TF-IDF";
+
+#SQL[@7,N64]Result[]
 create table src (id bigint primary key, json1 json, json2 json);
+
+#SQL[@8,N321]Result[]
 insert into src values  (0, '{"a":1, "b":"redredredredredredredredredredrerr"}', '{"d": "happybirthdayhappybirthdayhappybirthday", "f":"winterautumnsummerspring"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"redbluebrownyelloworange"}', '{"d":"兒童中文"}');
+
+#SQL[@12,N65]Result[]
 create fulltext index ftidx on src (json1) with parser json_value;
+
+#SQL[@14,N88]Result[24, 75]
 select * from src where match(json1) against('redbluebrownyelloworange' in boolean mode);
-id    json1    json2
-2    {"a": 3, "b": "redbluebrownyelloworange"}    {"d": "兒童中文"}
+id  ¦  json1  ¦  json2
+2  ¦  {"a": 3, "b": "redbluebrownyelloworange"}  ¦  {"d": "兒童中文"}
+
+#SQL[@16,N82]Result[24, 87]
 select * from src where match(json1) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@18,N73]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json_value;
+
+#SQL[@19,N132]Result[24, 145]
 select * from src where match(json1, json2) against('+redredredredredredredredredredrerr +winterautumnsummerspring' in boolean mode);
-id    json1    json2
-0    {"a": 1, "b": "redredredredredredredredredredrerr"}    {"d": "happybirthdayhappybirthdayhappybirthday", "f": "winterautumnsummerspring"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a": 1, "b": "redredredredredredredredredredrerr"}  ¦  {"d": "happybirthdayhappybirthdayhappybirthday", "f": "winterautumnsummerspring"}
+
+#SQL[@21,N89]Result[24, 87]
 select * from src where match(json1, json2) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@23,N14]Result[]
 drop table src;
+
+#SQL[@26,N67]Result[]
 create table src (id bigint primary key, json1 text, json2 varchar);
+
+#SQL[@27,N324]Result[]
 insert into src values  (0, '{"a":1, "b":"redredredredredredredredredredrerr"}', '{"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"redbluebrownyelloworange"}', '{"d":"兒童中文"}');
+
+#SQL[@31,N65]Result[]
 create fulltext index ftidx on src (json1) with parser json_value;
+
+#SQL[@33,N98]Result[24, 145]
 select * from src where match(json1) against('redredredredredredredredredredrerr' in boolean mode);
-id    json1    json2
-0    {"a":1, "b":"redredredredredredredredredredrerr"}    {"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a":1, "b":"redredredredredredredredredredrerr"}  ¦  {"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}
+
+#SQL[@35,N82]Result[24, 85]
 select * from src where match(json1) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@37,N73]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json_value;
+
+#SQL[@38,N83]Result[]
 select * from src where match(json1, json2) against('+red +winter' in boolean mode);
-id    json1    json2
+
+#SQL[@40,N113]Result[24, 145]
 select * from src where match(json1, json2) against('happybirthday.happy-birthday_happybirthday' in boolean mode);
-id    json1    json2
-0    {"a":1, "b":"redredredredredredredredredredrerr"}    {"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a":1, "b":"redredredredredredredredredredrerr"}  ¦  {"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}
+
+#SQL[@42,N14]Result[]
 drop table src;
+
+#SQL[@45,N104]Result[]
 create table src (id bigint primary key, json1 json, json2 json, FULLTEXT(json1) with parser json_value);
+
+#SQL[@46,N324]Result[]
 insert into src values  (0, '{"a":1, "b":"redredredredredredredredredredrerr"}', '{"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"redbluebrownyelloworange"}', '{"d":"兒童中文"}');
+
+#SQL[@50,N106]Result[]
 select * from src where match(json1) against('happybirthday.happy-birthday_happybirthday' in boolean mode);
-id    json1    json2
+
+#SQL[@52,N82]Result[24, 87]
 select * from src where match(json1) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@54,N73]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json_value;
+
+#SQL[@55,N140]Result[24, 148]
 select * from src where match(json1, json2) against('+happybirthday.happy-birthday_happybirthday +winterautumnsummerspring' in boolean mode);
-id    json1    json2
-0    {"a": 1, "b": "redredredredredredredredredredrerr"}    {"d": "happybirthday.happy-birthday_happybirthday", "f": "winterautumnsummerspring"}
+id  ¦  json1  ¦  json2
+0  ¦  {"a": 1, "b": "redredredredredredredredredredrerr"}  ¦  {"d": "happybirthday.happy-birthday_happybirthday", "f": "winterautumnsummerspring"}
+
+#SQL[@57,N89]Result[24, 87]
 select * from src where match(json1, json2) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a": 2, "b": "中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a": 2, "b": "中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@59,N53]Result[]
 update src set json1='{"c":"update json"}' where id=0;
+
+#SQL[@61,N14]Result[]
 drop table src;
+
+#SQL[@64,N107]Result[]
 create table src (id bigint primary key, json1 text, json2 varchar, fulltext(json1) with parser json_value);
+
+#SQL[@65,N332]Result[]
 insert into src values  (0, '{"a":1, "b":"redredredredredredredredredredrerr"}', '{"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red..blue--brown@@yellow::orange"}', '{"d":"兒童中文"}');
+
+#SQL[@69,N96]Result[24, 80]
 select * from src where match(json1) against('red..blue--brown@@yellow::orange' in boolean mode);
-id    json1    json2
-2    {"a":3, "b":"red..blue--brown@@yellow::orange"}    {"d":"兒童中文"}
+id  ¦  json1  ¦  json2
+2  ¦  {"a":3, "b":"red..blue--brown@@yellow::orange"}  ¦  {"d":"兒童中文"}
+
+#SQL[@71,N82]Result[24, 85]
 select * from src where match(json1) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@73,N73]Result[]
 create fulltext index ftidx2 on src (json1, json2) with parser json_value;
+
+#SQL[@74,N118]Result[24, 80]
 select * from src where match(json1, json2) against('+red..blue--brown@@yellow::orange +兒童中文' in boolean mode);
-id    json1    json2
-2    {"a":3, "b":"red..blue--brown@@yellow::orange"}    {"d":"兒童中文"}
+id  ¦  json1  ¦  json2
+2  ¦  {"a":3, "b":"red..blue--brown@@yellow::orange"}  ¦  {"d":"兒童中文"}
+
+#SQL[@76,N89]Result[24, 85]
 select * from src where match(json1, json2) against('中文學習教材' in boolean mode);
-id    json1    json2
-1    {"a":2, "b":"中文學習教材"}    ["apple", "orange", "banana", "指引"]
+id  ¦  json1  ¦  json2
+1  ¦  {"a":2, "b":"中文學習教材"}  ¦  ["apple", "orange", "banana", "指引"]
+
+#SQL[@78,N53]Result[]
 update src set json1='{"c":"update_json"}' where id=0;
+
+#SQL[@80,N84]Result[24, 115]
 select * from src where match(json1, json2) against('"update_json"' in boolean mode);
-id    json1    json2
-0    {"c":"update_json"}    {"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}
+id  ¦  json1  ¦  json2
+0  ¦  {"c":"update_json"}  ¦  {"d": "happybirthday.happy-birthday_happybirthday", "f":"winterautumnsummerspring"}
+
+#SQL[@82,N14]Result[]
 drop table src;
+

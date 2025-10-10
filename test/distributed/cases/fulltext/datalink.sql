@@ -5,8 +5,7 @@ create stage ftstage URL='file:///$resources/fulltext/';
 
 create table datasrc (id bigint primary key, fpath datalink, fulltext(fpath));
 
-insert into datasrc values (0, 'stage://ftstage/mo.pdf'), (1, 'file:///$resources/fulltext/chinese.pdf'), 
-(2, 'file:///$resources/fulltext/file-sample_100kB.docx');
+insert into datasrc values (0, 'stage://ftstage/mo.pdf'), (1, 'file:///$resources/fulltext/chinese.pdf'),(2, 'file:///$resources/fulltext/file-sample_100kB.docx');
 
 select id from datasrc where match(fpath) against('matrixone');
 

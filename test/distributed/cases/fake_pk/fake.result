@@ -1,46 +1,88 @@
+#SQL[@1,N28]Result[]
 create table fake_pk(id int);
+
+#SQL[@2,N33]Result[]
 insert into fake_pk(id) values(1);
+
+#SQL[@3,N33]Result[2, 1]
 select * from fake_pk order by id;
 id
 1
+
+#SQL[@4,N33]Result[]
 insert into fake_pk(id) values(2);
+
+#SQL[@5,N33]Result[2, 1, 1]
 select * from fake_pk order by id;
 id
 1
 2
+
+#SQL[@6,N29]Result[]
 insert into fake_pk values(3);
+
+#SQL[@7,N33]Result[2, 1, 1, 1]
 select * from fake_pk order by id;
 id
 1
 2
 3
+
+#SQL[@8,N39]Result[]
 update fake_pk set id = 11 where id = 1;
+
+#SQL[@9,N33]Result[2, 1, 1, 2]
 select * from fake_pk order by id;
 id
 2
 3
 11
+
+#SQL[@10,N32]Result[]
 delete from fake_pk where id = 1;
+
+#SQL[@11,N33]Result[2, 1, 1, 2]
 select * from fake_pk order by id;
 id
 2
 3
 11
+
+#SQL[@14,N67]Result[]
 create table fake_pk_with_cluster_by(id int, v int) cluster by (id);
+
+#SQL[@15,N47]Result[]
 insert into fake_pk_with_cluster_by values(1,1);
+
+#SQL[@16,N49]Result[9, 8]
 select * from fake_pk_with_cluster_by order by id;
-id    v
-1    1
+id  ¦  v
+1  ¦  1
+
+#SQL[@17,N54]Result[]
 update fake_pk_with_cluster_by set v = 10 where id = 1;
+
+#SQL[@18,N49]Result[9, 9]
 select * from fake_pk_with_cluster_by order by id;
-id    v
-1    10
+id  ¦  v
+1  ¦  10
+
+#SQL[@20,N76]Result[]
 create table fake_pk_with_multi_cluster_by(id int, v int) cluster by (id, v);
+
+#SQL[@21,N53]Result[]
 insert into fake_pk_with_multi_cluster_by values(1,1);
+
+#SQL[@22,N55]Result[9, 8]
 select * from fake_pk_with_multi_cluster_by order by id;
-id    v
-1    1
+id  ¦  v
+1  ¦  1
+
+#SQL[@23,N60]Result[]
 update fake_pk_with_multi_cluster_by set v = 10 where id = 1;
+
+#SQL[@24,N55]Result[9, 9]
 select * from fake_pk_with_multi_cluster_by order by id;
-id    v
-1    10
+id  ¦  v
+1  ¦  10
+

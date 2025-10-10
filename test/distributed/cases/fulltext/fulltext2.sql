@@ -454,12 +454,12 @@ insert into articles (title, content, author_id) values
 ('全文索引与JOIN操作', '全文索引可以与JOIN操作结合使用，以实现跨表的全文搜索。', 1);
 select * from articles;
 select * from authors;
--- @bvt:issue#20687
-select a.title, a.content, au.name
-from articles a
-join authors au on a.author_id = au.id
-where match(a.content) against ('MO' IN NATURAL LANGUAGE MODE);
--- @bvt:issue
+@issue(no=20687) {
+    select a.title, a.content, au.name
+    from articles a
+    join authors au on a.author_id = au.id
+    where match(a.content) against ('MO' IN NATURAL LANGUAGE MODE);
+}
 drop table articles;
 drop table authors;
 
@@ -487,19 +487,19 @@ insert into comments (post_id, comment_text) values
 (1, '这篇文章很有用，谢谢分享！'),
 (1, '我也在学习全文索引，很有帮助。'),
 (2, '全文索引真的很强大，学习了。');
--- @bvt:issue#20687
-select count(posts.title), count(comments.comment_id) as comment_count
-from posts
-left join comments on posts.post_id = comments.post_id
-where match(posts.content) against ('全文索引' IN NATURAL LANGUAGE MODE)
-group by posts.post_id;
+@issue(no=20687) {
+    select count(posts.title), count(comments.comment_id) as comment_count
+    from posts
+    left join comments on posts.post_id = comments.post_id
+    where match(posts.content) against ('全文索引' IN NATURAL LANGUAGE MODE)
+    group by posts.post_id;
 
-select title, content from articles
-where match(content) against ('全文索引' IN NATURAL LANGUAGE MODE)
-union
-select comment_text as title, comment_text as content from comments
-where match(comment_text) AGAINST ('全文索引' IN NATURAL LANGUAGE MODE);
--- @bvt:issue
+    select title, content from articles
+    where match(content) against ('全文索引' IN NATURAL LANGUAGE MODE)
+    union
+    select comment_text as title, comment_text as content from comments
+    where match(comment_text) AGAINST ('全文索引' IN NATURAL LANGUAGE MODE);
+}
 drop table comments;
 drop table posts;
 

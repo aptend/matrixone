@@ -1,9 +1,22 @@
+#SQL[@1,N33]Result[]
 set experimental_fulltext_index=1;
+
+#SQL[@2,N35]Result[]
 set ft_relevancy_algorithm="TF-IDF";
+
+#SQL[@3,N37]Result[]
 drop database if exists test_fulltext;
+
+#SQL[@4,N29]Result[]
 create database test_fulltext;
+
+#SQL[@5,N17]Result[]
 use test_fulltext;
+
+#SQL[@8,N31]Result[]
 drop table if exists fulltext01;
+
+#SQL[@9,N127]Result[]
 create table fulltext01
 (
 LastName char(10) primary key,
@@ -12,261 +25,572 @@ Gender char(1),
 DepartmentName char(20),
 Age int
 );
+
+#SQL[@17,N70]Result[]
 insert into fulltext01 VALUES('Gilbert', 'Kevin','M','Tool Design',33);
+
+#SQL[@18,N72]Result[]
 insert into fulltext01 VALUES('Tamburello', 'Andrea','F','Marketing',45);
+
+#SQL[@19,N70]Result[]
 insert into fulltext01 VALUES('Johnson', 'David','M','Engineering',66);
+
+#SQL[@20,N70]Result[]
 insert into fulltext01 VALUES('Sharma', 'Bradley','M','Production',27);
+
+#SQL[@21,N76]Result[]
 insert into fulltext01 VALUES('Rapier', 'Abigail','F',	'Human Resources',38);
+
+#SQL[@22,N24]Result[64, 50, 52, 50, 50, 55]
 select * from fulltext01;
-lastname    firstname    gender    departmentname    age
-Gilbert    Kevin    M    Tool Design    33
-Tamburello    Andrea    F    Marketing    45
-Johnson    David    M    Engineering    66
-Sharma    Bradley    M    Production    27
-Rapier    Abigail    F    Human Resources    38
+lastname  ¦  firstname  ¦  gender  ¦  departmentname  ¦  age
+Gilbert  ¦  Kevin  ¦  M  ¦  Tool Design  ¦  33
+Tamburello  ¦  Andrea  ¦  F  ¦  Marketing  ¦  45
+Johnson  ¦  David  ¦  M  ¦  Engineering  ¦  66
+Sharma  ¦  Bradley  ¦  M  ¦  Production  ¦  27
+Rapier  ¦  Abigail  ¦  F  ¦  Human Resources  ¦  38
+
+#SQL[@24,N63]Result[]
 create fulltext index ftidx on fulltext01 (LastName, FirstName);
+
+#SQL[@25,N66]Result[]
 alter table fulltext01 add column newcolumn decimal after LastName;
+
+#SQL[@26,N28]Result[23, 327]
 show create table fulltext01;
-Table    Create Table
-fulltext01    CREATE TABLE `fulltext01` (\n  `LastName` char(10) NOT NULL,\n  `newcolumn` decimal(38,0) DEFAULT NULL,\n  `FirstName` char(10) DEFAULT NULL,\n  `Gender` char(1) DEFAULT NULL,\n  `DepartmentName` char(20) DEFAULT NULL,\n  `Age` int DEFAULT NULL,\n  PRIMARY KEY (`LastName`),\n FULLTEXT `ftidx`(`LastName`,`FirstName`)\n)
+Table  ¦  Create Table
+fulltext01  ¦  CREATE TABLE `fulltext01` (
+  `LastName` char(10) NOT NULL,
+  `newcolumn` decimal(38,0) DEFAULT NULL,
+  `FirstName` char(10) DEFAULT NULL,
+  `Gender` char(1) DEFAULT NULL,
+  `DepartmentName` char(20) DEFAULT NULL,
+  `Age` int DEFAULT NULL,
+  PRIMARY KEY (`LastName`),
+ FULLTEXT `ftidx`(`LastName`,`FirstName`)
+)
+
+#SQL[@27,N24]Result[79, 60, 62, 60, 60, 65]
 select * from fulltext01;
-lastname    newcolumn    firstname    gender    departmentname    age
-Gilbert    null    Kevin    M    Tool Design    33
-Tamburello    null    Andrea    F    Marketing    45
-Johnson    null    David    M    Engineering    66
-Sharma    null    Bradley    M    Production    27
-Rapier    null    Abigail    F    Human Resources    38
+lastname  ¦  newcolumn  ¦  firstname  ¦  gender  ¦  departmentname  ¦  age
+Gilbert  ¦  null  ¦  Kevin  ¦  M  ¦  Tool Design  ¦  33
+Tamburello  ¦  null  ¦  Andrea  ¦  F  ¦  Marketing  ¦  45
+Johnson  ¦  null  ¦  David  ¦  M  ¦  Engineering  ¦  66
+Sharma  ¦  null  ¦  Bradley  ¦  M  ¦  Production  ¦  27
+Rapier  ¦  null  ¦  Abigail  ¦  F  ¦  Human Resources  ¦  38
+
+#SQL[@28,N19]Result[]
 truncate fulltext01;
+
+#SQL[@29,N21]Result[]
 drop table fulltext01;
+
+#SQL[@34,N30]Result[]
 drop table if exists employees;
+
+#SQL[@35,N326]Result[]
 create table employees (
-employeeNumber int(11) NOT NULL,
-lastName varchar(50) NOT NULL,
-firstName varchar(50) NOT NULL,
-extension varchar(10) NOT NULL,
-email varchar(100) NOT NULL,
-officeCode varchar(10) NOT NULL,
-reportsTo int(11) DEFAULT NULL,
-jobTitle varchar(50) NOT NULL,
-PRIMARY KEY (employeeNumber)
+  employeeNumber int(11) NOT NULL,
+  lastName varchar(50) NOT NULL,
+  firstName varchar(50) NOT NULL,
+  extension varchar(10) NOT NULL,
+  email varchar(100) NOT NULL,
+  officeCode varchar(10) NOT NULL,
+  reportsTo int(11) DEFAULT NULL,
+  jobTitle varchar(50) NOT NULL,
+  PRIMARY KEY (employeeNumber)
 );
+
+#SQL[@46,N372]Result[]
 insert into employees(employeeNumber,lastName,firstName,extension,email,officeCode,reportsTo,jobTitle) values
 (1002,'Murphy','Diane','x5800','dmurphy@classicmodelcars.com','1',NULL,'President'),
 (1056,'Patterson','Mary','x4611','mpatterso@classicmodelcars.com','1',1002,'VP Sales'),
 (1076,'Firrelli','Jeff','x9273','jfirrelli@classicmodelcars.com','1',1002,'VP Marketing');
+
+#SQL[@50,N23]Result[114, 104, 107, 110]
 select * from employees;
-employeenumber    lastname    firstname    extension    email    officecode    reportsto    jobtitle
-1002    Murphy    Diane    x5800    dmurphy@classicmodelcars.com    1    null    President
-1056    Patterson    Mary    x4611    mpatterso@classicmodelcars.com    1    1002    VP Sales
-1076    Firrelli    Jeff    x9273    jfirrelli@classicmodelcars.com    1    1002    VP Marketing
+employeenumber  ¦  lastname  ¦  firstname  ¦  extension  ¦  email  ¦  officecode  ¦  reportsto  ¦  jobtitle
+1002  ¦  Murphy  ¦  Diane  ¦  x5800  ¦  dmurphy@classicmodelcars.com  ¦  1  ¦  null  ¦  President
+1056  ¦  Patterson  ¦  Mary  ¦  x4611  ¦  mpatterso@classicmodelcars.com  ¦  1  ¦  1002  ¦  VP Sales
+1076  ¦  Firrelli  ¦  Jeff  ¦  x9273  ¦  jfirrelli@classicmodelcars.com  ¦  1  ¦  1002  ¦  VP Marketing
+
+#SQL[@51,N60]Result[]
 create fulltext index f01 on employees (LastName, FirstName);
+
+#SQL[@52,N42]Result[]
 alter table employees drop column LastName;
+
+#SQL[@53,N27]Result[23, 348]
 show create table employees;
-Table    Create Table
-employees    CREATE TABLE `employees` (\n  `employeeNumber` int NOT NULL,\n  `firstName` varchar(50) NOT NULL,\n  `extension` varchar(10) NOT NULL,\n  `email` varchar(100) NOT NULL,\n  `officeCode` varchar(10) NOT NULL,\n  `reportsTo` int DEFAULT NULL,\n  `jobTitle` varchar(50) NOT NULL,\n  PRIMARY KEY (`employeeNumber`),\n FULLTEXT `f01`(`firstName`)\n)
+Table  ¦  Create Table
+employees  ¦  CREATE TABLE `employees` (
+  `employeeNumber` int NOT NULL,
+  `firstName` varchar(50) NOT NULL,
+  `extension` varchar(10) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `officeCode` varchar(10) NOT NULL,
+  `reportsTo` int DEFAULT NULL,
+  `jobTitle` varchar(50) NOT NULL,
+  PRIMARY KEY (`employeeNumber`),
+ FULLTEXT `f01`(`firstName`)
+)
+
+#SQL[@54,N23]Result[100, 92, 92, 96]
 select * from employees;
-employeenumber    firstname    extension    email    officecode    reportsto    jobtitle
-1002    Diane    x5800    dmurphy@classicmodelcars.com    1    null    President
-1056    Mary    x4611    mpatterso@classicmodelcars.com    1    1002    VP Sales
-1076    Jeff    x9273    jfirrelli@classicmodelcars.com    1    1002    VP Marketing
+employeenumber  ¦  firstname  ¦  extension  ¦  email  ¦  officecode  ¦  reportsto  ¦  jobtitle
+1002  ¦  Diane  ¦  x5800  ¦  dmurphy@classicmodelcars.com  ¦  1  ¦  null  ¦  President
+1056  ¦  Mary  ¦  x4611  ¦  mpatterso@classicmodelcars.com  ¦  1  ¦  1002  ¦  VP Sales
+1076  ¦  Jeff  ¦  x9273  ¦  jfirrelli@classicmodelcars.com  ¦  1  ¦  1002  ¦  VP Marketing
+
+#SQL[@55,N30]Result[8, 1]
 select count(*) from employees;
 count(*)
 3
+
+#SQL[@56,N18]Result[]
 truncate employees;
+
+#SQL[@57,N20]Result[]
 drop table employees;
+
+#SQL[@62,N23]Result[]
 drop table if exists t1;
+
+#SQL[@63,N54]Result[]
 create table t1 (col1 int primary key , col2 longtext);
+
+#SQL[@64,N34]Result[]
 insert into t1 values(1, 'abcdef');
+
+#SQL[@65,N34]Result[]
 insert into t1 values(2, '_bcdef');
+
+#SQL[@66,N34]Result[]
 insert into t1 values(3, 'a_cdef');
+
+#SQL[@67,N34]Result[]
 insert into t1 values(4, 'ab_def');
+
+#SQL[@68,N38]Result[]
 create fulltext index f02 on t1 (col2);
+
+#SQL[@69,N38]Result[]
 alter table t1 modify column col2 text;
+
+#SQL[@70,N20]Result[23, 128]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `col1` int NOT NULL,\n  `col2` text DEFAULT NULL,\n  PRIMARY KEY (`col1`),\n FULLTEXT `f02`(`col2`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `col1` int NOT NULL,
+  `col2` text DEFAULT NULL,
+  PRIMARY KEY (`col1`),
+ FULLTEXT `f02`(`col2`)
+)
+
+#SQL[@71,N16]Result[14, 13, 13, 13, 13]
 select * from t1;
-col1    col2
-1    abcdef
-2    _bcdef
-3    a_cdef
-4    ab_def
+col1  ¦  col2
+1  ¦  abcdef
+2  ¦  _bcdef
+3  ¦  a_cdef
+4  ¦  ab_def
+
+#SQL[@72,N13]Result[]
 drop table t1;
+
+#SQL[@77,N23]Result[]
 drop table if exists t1;
+
+#SQL[@78,N43]Result[]
 create table t1 (a json, b int primary key);
+
+#SQL[@79,N89]Result[]
 insert into t1 values ('{"t1":"a"}',1),('{"t1":"b"}',2),('{"t1":"c"}',3),('{"t1":"d"}',4);
+
+#SQL[@80,N16]Result[8, 18, 18, 18, 18]
 select * from t1;
-a    b
-{"t1": "a"}    1
-{"t1": "b"}    2
-{"t1": "c"}    3
-{"t1": "d"}    4
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "c"}  ¦  3
+{"t1": "d"}  ¦  4
+
+#SQL[@81,N35]Result[]
 create fulltext index f03 on t1 (a);
+
+#SQL[@82,N38]Result[]
 insert into t1 values ('{"t1":"c"}',5);
+
+#SQL[@83,N23]Result[8, 1]
 select count(a) from t1;
 count(a)
 5
+
+#SQL[@84,N16]Result[8, 18, 18, 18, 18, 18]
 select * from t1;
-a    b
-{"t1": "a"}    1
-{"t1": "b"}    2
-{"t1": "c"}    3
-{"t1": "d"}    4
-{"t1": "c"}    5
+a  ¦  b
+{"t1": "a"}  ¦  1
+{"t1": "b"}  ¦  2
+{"t1": "c"}  ¦  3
+{"t1": "d"}  ¦  4
+{"t1": "c"}  ¦  5
+
+#SQL[@85,N13]Result[]
 drop table t1;
+
+#SQL[@90,N28]Result[]
 drop table if exists table01;
+
+#SQL[@91,N58]Result[]
 create table table01 (col1 int primary key, col2 datalink);
+
+#SQL[@92,N93]Result[]
 insert into table01 values (1, 'file://$resources/load_data/test_columnlist_01.csv?offset=5');
+
+#SQL[@93,N94]Result[]
 insert into table01 values (2, 'file://$resources/load_data/test_columnlist_02.csv?offset=10');
+
+#SQL[@94,N43]Result[]
 create fulltext index f06 on table01 (col2);
+
+#SQL[@95,N18]Result[]
 drop table table01;
+
+#SQL[@101,N25]Result[]
 drop table if exists ab01;
+
+#SQL[@102,N78]Result[]
 create table ab01(col1 int not null primary key , col2 char, col3 varchar(10));
+
+#SQL[@103,N34]Result[]
 insert into ab01 values (1,2,'da');
+
+#SQL[@104,N38]Result[]
 insert into ab01 values (2,3,'e4r34f');
+
+#SQL[@105,N18]Result[24, 16, 20]
 select * from ab01;
-col1    col2    col3
-1    2    da
-2    3    e4r34f
+col1  ¦  col2  ¦  col3
+1  ¦  2  ¦  da
+2  ¦  3  ¦  e4r34f
+
+#SQL[@106,N40]Result[]
 create fulltext index f01 on ab01 (col2);
+
+#SQL[@107,N40]Error[68]
 create fulltext index f02 on ab01 (col2);
 not supported: Fulltext index are not allowed to use the same column
+
+#SQL[@108,N15]Result[]
 drop table ab01;
+
+#SQL[@113,N27]Result[]
 drop table if exists char01;
+
+#SQL[@114,N67]Result[]
 create table char01 (col1 varchar(200) primary key , col2 char(10));
+
+#SQL[@115,N109]Result[]
 insert into char01 values ('23789178942u1uj3ridjfh2d28u49u4ueji32jf2f32ef32894rjk32nv432f432f', '367283r343');
+
+#SQL[@116,N76]Result[]
 insert into char01 values ('32jhbfchjecmwd%^&^(*&)UJHFRE%^T&YUHIJKNM', null);
+
+#SQL[@117,N20]Result[14, 81, 50]
 select * from char01;
-col1    col2
-23789178942u1uj3ridjfh2d28u49u4ueji32jf2f32ef32894rjk32nv432f432f    367283r343
-32jhbfchjecmwd%^&^(*&)UJHFRE%^T&YUHIJKNM    null
+col1  ¦  col2
+23789178942u1uj3ridjfh2d28u49u4ueji32jf2f32ef32894rjk32nv432f432f  ¦  367283r343
+32jhbfchjecmwd%^&^(*&)UJHFRE%^T&YUHIJKNM  ¦  null
+
+#SQL[@118,N47]Result[]
 alter table char01 add fulltext index f01(col1);
+
+#SQL[@119,N47]Result[]
 alter table char01 add fulltext index f02(col2);
+
+#SQL[@120,N24]Result[23, 174]
 show create table char01;
-Table    Create Table
-char01    CREATE TABLE `char01` (\n  `col1` varchar(200) NOT NULL,\n  `col2` char(10) DEFAULT NULL,\n  PRIMARY KEY (`col1`),\n FULLTEXT `f01`(`col1`),\n FULLTEXT `f02`(`col2`)\n)
+Table  ¦  Create Table
+char01  ¦  CREATE TABLE `char01` (
+  `col1` varchar(200) NOT NULL,
+  `col2` char(10) DEFAULT NULL,
+  PRIMARY KEY (`col1`),
+ FULLTEXT `f01`(`col1`),
+ FULLTEXT `f02`(`col2`)
+)
+
+#SQL[@121,N17]Result[]
 drop table char01;
+
+#SQL[@126,N25]Result[]
 drop table if exists ab02;
+
+#SQL[@127,N62]Result[]
 create table ab02 (a bigint unsigned not null, primary key(a));
+
+#SQL[@128,N116]Result[]
 insert into ab02 values (18446744073709551615), (0xFFFFFFFFFFFFFFFE), (18446744073709551613), (18446744073709551612);
+
+#SQL[@129,N18]Result[1, 20, 20, 20, 20]
 select * from ab02;
 a
 18446744073709551615
 18446744073709551614
 18446744073709551613
 18446744073709551612
+
+#SQL[@130,N37]Error[81]
 create fulltext index f03 on ab02 (a);
 not supported: fulltext index only support char, varchar, text, datalink and json
+
+#SQL[@131,N15]Result[]
 drop table ab02;
+
+#SQL[@133,N23]Result[]
 drop table if exists t1;
+
+#SQL[@134,N40]Result[]
 create table t1(a binary(2) primary key);
+
+#SQL[@135,N27]Error[47]
 insert into t1 values(null);
 constraint violation: Column 'a' cannot be null
+
+#SQL[@136,N16]Result[]
 select * from t1;
-a
+
+#SQL[@137,N28]Result[]
 insert into t1 values("时");
+
+#SQL[@138,N16]Result[1, 3]
 select * from t1;
 a
-æ¶
+时
+
+#SQL[@139,N42]Error[210]
 insert into t1 values(rpad("1", 500, "1"));
 internal error: Can't cast '1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111...' from VARCHAR type to BINARY type. Src length 500 is larger than Dest length 2
+
+#SQL[@140,N28]Result[]
 delete from t1 where a="时";
+
+#SQL[@141,N26]Result[]
 insert into t1 values("6");
+
+#SQL[@142,N27]Result[]
 insert into t1 values("66");
+
+#SQL[@143,N35]Error[81]
 create fulltext index f04 on t1 (a);
 not supported: fulltext index only support char, varchar, text, datalink and json
+
+#SQL[@144,N13]Result[]
 drop table t1;
+
+#SQL[@146,N23]Result[]
 drop table if exists t1;
+
+#SQL[@147,N39]Result[]
 create table t1(t time(3) primary key );
+
+#SQL[@148,N34]Result[]
 insert into t1 values("100:00:20");
+
+#SQL[@149,N35]Result[]
 insert into t1 values("-800:59:59");
+
+#SQL[@150,N44]Result[]
 insert into t1 values("2012-12-12 12:00:20");
+
+#SQL[@151,N49]Result[]
 insert into t1 values("2012-12-12 12:00:20.1234");
+
+#SQL[@152,N49]Result[]
 insert into t1 values("2012-12-12 12:00:20.1235");
+
+#SQL[@153,N35]Error[81]
 create fulltext index f05 on t1 (t);
 not supported: fulltext index only support char, varchar, text, datalink and json
+
+#SQL[@154,N13]Result[]
 drop table t1;
+
+#SQL[@159,N29]Result[]
 drop table if exists articles;
+
+#SQL[@160,N137]Result[]
 create table articles (
 id int auto_increment primary key,
 title varchar(255),
 content text,
 fulltext(title, content) with parser ngram
 );
+
+#SQL[@166,N279]Result[]
 insert into articles (title, content) values
 ('MO全文索引示例', '这是一个关于MO全文索引的例子。它展示了如何使用ngram解析器进行全文搜索。'),
 ('ngram解析器', 'ngram解析器允许MO对中文等语言进行分词，以优化全文搜索。');
+
+#SQL[@169,N26]Result[23, 215]
 show create table articles;
-Table    Create Table
-articles    CREATE TABLE `articles` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `title` varchar(255) DEFAULT NULL,\n  `content` text DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT (`title`,`content`) WITH PARSER ngram\n)
+Table  ¦  Create Table
+articles  ¦  CREATE TABLE `articles` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) DEFAULT NULL,
+  `content` text DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT (`title`,`content`) WITH PARSER ngram
+)
+
+#SQL[@170,N99]Result[26, 136]
 select * from articles where match(title, content) against('全文索引' IN NATURAL LANGUAGE MODE);
-id    title    content
-1    MO全文索引示例    这是一个关于MO全文索引的例子。它展示了如何使用ngram解析器进行全文搜索。
+id  ¦  title  ¦  content
+1  ¦  MO全文索引示例  ¦  这是一个关于MO全文索引的例子。它展示了如何使用ngram解析器进行全文搜索。
+
+#SQL[@171,N22]Result[26, 136, 106]
 select * from articles;
-id    title    content
-1    MO全文索引示例    这是一个关于MO全文索引的例子。它展示了如何使用ngram解析器进行全文搜索。
-2    ngram解析器    ngram解析器允许MO对中文等语言进行分词，以优化全文搜索。
+id  ¦  title  ¦  content
+1  ¦  MO全文索引示例  ¦  这是一个关于MO全文索引的例子。它展示了如何使用ngram解析器进行全文搜索。
+2  ¦  ngram解析器  ¦  ngram解析器允许MO对中文等语言进行分词，以优化全文搜索。
+
+#SQL[@172,N19]Result[]
 drop table articles;
+
+#SQL[@177,N29]Result[]
 drop table if exists products;
+
+#SQL[@178,N144]Result[]
 create table products (
-id int auto_increment primary key,
-name varchar(255),
-details json,
-fulltext(details) with PARSER json
+    id int auto_increment primary key,
+    name varchar(255),
+    details json,
+    fulltext(details) with PARSER json
 );
+
+#SQL[@184,N206]Result[]
 insert into products (name, details) values
 ('ノートパソコン', '{"brand": "Dell", "specs": "i7, 16GB RAM", "price": 1200}'),
 ('스마트폰', '{"brand": "Apple", "model": "iPhone 12", "price": 800}');
+
+#SQL[@187,N26]Result[23, 205]
 show create table products;
-Table    Create Table
-products    CREATE TABLE `products` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) DEFAULT NULL,\n  `details` json DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT (`details`) WITH PARSER json\n)
+Table  ¦  Create Table
+products  ¦  CREATE TABLE `products` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `details` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT (`details`) WITH PARSER json
+)
+
+#SQL[@188,N111]Result[]
 insert into products (name, details) values('手机', '{"brand": "Apple", "model": "iPhone 12", "price": 800}');
+
+#SQL[@189,N22]Result[25, 91, 79, 73]
 select * from products;
-id    name    details
-1    ノートパソコン    {"brand": "Dell", "price": 1200, "specs": "i7, 16GB RAM"}
-2    스마트폰    {"brand": "Apple", "model": "iPhone 12", "price": 800}
-3    手机    {"brand": "Apple", "model": "iPhone 12", "price": 800}
+id  ¦  name  ¦  details
+1  ¦  ノートパソコン  ¦  {"brand": "Dell", "price": 1200, "specs": "i7, 16GB RAM"}
+2  ¦  스마트폰  ¦  {"brand": "Apple", "model": "iPhone 12", "price": 800}
+3  ¦  手机  ¦  {"brand": "Apple", "model": "iPhone 12", "price": 800}
+
+#SQL[@190,N84]Result[25, 91]
 select * from products where match(details) against('Dell' IN NATURAL LANGUAGE MODE);
-id    name    details
-1    ノートパソコン    {"brand": "Dell", "price": 1200, "specs": "i7, 16GB RAM"}
+id  ¦  name  ¦  details
+1  ¦  ノートパソコン  ¦  {"brand": "Dell", "price": 1200, "specs": "i7, 16GB RAM"}
+
+#SQL[@191,N92]Result[12, 19, 13]
 select id, name from products where match(details) against('Apple' IN NATURAL LANGUAGE MODE);
-id    name
-2    스마트폰
-3    手机
+id  ¦  name
+2  ¦  스마트폰
+3  ¦  手机
+
+#SQL[@192,N19]Result[]
 drop table products;
+
+#SQL[@197,N37]Result[]
 drop table if exists prepare_fulltext;
+
+#SQL[@198,N66]Result[]
 create table prepare_fulltext (a char primary key , b varchar(20));
+
+#SQL[@199,N61]Result[]
 insert into prepare_fulltext values (1, 11), (2, 22), (3, 33);
+
+#SQL[@200,N70]Result[]
 prepare stmt1 from 'create fulltext index f06 on prepare_fulltext (a)';
+
+#SQL[@201,N13]Result[]
 execute stmt1;
+
+#SQL[@202,N34]Result[23, 155]
 show create table prepare_fulltext;
-Table    Create Table
-prepare_fulltext    CREATE TABLE `prepare_fulltext` (\n  `a` char(1) NOT NULL,\n  `b` varchar(20) DEFAULT NULL,\n  PRIMARY KEY (`a`),\n FULLTEXT `f06`(`a`)\n)
+Table  ¦  Create Table
+prepare_fulltext  ¦  CREATE TABLE `prepare_fulltext` (
+  `a` char(1) NOT NULL,
+  `b` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`a`),
+ FULLTEXT `f06`(`a`)
+)
+
+#SQL[@203,N30]Result[8, 9, 9, 9]
 select * from prepare_fulltext;
-a    b
-1    11
-2    22
-3    33
+a  ¦  b
+1  ¦  11
+2  ¦  22
+3  ¦  33
+
+#SQL[@204,N27]Result[]
 drop table prepare_fulltext;
+
+#SQL[@209,N24]Result[]
 drop table if exists pro;
+
+#SQL[@210,N99]Result[]
 create table pro (
-id int auto_increment primary key,
-name varchar(255),
-details json
+    id int auto_increment primary key,
+    name varchar(255),
+    details json
 );
+
+#SQL[@215,N86]Result[]
 prepare stmt4 from 'alter table pro add fulltext index pro1(details) with PARSER json';
+
+#SQL[@216,N13]Result[]
 execute stmt4;
+
+#SQL[@217,N66]Result[]
 prepare stmt3 from 'alter table pro add fulltext index pro2(name)';
+
+#SQL[@218,N13]Result[]
 execute stmt3;
+
+#SQL[@219,N21]Result[23, 227]
 show create table pro;
-Table    Create Table
-pro    CREATE TABLE `pro` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `name` varchar(255) DEFAULT NULL,\n  `details` json DEFAULT NULL,\n  PRIMARY KEY (`id`),\n FULLTEXT `pro1`(`details`) WITH PARSER json,\n FULLTEXT `pro2`(`name`)\n)
+Table  ¦  Create Table
+pro  ¦  CREATE TABLE `pro` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `details` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+ FULLTEXT `pro1`(`details`) WITH PARSER json,
+ FULLTEXT `pro2`(`name`)
+)
+
+#SQL[@220,N106]Result[]
 insert into pro (name, details) values('手机', '{"brand": "Apple", "model": "iPhone 12", "price": 800}');
+
+#SQL[@221,N17]Result[25, 73]
 select * from pro;
-id    name    details
-1    手机    {"brand": "Apple", "model": "iPhone 12", "price": 800}
+id  ¦  name  ¦  details
+1  ¦  手机  ¦  {"brand": "Apple", "model": "iPhone 12", "price": 800}
+
+#SQL[@222,N14]Result[]
 drop table pro;
+
+#SQL[@227,N31]Result[]
 drop table if exists test_table;
+
+#SQL[@228,N152]Result[]
 create table test_table(
 col1 int auto_increment,
 col2 float,
@@ -277,114 +601,178 @@ col6 text,
 PRIMARY KEY (`col1`),
 fulltext(col5)
 );
+
+#SQL[@238,N28]Result[23, 275]
 show create table test_table;
-Table    Create Table
-test_table    CREATE TABLE `test_table` (\n  `col1` int NOT NULL AUTO_INCREMENT,\n  `col2` float DEFAULT NULL,\n  `col3` bool DEFAULT NULL,\n  `col4` date DEFAULT NULL,\n  `col5` varchar(255) DEFAULT NULL,\n  `col6` text DEFAULT NULL,\n  PRIMARY KEY (`col1`),\n FULLTEXT (`col5`)\n)
+Table  ¦  Create Table
+test_table  ¦  CREATE TABLE `test_table` (
+  `col1` int NOT NULL AUTO_INCREMENT,
+  `col2` float DEFAULT NULL,
+  `col3` bool DEFAULT NULL,
+  `col4` date DEFAULT NULL,
+  `col5` varchar(255) DEFAULT NULL,
+  `col6` text DEFAULT NULL,
+  PRIMARY KEY (`col1`),
+ FULLTEXT (`col5`)
+)
+
+#SQL[@239,N113]Result[]
 load data infile '$resources/load_data/test_1.csv' into table test_table fields terminated by ',' parallel 'true';
+
+#SQL[@240,N24]Result[54, 63, 64, 63, 64, 63, 64, 63, 64, 63, 64, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68, 67, 68]
 select * from test_table;
-col1    col2    col3    col4    col5    col6
-0    0.1    true    1982-03-24    varchar_0    text_0
-1    1.1    false    1982-07-31    varchar_1    text_1
-2    2.1    true    2002-04-13    varchar_2    text_2
-3    3.1    false    2019-09-29    varchar_3    text_3
-4    4.1    true    1996-08-20    varchar_4    text_4
-5    5.1    false    2008-10-13    varchar_5    text_5
-6    6.1    true    2002-03-05    varchar_6    text_6
-7    7.1    false    1993-11-07    varchar_7    text_7
-8    8.1    true    1994-01-08    varchar_8    text_8
-9    9.1    false    1999-09-17    varchar_9    text_9
-10    10.1    true    2003-09-28    varchar_10    text_10
-11    11.1    false    1984-01-22    varchar_11    text_11
-12    12.1    true    1994-02-10    varchar_12    text_12
-13    13.1    false    1994-12-02    varchar_13    text_13
-14    14.1    true    2013-01-19    varchar_14    text_14
-15    15.1    false    2002-09-29    varchar_15    text_15
-16    16.1    true    2001-12-07    varchar_16    text_16
-17    17.1    false    1989-03-11    varchar_17    text_17
-18    18.1    true    2019-11-04    varchar_18    text_18
-19    19.1    false    2002-08-15    varchar_19    text_19
-20    20.1    true    1995-12-20    varchar_20    text_20
-21    21.1    false    2018-08-03    varchar_21    text_21
-22    22.1    true    1998-03-10    varchar_22    text_22
-23    23.1    false    2022-04-08    varchar_23    text_23
-24    24.1    true    1989-04-27    varchar_24    text_24
-25    25.1    false    2009-03-14    varchar_25    text_25
-26    26.1    true    2019-03-27    varchar_26    text_26
-27    27.1    false    1983-10-28    varchar_27    text_27
-28    28.1    true    1993-07-19    varchar_28    text_28
-29    29.1    false    1986-09-11    varchar_29    text_29
-30    30.1    true    1992-08-19    varchar_30    text_30
-31    31.1    false    1981-08-07    varchar_31    text_31
-32    32.1    true    1984-03-25    varchar_32    text_32
-33    33.1    false    2001-09-05    varchar_33    text_33
-34    34.1    true    2022-03-17    varchar_34    text_34
-35    35.1    false    2008-06-24    varchar_35    text_35
-36    36.1    true    1987-11-23    varchar_36    text_36
-37    37.1    false    2008-11-10    varchar_37    text_37
-38    38.1    true    1986-01-29    varchar_38    text_38
-39    39.1    false    1985-02-27    varchar_39    text_39
-40    40.1    true    2016-11-28    varchar_40    text_40
-41    41.1    false    1991-02-11    varchar_41    text_41
-42    42.1    true    2019-01-08    varchar_42    text_42
-43    43.1    false    2009-05-01    varchar_43    text_43
-44    44.1    true    1986-11-15    varchar_44    text_44
-45    45.1    false    2000-07-22    varchar_45    text_45
-46    46.1    true    2002-09-07    varchar_46    text_46
-47    47.1    false    1987-09-23    varchar_47    text_47
-48    48.1    true    1985-10-25    varchar_48    text_48
-49    49.1    false    1988-10-06    varchar_49    text_49
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6
+0  ¦  0.1  ¦  true  ¦  1982-03-24  ¦  varchar_0  ¦  text_0
+1  ¦  1.1  ¦  false  ¦  1982-07-31  ¦  varchar_1  ¦  text_1
+2  ¦  2.1  ¦  true  ¦  2002-04-13  ¦  varchar_2  ¦  text_2
+3  ¦  3.1  ¦  false  ¦  2019-09-29  ¦  varchar_3  ¦  text_3
+4  ¦  4.1  ¦  true  ¦  1996-08-20  ¦  varchar_4  ¦  text_4
+5  ¦  5.1  ¦  false  ¦  2008-10-13  ¦  varchar_5  ¦  text_5
+6  ¦  6.1  ¦  true  ¦  2002-03-05  ¦  varchar_6  ¦  text_6
+7  ¦  7.1  ¦  false  ¦  1993-11-07  ¦  varchar_7  ¦  text_7
+8  ¦  8.1  ¦  true  ¦  1994-01-08  ¦  varchar_8  ¦  text_8
+9  ¦  9.1  ¦  false  ¦  1999-09-17  ¦  varchar_9  ¦  text_9
+10  ¦  10.1  ¦  true  ¦  2003-09-28  ¦  varchar_10  ¦  text_10
+11  ¦  11.1  ¦  false  ¦  1984-01-22  ¦  varchar_11  ¦  text_11
+12  ¦  12.1  ¦  true  ¦  1994-02-10  ¦  varchar_12  ¦  text_12
+13  ¦  13.1  ¦  false  ¦  1994-12-02  ¦  varchar_13  ¦  text_13
+14  ¦  14.1  ¦  true  ¦  2013-01-19  ¦  varchar_14  ¦  text_14
+15  ¦  15.1  ¦  false  ¦  2002-09-29  ¦  varchar_15  ¦  text_15
+16  ¦  16.1  ¦  true  ¦  2001-12-07  ¦  varchar_16  ¦  text_16
+17  ¦  17.1  ¦  false  ¦  1989-03-11  ¦  varchar_17  ¦  text_17
+18  ¦  18.1  ¦  true  ¦  2019-11-04  ¦  varchar_18  ¦  text_18
+19  ¦  19.1  ¦  false  ¦  2002-08-15  ¦  varchar_19  ¦  text_19
+20  ¦  20.1  ¦  true  ¦  1995-12-20  ¦  varchar_20  ¦  text_20
+21  ¦  21.1  ¦  false  ¦  2018-08-03  ¦  varchar_21  ¦  text_21
+22  ¦  22.1  ¦  true  ¦  1998-03-10  ¦  varchar_22  ¦  text_22
+23  ¦  23.1  ¦  false  ¦  2022-04-08  ¦  varchar_23  ¦  text_23
+24  ¦  24.1  ¦  true  ¦  1989-04-27  ¦  varchar_24  ¦  text_24
+25  ¦  25.1  ¦  false  ¦  2009-03-14  ¦  varchar_25  ¦  text_25
+26  ¦  26.1  ¦  true  ¦  2019-03-27  ¦  varchar_26  ¦  text_26
+27  ¦  27.1  ¦  false  ¦  1983-10-28  ¦  varchar_27  ¦  text_27
+28  ¦  28.1  ¦  true  ¦  1993-07-19  ¦  varchar_28  ¦  text_28
+29  ¦  29.1  ¦  false  ¦  1986-09-11  ¦  varchar_29  ¦  text_29
+30  ¦  30.1  ¦  true  ¦  1992-08-19  ¦  varchar_30  ¦  text_30
+31  ¦  31.1  ¦  false  ¦  1981-08-07  ¦  varchar_31  ¦  text_31
+32  ¦  32.1  ¦  true  ¦  1984-03-25  ¦  varchar_32  ¦  text_32
+33  ¦  33.1  ¦  false  ¦  2001-09-05  ¦  varchar_33  ¦  text_33
+34  ¦  34.1  ¦  true  ¦  2022-03-17  ¦  varchar_34  ¦  text_34
+35  ¦  35.1  ¦  false  ¦  2008-06-24  ¦  varchar_35  ¦  text_35
+36  ¦  36.1  ¦  true  ¦  1987-11-23  ¦  varchar_36  ¦  text_36
+37  ¦  37.1  ¦  false  ¦  2008-11-10  ¦  varchar_37  ¦  text_37
+38  ¦  38.1  ¦  true  ¦  1986-01-29  ¦  varchar_38  ¦  text_38
+39  ¦  39.1  ¦  false  ¦  1985-02-27  ¦  varchar_39  ¦  text_39
+40  ¦  40.1  ¦  true  ¦  2016-11-28  ¦  varchar_40  ¦  text_40
+41  ¦  41.1  ¦  false  ¦  1991-02-11  ¦  varchar_41  ¦  text_41
+42  ¦  42.1  ¦  true  ¦  2019-01-08  ¦  varchar_42  ¦  text_42
+43  ¦  43.1  ¦  false  ¦  2009-05-01  ¦  varchar_43  ¦  text_43
+44  ¦  44.1  ¦  true  ¦  1986-11-15  ¦  varchar_44  ¦  text_44
+45  ¦  45.1  ¦  false  ¦  2000-07-22  ¦  varchar_45  ¦  text_45
+46  ¦  46.1  ¦  true  ¦  2002-09-07  ¦  varchar_46  ¦  text_46
+47  ¦  47.1  ¦  false  ¦  1987-09-23  ¦  varchar_47  ¦  text_47
+48  ¦  48.1  ¦  true  ¦  1985-10-25  ¦  varchar_48  ¦  text_48
+49  ¦  49.1  ¦  false  ¦  1988-10-06  ¦  varchar_49  ¦  text_49
+
+#SQL[@241,N21]Result[]
 drop table test_table;
+
+#SQL[@246,N32]Result[]
 drop table if exists jsonline_t2;
+
+#SQL[@247,N104]Result[]
 create table jsonline_t2(
 col1 char(225),
 col2 varchar(225) ,
 col3 text,
 col4 varchar(225) primary key
 );
+
+#SQL[@253,N46]Result[]
 create fulltext index f05 on jsonline_t2(col3);
+
+#SQL[@254,N131]Result[]
 load data infile{'filepath'='$resources/load_data/char_varchar_2.jl','format'='jsonline','jsondata'='object'}into table jsonline_t2;
+
+#SQL[@255,N25]Result[34, 30, 35, 50, 36, 41]
 select * from jsonline_t2;
-col1    col2    col3    col4
-"a"    "b"    "c"    "d"
-'d'    '123456'    'b'    'a'
-a    中文    #¥%……&#    234cccc重要
-"'a'"    "'b'"    "'c'"    abc
- 123f fff     yeah     红tu    bb"
+col1  ¦  col2  ¦  col3  ¦  col4
+"a"  ¦  "b"  ¦  "c"  ¦  "d"
+'d'  ¦  '123456'  ¦  'b'  ¦  'a'
+a  ¦  中文  ¦  #¥%……&#  ¦  234cccc重要
+"'a'"  ¦  "'b'"  ¦  "'c'"  ¦  abc
+ 123f fff  ¦   yeah   ¦  红tu  ¦  bb"
+
+#SQL[@256,N22]Result[]
 drop table jsonline_t2;
+
+#SQL[@261,N23]Result[]
 drop table if exists t1;
+
+#SQL[@262,N232]Result[]
 create table t1(
-col1 bool,
-col2 int primary key,
-col3 varchar(100),
-col4 date,
-col5 datetime,
-col6 timestamp,
-col7 decimal,
-col8 float,
-col9 json,
-col10 text,
-col11 json,
-col12 bool
+    col1 bool,
+    col2 int primary key,
+    col3 varchar(100),
+    col4 date,
+    col5 datetime,
+    col6 timestamp,
+    col7 decimal,
+    col8 float,
+    col9 json,
+    col10 text,
+    col11 json,
+    col12 bool
 );
+
+#SQL[@276,N37]Result[]
 create fulltext index f06 on t1(col9);
+
+#SQL[@277,N127]Result[]
 load data infile {'filepath'='$resources/load_data/jsonline_object01.jl','format'='jsonline','jsondata'='object'} into table t1;
+
+#SQL[@278,N16]Result[117, 179, 177, 178, 177]
 select * from t1;
-col1    col2    col3    col4    col5    col6    col7    col8    col9    col10    col11    col12
-true    1    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1qaz    null    null
-true    2    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1aza    null    null
-true    3    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    ["1", 2, null, false, true, {"q": 1}]    1az    null    null
-true    4    var    2020-09-07    2020-09-07 00:00:00    2020-09-07 00:00:00    18    121.11    {"b": ["a", "b", {"q": 4}], "c": 1}    1qaz    null    null
+col1  ¦  col2  ¦  col3  ¦  col4  ¦  col5  ¦  col6  ¦  col7  ¦  col8  ¦  col9  ¦  col10  ¦  col11  ¦  col12
+true  ¦  1  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-06 16:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1qaz  ¦  null  ¦  null
+true  ¦  2  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-06 16:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1aza  ¦  null  ¦  null
+true  ¦  3  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-06 16:00:00  ¦  18  ¦  121.11  ¦  ["1", 2, null, false, true, {"q": 1}]  ¦  1az  ¦  null  ¦  null
+true  ¦  4  ¦  var  ¦  2020-09-07  ¦  2020-09-07 00:00:00  ¦  2020-09-06 16:00:00  ¦  18  ¦  121.11  ¦  {"b": ["a", "b", {"q": 4}], "c": 1}  ¦  1qaz  ¦  null  ¦  null
+
+#SQL[@279,N20]Result[23, 443]
 show create table t1;
-Table    Create Table
-t1    CREATE TABLE `t1` (\n  `col1` bool DEFAULT NULL,\n  `col2` int NOT NULL,\n  `col3` varchar(100) DEFAULT NULL,\n  `col4` date DEFAULT NULL,\n  `col5` datetime DEFAULT NULL,\n  `col6` timestamp NULL DEFAULT NULL,\n  `col7` decimal(38,0) DEFAULT NULL,\n  `col8` float DEFAULT NULL,\n  `col9` json DEFAULT NULL,\n  `col10` text DEFAULT NULL,\n  `col11` json DEFAULT NULL,\n  `col12` bool DEFAULT NULL,\n  PRIMARY KEY (`col2`),\n FULLTEXT `f06`(`col9`)\n)
+Table  ¦  Create Table
+t1  ¦  CREATE TABLE `t1` (
+  `col1` bool DEFAULT NULL,
+  `col2` int NOT NULL,
+  `col3` varchar(100) DEFAULT NULL,
+  `col4` date DEFAULT NULL,
+  `col5` datetime DEFAULT NULL,
+  `col6` timestamp NULL DEFAULT NULL,
+  `col7` decimal(38,0) DEFAULT NULL,
+  `col8` float DEFAULT NULL,
+  `col9` json DEFAULT NULL,
+  `col10` text DEFAULT NULL,
+  `col11` json DEFAULT NULL,
+  `col12` bool DEFAULT NULL,
+  PRIMARY KEY (`col2`),
+ FULLTEXT `f06`(`col9`)
+)
+
+#SQL[@280,N13]Result[]
 drop table t1;
+
+#SQL[@286,N29]Result[]
 drop table if exists articles;
+
+#SQL[@287,N148]Result[]
 create table articles (
-id int unsigned auto_increment not null primary key,
-title varchar(200),
-body text,
-fulltext (title, body)
+    id int unsigned auto_increment not null primary key,
+    title varchar(200),
+    body text,
+    fulltext (title, body)
 );
+
+#SQL[@293,N370]Result[]
 insert into articles (title, body) VALUES
 ('MO Tutorial', 'DBMS stands for DataBase ...'),
 ('How To Use MO Well', 'After you went through a ...'),
@@ -392,38 +780,54 @@ insert into articles (title, body) VALUES
 ('1001 MO Tricks', '1. Never run MOd as root. 2. ...'),
 ('MO vs. YourSQL', 'In the following database comparison ...'),
 ('MO Security', 'When configured properly, MO ...');
+
+#SQL[@301,N94]Result[23, 52, 67]
 select * from articles
 where match (title, body)
 against ('database' in natural language mode);
-id    title    body
-1    MO Tutorial    DBMS stands for DataBase ...
-5    MO vs. YourSQL    In the following database comparison ...
+id  ¦  title  ¦  body
+1  ¦  MO Tutorial  ¦  DBMS stands for DataBase ...
+5  ¦  MO vs. YourSQL  ¦  In the following database comparison ...
+
+#SQL[@305,N99]Result[13, 16, 16]
 select id, match (title, body)
 against ('Tutorial' in natural language mode) as score
 from articles;
-id    score
-1    0.2276447
-3    0.2276447
+id  ¦  score
+1  ¦  0.2276447
+3  ¦  0.2276447
+
+#SQL[@309,N124]Result[23, 50]
 select id, body, match (title, body)
 against ('MO tutorial DBMS stands for' in natural language mode) as score
 from articles;
-id    body    score
-1    DBMS stands for DataBase ...    3.0275967
+id  ¦  body  ¦  score
+1  ¦  DBMS stands for DataBase ...  ¦  3.0275967
+
+#SQL[@313,N215]Result[23, 50]
 select id, body, match (title, body)
 against ('MO tutorial DBMS stands for' in natural language mode) as score
 from articles
 where match (title, body)
 against ('MO tutorial DBMS stands for' in natural language mode);
-id    body    score
-1    DBMS stands for DataBase ...    3.0275967
+id  ¦  body  ¦  score
+1  ¦  DBMS stands for DataBase ...  ¦  3.0275967
+
+#SQL[@318,N19]Result[]
 drop table articles;
+
+#SQL[@324,N28]Result[]
 drop table if exists article;
+
+#SQL[@325,N140]Result[]
 create table article (
-id int unsigned auto_increment not null primary key,
-title varchar(200),
-body text,
-fulltext (body)
+    id int unsigned auto_increment not null primary key,
+    title varchar(200),
+    body text,
+    fulltext (body)
 );
+
+#SQL[@331,N369]Result[]
 insert into article (title, body) VALUES
 ('MO Tutorial', 'DBMS stands for DataBase ...'),
 ('How To Use MO Well', 'After you went through a ...'),
@@ -431,193 +835,270 @@ insert into article (title, body) VALUES
 ('1001 MO Tricks', '1. Never run MOd as root. 2. ...'),
 ('MO vs. YourSQL', 'In the following database comparison ...'),
 ('MO Security', 'When configured properly, MO ...');
+
+#SQL[@339,N86]Result[23, 52, 67]
 select * from article
 where match (body)
 against ('database' in natural language mode);
-id    title    body
-1    MO Tutorial    DBMS stands for DataBase ...
-5    MO vs. YourSQL    In the following database comparison ...
+id  ¦  title  ¦  body
+1  ¦  MO Tutorial  ¦  DBMS stands for DataBase ...
+5  ¦  MO vs. YourSQL  ¦  In the following database comparison ...
+
+#SQL[@343,N91]Result[13, 16, 16]
 select id, match (body)
 against ('DataBase' in natural language mode) as score
 from article;
-id    score
-1    0.2276447
-5    0.2276447
+id  ¦  score
+1  ¦  0.2276447
+5  ¦  0.2276447
+
+#SQL[@347,N194]Result[23, 50]
 select id, body, match (body)
 against ('DBMS stands for Database' in natural language mode) as score
 from article
 where match (body)
 against ('DBMS stands for Database' in natural language mode);
-id    body    score
-1    DBMS stands for DataBase ...    2.4220774
+id  ¦  body  ¦  score
+1  ¦  DBMS stands for DataBase ...  ¦  2.4220774
+
+#SQL[@352,N18]Result[]
 drop table article;
+
+#SQL[@358,N29]Result[]
 drop table if exists example1;
+
+#SQL[@359,N104]Result[]
 create table example1 (
-id INT auto_increment primary key,
-content text,
-fulltext(content)
+    id INT auto_increment primary key,
+    content text,
+    fulltext(content)
 );
+
+#SQL[@364,N348]Result[]
 insert into example1 (content) values
 ('MO is a database management system.'),
 ('A database management system is a software that manages databases.'),
 ('MO is a popular choice for development.'),
 ('PHP is a popular server-side scripting language for web development.'),
 ('Python is a high-level programming language used for various applications.');
+
+#SQL[@370,N86]Result[15, 42]
 select * from example1
 where match (content)
 against ('+MO +database' in boolean mode);
-id    content
-1    MO is a database management system.
+id  ¦  content
+1  ¦  MO is a database management system.
+
+#SQL[@374,N81]Result[15, 42, 73]
 select * from example1
 where match(content)
 against ('+database' in boolean mode);
-id    content
-1    MO is a database management system.
-2    A database management system is a software that manages databases.
+id  ¦  content
+1  ¦  MO is a database management system.
+2  ¦  A database management system is a software that manages databases.
+
+#SQL[@378,N81]Result[]
 select * from example1
 where match(content)
 against ('-database' in boolean mode);
-id    content
+
+#SQL[@382,N93]Result[15, 75]
 select * from example1
 where match (content)
 against ('+web development -MO' in boolean mode);
-id    content
-4    PHP is a popular server-side scripting language for web development.
+id  ¦  content
+4  ¦  PHP is a popular server-side scripting language for web development.
+
+#SQL[@386,N76]Result[15, 42, 46]
 select * from example1
 where match (content)
 against ('+MO' in boolean mode);
-id    content
-1    MO is a database management system.
-3    MO is a popular choice for development.
+id  ¦  content
+1  ¦  MO is a database management system.
+3  ¦  MO is a popular choice for development.
+
+#SQL[@390,N85]Result[15, 42, 46]
 select * from example1
 where match (content)
 against ('+MO ~popular' in boolean mode);
-id    content
-1    MO is a database management system.
-3    MO is a popular choice for development.
+id  ¦  content
+1  ¦  MO is a database management system.
+3  ¦  MO is a popular choice for development.
+
+#SQL[@394,N76]Result[15, 42, 46]
 select * from example1
 where match (content)
 against ('MO*' in boolean mode);
-id    content
-1    MO is a database management system.
-3    MO is a popular choice for development.
+id  ¦  content
+1  ¦  MO is a database management system.
+3  ¦  MO is a popular choice for development.
+
+#SQL[@398,N98]Result[15, 42, 46]
 select * from example1
 where match (content)
 against ('+MO +(<popular >database)' in boolean mode);
-id    content
-1    MO is a database management system.
-3    MO is a popular choice for development.
+id  ¦  content
+1  ¦  MO is a database management system.
+3  ¦  MO is a popular choice for development.
+
+#SQL[@402,N84]Result[15, 46, 42]
 select * from example1
 where match (content)
 against ('+MO popular' in boolean mode);
-id    content
-3    MO is a popular choice for development.
-1    MO is a database management system.
+id  ¦  content
+3  ¦  MO is a popular choice for development.
+1  ¦  MO is a database management system.
+
+#SQL[@406,N80]Result[15, 46, 75]
 select * from example1
 where match (content)
 against ('popular' in boolean mode);
-id    content
-3    MO is a popular choice for development.
-4    PHP is a popular server-side scripting language for web development.
+id  ¦  content
+3  ¦  MO is a popular choice for development.
+4  ¦  PHP is a popular server-side scripting language for web development.
+
+#SQL[@409,N19]Result[]
 drop table example1;
+
+#SQL[@415,N33]Result[]
 drop table if exists example_json;
+
+#SQL[@416,N82]Result[]
 create table example_json (
-id int auto_increment primary key,
-data json
+    id int auto_increment primary key,
+    data json
 );
+
+#SQL[@420,N80]Result[]
 alter table example_json add fulltext index idx_jsondata (data) with parser json;
+
+#SQL[@422,N324]Result[]
 insert into example_json (data) values
 ('{"title": "MO Full-Text Search", "content": "Full-text search is a technique for searching text-based content."}'),
 ('{"title": "Introduction to MO", "content": "MO is an open-source relational database management system."}'),
 ('{"title": "MO development", "content": "MO history"}');
+
+#SQL[@426,N87]Result[12, 59, 119, 112]
 select * from example_json where match(data) against ('MO development' in boolean mode);
-id    data
-3    {"content": "MO history", "title": "MO development"}
-1    {"content": "Full-text search is a technique for searching text-based content.", "title": "MO Full-Text Search"}
-2    {"content": "MO is an open-source relational database management system.", "title": "Introduction to MO"}
+id  ¦  data
+3  ¦  {"content": "MO history", "title": "MO development"}
+1  ¦  {"content": "Full-text search is a technique for searching text-based content.", "title": "MO Full-Text Search"}
+2  ¦  {"content": "MO is an open-source relational database management system.", "title": "Introduction to MO"}
+
+#SQL[@427,N58]Result[]
 select * from example_json where match(data) against (' ');
-id    data
+
+#SQL[@428,N89]Result[12, 59]
 select * from example_json where match(data) against ('"MO development"' in boolean mode);
-id    data
-3    {"content": "MO history", "title": "MO development"}
+id  ¦  data
+3  ¦  {"content": "MO history", "title": "MO development"}
+
+#SQL[@429,N90]Result[12, 119, 59]
 select * from example_json where match(data) against ('+MO -open -source' in boolean mode);
-id    data
-1    {"content": "Full-text search is a technique for searching text-based content.", "title": "MO Full-Text Search"}
-3    {"content": "MO history", "title": "MO development"}
+id  ¦  data
+1  ¦  {"content": "Full-text search is a technique for searching text-based content.", "title": "MO Full-Text Search"}
+3  ¦  {"content": "MO history", "title": "MO development"}
+
+#SQL[@430,N23]Result[]
 drop table example_json;
+
+#SQL[@436,N29]Result[]
 drop table if exists articles;
+
+#SQL[@437,N28]Result[]
 drop table if exists authors;
+
+#SQL[@438,N147]Result[]
 create table articles (
-id int auto_increment primary key,
-title varchar(255),
-content text,
-author_id int,
-fulltext(content)
+    id int auto_increment primary key,
+    title varchar(255),
+    content text,
+    author_id int,
+    fulltext(content)
 );
+
+#SQL[@445,N85]Result[]
 create table authors (
-id int auto_increment primary key,
-name varchar(100)
+    id int auto_increment primary key,
+    name varchar(100)
 );
+
+#SQL[@449,N81]Result[]
 insert into authors (name) values ('John Doe'), ('Jane Smith'), ('Alice Johnson');
+
+#SQL[@450,N549]Result[]
 insert into articles (title, content, author_id) values
 ('MO全文索引入门', 'MO全文索引是一种强大的工具，可以帮助你快速检索数据库中的文本数据。', 1),
 ('深入理解全文索引', '全文索引不仅可以提高搜索效率，还可以通过JOIN操作与其他表结合使用。', 2),
 ('MO性能优化', '本文将探讨如何优化MO数据库的性能，包括索引优化和查询优化。', 3),
 ('全文索引与JOIN操作', '全文索引可以与JOIN操作结合使用，以实现跨表的全文搜索。', 1);
-select * from articles;
-id    title    content    author_id
-1    MO全文索引入门    MO全文索引是一种强大的工具，可以帮助你快速检索数据库中的文本数据。    1
-2    深入理解全文索引    全文索引不仅可以提高搜索效率，还可以通过JOIN操作与其他表结合使用。    2
-3    MO性能优化    本文将探讨如何优化MO数据库的性能，包括索引优化和查询优化。    3
-4    全文索引与JOIN操作    全文索引可以与JOIN操作结合使用，以实现跨表的全文搜索。    1
-select * from authors;
-id    name
-1    John Doe
-2    Jane Smith
-3    Alice Johnson
-select a.title, a.content, au.name
-from articles a
-join authors au on a.author_id = au.id
-where match(a.content) against ('MO' IN NATURAL LANGUAGE MODE);
 
+#SQL[@455,N22]Result[41, 138, 141, 120, 124]
+select * from articles;
+id  ¦  title  ¦  content  ¦  author_id
+1  ¦  MO全文索引入门  ¦  MO全文索引是一种强大的工具，可以帮助你快速检索数据库中的文本数据。  ¦  1
+2  ¦  深入理解全文索引  ¦  全文索引不仅可以提高搜索效率，还可以通过JOIN操作与其他表结合使用。  ¦  2
+3  ¦  MO性能优化  ¦  本文将探讨如何优化MO数据库的性能，包括索引优化和查询优化。  ¦  3
+4  ¦  全文索引与JOIN操作  ¦  全文索引可以与JOIN操作结合使用，以实现跨表的全文搜索。  ¦  1
+
+#SQL[@456,N21]Result[12, 15, 17, 20]
+select * from authors;
+id  ¦  name
+1  ¦  John Doe
+2  ¦  Jane Smith
+3  ¦  Alice Johnson
+
+#SQL[@463,N19]Result[]
 drop table articles;
+
+#SQL[@464,N18]Result[]
 drop table authors;
+
+#SQL[@469,N26]Result[]
 drop table if exists posts;
+
+#SQL[@470,N29]Result[]
 drop table if exists comments;
+
+#SQL[@471,N107]Result[]
 create table posts (
-post_id int auto_increment primary key,
-title varchar(255),
-content text
+    post_id int auto_increment primary key,
+    title varchar(255),
+    content text
 );
+
+#SQL[@476,N164]Result[]
 create table comments (
-comment_id int auto_increment primary key,
-post_id int,
-comment_text text,
-foreign key (post_id) references posts(post_id)
+    comment_id int auto_increment primary key,
+    post_id int,
+    comment_text text,
+    foreign key (post_id) references posts(post_id)
 );
+
+#SQL[@482,N39]Result[]
 alter table posts add fulltext(content);
+
+#SQL[@483,N299]Result[]
 insert into posts (title, content) values
 ('MO全文索引入门', 'MO全文索引是一种强大的工具，可以帮助你快速检索数据库中的文本数据。'),
 ('深入理解全文索引', '全文索引不仅可以提高搜索效率，还可以通过JOIN操作与其他表结合使用。');
+
+#SQL[@486,N203]Result[]
 insert into comments (post_id, comment_text) values
 (1, '这篇文章很有用，谢谢分享！'),
 (1, '我也在学习全文索引，很有帮助。'),
 (2, '全文索引真的很强大，学习了。');
-select count(posts.title), count(comments.comment_id) as comment_count
-from posts
-left join comments on posts.post_id = comments.post_id
-where match(posts.content) against ('全文索引' IN NATURAL LANGUAGE MODE)
-group by posts.post_id;
 
-select title, content from articles
-where match(content) against ('全文索引' IN NATURAL LANGUAGE MODE)
-union
-select comment_text as title, comment_text as content from comments
-where match(comment_text) AGAINST ('全文索引' IN NATURAL LANGUAGE MODE);
-
+#SQL[@503,N19]Result[]
 drop table comments;
+
+#SQL[@504,N16]Result[]
 drop table posts;
+
+#SQL[@508,N36]Result[]
 drop table if exists fulltext_test01;
+
+#SQL[@509,N212]Result[]
 create table `fulltext_test01` (
 `col1` bigint default NULL,
 `col2` int not null,
@@ -626,19 +1107,47 @@ create table `fulltext_test01` (
 PRIMARY KEY (`col2`),
 FULLTEXT f01(`col3`) WITH PARSER ngram
 );
+
+#SQL[@517,N153]Result[]
 load data infile '$resources/external_table_file/zhwiki.txt' into table fulltext_test01 fields terminated by ':' ESCAPED BY '\t' lines terminated by '\n';
+
+#SQL[@518,N33]Result[23, 246]
 show create table fulltext_test01;
-Table    Create Table
-fulltext_test01    CREATE TABLE `fulltext_test01` (\n  `col1` bigint DEFAULT NULL,\n  `col2` int NOT NULL,\n  `col3` varchar(200) DEFAULT NULL,\n  `col4` varchar(200) DEFAULT NULL,\n  PRIMARY KEY (`col2`),\n FULLTEXT `f01`(`col3`) WITH PARSER ngram\n)
+Table  ¦  Create Table
+fulltext_test01  ¦  CREATE TABLE `fulltext_test01` (
+  `col1` bigint DEFAULT NULL,
+  `col2` int NOT NULL,
+  `col3` varchar(200) DEFAULT NULL,
+  `col4` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`col2`),
+ FULLTEXT `f01`(`col3`) WITH PARSER ngram
+)
+
+#SQL[@519,N42]Result[]
 alter table fulltext_test01 drop index f01;
+
+#SQL[@520,N33]Result[23, 203]
 show create table fulltext_test01;
-Table    Create Table
-fulltext_test01    CREATE TABLE `fulltext_test01` (\n  `col1` bigint DEFAULT NULL,\n  `col2` int NOT NULL,\n  `col3` varchar(200) DEFAULT NULL,\n  `col4` varchar(200) DEFAULT NULL,\n  PRIMARY KEY (`col2`)\n)
+Table  ¦  Create Table
+fulltext_test01  ¦  CREATE TABLE `fulltext_test01` (
+  `col1` bigint DEFAULT NULL,
+  `col2` int NOT NULL,
+  `col3` varchar(200) DEFAULT NULL,
+  `col4` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`col2`)
+)
+
+#SQL[@521,N29]Result[34, 58, 65, 50, 46]
 select * from fulltext_test01;
-col1    col2    col3    col4
-608    1    Wikipedia    上载纪录/存档/2002年
-608    2    Wikipedia    删除纪录/档案馆/2004年3月
-608    26    Wikipedia    繁简分歧词表
-608    31    Wikipedia    宣告/2005年
+col1  ¦  col2  ¦  col3  ¦  col4
+608  ¦  1  ¦  Wikipedia  ¦  上载纪录/存档/2002年
+608  ¦  2  ¦  Wikipedia  ¦  删除纪录/档案馆/2004年3月
+608  ¦  26  ¦  Wikipedia  ¦  繁简分歧词表
+608  ¦  31  ¦  Wikipedia  ¦  宣告/2005年
+
+#SQL[@522,N26]Result[]
 drop table fulltext_test01;
+
+#SQL[@524,N27]Result[]
 drop database test_fulltext;
+

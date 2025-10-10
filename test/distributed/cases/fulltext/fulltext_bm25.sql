@@ -20,7 +20,7 @@ create fulltext index ftidx on src (body, title);
 create fulltext index ftidx02 on src (body, title);
 select * from src where match(body) against('red');
 select * from src where match(body,title) against('+]]]');
-select * from src where match(body,title) against('+I'm');
+select * from src where match(body,title) against("+I'm");
 
 select match(body) against('red') from src;
 
@@ -185,7 +185,7 @@ drop table src2;
 
 -- bytejson parser
 create table src (id bigint primary key, json1 json, json2 json);
-insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'), 
+insert into src values  (0, '{"a":1, "b":"red"}', '{"d": "happy birthday", "f":"winter"}'),
 (1, '{"a":2, "b":"中文學習教材"}', '["apple", "orange", "banana", "指引"]'),
 (2, '{"a":3, "b":"red blue"}', '{"d":"兒童中文"}');
 

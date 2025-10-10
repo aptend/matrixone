@@ -262,7 +262,7 @@ select * from c1;
 drop table c1;
 create table c1 (a int primary key, f_a int, f_b int, f_c int, f_d int, constraint ck foreign key(f_a,f_b) REFERENCES f1(a,b));
 drop table c1;
-create table c1 (a int primary key, f_a int, f_b int, f_c int, f_d int, constraint ck foreign key(f_a,f_c) REFERENCES f1(a,c)); 
+create table c1 (a int primary key, f_a int, f_b int, f_c int, f_d int, constraint ck foreign key(f_a,f_c) REFERENCES f1(a,c));
 create table c1 (a int primary key, f_a int, f_b int, f_c int, f_d int, constraint ck foreign key(f_c,f_d) REFERENCES f1(c,d));
 
 create table fk_01(col1 decimal(38,3),col2 char(25),col3 int,col4 date,primary key(col1,col3,col4));

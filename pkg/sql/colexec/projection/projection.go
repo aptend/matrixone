@@ -88,5 +88,30 @@ func (projection *Projection) Call(proc *process.Process) (vm.CallResult, error)
 	projection.ctr.buf.SetRowCount(bat.RowCount())
 
 	result.Batch = projection.ctr.buf
+
+	// if projection.Children[0].OpType() == vm.DedupJoin || projection.Children[0].OpType() == vm.RightDedupJoin {
+	// 	match := false
+	// 	dedupJoin, ok := projection.Children[0].(*dedupjoin.DedupJoin)
+	// 	if ok {
+	// 		match = dedupJoin.DedupColName == "c1"
+	// 	} else {
+	// 		rightDedupJoin, ok := projection.Children[0].(*rightdedupjoin.RightDedupJoin)
+	// 		if ok {
+	// 			match = rightDedupJoin.DedupColName == "c1"
+	// 		}
+	// 	}
+	// 	if match {
+	// 		s := ""
+	// 		for i, vec := range bat.Vecs {
+	// 			s += fmt.Sprintf("vec id: %d, type: %s, length: %d, null count: %d\n", i, vec.GetType().String(), vec.Length(), vec.GetNulls().Count())
+	// 		}
+	// 		fmt.Printf("yyyyyyy result.Batch: %s\n", s)
+	// 		s = ""
+	// 		for i, vec := range projection.ctr.buf.Vecs {
+	// 			s += fmt.Sprintf("vec id: %d, type: %s, length: %d, null count: %d\n", i, vec.GetType().String(), vec.Length(), vec.GetNulls().Count())
+	// 		}
+	// 		fmt.Printf("yyyyyyy projection.ctr.buf: %s\n", s)
+	// 	}
+	// }
 	return result, nil
 }

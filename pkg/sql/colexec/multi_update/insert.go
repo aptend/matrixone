@@ -142,6 +142,11 @@ func (update *MultiUpdate) insert_table(
 	}
 	rowCount := insertBatch.Vecs[0].Length()
 	if rowCount > 0 {
+		// if updateCtx.TableDef.DbName == "db" {
+		// 	fmt.Printf("yyyyyyy insert_table: %s = \n %s\n",
+		// 		updateCtx.TableDef.Name,
+		// 		insertBatch.String())
+		// }
 		insertBatch.SetRowCount(rowCount)
 		tableType := update.ctr.updateCtxInfos[updateCtx.TableDef.Name].tableType
 		update.addInsertAffectRows(tableType, uint64(rowCount))
@@ -193,6 +198,11 @@ func (update *MultiUpdate) check_null_and_insert_table(
 	newRowCount := insertBatch.Vecs[0].Length()
 	if newRowCount > 0 {
 		insertBatch.SetRowCount(newRowCount)
+		// if updateCtx.TableDef.DbName == "db" {
+		// 	fmt.Printf("yyyyyyy check_null_and_insert_table: %s = \n %s\n",
+		// 		updateCtx.TableDef.Name,
+		// 		insertBatch.String())
+		// }
 		tableType := update.ctr.updateCtxInfos[updateCtx.TableDef.Name].tableType
 		update.addInsertAffectRows(tableType, uint64(newRowCount))
 		source := update.ctr.updateCtxInfos[updateCtx.TableDef.Name].Source

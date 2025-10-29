@@ -173,6 +173,14 @@ func (update *MultiUpdate) Call(proc *process.Process) (vm.CallResult, error) {
 	panic(fmt.Sprintf("unexpected multi_update.UpdateAction: %#v", update.Action))
 }
 
+func (update *MultiUpdate) checkTable(name string) bool {
+	for _, updateCtx := range update.MultiUpdateCtx {
+		if updateCtx.TableDef.Name == name {
+			return true
+		}
+	}
+	return false
+}
 func (update *MultiUpdate) update_s3(proc *process.Process, analyzer process.Analyzer) (vm.CallResult, error) {
 	start := time.Now()
 	defer func() {

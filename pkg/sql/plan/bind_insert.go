@@ -330,6 +330,69 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 
 	appendedUniqueProjs := make(map[string]*plan.Expr, len(tableDef.Indexes)/2)
 
+	// prepare base unique projections for unique indexes, even dedup is skipped for some cases, like load mode
+	for i, idxDef := range tableDef.Indexes {
+		if skipUniqueIdx[i] || !idxDef.Unique {
+			continue
+		}
+
+		// prepare two projections for the unique index: `__mo_index_idx_col` and `__mo_index_pri_col`
+		idxTableName := idxDef.IndexTableName
+		idxPriColName := idxTableName + "." + catalog.IndexTablePrimaryColName
+		idxIdxColName := idxTableName + "." + catalog.IndexTableIndexColName
+		pkPos := colName2Idx[tableDef.Name+"."+tableDef.Pkey.PkeyColName]
+
+		// __mo_index_pri_col projection for primary key
+		idxPrimaryColExpr := &plan.Expr{
+			Typ: selectNode.ProjectList[pkPos].Typ,
+			Expr: &plan.Expr_Col{
+				Col: &plan.ColRef{
+					RelPos: selectTag,
+					ColPos: pkPos,
+				},
+			},
+		}
+		appendedUniqueProjs[idxPriColName] = idxPrimaryColExpr
+
+		// __mo_index_idx_col projection for index columns
+		argsLen := len(idxDef.Parts)
+		var idxIndexColExpr *plan.Expr
+		if argsLen == 1 {
+			colFullName := tableDef.Name + "." + idxDef.Parts[0]
+			idxIndexColExpr = &plan.Expr{
+				Typ: selectNode.ProjectList[colName2Idx[colFullName]].Typ,
+				Expr: &plan.Expr_Col{
+					Col: &plan.ColRef{
+						RelPos: selectTag,
+						ColPos: colName2Idx[colFullName],
+					},
+				},
+			}
+		} else {
+			args := make([]*plan.Expr, argsLen)
+			var colPos int32
+			var ok bool
+			for k := range argsLen {
+				if colPos, ok = colName2Idx[tableDef.Name+"."+catalog.ResolveAlias(idxDef.Parts[k])]; !ok {
+					errMsg := fmt.Sprintf("bind insert err, can not find colName = %s", idxDef.Parts[k])
+					return 0, moerr.NewInternalError(builder.GetContext(), errMsg)
+				}
+				args[k] = &plan.Expr{
+					Typ: selectNode.ProjectList[colPos].Typ,
+					Expr: &plan.Expr_Col{
+						Col: &plan.ColRef{
+							RelPos: selectTag,
+							ColPos: colPos,
+						},
+					},
+				}
+			}
+
+			idxIndexColExpr, _ = BindFuncExprImplByPlanExpr(builder.GetContext(), "serial", args)
+		}
+		appendedUniqueProjs[idxIdxColName] = idxIndexColExpr
+	}
+
 	// handle primary/unique key confliction
 	if builder.canSkipDedup(tableDef) {
 		// load do not handle primary/unique key confliction
@@ -364,8 +427,7 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 		}
 
 		// dedup#1:handle pk dedup
-		doPkDedup := !skipPkDedup && pkName != catalog.FakePrimaryKeyColName
-		if doPkDedup {
+		if !skipPkDedup && pkName != catalog.FakePrimaryKeyColName {
 			builder.addNameByColRef(scanTag, tableDef)
 
 			scanNodeID := builder.appendNode(&plan.Node{
@@ -451,7 +513,6 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 		}
 
 		// dedup#2:handle unique key dedup
-		pkPos := colName2Idx[tableDef.Name+"."+tableDef.Pkey.PkeyColName]
 		for i, idxDef := range tableDef.Indexes {
 
 			// step 0: skip if necessary
@@ -481,67 +542,21 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 			skipUniqueDedupByAlterCopy := skipUniqueIdxDedup != nil && skipUniqueIdxDedup[idxDef.IndexName]
 
 			idxTableName := idxDef.IndexTableName
+			idxPriColName := idxTableName + "." + catalog.IndexTablePrimaryColName
+			idxIdxColName := idxTableName + "." + catalog.IndexTableIndexColName
 
-			// step 1: prepare two `if` projections for the unique index: `__mo_index_idx_col` and `__mo_index_pri_col`
-			// __mo_index_pri_col projection for primary key
-			idxPrimaryColExpr := &plan.Expr{
-				Typ: selectNode.ProjectList[pkPos].Typ,
-				Expr: &plan.Expr_Col{
-					Col: &plan.ColRef{
-						RelPos: selectTag,
-						ColPos: pkPos,
-					},
-				},
-			}
-			// if alter copy requires skip unique index dedup, we don't need to create the if expression for the primary key
+			// if update on duplicate key is disabled, we don't need to create the if expression for the primary key
 			// insert all data is ok
-			// also, if pk dedup is disabled, we don't need to create the if expression for the primary key
-			if !skipUniqueDedupByAlterCopy && doPkDedup {
-				idxPrimaryColExpr = createIfExpr(idxPrimaryColExpr)
+			if !skipUniqueDedupByAlterCopy && onDupAction == plan.Node_UPDATE {
+				idxPrimaryColExpr := createIfExpr(appendedUniqueProjs[idxPriColName])
+				appendedUniqueProjs[idxPriColName] = idxPrimaryColExpr
 			}
-			appendedUniqueProjs[idxTableName+"."+catalog.IndexTablePrimaryColName] = idxPrimaryColExpr
 
 			// __mo_index_idx_col projection for index columns
-			argsLen := len(idxDef.Parts)
-			var idxIndexColExpr *plan.Expr
-			if argsLen == 1 {
-				colFullName := tableDef.Name + "." + idxDef.Parts[0]
-				idxIndexColExpr = &plan.Expr{
-					Typ: selectNode.ProjectList[colName2Idx[colFullName]].Typ,
-					Expr: &plan.Expr_Col{
-						Col: &plan.ColRef{
-							RelPos: selectTag,
-							ColPos: colName2Idx[colFullName],
-						},
-					},
-				}
-			} else {
-				args := make([]*plan.Expr, argsLen)
-				var colPos int32
-				var ok bool
-				for k := range argsLen {
-					if colPos, ok = colName2Idx[tableDef.Name+"."+catalog.ResolveAlias(idxDef.Parts[k])]; !ok {
-						errMsg := fmt.Sprintf("bind insert err, can not find colName = %s", idxDef.Parts[k])
-						return 0, moerr.NewInternalError(builder.GetContext(), errMsg)
-					}
-					args[k] = &plan.Expr{
-						Typ: selectNode.ProjectList[colPos].Typ,
-						Expr: &plan.Expr_Col{
-							Col: &plan.ColRef{
-								RelPos: selectTag,
-								ColPos: colPos,
-							},
-						},
-					}
-				}
-
-				idxIndexColExpr, _ = BindFuncExprImplByPlanExpr(builder.GetContext(), "serial", args)
+			if !skipUniqueDedupByAlterCopy && onDupAction == plan.Node_UPDATE {
+				idxIndexColExpr := createIfExpr(appendedUniqueProjs[idxIdxColName])
+				appendedUniqueProjs[idxIdxColName] = idxIndexColExpr
 			}
-
-			if !skipUniqueDedupByAlterCopy && doPkDedup {
-				idxIndexColExpr = createIfExpr(idxIndexColExpr)
-			}
-			appendedUniqueProjs[idxTableName+"."+catalog.IndexTableIndexColName] = idxIndexColExpr
 
 			if skipUniqueDedupByAlterCopy {
 				continue
@@ -615,6 +630,10 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 				DedupColName:      dedupColName,
 				DedupColTypes:     dedupColTypes,
 			}, bindCtx)
+
+			// if tableDef.DbName == "db" {
+			// 	logutil.Info("yyyyy idxIndexColExpr", zap.Any("dedup action", onDupAction), zap.Any("dedup col name", dedupColName), zap.Any("join cond", joinCond.String()))
+			// }
 		}
 	}
 
@@ -701,16 +720,24 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 				return BindFuncExprImplByPlanExpr(builder.GetContext(), "serial_full", args)
 			}
 
-			if idxNeedUpdate[i] {
+			projForAppendAllInputRows := func() error {
+				// write all rows
 				// append __mo_index_pri_col projection for primary key
 				colName2Idx[idxTableName+"."+catalog.IndexTablePrimaryColName] = pkPos
 				// append __mo_index_idx_col projection for index columns, normal serial_full expression
 				idxExpr, err := serialIdxPkExpr(idxDef)
 				if err != nil {
-					return 0, err
+					return err
 				}
 				colName2Idx[idxTableName+"."+catalog.IndexTableIndexColName] = int32(len(newProjList))
 				newProjList = append(newProjList, idxExpr)
+				return nil
+			}
+
+			if idxNeedUpdate[i] {
+				if err := projForAppendAllInputRows(); err != nil {
+					return 0, err
+				}
 
 				/*
 					we have a update clause to change this column, so we need to delete the row from the index table
@@ -757,6 +784,10 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 				delIdxExpr, _ := BindFuncExprImplByPlanExpr(builder.GetContext(), "serial_full", delArgs)
 				delColName2Idx[idxTableName+"."+catalog.IndexTableIndexColName] = [2]int32{finalProjTag, int32(len(newProjList))}
 				newProjList = append(newProjList, delIdxExpr)
+			} else if onDupAction != plan.Node_UPDATE {
+				if err := projForAppendAllInputRows(); err != nil {
+					return 0, err
+				}
 			} else {
 				// the secondary index columns are not updated, so we need to append the brand new rows into the index table without deleting any rows.
 				idxPrimaryColExpr := &plan.Expr{

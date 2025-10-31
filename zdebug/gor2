@@ -1,0 +1,73 @@
+goroutine 29217 [select, 1 minutes]:
+github.com/mdlayher/socket.rwT[...].func2()
+	/root/go/pkg/mod/github.com/mdlayher/socket@v0.5.1/conn.go:778 +0xb5
+created by github.com/mdlayher/socket.rwT[...] in goroutine 177
+	/root/go/pkg/mod/github.com/mdlayher/socket@v0.5.1/conn.go:775 +0x532
+
+goroutine 17476 [select, 4 minutes]:
+github.com/matrixorigin/matrixone/pkg/vm/message.(*MessageReceiver).ReceiveMessage(0xc023d66a48, 0x1, {0x6016ef0, 0xc024fb5130})
+	/root/matrixone/pkg/vm/message/message.go:239 +0x29e
+github.com/matrixorigin/matrixone/pkg/vm/message.ReceiveJoinMap(0x2, 0x1, 0xffffffff, 0xc01d3a5320, {0x6016ef0, 0xc024fb5130})
+	/root/matrixone/pkg/vm/message/joinMapMsg.go:261 +0xfc
+github.com/matrixorigin/matrixone/pkg/sql/colexec/rightdedupjoin.(*RightDedupJoin).build(0xc02367ef00, {0x60ce940, 0xc024e53b30}, 0xc089423140)
+	/root/matrixone/pkg/sql/colexec/rightdedupjoin/join.go:132 +0x105
+github.com/matrixorigin/matrixone/pkg/sql/colexec/rightdedupjoin.(*RightDedupJoin).Call(0xc02367ef00, 0xc089423140)
+	/root/matrixone/pkg/sql/colexec/rightdedupjoin/join.go:88 +0xd3
+github.com/matrixorigin/matrixone/pkg/vm.Exec({0x607b550, 0xc02367ef00}, 0xc089423140)
+	/root/matrixone/pkg/vm/types.go:514 +0xe3
+github.com/matrixorigin/matrixone/pkg/vm.ChildrenCall({0x607b550, 0xc02367ef00}, 0xc089423140, {0x60ce940, 0xc024e53b80})
+	/root/matrixone/pkg/vm/types.go:525 +0x59
+github.com/matrixorigin/matrixone/pkg/sql/colexec/rightdedupjoin.(*RightDedupJoin).Call(0xc02367f2c0, 0xc089423140)
+	/root/matrixone/pkg/sql/colexec/rightdedupjoin/join.go:96 +0x91
+github.com/matrixorigin/matrixone/pkg/vm.Exec({0x607b550, 0xc02367f2c0}, 0xc089423140)
+	/root/matrixone/pkg/vm/types.go:514 +0xe3
+github.com/matrixorigin/matrixone/pkg/vm.ChildrenCall({0x607b550, 0xc02367f2c0}, 0xc089423140, {0x60ce940, 0xc024e53bd0})
+	/root/matrixone/pkg/vm/types.go:525 +0x59
+github.com/matrixorigin/matrixone/pkg/sql/colexec/projection.(*Projection).Call(0xc062ca6e60, 0xc089423140)
+	/root/matrixone/pkg/sql/colexec/projection/projection.go:62 +0x54
+github.com/matrixorigin/matrixone/pkg/vm.Exec({0x607ad00, 0xc062ca6e60}, 0xc089423140)
+	/root/matrixone/pkg/vm/types.go:514 +0xe3
+github.com/matrixorigin/matrixone/pkg/vm.ChildrenCall({0x607ad00, 0xc062ca6e60}, 0xc089423140, {0x60ce940, 0xc024e53c20})
+	/root/matrixone/pkg/vm/types.go:525 +0x59
+github.com/matrixorigin/matrixone/pkg/sql/colexec/multi_update.(*MultiUpdate).getInput(0xc0176fd2c0, 0xc0332b8fd0?, {0x60ce940?, 0xc024e53c20?})
+	/root/matrixone/pkg/sql/colexec/multi_update/multi_update.go:456 +0x55
+github.com/matrixorigin/matrixone/pkg/sql/colexec/multi_update.(*MultiUpdate).update_s3(0xc0176fd2c0, 0xc089423140, {0x60ce940, 0xc024e53c20})
+	/root/matrixone/pkg/sql/colexec/multi_update/multi_update.go:192 +0x117
+github.com/matrixorigin/matrixone/pkg/sql/colexec/multi_update.(*MultiUpdate).Call(0xc0176fd2c0, 0xc089423140)
+	/root/matrixone/pkg/sql/colexec/multi_update/multi_update.go:165 +0x13c
+github.com/matrixorigin/matrixone/pkg/vm.Exec({0x607b630, 0xc0176fd2c0}, 0xc089423140)
+	/root/matrixone/pkg/vm/types.go:514 +0xe3
+github.com/matrixorigin/matrixone/pkg/vm.ChildrenCall({0x607b630, 0xc0176fd2c0}, 0xc089423140, {0x60ce940, 0xc024e53c70})
+	/root/matrixone/pkg/vm/types.go:525 +0x59
+github.com/matrixorigin/matrixone/pkg/sql/colexec/multi_update.(*MultiUpdate).updateFlushS3Info(0xc01cc77540, 0xc089423140, {0x60ce940, 0xc024e53c70})
+	/root/matrixone/pkg/sql/colexec/multi_update/multi_update.go:277 +0x9e
+github.com/matrixorigin/matrixone/pkg/sql/colexec/multi_update.(*MultiUpdate).Call(0xc01cc77540, 0xc089423140)
+	/root/matrixone/pkg/sql/colexec/multi_update/multi_update.go:169 +0xe9
+github.com/matrixorigin/matrixone/pkg/vm.Exec({0x607b630, 0xc01cc77540}, 0xc089423140)
+	/root/matrixone/pkg/vm/types.go:514 +0xe3
+github.com/matrixorigin/matrixone/pkg/vm/pipeline.(*Pipeline).Run(0xc023d67a78, 0xc089423140)
+	/root/matrixone/pkg/vm/pipeline/pipeline.go:71 +0xfe
+github.com/matrixorigin/matrixone/pkg/vm/pipeline.(*Pipeline).RunWithReader(0xc023d67a78, {0x6042c08, 0xc024e586e0}, 0x0, 0xc089423140)
+	/root/matrixone/pkg/vm/pipeline/pipeline.go:59 +0xce
+github.com/matrixorigin/matrixone/pkg/sql/compile.(*Scope).Run(0xc024283e00, 0xc06d152540)
+	/root/matrixone/pkg/sql/compile/scope.go:198 +0x417
+github.com/matrixorigin/matrixone/pkg/sql/compile.(*Scope).ParallelRun(0xc024283e00, 0xc06d152540)
+	/root/matrixone/pkg/sql/compile/scope.go:489 +0x165
+github.com/matrixorigin/matrixone/pkg/sql/compile.(*Scope).MergeRun(0xc024283e00, 0xc06d152540)
+	/root/matrixone/pkg/sql/compile/scope.go:342 +0x425
+github.com/matrixorigin/matrixone/pkg/sql/compile.(*Scope).RemoteRun(0xc024283e00, 0xc06d152540)
+	/root/matrixone/pkg/sql/compile/scope.go:394 +0x516
+github.com/matrixorigin/matrixone/pkg/sql/compile.(*Compile).run(0xc06d152540, 0xc024283e00)
+	/root/matrixone/pkg/sql/compile/compile.go:375 +0x8b
+github.com/matrixorigin/matrixone/pkg/sql/compile.(*Compile).runOnce.func2()
+	/root/matrixone/pkg/sql/compile/compile.go:539 +0x59
+github.com/panjf2000/ants/v2.(*goWorker).run.func1()
+	/root/go/pkg/mod/github.com/panjf2000/ants/v2@v2.7.4/worker.go:67 +0x8a
+created by github.com/panjf2000/ants/v2.(*goWorker).run in goroutine 2519
+	/root/go/pkg/mod/github.com/panjf2000/ants/v2@v2.7.4/worker.go:48 +0x5c
+
+goroutine 29447 [chan receive]:
+github.com/panjf2000/ants/v2.(*goWorker).run.func1()
+	/root/go/pkg/mod/github.com/panjf2000/ants/v2@v2.7.4/worker.go:63 +0x6a
+created by github.com/panjf2000/ants/v2.(*goWorker).run in goroutine 2261
+	/root/go/pkg/mod/github.com/panjf2000/ants/v2@v2.7.4/worker.go:48 +0x5c

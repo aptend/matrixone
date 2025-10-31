@@ -1,0 +1,406 @@
+
+mysql> explain verbose insert into t2 select * from t1;
++----------------------------------------------------------------------------------------------------------------------------------------------------------+
+| AP QUERY PLAN ON ONE CN(16 core)                                                                                                                         |
++----------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Multi Update[6] (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1)                                                                    |
+|   Output: #[0,0]                                                                                                                                         |
+|   Table: t2 Insert Columns: t1.id, t1.val                                                                                                                |
+|   Table: __mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe Insert Columns: t1.val, t1.id                                                            |
+|   ->  Join[5] (cost=502000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1 hashmapSize=500000.00)                                                |
+|         Output: t1.id, t1.val                                                                                                                            |
+|         Join Type: RIGHT DEDUP (FAIL)   hashOnPK                                                                                                         |
+|         Join Cond: (t1.val = #[1,0]) shuffle: range(t1.val)                                                                                              |
+|         ->  Join[3] (cost=501000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1 hashmapSize=500000.00)                                          |
+|               Output: t1.id, t1.val                                                                                                                      |
+|               Join Type: RIGHT DEDUP (FAIL)   hashOnPK                                                                                                   |
+|               Join Cond: (t1.id = t2.id) shuffle: range(t1.id)                                                                                           |
+|               ->  Lock[1] (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=63)                                                         |
+|                     Output: t1.id, t1.val                                                                                                                |
+|                     Lock level: Table level lock                                                                                                         |
+|                     ->  Table Scan[0] on db.t1 (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=63)                                    |
+|                           Output: t1.id, t1.val                                                                                                          |
+|                           Table: 't1' (0:'id', 1:'val') shuffle: range(id)                                                                               |
+|               ->  Table Scan[2] on db.t2 (cost=1000.00 outcnt=1000.00 selectivity=1.0000 dop=0 blockNum=1)                                               |
+|                     Output: t2.id                                                                                                                        |
+|                     Table: 't2' (0:'id') shuffle: range(id)                                                                                              |
+|         ->  Table Scan[4] on db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe (cost=1000.00 outcnt=1000.00 selectivity=1.0000 dop=0 blockNum=1) |
+|               Output: #[0,0]                                                                                                                             |
+|               Table: '__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe' (0:'__mo_index_idx_col') shuffle: range(__mo_index_idx_col)                |
++----------------------------------------------------------------------------------------------------------------------------------------------------------+
+24 rows in set (0.00 sec)
+
+mysql> explain phyplan verbose insert into t2 select * from t1;
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| ap query phyplan on one cn(16 core)                                                                                                                                                |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Overview:                                                                                                                                                                          |
+|       MemoryUsage:36701984B,  SpillSize:0B,  DiskI/O:4020570B,  NewWorkI/O:0B, AffectedRows: 500000                                                                                     |
+|       S3List:0, S3Head:0, S3Put:0, S3Get:0, S3Delete:0, S3DeleteMul:0, S3InputEstByRows((1000000+0)/8192):122.0703                                                                      |
+|       CPU Usage:                                                                                                                                                                        |
+|               - Total CPU Time: 310752995ns                                                                                                                                                    |
+|               - CPU Time Detail: Parse(103090)+BuildPlan(1010672)+Compile(158413)+PhyExec(431847870)+PrepareRun(4434307)-PreRunWaitLock(3359282)-PlanStatsIO(0)-IOAccess(123442075)-IOMerge(0) |
+|               - Permission Authentication Stats Array: [5 0 0 0 0 0 0 0 0 0 0]                                                                                                                 |
+| Physical Plan Deployment:                                                                                                                                                          |
+| Scope 1 (Magic: Merge, addr:127.0.0.1:18000, mcpu: 1, Receiver: [0]) PrepareTimeConsumed: 27128ns                                                                                  |
+|   Pipeline: └── multi update(idx:0, isFirst:false, isLast:true)                                                                                                                    |
+|                 └── merge(idx:6, isFirst:false, isLast:false)                                                                                                                      |
+|   PreScopes: {                                                                                                                                                                     |
+|     Scope 1 (Magic: Remote, addr:127.0.0.1:18000, mcpu: 16, Receiver: []) PrepareTimeConsumed: 384042ns                                                                            |
+|       DataSource: db.t1[id val]                                                                                                                                                    |
+|       Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                               |
+|                     └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                            |
+|                         └── right dedup join(idx:5, isFirst:true, isLast:true)                                                                                                     |
+|                             └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                      |
+|                                 └── right dedup join(idx:3, isFirst:true, isLast:true)                                                                                             |
+|                                     └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                              |
+|                                         └── projection(idx:1, isFirst:true, isLast:true)                                                                                           |
+|                                             └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                        |
+|       PreScopes: {                                                                                                                                                                 |
+|         Scope 1 (Magic: Remote, addr:127.0.0.1:18000, mcpu: 16, Receiver: []) PrepareTimeConsumed: 237767ns                                                                        |
+|           DataSource: db.t2[id]                                                                                                                                                    |
+|           Pipeline: └── shuffle build(idx:3, isFirst:false, isLast:false)                                                                                                          |
+|                         └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                          |
+|                             └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                        |
+|           PreScopes: {                                                                                                                                                             |
+|             Scope 1 (Magic: Normal, addr:, mcpu: 0, Receiver: []) PrepareTimeConsumed: 41863ns                                                                                     |
+|               PreScopes: {                                                                                                                                                         |
+|                 Scope 1 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 226ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 2 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 202ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 3 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 223ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 4 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 114ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 5 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 782ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 6 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 209ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 7 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 814ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 8 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 930ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 9 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 140ns                                                                    |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 10 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 112ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 11 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 104ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 12 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 108ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 13 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 100ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 14 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 363ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 15 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 106ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 16 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 295ns                                                                   |
+|                   DataSource: db.t2[id]                                                                                                                                            |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:2, isFirst:true, isLast:true)                                                                                                |
+|               }                                                                                                                                                                    |
+|           }                                                                                                                                                                        |
+|         Scope 2 (Magic: Remote, addr:127.0.0.1:18000, mcpu: 16, Receiver: []) PrepareTimeConsumed: 226097ns                                                                        |
+|           DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                                |
+|           Pipeline: └── shuffle build(idx:5, isFirst:false, isLast:false)                                                                                                          |
+|                         └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                          |
+|                             └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                        |
+|           PreScopes: {                                                                                                                                                             |
+|             Scope 1 (Magic: Normal, addr:, mcpu: 0, Receiver: []) PrepareTimeConsumed: 32089ns                                                                                     |
+|               PreScopes: {                                                                                                                                                         |
+|                 Scope 1 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 110ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 2 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 116ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 3 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 104ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 4 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 104ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 5 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 108ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 6 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 100ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 7 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 163ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 8 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 588ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 9 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 370ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 10 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 662ns                                                                   |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 11 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 1086ns                                                                  |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 12 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 162ns                                                                   |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 13 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 159ns                                                                   |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 14 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 226ns                                                                   |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 15 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 30ns                                                                    |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|                 Scope 16 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 308ns                                                                   |
+|                   DataSource: db.__mo_index_unique_019a344f-31d8-7613-b209-5710a63385fe[__mo_index_idx_col]                                                                        |
+|                   Pipeline: └── shuffle build(idx:0, isFirst:false, isLast:false)                                                                                                  |
+|                                 └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                                  |
+|                                     └── tablescan(idx:4, isFirst:true, isLast:true)                                                                                                |
+|               }                                                                                                                                                                    |
+|           }                                                                                                                                                                        |
+|         Scope 3 (Magic: Normal, addr:, mcpu: 0, Receiver: []) PrepareTimeConsumed: 40367ns                                                                                         |
+|           PreScopes: {                                                                                                                                                             |
+|             Scope 1 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 271ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 2 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 537ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 3 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 900ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 4 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 200ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 5 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 429ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 6 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 177ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 7 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 655ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 8 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 239ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 9 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 190ns                                                                        |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 10 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 476ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 11 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 286ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 12 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 363ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 13 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 262ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 14 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 405ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 15 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 180ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|             Scope 16 (Magic: Normal, addr:127.0.0.1:18000, mcpu: 1, Receiver: []) PrepareTimeConsumed: 175ns                                                                       |
+|               DataSource: db.t1[id val]                                                                                                                                            |
+|               Pipeline: └── connect(idx:6, isFirst:false, isLast:false) to MergeReceiver [0]                                                                                       |
+|                             └── multi update(idx:6, isFirst:true, isLast:false)                                                                                                    |
+|                                 └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                           |
+|                                     └── shuffleV2(idx:5, isFirst:false, isLast:false)                                                                                              |
+|                                         └── right dedup join(idx:0, isFirst:false, isLast:false)                                                                                   |
+|                                             └── shuffleV2(idx:3, isFirst:false, isLast:false)                                                                                      |
+|                                                 └── projection(idx:1, isFirst:true, isLast:true)                                                                                   |
+|                                                     └── tablescan(idx:0, isFirst:true, isLast:true)                                                                                |
+|           }                                                                                                                                                                        |
+|       }                                                                                                                                                                            |
+|   }                                                                                                                                                                                |
++------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+368 rows in set (0.28 sec)

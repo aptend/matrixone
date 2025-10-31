@@ -24,6 +24,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
+	"go.uber.org/zap"
 )
 
 const messageTimeout = 300 * time.Second
@@ -172,9 +173,14 @@ func NewMessageReceiver(tags []int32, addr MessageAddress, mb *MessageBoard) *Me
 	}
 }
 
-func SendMessage(m Message, mb *MessageBoard) {
+func SendMessage(m Message, mb *MessageBoard, other ...int) {
 	if m.GetReceiverAddr().CnAddr == CURRENTCN { // message for current CN
 		mb.rwMutex.Lock()
+		if len(other) > 0 {
+			logutil.Info("yyyyyyy SendMessage",
+				zap.Int("waiters len", len(mb.waiters)),
+				zap.Any("debug string", m.DebugString()))
+		}
 		mb.messages = append(mb.messages, &m)
 		if m.NeedBlock() {
 			// broadcast for block message

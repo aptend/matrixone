@@ -1,0 +1,32 @@
+mysql> explain verbose insert into t2 select * from t1;
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| AP QUERY PLAN ON ONE CN(16 core)                                                                                                                                            |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Multi Update[7] (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1)                                                                                       |
+|   Output: #[0,0]                                                                                                                                                            |
+|   Table: t2 Insert Columns: #[0,0], #[0,1], #[0,2]                                                                                                                          |
+|   Table: __mo_index_unique_019a346d-bd5f-770c-85d8-34d358d016fc Insert Columns: #[0,4], #[0,3]                                                                              |
+|   ->  Project[6] (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1)                                                                                      |
+|         Output: t1.a, t1.b, t1.c, if((t2.a IS NULL), t1.a, (null)), if((t2.a IS NULL), t1.b, (null))                                                                        |
+|         ->  Join[5] (cost=502000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1 hashmapSize=500000.00)                                                             |
+|               Output: t1.a, t1.b, t1.c, t2.a                                                                                                                                |
+|               Join Type: RIGHT DEDUP (FAIL)   hashOnPK                                                                                                                      |
+|               Join Cond: (if((t2.a IS NULL), t1.b, (null)) = #[1,0])                                                                                                        |
+|               ->  Join[3] (cost=501000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=1 hashmapSize=500000.00)                                                       |
+|                     Output: t1.a, t1.b, t1.c, t2.a                                                                                                                          |
+|                     Join Type: RIGHT DEDUP (FAIL)   hashOnPK                                                                                                                |
+|                     Join Cond: (t1.a = t2.a) shuffle: range(t1.a)                                                                                                           |
+|                     ->  Lock[1] (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=63)                                                                      |
+|                           Output: t1.a, t1.b, t1.c                                                                                                                          |
+|                           Lock level: Table level lock                                                                                                                      |
+|                           ->  Table Scan[0] on db.t1 [ForceOneCN] (cost=500000.00 outcnt=500000.00 selectivity=1.0000 dop=0 blockNum=63)                                    |
+|                                 Output: t1.a, t1.b, t1.c                                                                                                                    |
+|                                 Table: 't1' (0:'a', 1:'b', 2:'c') shuffle: range(a)                                                                                         |
+|                     ->  Table Scan[2] on db.t2 [ForceOneCN] (cost=1000.00 outcnt=1000.00 selectivity=1.0000 dop=0 blockNum=1)                                               |
+|                           Output: t2.a                                                                                                                                      |
+|                           Table: 't2' (0:'a') shuffle: range(a)                                                                                                             |
+|               ->  Table Scan[4] on db.__mo_index_unique_019a346d-bd5f-770c-85d8-34d358d016fc [ForceOneCN] (cost=1000.00 outcnt=1000.00 selectivity=1.0000 dop=0 blockNum=1) |
+|                     Output: #[0,0]                                                                                                                                          |
+|                     Table: '__mo_index_unique_019a346d-bd5f-770c-85d8-34d358d016fc' (0:'__mo_index_idx_col') shuffle: hash(__mo_index_idx_col)                              |
++-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+26 rows in set (0.00 sec)

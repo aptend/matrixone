@@ -24,6 +24,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/defines"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/perfcounter"
 	"github.com/matrixorigin/matrixone/pkg/sql/parsers/tree"
@@ -172,11 +173,19 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 	}
 
 	var isExplainPhyPlan = false
+	var isExplainAnalyze = false
 	var option *ExplainOption
 	if explainStmt, ok := c.stmt.(*tree.ExplainPhyPlan); ok {
 		isExplainPhyPlan = true
 		option = getExplainOption(explainStmt.Options)
+	} else if explainStmt, ok := c.stmt.(*tree.ExplainAnalyze); ok {
+		isExplainAnalyze = true
+		option = getExplainOption(explainStmt.Options)
 	}
+	logutil.Debug("yyyyyy isExplainPhyPlan",
+		zap.Any("isExplainPhyPlan", isExplainPhyPlan),
+		zap.Any("isExplainAnalyze", isExplainAnalyze),
+	)
 
 	defer func() {
 		// if a rerun occurs, it differs from the original c, so we need to release it.
@@ -276,6 +285,53 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 					err = moerr.NewCannotCommitOrphan(execTopContext)
 				}
 			}
+			// For explain phyplan, generate plan info even on error and log it
+			// if isExplainPhyPlan {
+			// 	c.AnalyzeExecPlan(runC, queryResult, stats, isExplainPhyPlan, option)
+			// 	if runC.anal != nil && runC.anal.explainPhyBuffer != nil {
+			// 		getLogger(c.proc.GetService()).Info("explain phyplan on error",
+			// 			zap.String("sql", c.sql),
+			// 			zap.Error(err),
+			// 		)
+			// 		fmt.Printf("\n========== EXPLAIN PHYPLAN (ERROR) ==========\n")
+			// 		fmt.Printf("SQL: %s\n", c.sql)
+			// 		fmt.Printf("Error: %v\n", err)
+			// 		fmt.Printf("Physical Plan:\n%s", runC.anal.explainPhyBuffer.String())
+			// 		fmt.Printf("=============================================\n\n")
+			// 	}
+			// }
+			// // For explain analyze, generate plan info even on error and log it
+			// if isExplainAnalyze {
+			// 	if c.pn != nil && c.pn.GetQuery() != nil {
+			// 		getLogger(c.proc.GetService()).Info("explain analyze on error",
+			// 			zap.String("sql", c.sql),
+			// 			zap.Error(err),
+			// 		)
+			// 		explainQuery := explain.NewExplainQueryImpl(c.pn.GetQuery())
+			// 		buffer := explain.NewExplainDataBuffer()
+			// 		var explainOptions *explain.ExplainOptions
+			// 		if option != nil {
+			// 			explainOptions = &explain.ExplainOptions{
+			// 				Verbose: option.Verbose,
+			// 				Analyze: option.Analyze,
+			// 			}
+			// 		} else {
+			// 			explainOptions = &explain.ExplainOptions{
+			// 				Analyze: true,
+			// 			}
+			// 		}
+			// 		if explainErr := explainQuery.ExplainPlan(execTopContext, buffer, explainOptions); explainErr == nil {
+			// 			fmt.Printf("\n========== EXPLAIN ANALYZE (ERROR) ==========\n")
+			// 			fmt.Printf("SQL: %s\n", c.sql)
+			// 			fmt.Printf("Error: %v\n", err)
+			// 			fmt.Printf("Query Plan:\n")
+			// 			for _, line := range buffer.Lines {
+			// 				fmt.Printf("%s\n", line)
+			// 			}
+			// 			fmt.Printf("=============================================\n\n")
+			// 		}
+			// 	}
+			// }
 			return nil, err
 		}
 

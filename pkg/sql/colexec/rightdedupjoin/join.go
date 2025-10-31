@@ -26,11 +26,13 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
 	"github.com/matrixorigin/matrixone/pkg/vm"
 	"github.com/matrixorigin/matrixone/pkg/vm/message"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 const opName = "right_dedup_join"
@@ -129,7 +131,25 @@ func (rightDedupJoin *RightDedupJoin) build(analyzer process.Analyzer, proc *pro
 	ctr := &rightDedupJoin.ctr
 	start := time.Now()
 	defer analyzer.WaitStop(start)
+	if rightDedupJoin.DedupColName == "a" || rightDedupJoin.DedupColName == "b" {
+		logutil.Info("yyyyyyy begin  RightDedupJoin try receive joinmap",
+			zap.Int32("joinMapTag", rightDedupJoin.JoinMapTag),
+			zap.Bool("isShuffle", rightDedupJoin.IsShuffle),
+			zap.Int32("shuffleIdx", rightDedupJoin.ShuffleIdx),
+			zap.String("dedupColName", rightDedupJoin.DedupColName),
+			zap.Int("dedupColTypesLen", len(rightDedupJoin.DedupColTypes)),
+			zap.Int32("operatorIdx", int32(rightDedupJoin.GetIdx())))
+	}
 	ctr.mp, err = message.ReceiveJoinMap(rightDedupJoin.JoinMapTag, rightDedupJoin.IsShuffle, rightDedupJoin.ShuffleIdx, proc.GetMessageBoard(), proc.Ctx)
+	if rightDedupJoin.DedupColName == "a" || rightDedupJoin.DedupColName == "b" {
+		logutil.Info("yyyyyyy end   RightDedupJoin receive joinmap",
+			zap.Int32("joinMapTag", rightDedupJoin.JoinMapTag),
+			zap.Bool("isShuffle", rightDedupJoin.IsShuffle),
+			zap.Int32("shuffleIdx", rightDedupJoin.ShuffleIdx),
+			zap.String("dedupColName", rightDedupJoin.DedupColName),
+			zap.Int("dedupColTypesLen", len(rightDedupJoin.DedupColTypes)),
+			zap.Int32("operatorIdx", int32(rightDedupJoin.GetIdx())))
+	}
 	if err != nil {
 		return
 	}
@@ -263,7 +283,16 @@ func (ctr *container) probe(bat *batch.Batch, ap *RightDedupJoin, proc *process.
 	result.Batch.SetRowCount(count)
 
 	for i, rp := range ap.Result {
-		result.Batch.Vecs[i] = bat.Vecs[rp.Pos]
+		if rp.Rel == 0 {
+			result.Batch.Vecs[i] = bat.Vecs[rp.Pos]
+		} else {
+			nullvec := vector.NewVec(ap.RightTypes[rp.Pos])
+			if err := vector.AppendMultiFixed(nullvec, 0, true, bat.RowCount(), proc.Mp()); err != nil {
+				return err
+			}
+			result.Batch.Vecs[i] = nullvec
+		}
+
 	}
 
 	return nil

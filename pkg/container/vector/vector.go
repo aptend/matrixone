@@ -2202,8 +2202,11 @@ func (v *Vector) UnionOne(w *Vector, sel int64, mp *mpool.MPool) error {
 
 	if v.GetType().IsVarlen() {
 		var vs, ws []types.Varlena
+		// Ensure col.Cap is up-to-date before getting slice
+		v.setupFromData()
 		ToSliceNoTypeCheck(v, &vs)
 		ToSliceNoTypeCheck(w, &ws)
+
 		err := BuildVarlenaFromVarlena(v, &vs[oldLen], &ws[sel], &w.area, mp)
 		if err != nil {
 			return err

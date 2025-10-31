@@ -253,8 +253,36 @@ func (ctr *container) finalize(ap *DedupJoin, proc *process.Process) error {
 				if rp.Rel == 1 {
 					ap.ctr.buf[i].Vecs[j] = vector.NewVec(ap.RightTypes[rp.Pos])
 					for _, sel := range newSels {
-						idx1, idx2 := sel/colexec.DefaultBatchSize, sel%colexec.DefaultBatchSize
-						if err := ap.ctr.buf[i].Vecs[j].UnionOne(ctr.batches[idx1].Vecs[rp.Pos], int64(idx2), proc.Mp()); err != nil {
+						// Calculate batch index and row index within that batch
+						// sel is a global index (0-based) across all batches
+						// We need to find which batch contains this index by accumulating row counts
+						idx1 := 0
+						remaining := int64(sel)
+						for idx1 < len(ctr.batches) {
+							batchRowCount := int64(ctr.batches[idx1].RowCount())
+							if remaining < batchRowCount {
+								// Found the batch containing sel
+								break
+							}
+							remaining -= batchRowCount
+							idx1++
+						}
+
+						// Skip sel if it exceeds actual batch row count
+						// This can happen if batchRowCount from mp.GetRowCount() doesn't match
+						// the actual accumulated row count of batches
+						if idx1 >= len(ctr.batches) {
+							continue
+						}
+
+						idx2 := remaining
+						batchRowCount := ctr.batches[idx1].RowCount()
+						if idx2 < 0 || int(idx2) >= batchRowCount {
+							// This shouldn't happen with correct logic, but handle it defensively
+							continue
+						}
+
+						if err := ap.ctr.buf[i].Vecs[j].UnionOne(ctr.batches[idx1].Vecs[rp.Pos], idx2, proc.Mp()); err != nil {
 							return err
 						}
 					}

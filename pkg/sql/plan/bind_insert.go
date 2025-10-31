@@ -547,13 +547,13 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 
 			// if update on duplicate key is disabled, we don't need to create the if expression for the primary key
 			// insert all data is ok
-			if !skipUniqueDedupByAlterCopy && onDupAction == plan.Node_UPDATE {
+			if !skipUniqueDedupByAlterCopy /*&& onDupAction == plan.Node_UPDATE */ {
 				idxPrimaryColExpr := createIfExpr(appendedUniqueProjs[idxPriColName])
 				appendedUniqueProjs[idxPriColName] = idxPrimaryColExpr
 			}
 
 			// __mo_index_idx_col projection for index columns
-			if !skipUniqueDedupByAlterCopy && onDupAction == plan.Node_UPDATE {
+			if !skipUniqueDedupByAlterCopy /*&& onDupAction == plan.Node_UPDATE */ {
 				idxIndexColExpr := createIfExpr(appendedUniqueProjs[idxIdxColName])
 				appendedUniqueProjs[idxIdxColName] = idxIndexColExpr
 			}
@@ -631,9 +631,6 @@ func (builder *QueryBuilder) appendDedupAndMultiUpdateNodesForBindInsert(
 				DedupColTypes:     dedupColTypes,
 			}, bindCtx)
 
-			// if tableDef.DbName == "db" {
-			// 	logutil.Info("yyyyy idxIndexColExpr", zap.Any("dedup action", onDupAction), zap.Any("dedup col name", dedupColName), zap.Any("join cond", joinCond.String()))
-			// }
 		}
 	}
 

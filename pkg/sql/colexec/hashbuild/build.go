@@ -18,10 +18,12 @@ import (
 	"bytes"
 
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
 	"github.com/matrixorigin/matrixone/pkg/vm"
 	"github.com/matrixorigin/matrixone/pkg/vm/message"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 const opName = "hash_build"
@@ -87,7 +89,17 @@ func (hashBuild *HashBuild) Call(proc *process.Process) (vm.CallResult, error) {
 			if ap.JoinMapTag <= 0 {
 				panic("wrong joinmap message tag!")
 			}
-			message.SendMessage(message.JoinMapMsg{JoinMapPtr: jm, Tag: ap.JoinMapTag}, proc.GetMessageBoard())
+			if ap.DedupColName == "a" || ap.DedupColName == "b" {
+				logutil.Info("yyyyyyy HashBuild joinmap tag",
+					zap.Int32("joinmap tag", ap.JoinMapTag),
+					zap.String("dedup col name", ap.DedupColName),
+					zap.Int("dedupColTypesLen", len(hashBuild.DedupColTypes)),
+					zap.Int("operator index", hashBuild.GetIdx()),
+					zap.Any("state", ctr.state))
+				message.SendMessage(message.JoinMapMsg{JoinMapPtr: jm, Tag: ap.JoinMapTag}, proc.GetMessageBoard(), 1)
+			} else {
+				message.SendMessage(message.JoinMapMsg{JoinMapPtr: jm, Tag: ap.JoinMapTag}, proc.GetMessageBoard())
+			}
 			ctr.state = SendSucceed
 
 		case SendSucceed:

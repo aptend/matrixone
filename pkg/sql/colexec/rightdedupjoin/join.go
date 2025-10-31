@@ -26,11 +26,13 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
 	"github.com/matrixorigin/matrixone/pkg/vm"
 	"github.com/matrixorigin/matrixone/pkg/vm/message"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 const opName = "right_dedup_join"
@@ -129,7 +131,25 @@ func (rightDedupJoin *RightDedupJoin) build(analyzer process.Analyzer, proc *pro
 	ctr := &rightDedupJoin.ctr
 	start := time.Now()
 	defer analyzer.WaitStop(start)
+	if rightDedupJoin.DedupColName == "a" || rightDedupJoin.DedupColName == "b" {
+		logutil.Info("yyyyyyy begin  RightDedupJoin try receive joinmap",
+			zap.Int32("joinMapTag", rightDedupJoin.JoinMapTag),
+			zap.Bool("isShuffle", rightDedupJoin.IsShuffle),
+			zap.Int32("shuffleIdx", rightDedupJoin.ShuffleIdx),
+			zap.String("dedupColName", rightDedupJoin.DedupColName),
+			zap.Int("dedupColTypesLen", len(rightDedupJoin.DedupColTypes)),
+			zap.Int32("operatorIdx", int32(rightDedupJoin.GetIdx())))
+	}
 	ctr.mp, err = message.ReceiveJoinMap(rightDedupJoin.JoinMapTag, rightDedupJoin.IsShuffle, rightDedupJoin.ShuffleIdx, proc.GetMessageBoard(), proc.Ctx)
+	if rightDedupJoin.DedupColName == "a" || rightDedupJoin.DedupColName == "b" {
+		logutil.Info("yyyyyyy end   RightDedupJoin receive joinmap",
+			zap.Int32("joinMapTag", rightDedupJoin.JoinMapTag),
+			zap.Bool("isShuffle", rightDedupJoin.IsShuffle),
+			zap.Int32("shuffleIdx", rightDedupJoin.ShuffleIdx),
+			zap.String("dedupColName", rightDedupJoin.DedupColName),
+			zap.Int("dedupColTypesLen", len(rightDedupJoin.DedupColTypes)),
+			zap.Int32("operatorIdx", int32(rightDedupJoin.GetIdx())))
+	}
 	if err != nil {
 		return
 	}

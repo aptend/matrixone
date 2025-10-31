@@ -17,9 +17,11 @@ package shufflebuild
 import (
 	"bytes"
 
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/vm"
 	"github.com/matrixorigin/matrixone/pkg/vm/message"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 const opName = "shuffle_build"
@@ -93,7 +95,18 @@ func (shuffleBuild *ShuffleBuild) Call(proc *process.Process) (vm.CallResult, er
 				}
 				jm.IncRef(1)
 			}
-			message.SendMessage(message.JoinMapMsg{JoinMapPtr: jm, IsShuffle: true, ShuffleIdx: ap.ShuffleIdx, Tag: ap.JoinMapTag}, proc.GetMessageBoard())
+			if ap.DedupColName == "a" || ap.DedupColName == "b" {
+				logutil.Info("yyyyyyy ShuffleBuild send tag",
+					zap.Int32("joinmap tag", ap.JoinMapTag),
+					zap.Int32("shuffleIdx", ap.ShuffleIdx),
+					zap.String("dedup col name", ap.DedupColName),
+					zap.Int("dedupColTypesLen", len(ap.DedupColTypes)),
+					zap.Int("operator index", ap.GetIdx()),
+					zap.Any("state", ctr.state))
+				message.SendMessage(message.JoinMapMsg{JoinMapPtr: jm, IsShuffle: true, ShuffleIdx: ap.ShuffleIdx, Tag: ap.JoinMapTag}, proc.GetMessageBoard(), 1)
+			} else {
+				message.SendMessage(message.JoinMapMsg{JoinMapPtr: jm, IsShuffle: true, ShuffleIdx: ap.ShuffleIdx, Tag: ap.JoinMapTag}, proc.GetMessageBoard())
+			}
 			ctr.state = SendSucceed
 
 		case SendSucceed:

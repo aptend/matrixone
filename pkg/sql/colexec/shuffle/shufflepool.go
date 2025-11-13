@@ -147,12 +147,23 @@ func (sp *ShufflePool) GetFullBatch(proc *process.Process) *batch.Batch {
 
 func (sp *ShufflePool) putBatchIntoShuffledPoolsBySels(srcBatch *batch.Batch, sels [][]int32, proc *process.Process) error {
 	var err error
+	// Check if this is TPCH query for debug logging
+	dbName := ""
+	if proc != nil && proc.Base != nil {
+		dbName = proc.Base.SessionInfo.GetDatabase()
+	}
+	isTPCH := dbName == "tpch_100g"
+	
 	for i := range sp.batches {
 		currentSels := sels[i]
 		if len(currentSels) > 0 {
 			sp.locks[i].Lock()
 
-			err = sp.batches[i].Union(proc.Mp(), srcBatch, currentSels)
+			if isTPCH {
+				err = sp.batches[i].Union(proc.Mp(), srcBatch, currentSels, dbName)
+			} else {
+				err = sp.batches[i].Union(proc.Mp(), srcBatch, currentSels)
+			}
 			if err != nil {
 				sp.locks[i].Unlock()
 				return err

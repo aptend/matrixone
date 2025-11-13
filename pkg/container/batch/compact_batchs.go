@@ -19,6 +19,8 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
+	"go.uber.org/zap"
 )
 
 // simple batch slice
@@ -153,7 +155,8 @@ func (bats *CompactBatchs) Extend(mpool *mpool.MPool, inBatch *Batch) error {
 }
 
 // Union  union some data from one batch to CompactBatchs
-func (bats *CompactBatchs) Union(mpool *mpool.MPool, inBatch *Batch, sels []int32) error {
+// dbName is optional, used for debug logging (only logs when dbName is "tpch_100g")
+func (bats *CompactBatchs) Union(mpool *mpool.MPool, inBatch *Batch, sels []int32, dbName ...string) error {
 	selsLen := len(sels)
 	if selsLen == 0 {
 		return nil
@@ -164,6 +167,9 @@ func (bats *CompactBatchs) Union(mpool *mpool.MPool, inBatch *Batch, sels []int3
 	if selsLen > inBatch.RowCount() {
 		panic("sels len > inBatch.RowCount()")
 	}
+
+	// Check if this is TPCH query for debug logging
+	isTPCH := len(dbName) > 0 && dbName[0] == "tpch_100g"
 
 	if bats.Length() == 0 {
 		tmpBat := NewWithSize(len(inBatch.Vecs))
@@ -176,15 +182,45 @@ func (bats *CompactBatchs) Union(mpool *mpool.MPool, inBatch *Batch, sels []int3
 		}
 		tmpBat.rowCount = tmpBat.Vecs[0].Length()
 		bats.batchs = append(bats.batchs, tmpBat)
+		if isTPCH {
+			logutil.Debug("CompactBatchs.Union: empty batches, created new batch",
+				zap.Int("selsLen", selsLen),
+				zap.Int("inBatchRowCount", inBatch.RowCount()),
+				zap.Int("newBatchRowCount", tmpBat.rowCount),
+				zap.Int("batchMaxRow", bats.batchMaxRow))
+		}
 		return nil
 	}
 
 	batLen := bats.Length()
 	lastBat := bats.batchs[batLen-1]
+	lastBatRowCountBefore := lastBat.rowCount
+	lastBatVecLenBefore := lastBat.Vecs[0].Length()
 	firstSelsLen := bats.batchMaxRow - lastBat.rowCount
+
+	if isTPCH {
+		logutil.Debug("CompactBatchs.Union: before union",
+			zap.Int("batLen", batLen),
+			zap.Int("lastBatRowCount", lastBatRowCountBefore),
+			zap.Int("lastBatVecLen", lastBatVecLenBefore),
+			zap.Int("batchMaxRow", bats.batchMaxRow),
+			zap.Int("firstSelsLen", firstSelsLen),
+			zap.Int("selsLen", selsLen),
+			zap.Int("inBatchRowCount", inBatch.RowCount()))
+	}
+
 	if firstSelsLen > selsLen {
 		firstSelsLen = selsLen
 	}
+
+	if isTPCH && firstSelsLen <= 0 {
+		logutil.Debug("CompactBatchs.Union: WARNING firstSelsLen <= 0",
+			zap.Int("firstSelsLen", firstSelsLen),
+			zap.Int("lastBatRowCount", lastBatRowCountBefore),
+			zap.Int("lastBatVecLen", lastBatVecLenBefore),
+			zap.Int("batchMaxRow", bats.batchMaxRow))
+	}
+
 	firstSels := sels[:firstSelsLen]
 	for i := range lastBat.Vecs {
 		err := lastBat.Vecs[i].UnionInt32(inBatch.Vecs[i], firstSels, mpool)
@@ -193,6 +229,17 @@ func (bats *CompactBatchs) Union(mpool *mpool.MPool, inBatch *Batch, sels []int3
 		}
 	}
 	lastBat.rowCount = lastBat.Vecs[0].Length()
+	lastBatVecLenAfter := lastBat.Vecs[0].Length()
+
+	if isTPCH {
+		logutil.Debug("CompactBatchs.Union: after union first batch",
+			zap.Int("firstSelsLen", firstSelsLen),
+			zap.Int("lastBatRowCountBefore", lastBatRowCountBefore),
+			zap.Int("lastBatVecLenBefore", lastBatVecLenBefore),
+			zap.Int("lastBatRowCountAfter", lastBat.rowCount),
+			zap.Int("lastBatVecLenAfter", lastBatVecLenAfter),
+			zap.Int("batchMaxRow", bats.batchMaxRow))
+	}
 
 	newSels := sels[firstSelsLen:]
 	for len(newSels) > 0 {
@@ -211,6 +258,12 @@ func (bats *CompactBatchs) Union(mpool *mpool.MPool, inBatch *Batch, sels []int3
 		}
 		tmpBat.rowCount = tmpBat.Vecs[0].Length()
 		bats.batchs = append(bats.batchs, tmpBat)
+		if isTPCH {
+			logutil.Debug("CompactBatchs.Union: created new batch",
+				zap.Int("tmpSize", tmpSize),
+				zap.Int("newBatchRowCount", tmpBat.rowCount),
+				zap.Int("batchMaxRow", bats.batchMaxRow))
+		}
 		newSels = newSels[tmpSize:]
 	}
 	return nil

@@ -15,10 +15,12 @@
 package shuffleV2
 
 import (
+	"runtime"
 	"sync"
 
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"go.uber.org/zap"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
@@ -224,18 +226,73 @@ func (sp *ShufflePoolV2) putAllBatchIntoPoolByShuffleIdx(srcBatch *batch.Batch, 
 }
 
 func (sp *ShufflePoolV2) putBatchIntoShuffledPoolsBySels(srcBatch *batch.Batch, sels [][]int32, proc *process.Process) error {
+	// Check if this is TPCH query for debug logging
+	dbName := ""
+	if proc != nil && proc.Base != nil {
+		dbName = proc.Base.SessionInfo.GetDatabase()
+	}
+	isTPCH := dbName == "tpch_100g"
+
+	// Collect buckets that need to be written for logging
+	var bucketsToWrite []int
+	for i := range sp.batches {
+		if len(sels[i]) > 0 {
+			bucketsToWrite = append(bucketsToWrite, i)
+		}
+	}
+
+	// Log lock acquisition order for TPCH queries
+	if isTPCH && len(bucketsToWrite) > 0 {
+		goroutineID := getGoroutineID()
+		logutil.Debug("putBatchIntoShuffledPoolsBySels: starting lock acquisition",
+			zap.String("dbName", dbName),
+			zap.Int("goroutineID", goroutineID),
+			zap.Ints("bucketsToWrite", bucketsToWrite),
+			zap.Int("batchRowCount", srcBatch.RowCount()))
+	}
+
 	var err error
 	for i := range sp.batches {
 		currentSels := sels[i]
 		if len(currentSels) > 0 {
+			if isTPCH {
+				goroutineID := getGoroutineID()
+				logutil.Debug("putBatchIntoShuffledPoolsBySels: attempting to lock bucket",
+					zap.String("dbName", dbName),
+					zap.Int("goroutineID", goroutineID),
+					zap.Int("bucketIndex", i),
+					zap.Int("selsLen", len(currentSels)))
+			}
 			sp.batchLocks[i].Lock()
+			if isTPCH {
+				goroutineID := getGoroutineID()
+				logutil.Debug("putBatchIntoShuffledPoolsBySels: locked bucket",
+					zap.String("dbName", dbName),
+					zap.Int("goroutineID", goroutineID),
+					zap.Int("bucketIndex", i))
+			}
 			err = sp.batches[i].Union(proc.Mp(), srcBatch, currentSels)
 			if err != nil {
+				if isTPCH {
+					goroutineID := getGoroutineID()
+					logutil.Debug("putBatchIntoShuffledPoolsBySels: error, unlocking bucket",
+						zap.String("dbName", dbName),
+						zap.Int("goroutineID", goroutineID),
+						zap.Int("bucketIndex", i),
+						zap.Error(err))
+				}
 				sp.batchLocks[i].Unlock()
 				return err
 			}
 			if sp.batches[i].Length() > 1 && len(sp.batchWaiters[i]) == 0 {
 				sp.batchWaiters[i] <- true
+			}
+			if isTPCH {
+				goroutineID := getGoroutineID()
+				logutil.Debug("putBatchIntoShuffledPoolsBySels: unlocking bucket",
+					zap.String("dbName", dbName),
+					zap.Int("goroutineID", goroutineID),
+					zap.Int("bucketIndex", i))
 			}
 			sp.batchLocks[i].Unlock()
 			//sp.statsLock.Lock()
@@ -246,7 +303,37 @@ func (sp *ShufflePoolV2) putBatchIntoShuffledPoolsBySels(srcBatch *batch.Batch, 
 			//sp.statsLock.Unlock()
 		}
 	}
+
+	if isTPCH && len(bucketsToWrite) > 0 {
+		goroutineID := getGoroutineID()
+		logutil.Debug("putBatchIntoShuffledPoolsBySels: all locks released",
+			zap.String("dbName", dbName),
+			zap.Int("goroutineID", goroutineID),
+			zap.Ints("bucketsWritten", bucketsToWrite))
+	}
 	return nil
+}
+
+// getGoroutineID returns the current goroutine ID by parsing the stack trace
+// Format: "goroutine 12345 [running]:"
+func getGoroutineID() int {
+	var buf [64]byte
+	n := runtime.Stack(buf[:], false)
+	id := 0
+	// Find "goroutine " prefix
+	prefix := []byte("goroutine ")
+	prefixLen := len(prefix)
+	for i := 0; i < n-prefixLen; i++ {
+		if string(buf[i:i+prefixLen]) == "goroutine " {
+			// Parse the number after "goroutine "
+			start := i + prefixLen
+			for j := start; j < n && buf[j] >= '0' && buf[j] <= '9'; j++ {
+				id = id*10 + int(buf[j]-'0')
+			}
+			break
+		}
+	}
+	return id
 }
 
 func (sp *ShufflePoolV2) statsDirectlySentBatch(srcBatch *batch.Batch) {

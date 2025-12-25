@@ -56,7 +56,7 @@ func (db *txnDB) SetCreateEntry(e txnif.TxnEntry) (err error) {
 	if db.createEntry != nil {
 		panic("logic error")
 	}
-	if err = db.store.IncreateWriteCnt("set create entry"); err != nil {
+	if err = db.store.IncreateWriteCnt("set create entry x"); err != nil {
 		return
 	}
 	db.store.txn.GetMemo().AddCatalogChange()

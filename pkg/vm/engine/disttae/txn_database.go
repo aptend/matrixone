@@ -496,7 +496,8 @@ func (db *txnDatabase) createWithID(
 		logicalId = logicalIdFromCtx.(uint64)
 	}
 	tbl.logicalId = logicalId
-	{ // 3. Write create table batch, update tbl.rowiod
+	var compositePk []byte // Declared here to be accessible in both block 3 and block 5
+	{                      // 3. Write create table batch, update tbl.rowiod
 
 		db := tbl.db
 		if features.IsPartition(tbl.extraInfo.FeatureFlag) {
@@ -526,7 +527,7 @@ func (db *txnDatabase) createWithID(
 			return err
 		}
 
-		compositePk := bat.Vecs[catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(0)
+		compositePk = bat.Vecs[catalog.MO_TABLES_CPKEY_IDX].GetBytesAt(0)
 
 		note := noteForCreate(tbl.tableId, tbl.tableName)
 		if useAlterNote {
@@ -538,13 +539,11 @@ func (db *txnDatabase) createWithID(
 			bat.Clean(m)
 			return err
 		}
-
-		if err = db.syncLogicalIdIndexInsert(ctx, logicalId, compositePk, isUpdate); err != nil {
-			return err
-		}
 	}
 
 	{ // 4. Write create column batch
+		// NOTE: mo_columns entry must immediately follow mo_tables entry for TN's ParseEntryList to work correctly.
+		// The logical_id index entry is written after mo_columns to maintain this ordering.
 		bat, err := catalog.GenCreateColumnTuples(cols, m, packer)
 		if err != nil {
 			return err
@@ -562,7 +561,13 @@ func (db *txnDatabase) createWithID(
 		}
 	}
 
-	// 5. handle map cache
+	{ // 5. Write logical_id index entry (after mo_columns to maintain entry ordering for TN)
+		if err = db.syncLogicalIdIndexInsert(ctx, logicalId, compositePk, isUpdate); err != nil {
+			return err
+		}
+	}
+
+	// 6. handle map cache
 	key := genTableKey(accountId, name, db.databaseId, db.databaseName)
 	txn.tableOps.addCreateTable(key, txn.statementID, tbl)
 	return nil

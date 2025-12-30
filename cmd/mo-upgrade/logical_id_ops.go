@@ -52,7 +52,6 @@ func (c *upgradeContext) mergeObjects() error {
 	}
 
 	// Extract the inner SQL (remove outer SELECT and quotes)
-	mergeSQL = strings.TrimPrefix(mergeSQL, "SELECT ")
 	mergeSQL = strings.TrimSuffix(mergeSQL, ";")
 
 	fmt.Printf("  Executing merge command...\n")

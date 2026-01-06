@@ -88,9 +88,9 @@ func UnsafeSliceCastToLength[B any, A any](from []A, length int) []B {
 	// lenB := lenA / szB
 
 	// BUG: #23350
-	// if lenA%szB != 0 {
-	//	panic(fmt.Sprintf("unsafe slice cast: from length %d is not a multiple of %d", lenA, szB))
-	// }
+	if lenA%szB != 0 {
+		panic(fmt.Sprintf("unsafe slice cast: from length %d is not a multiple of %d", lenA, szB))
+	}
 
 	capB := capA / szB
 	return unsafe.Slice(

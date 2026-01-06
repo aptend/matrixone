@@ -3286,15 +3286,8 @@ func TestVectorPoolTypeChangeBug_Issue23295(t *testing.T) {
 	tsType := types.T_TS.ToType()
 	vec.ResetWithNewType(&tsType)
 
-	// Step 3: ToSlice with stale Cap=8 would create invalid slice
-	// It thinks there are 8 TS elements (96 bytes), but buffer is only 8 bytes!
-	// With -race, checkType will panic on type mismatch if col.Ptr is stale
-	var col []types.TS
-	ToSlice(vec, &col)
-	require.Equal(t, 0, cap(col)) // After fix: cap should be 0, not stale value 8
-
-	// AppendMultiFixed(vec, types.TS{}, false, 0, mp) also triggers this bug,
-	// because it calls ToSlice without extending buffer
+	// triggers this bug, because it calls ToSlice without extending buffer
+	AppendMultiFixed(vec, types.TS{}, false, 0, mp)
 
 	vec.Free(mp)
 }

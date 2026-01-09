@@ -61,12 +61,18 @@ type TxnCompilerContext struct {
 	//for support explain analyze
 	tcw     ComputationWrapper
 	execCtx *ExecCtx
-	mu      sync.Mutex
+	// cached backExec for subscription meta queries, reused within the same transaction
+	cachedBackExec BackgroundExec
+	mu             sync.Mutex
 }
 
 func (tcc *TxnCompilerContext) Close() {
 	tcc.mu.Lock()
 	defer tcc.mu.Unlock()
+	if tcc.cachedBackExec != nil {
+		tcc.cachedBackExec.Close()
+		tcc.cachedBackExec = nil
+	}
 	tcc.execCtx = nil
 	tcc.snapshot = nil
 	tcc.views = nil
@@ -972,16 +978,28 @@ func (tcc *TxnCompilerContext) GetSubscriptionMeta(dbName string, snapshot *plan
 		}
 	}
 
-	bh := tcc.execCtx.ses.GetShareTxnBackgroundExec(tempCtx, false)
-	defer bh.Close()
+	bh := tcc.getOrCreateBackExec(tempCtx)
+	bh.ClearExecResultSet()
 	return getSubscriptionMeta(tempCtx, dbName, tcc.GetSession(), txn, bh)
 }
 
 func (tcc *TxnCompilerContext) CheckSubscriptionValid(subName, accName, pubName string) error {
-	bh := tcc.execCtx.ses.GetShareTxnBackgroundExec(tcc.GetContext(), false)
-	defer bh.Close()
+	bh := tcc.getOrCreateBackExec(tcc.GetContext())
+	bh.ClearExecResultSet()
 	_, err := checkSubscriptionValidCommon(tcc.GetContext(), tcc.GetSession(), subName, accName, pubName, bh)
 	return err
+}
+
+// getOrCreateBackExec returns a cached BackgroundExec or creates a new one.
+// The cached backExec shares the same txn with the session, so snapshot updates
+// (e.g., in pessimistic transactions after lock acquisition) are automatically visible.
+func (tcc *TxnCompilerContext) getOrCreateBackExec(ctx context.Context) BackgroundExec {
+	tcc.mu.Lock()
+	defer tcc.mu.Unlock()
+	if tcc.cachedBackExec == nil {
+		tcc.cachedBackExec = tcc.execCtx.ses.GetShareTxnBackgroundExec(ctx, false)
+	}
+	return tcc.cachedBackExec
 }
 
 func (tcc *TxnCompilerContext) SetQueryingSubscription(meta *plan.SubscriptionMeta) {

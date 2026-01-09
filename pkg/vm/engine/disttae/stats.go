@@ -40,6 +40,47 @@ import (
 	"go.uber.org/zap"
 )
 
+// ```
+// Logtail 事件
+//     │
+//     ▼
+// tailC (chan, cap=10000) logtail 消费专用，最小化阻塞 logtail 消费
+//     │
+//     ▼
+// consumeWorker (1个 goroutine)
+//     │
+//     │ 判断入队条件（第一层）：
+//     │ - keyExists(): key 必须已存在
+//     │ - CkpLocation: checkpoint 时触发
+//     │ - MetaEntry: object 元数据变更时触发
+//     │
+//     ▼
+// updateC (chan, cap=3000)
+//     │
+//     ▼
+// updateWorker (16-27个 goroutine)
+//     │
+//     │ 判断执行条件（第二层）： 便于统一 debounce force/normal update request
+//     │ - shouldUpdate(): 检查 inProgress 和 MinUpdateInterval (15s)
+//     │
+//     ▼
+// doUpdate()
+//     │
+//     ├─→ 订阅表获取 PartitionState
+//     ├─→ 从 CatalogCache 获取 TableDef
+//     └─→ collectTableStats()
+//             │
+//             ▼
+//         ForeachVisibleObjects()
+//             │ 并发遍历所有**已落盘的 Object** (concurrentExecutor)
+//             │ 注意：内存中的 dirty blocks 不参与统计
+//             ▼
+//         FastLoadObjectMeta() (S3 IO)
+//             │
+//             ▼
+//         累加统计信息 (ZoneMap, NDV, RowCount 等)
+// ```
+
 const (
 	// MinExecutorConcurrency is the minimum concurrency for concurrentExecutor
 	// which handles IO-intensive tasks (reading S3 objects).
@@ -154,9 +195,6 @@ type GlobalStats struct {
 		updating map[pb.StatsInfoKey]*updateRecord
 	}
 
-	// tableLogtailCounter is the counter of the logtail entry of stats info key.
-	tableLogtailCounter map[pb.StatsInfoKey]int64
-
 	// statsInfoMap is the global stats info in engine which
 	// contains all subscribed tables stats info.
 	mu struct {
@@ -190,13 +228,12 @@ func NewGlobalStats(
 	ctx context.Context, e *Engine, keyRouter client.KeyRouter[pb.StatsInfoKey], opts ...GlobalStatsOption,
 ) *GlobalStats {
 	s := &GlobalStats{
-		ctx:                 ctx,
-		engine:              e,
-		tailC:               make(chan *logtail.TableLogtail, 10000),
-		updateC:             make(chan pb.StatsInfoKeyWithContext, 3000),
-		tableLogtailCounter: make(map[pb.StatsInfoKey]int64),
-		KeyRouter:           keyRouter,
-		queueWatcher:        newQueueWatcher(),
+		ctx:          ctx,
+		engine:       e,
+		tailC:        make(chan *logtail.TableLogtail, 10000),
+		updateC:      make(chan pb.StatsInfoKeyWithContext, 3000),
+		KeyRouter:    keyRouter,
+		queueWatcher: newQueueWatcher(),
 	}
 	s.updatingMu.updating = make(map[pb.StatsInfoKey]*updateRecord)
 	s.mu.statsInfoMap = make(map[pb.StatsInfoKey]*pb.StatsInfo)
@@ -226,14 +263,11 @@ func NewGlobalStats(
 		executorConcurrency = MaxExecutorConcurrency
 	}
 	// Calculate updateWorker concurrency: executorConcurrency / WorkerConcurrencyRatio, but minimum MinWorkerConcurrency
-	updateWorkerConcurrency := executorConcurrency / WorkerConcurrencyRatio
-	if updateWorkerConcurrency < MinWorkerConcurrency {
-		updateWorkerConcurrency = MinWorkerConcurrency
-	}
+	updateWorkerConcurrency := max(executorConcurrency/WorkerConcurrencyRatio, MinWorkerConcurrency)
 	s.concurrentExecutor = newConcurrentExecutor(executorConcurrency)
 	s.concurrentExecutor.Run(ctx)
 	go s.consumeWorker(ctx)
-	s.updateWorker(ctx, updateWorkerConcurrency) // updateWorker内部已启动goroutines，不需要再用go
+	s.spawnUpdateWorker(ctx, updateWorkerConcurrency) // updateWorker内部已启动goroutines，不需要再用go
 	go s.queueWatcher.run(ctx)
 	logutil.Info(
 		"GlobalStats-Started",
@@ -244,23 +278,12 @@ func NewGlobalStats(
 	return s
 }
 
-// shouldTrigger returns true only if key already exists in the map.
-func (gs *GlobalStats) shouldTrigger(key pb.StatsInfoKey) bool {
+// keyExists returns true only if key already exists in the map.
+func (gs *GlobalStats) keyExists(key pb.StatsInfoKey) bool {
 	gs.mu.Lock()
 	defer gs.mu.Unlock()
 	_, ok := gs.mu.statsInfoMap[key]
 	return ok
-}
-
-// checkTriggerCond checks the condition that if we should trigger the stats update.
-func (gs *GlobalStats) checkTriggerCond(key pb.StatsInfoKey, entryNum int64) bool {
-	gs.mu.Lock()
-	defer gs.mu.Unlock()
-	info, ok := gs.mu.statsInfoMap[key]
-	if ok && info != nil && info.BlockNumber*16-entryNum > 64 {
-		return false
-	}
-	return true
 }
 
 func (gs *GlobalStats) PrefetchTableMeta(ctx context.Context, key pb.StatsInfoKey) bool {
@@ -365,8 +388,8 @@ func (gs *GlobalStats) consumeWorker(ctx context.Context) {
 	}
 }
 
-func (gs *GlobalStats) updateWorker(ctx context.Context, num int) {
-	for i := 0; i < num; i++ {
+func (gs *GlobalStats) spawnUpdateWorker(ctx context.Context, num int) {
+	for range num {
 		go func() {
 			for {
 				select {
@@ -415,41 +438,29 @@ func (gs *GlobalStats) consumeLogtail(ctx context.Context, tail *logtail.TableLo
 		DbName:     tail.Table.GetDbName(),
 	}
 
-	wrapkey := pb.StatsInfoKeyWithContext{
-		Ctx: ctx,
-		Key: key,
+	hasMetaLogtailEntry := func() bool {
+		if tail.Table == nil {
+			return false
+		}
+		for i := range tail.Commands {
+			if logtailreplay.IsMetaEntry(tail.Commands[i].TableName) {
+				return true
+			}
+		}
+		return false
 	}
 
-	if len(tail.CkpLocation) > 0 {
-		if gs.shouldTrigger(key) {
-			gs.triggerUpdate(wrapkey, false)
-		}
-	} else if tail.Table != nil {
-		var triggered bool
-		for _, cmd := range tail.Commands {
-			if logtailreplay.IsMetaEntry(cmd.TableName) {
-				triggered = true
-				if gs.shouldTrigger(key) {
-					gs.triggerUpdate(wrapkey, false)
-				}
-				break
-			}
-		}
-		if _, ok := gs.tableLogtailCounter[key]; !ok {
-			gs.tableLogtailCounter[key] = 1
-		} else {
-			gs.tableLogtailCounter[key]++
-		}
-		if !triggered && gs.checkTriggerCond(key, gs.tableLogtailCounter[key]) {
-			gs.tableLogtailCounter[key] = 0
-			if gs.shouldTrigger(key) {
-				gs.triggerUpdate(wrapkey, false)
-			}
+	if len(tail.CkpLocation) > 0 || hasMetaLogtailEntry() {
+		if gs.keyExists(key) {
+			gs.triggerUpdate(pb.StatsInfoKeyWithContext{
+				Ctx: ctx,
+				Key: key,
+			}, false)
 		}
 	}
 }
 
-// shouldUpdate returns true only the stats of the key should be updated.
+// shouldUpdate implements a debounce mechanism to prevent excessive stats updates.
 func (gs *GlobalStats) shouldUpdate(key pb.StatsInfoKey) bool {
 	gs.updatingMu.Lock()
 	defer gs.updatingMu.Unlock()

@@ -120,7 +120,7 @@ func TestAssociativeLawRemapping(t *testing.T) {
 	// Connector_job table (B): small after filter
 	jobStats := plan.NewStatsInfo()
 	jobStats.TableCnt = 9
-	sharedStatsCache.SetStatsInfo(jobTableID, jobStats)
+	sharedStatsCache.Set(jobTableID, jobStats)
 
 	// Store stats cache in context so compiler context can access it
 	ctx = context.WithValue(ctx, "test_stats_cache", sharedStatsCache)

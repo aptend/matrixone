@@ -123,6 +123,33 @@ func (c *compilerContext) Stats(obj *plan.ObjectRef, snapshot *plan.Snapshot) (*
 		stats.AddBuildPlanStatsConsumption(time.Since(start))
 	}()
 
+	tableID := uint64(obj.Obj)
+
+	// Fast path: return cached result if visited within 3 seconds AND stats is valid
+	// Stats is valid if AccurateObjectNumber > 0 (meaning we have real data)
+	if w := c.GetStatsCache().Get(tableID); w.Exists() {
+		if time.Now().Unix()-w.GetLastVisit() < 3 {
+			s := w.GetStats()
+			if s != nil && s.AccurateObjectNumber > 0 {
+				return s, nil
+			}
+			// Stats is nil or empty, need to re-check
+		}
+	}
+
+	// Slow path: do heavy work
+	result, err := c.doStatsHeavyWork(obj, snapshot, tableID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Cache the result
+	c.GetStatsCache().Set(tableID, result)
+
+	return result, nil
+}
+
+func (c *compilerContext) doStatsHeavyWork(obj *plan.ObjectRef, snapshot *plan.Snapshot, tableID uint64) (*pb.StatsInfo, error) {
 	dbName := obj.GetSchemaName()
 	tableName := obj.GetObjName()
 
@@ -143,22 +170,28 @@ func (c *compilerContext) Stats(obj *plan.ObjectRef, snapshot *plan.Snapshot) (*
 	// If so, use the cached stats instead of fetching from engine
 	if _, isTestEnv := c.GetContext().Value("test_stats_cache").(*plan.StatsCache); isTestEnv {
 		tableID := table.GetTableID(ctx)
-		if statsWrapper := c.statsCache.GetStatsInfo(tableID, false); statsWrapper != nil && statsWrapper.Stats != nil {
+		if statsWrapper := c.statsCache.Get(tableID); statsWrapper.Exists() && statsWrapper.GetStats() != nil {
 			logutil.Infof("use test env cached stats for table %s (tableID=%d)", tableName, tableID)
-			return statsWrapper.Stats, nil
+			return statsWrapper.GetStats(), nil
 		}
 	}
 
+	// Check if table is empty
+	approxNumObjects := table.ApproxObjectsNum(ctx)
+	if approxNumObjects == 0 {
+		// Return nil for empty table, calcScanStats will use DefaultStats()
+		return nil, nil
+	}
+
+	// Check if update is needed
+	w := c.GetStatsCache().Get(tableID)
+	if w.Exists() && w.GetStats() != nil && !w.GetStats().NeedUpdate(int64(approxNumObjects)) {
+		return w.GetStats(), nil
+	}
+
+	// Call table.Stats() to get new data
 	newCtx := perfcounter.AttachCalcTableStatsKey(ctx)
-	statsInfo, err := table.Stats(newCtx, true)
-	if err != nil {
-		return nil, err
-	}
-	if c.statsCache == nil {
-		c.statsCache = plan.NewStatsCache()
-	}
-	c.statsCache.SetStatsInfo(table.GetTableID(ctx), statsInfo)
-	return statsInfo, nil
+	return table.Stats(newCtx, true)
 }
 
 func (c *compilerContext) GetStatsCache() *plan.StatsCache {

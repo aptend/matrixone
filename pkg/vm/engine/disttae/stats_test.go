@@ -236,6 +236,110 @@ func TestGlobalStats_ShouldUpdate(t *testing.T) {
 	})
 }
 
+// TestGlobalStats_PatchStats tests PatchStats partial update for table-level,
+// column-level stats and ShuffleRange partial updates.
+func TestGlobalStats_PatchStats(t *testing.T) {
+	defer leaktest.AfterTest(t)()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	gs := NewGlobalStats(ctx, nil, nil)
+	require.NotNil(t, gs)
+
+	key := statsinfo.StatsInfoKey{
+		DatabaseID: 100,
+		TableID:    101,
+	}
+
+	t.Run("nil_patch_no_error", func(t *testing.T) {
+		err := gs.PatchStats(key, nil)
+		assert.NoError(t, err)
+	})
+
+	t.Run("table_level_patch", func(t *testing.T) {
+		tableCnt := 1000.0
+		blockNum := int64(50)
+		objNum := int64(20)
+		err := gs.PatchStats(key, &PatchArgs{
+			TableCnt:             &tableCnt,
+			BlockNumber:          &blockNum,
+			AccurateObjectNumber: &objNum,
+		})
+		assert.NoError(t, err)
+
+		gs.mu.Lock()
+		stats := gs.mu.statsInfoMap[key]
+		gs.mu.Unlock()
+		require.NotNil(t, stats)
+		assert.Equal(t, tableCnt, stats.TableCnt)
+		assert.Equal(t, blockNum, stats.BlockNumber)
+		assert.Equal(t, objNum, stats.AccurateObjectNumber)
+	})
+
+	t.Run("column_level_patch_merge", func(t *testing.T) {
+		ndvMap := map[string]float64{"col_a": 100, "col_b": 200}
+		minValMap := map[string]float64{"col_a": 1.0, "col_b": 10.0}
+		maxValMap := map[string]float64{"col_a": 99.0, "col_b": 199.0}
+		nullCntMap := map[string]uint64{"col_a": 5, "col_b": 0}
+		sizeMap := map[string]uint64{"col_a": 8000, "col_b": 16000}
+
+		err := gs.PatchStats(key, &PatchArgs{
+			NdvMap:     ndvMap,
+			MinValMap:  minValMap,
+			MaxValMap:  maxValMap,
+			NullCntMap: nullCntMap,
+			SizeMap:    sizeMap,
+		})
+		assert.NoError(t, err)
+
+		gs.mu.Lock()
+		stats := gs.mu.statsInfoMap[key]
+		gs.mu.Unlock()
+		require.NotNil(t, stats)
+		assert.Equal(t, 100.0, stats.NdvMap["col_a"])
+		assert.Equal(t, 200.0, stats.NdvMap["col_b"])
+		assert.Equal(t, 1.0, stats.MinValMap["col_a"])
+		assert.Equal(t, 99.0, stats.MaxValMap["col_a"])
+		assert.Equal(t, uint64(5), stats.NullCntMap["col_a"])
+		assert.Equal(t, uint64(8000), stats.SizeMap["col_a"])
+	})
+
+	t.Run("shuffle_range_partial_update", func(t *testing.T) {
+		overlap := 0.8
+		uniform := 0.9
+		result := []float64{0.1, 0.2, 0.3}
+		err := gs.PatchStats(key, &PatchArgs{
+			ShuffleRangeMap: map[string]*ShuffleRangePartialUpdate{
+				"col_a": {Overlap: &overlap, Uniform: &uniform, Result: result},
+			},
+		})
+		assert.NoError(t, err)
+
+		gs.mu.Lock()
+		stats := gs.mu.statsInfoMap[key]
+		gs.mu.Unlock()
+		require.NotNil(t, stats)
+		require.NotNil(t, stats.ShuffleRangeMap["col_a"])
+		sr := stats.ShuffleRangeMap["col_a"]
+		assert.Equal(t, 0.8, sr.Overlap)
+		assert.Equal(t, 0.9, sr.Uniform)
+		assert.Equal(t, result, sr.Result)
+	})
+
+	t.Run("create_new_stats_if_not_exists", func(t *testing.T) {
+		newKey := statsinfo.StatsInfoKey{DatabaseID: 200, TableID: 201}
+		tableCnt := 500.0
+		err := gs.PatchStats(newKey, &PatchArgs{TableCnt: &tableCnt})
+		assert.NoError(t, err)
+
+		gs.mu.Lock()
+		stats := gs.mu.statsInfoMap[newKey]
+		gs.mu.Unlock()
+		require.NotNil(t, stats)
+		assert.Equal(t, 500.0, stats.TableCnt)
+	})
+}
+
 func TestQueueWatcher(t *testing.T) {
 	defer leaktest.AfterTest(t)()
 	testAdjustFn := func(qw *queueWatcher) {
@@ -1591,6 +1695,32 @@ func TestGlobalStats_ShouldEnqueue(t *testing.T) {
 
 		// Zero base: treated as small table, any change should enqueue
 		assert.True(t, gs.shouldEnqueueUpdate(key, 1, false))
+	})
+
+	t.Run("get_sampling_ratio_and_base_object_cnt", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		gs := NewGlobalStats(ctx, nil, nil)
+		assert.NotNil(t, gs)
+
+		key := statsinfo.StatsInfoKey{
+			DatabaseID: 100,
+			TableID:    101,
+		}
+
+		// Before any update: both should be 0
+		assert.Equal(t, 0.0, gs.GetSamplingRatio(key))
+		assert.Equal(t, int64(0), gs.GetBaseObjectCnt(key))
+
+		// After markUpdateComplete with updated=true
+		gs.markUpdateComplete(key, true, 500, 0.25)
+		assert.Equal(t, 0.25, gs.GetSamplingRatio(key))
+		assert.Equal(t, int64(500), gs.GetBaseObjectCnt(key))
+
+		// Another key: no record, still 0
+		key2 := statsinfo.StatsInfoKey{DatabaseID: 100, TableID: 102}
+		assert.Equal(t, 0.0, gs.GetSamplingRatio(key2))
+		assert.Equal(t, int64(0), gs.GetBaseObjectCnt(key2))
 	})
 
 	t.Run("concurrent_enqueue_checks", func(t *testing.T) {

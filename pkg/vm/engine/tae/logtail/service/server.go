@@ -638,7 +638,8 @@ func (s *LogtailServer) pullActivationPhase1(ctx context.Context, act catalogAct
 				timestamp.Timestamp{},
 				waterline,
 				allowedAccounts,
-				true, // activation: strip object meta, already in partition state
+				false, // activation: keep object meta so HandleDataObjectList GC
+				       // can clean up rows that overlap with concurrent flushes
 			)
 			mu.Lock()
 			defer mu.Unlock()
@@ -793,7 +794,7 @@ func (s *LogtailServer) sendActivation(ctx context.Context, p1 *catalogActivatio
 			phase1Ts = *p1.tails[i].Ts
 		}
 
-		phase2Tail, closeCB, err := s.pullTableLogtail(sendCtx, table, phase1Ts, targetTS, allowedAccounts, true)
+		phase2Tail, closeCB, err := s.pullTableLogtail(sendCtx, table, phase1Ts, targetTS, allowedAccounts, false)
 		if err != nil {
 			closeCallbacks(closeCB)
 			s.logger.Error("activation phase2 failed",

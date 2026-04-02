@@ -592,7 +592,7 @@ func InitTableItemWithColumns(item *TableItem, cols Columns) {
 			colDetails := make([]string, 0, len(cols))
 			for _, col := range cols {
 				colDetails = append(colDetails, fmt.Sprintf(
-					"%s(seqnum=%d,num=%d,typ=%d)", col.Name, col.Seqnum, col.Num, col.Typ.Id))
+					"%s(seqnum=%d,num=%d)", col.Name, col.Seqnum, col.Num))
 			}
 			logutil.Error("catalog-cache: DUPLICATE COLUMNS DETECTED in table definition",
 				zap.Uint32("account-id", item.AccountId),
@@ -625,6 +625,16 @@ func (cc *CatalogCache) InsertColumns(bat *batch.Batch) {
 	ParseColumnsBatchAnd(bat, func(mp map[TableItemKey]Columns) {
 		queryKey := new(TableItem)
 		for k, cols := range mp {
+			// Diagnostic: log column insertion details per table for duplication tracing.
+			ts := k.Ts.toTs()
+			logutil.Info("catalog-cache.InsertColumns",
+				zap.Uint32("account-id", k.AccountId),
+				zap.Uint64("database-id", k.DatabaseId),
+				zap.Uint64("table-id", k.Id),
+				zap.String("table-name", k.Name),
+				zap.String("ts", ts.String()),
+				zap.Int("column-count", len(cols)),
+			)
 			queryKey.Name = k.Name
 			queryKey.AccountId = k.AccountId
 			queryKey.DatabaseId = k.DatabaseId

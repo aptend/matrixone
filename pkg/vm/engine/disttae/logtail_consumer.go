@@ -743,6 +743,22 @@ func (c *PushClient) handleActivationResponse(
 ) {
 	for i := range resp.Tails {
 		tail := resp.Tails[i]
+		// Diagnostic: log per-tail entry/row details to detect if TN sends duplicate data
+		totalRows := 0
+		for j := range tail.Commands {
+			if tail.Commands[j].Bat != nil && len(tail.Commands[j].Bat.Vecs) > 0 {
+				totalRows += int(tail.Commands[j].Bat.Vecs[0].Len)
+			}
+		}
+		logutil.Info("logtail.consumer.activation.response.tail",
+			zap.Uint32("account-id", resp.AccountId),
+			zap.Uint64("seq", resp.Seq),
+			zap.Uint64("table-id", tail.Table.TbId),
+			zap.String("table-name", tail.Table.TbName),
+			zap.Int("entries", len(tail.Commands)),
+			zap.Int("total-rows", totalRows),
+			zap.String("ckp-location", tail.CkpLocation),
+		)
 		if err := updatePartitionOfPush(ctx, e, &tail, true, receiveAt, false); err != nil {
 			logutil.Error("logtail.consumer.activation.apply.tail.failed",
 				zap.Uint32("account-id", resp.AccountId),
@@ -1153,6 +1169,11 @@ func (c *PushClient) doActivateTenantCatalog(ctx context.Context, e *Engine, acc
 	c.applyCatalogCacheChange(func() {
 		fns := c.lazyCatalog.beginAccountReadyTransition(accountID)
 		delayedApplyCount = len(fns)
+		logutil.Info("logtail.consumer.activation.dca.flush",
+			zap.Uint32("account-id", accountID),
+			zap.Uint64("seq", seq),
+			zap.Int("delayed-apply-count", delayedApplyCount),
+		)
 		for _, f := range fns {
 			f()
 		}

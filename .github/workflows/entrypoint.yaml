@@ -28,35 +28,35 @@ jobs:
     name: Matrixone CI
     needs: check-pr-valid
     if: ${{ needs.check-pr-valid.outputs.pr_valid == 'true' && github.base_ref != '3.0-dev' }}
-    uses: matrixorigin/CI/.github/workflows/ci.yaml@main
+    uses: matrixorigin/CI/.github/workflows/ci.yaml@pubrepo
     secrets: inherit
 
   matrixone-upgrade-ci:
     name: Matrixone Upgrade CI
     needs: check-pr-valid
     if: ${{ needs.check-pr-valid.outputs.pr_valid == 'true' && github.base_ref != '3.0-dev' }}
-    uses: matrixorigin/CI/.github/workflows/e2e-upgrade.yaml@main
+    uses: matrixorigin/CI/.github/workflows/e2e-upgrade.yaml@pubrepo
     secrets: inherit
 
   matrixone-compose-ci:
     name: Matrixone Compose CI
     needs: check-pr-valid
     if: ${{ needs.check-pr-valid.outputs.pr_valid == 'true' && github.base_ref != '3.0-dev' }}
-    uses: matrixorigin/CI/.github/workflows/e2e-compose.yaml@main
+    uses: matrixorigin/CI/.github/workflows/e2e-compose.yaml@pubrepo
     secrets: inherit
 
   matrixone-standalone-ci:
     name: Matrixone Standlone CI
     needs: check-pr-valid
     if: ${{ needs.check-pr-valid.outputs.pr_valid == 'true' && github.base_ref != '3.0-dev' }}
-    uses: matrixorigin/CI/.github/workflows/e2e-standalone.yaml@main
+    uses: matrixorigin/CI/.github/workflows/e2e-standalone.yaml@pubrepo
     secrets: inherit
 
   matrixone-utils-ci:
     name: Matrixone Utils CI
     needs: check-pr-valid
     if: ${{ needs.check-pr-valid.outputs.pr_valid == 'true' && github.base_ref != '3.0-dev' }}
-    uses: matrixorigin/CI/.github/workflows/utils.yaml@main
+    uses: matrixorigin/CI/.github/workflows/utils.yaml@pubrepo
     secrets: inherit
 
   # ============ 3.0-dev 分支使用 @release/3.0-dev ============

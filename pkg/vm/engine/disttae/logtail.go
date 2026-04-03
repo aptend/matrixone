@@ -36,6 +36,7 @@ func consumeEntry(
 	state *logtailreplay.PartitionState,
 	e *api.Entry,
 	isSub bool,
+	skipCatalogCache bool,
 ) error {
 	// for test only.
 	if engine.skipConsume {
@@ -58,6 +59,13 @@ func consumeEntry(
 
 	// Lazy catalog CN logic is scoped only to the three catalog tables.
 	if !catalog.IsLazyCatalogTableID(e.TableId) || logtailreplay.IsMetaEntry(e.TableName) || e.EntryType == api.Entry_DataObject || e.EntryType == api.Entry_TombstoneObject {
+		return nil
+	}
+
+	// Activation response data should only populate PartitionState; the
+	// catalog cache is built later by replayCatalogCacheAt. Skip all
+	// catalog-cache operations (both global DCA and per-account DCA).
+	if skipCatalogCache {
 		return nil
 	}
 

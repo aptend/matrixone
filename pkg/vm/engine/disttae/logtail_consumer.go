@@ -759,7 +759,7 @@ func (c *PushClient) handleActivationResponse(
 			zap.Int("total-rows", totalRows),
 			zap.String("ckp-location", tail.CkpLocation),
 		)
-		if err := updatePartitionOfPush(ctx, e, &tail, true, receiveAt, false); err != nil {
+		if err := updatePartitionOfPush(ctx, e, &tail, true, receiveAt, false, true); err != nil {
 			logutil.Error("logtail.consumer.activation.apply.tail.failed",
 				zap.Uint32("account-id", resp.AccountId),
 				zap.Uint64("seq", resp.Seq),
@@ -2590,7 +2590,7 @@ func (e *Engine) consumeSubscribeResponse(
 	lazyLoad bool,
 	receiveAt time.Time) error {
 	lt := rp.GetLogtail()
-	return updatePartitionOfPush(ctx, e, &lt, lazyLoad, receiveAt, true)
+	return updatePartitionOfPush(ctx, e, &lt, lazyLoad, receiveAt, true, false)
 }
 
 func (e *Engine) consumeUpdateLogTail(
@@ -2598,7 +2598,7 @@ func (e *Engine) consumeUpdateLogTail(
 	rp logtail.TableLogtail,
 	lazyLoad bool,
 	receiveAt time.Time) error {
-	return updatePartitionOfPush(ctx, e, &rp, lazyLoad, receiveAt, false)
+	return updatePartitionOfPush(ctx, e, &rp, lazyLoad, receiveAt, false, false)
 }
 
 // updatePartitionOfPush is the partition update method of log tail push model.
@@ -2608,7 +2608,8 @@ func updatePartitionOfPush(
 	tl *logtail.TableLogtail,
 	lazyLoad bool,
 	receiveAt time.Time,
-	isSub bool) (err error) {
+	isSub bool,
+	skipCatalogCache bool) (err error) {
 	start := time.Now()
 	v2.LogTailApplyLatencyDurationHistogram.Observe(start.Sub(receiveAt).Seconds())
 	defer func() {
@@ -2667,6 +2668,7 @@ func updatePartitionOfPush(
 			state,
 			tl,
 			isSub,
+			skipCatalogCache,
 		)
 		v2.LogtailUpdatePartitonConsumeLogtailDurationHistogram.Observe(time.Since(t0).Seconds())
 
@@ -2678,7 +2680,7 @@ func updatePartitionOfPush(
 			v2.LogtailUpdatePartitonHandleCheckpointDurationHistogram.Observe(time.Since(t0).Seconds())
 		}
 		t0 = time.Now()
-		err = consumeCkpsAndLogTail(ctx, partition.TableInfo.PrimarySeqnum, e, state, tl, dbId, tblId, isSub)
+		err = consumeCkpsAndLogTail(ctx, partition.TableInfo.PrimarySeqnum, e, state, tl, dbId, tblId, isSub, skipCatalogCache)
 		v2.LogtailUpdatePartitonConsumeLogtailDurationHistogram.Observe(time.Since(t0).Seconds())
 	}
 
@@ -2730,6 +2732,7 @@ func consumeLogTail(
 	state *logtailreplay.PartitionState,
 	lt *logtail.TableLogtail,
 	isSub bool,
+	skipCatalogCache bool,
 ) error {
 	// return hackConsumeLogtail(ctx, primarySeqnum, engine, state, lt)
 	if lt.Table.DbName == "" {
@@ -2738,7 +2741,7 @@ func consumeLogTail(
 	t0 := time.Now()
 	for i := 0; i < len(lt.Commands); i++ {
 		if err := consumeEntry(ctx, primarySeqnum,
-			engine, engine.GetLatestCatalogCache(), state, &lt.Commands[i], isSub); err != nil {
+			engine, engine.GetLatestCatalogCache(), state, &lt.Commands[i], isSub, skipCatalogCache); err != nil {
 			return err
 		}
 	}
@@ -2778,6 +2781,7 @@ func consumeCkpsAndLogTail(
 	databaseId uint64,
 	tableId uint64,
 	isSub bool,
+	skipCatalogCache bool,
 ) (err error) {
 	var closeCBs []func()
 	if err = taeLogtail.ConsumeCheckpointEntries(
@@ -2797,5 +2801,5 @@ func consumeCkpsAndLogTail(
 			}
 		}
 	}()
-	return consumeLogTail(ctx, primarySeqnum, engine, state, lt, isSub)
+	return consumeLogTail(ctx, primarySeqnum, engine, state, lt, isSub, skipCatalogCache)
 }

@@ -60,7 +60,12 @@ func NewCatalog() *CatalogCache {
 func (cc *CatalogCache) UpdateDuration(start types.TS, end types.TS) {
 	cc.mu.Lock()
 	defer cc.mu.Unlock()
-	cc.mu.start = start
+	// Use the earlier start so that activation (which produces a newer
+	// replayTS) does not shrink the serve window that was already
+	// established by startup or an earlier activation.
+	if start.LT(&cc.mu.start) {
+		cc.mu.start = start
+	}
 	cc.mu.end = end
 	logutil.Info(
 		"catalog.cache.update.start.end",

@@ -403,17 +403,25 @@ func (e *Engine) Database(
 			logutil.Info(
 				"engine.database.load.from.storage",
 				zap.String("name", name),
-				zap.String("cache-start", catalog.GetStartTS().ToString()),
-				zap.String("txn", op.Txn().DebugString()),
+				zap.String("reason", "cache-cannot-serve"),
 			)
-			// read batch from storage
-			if item, err = e.loadDatabaseFromStorage(ctx, accountId, name, op); err != nil {
-				return nil, err
-			}
-			if item == nil {
-				return nil, moerr.GetOkExpectedEOB()
-			}
 		} else {
+			logutil.Info(
+				"engine.database.load.from.storage",
+				zap.String("name", name),
+				zap.String("reason", "cache-miss-despite-serve-ok"),
+				zap.String("txn-ts", types.TimestampToTS(op.SnapshotTS()).ToString()),
+				zap.String("cache-start", catalog.GetStartTS().ToString()),
+			)
+		}
+		// Always consult the PartitionState when the catalog cache
+		// doesn't have the entry. The BTree lookup can miss when the
+		// search Ts diverges from the cached entry's Ts (e.g. a stale
+		// txn snapshot from before an activation replay).
+		if item, err = e.loadDatabaseFromStorage(ctx, accountId, name, op); err != nil {
+			return nil, err
+		}
+		if item == nil {
 			return nil, moerr.GetOkExpectedEOB()
 		}
 	}

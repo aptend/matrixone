@@ -2028,7 +2028,8 @@ func getFkDeps(
 		// are recreated from the snapshot with correct FK constraints.
 		if moerr.IsMoErrCode(err, moerr.ErrNoSuchTable) ||
 			moerr.IsMoErrCode(err, moerr.ErrBadDB) ||
-			moerr.IsMoErrCode(err, moerr.ErrInvalidInput) {
+			moerr.IsMoErrCode(err, moerr.ErrInvalidInput) ||
+			moerr.IsMoErrCode(err, moerr.ErrParseError) {
 			getLogger("").Warn(fmt.Sprintf("FK dep query failed (source catalog unavailable), proceeding without FK ordering: %v", err))
 			return make(map[string][]string), nil
 		}

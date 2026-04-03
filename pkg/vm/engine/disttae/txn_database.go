@@ -689,31 +689,43 @@ func (db *txnDatabase) getTableItem(
 	var err error
 	c := engine.GetLatestCatalogCache()
 	if ok := c.GetTable(&item); ok {
-		// Guard against a transient catalog-cache window: push logtail
-		// delivers mo_tables and mo_columns entries separately, each
-		// applied under a distinct catalogCacheMu acquisition.
-		// InsertTable creates a BTree item with nil Defs; InsertColumns
-		// later replaces it with a fully-populated copy (COW).  Between
-		// the two, a concurrent GetTable reader can observe the
-		// intermediate item whose Defs is nil.  Fall through to
-		// loadTableFromStorage so callers never see a column-less
-		// table definition.
 		if item.Defs != nil {
 			return &item, nil
 		}
+		// Transient catalog-cache window: InsertTable created the BTree
+		// item with nil Defs, and InsertColumns hasn't populated it yet.
+		// Fall through to loadTableFromStorage unconditionally.
 		logutil.Warn("FIND_TABLE catalog-cache item has no column defs, falling through to storage",
 			zap.String("table", name),
 			zap.Uint32("accountID", accountID),
 			zap.Uint64("tableID", item.Id),
 		)
 	}
-	var tableitem *cache.TableItem
+	// Cache miss: either the entry was not found in the BTree (e.g. the
+	// search Ts does not match the cached entry's Ts due to a stale
+	// transaction snapshot), or the entry has nil Defs (transient race).
+	// Always consult the authoritative PartitionState via storage instead
+	// of trusting the CanServe/CanServeAccount gate, which can produce
+	// false "not found" when the cache Ts diverges from the search Ts.
 	if !c.CanServe(types.TimestampToTS(db.op.SnapshotTS())) ||
 		!engine.pClient.CanServeAccount(accountID, db.op.SnapshotTS()) {
-		logutil.Info("FIND_TABLE loadTableFromStorage", zap.String("table", name), zap.Uint32("accountID", accountID), zap.String("txn", db.op.Txn().DebugString()), zap.String("cacheTS", c.GetStartTS().ToString()))
-		if tableitem, err = db.loadTableFromStorage(ctx, accountID, name); err != nil {
-			return nil, err
-		}
+		logutil.Info("FIND_TABLE loadTableFromStorage",
+			zap.String("table", name),
+			zap.Uint32("accountID", accountID),
+			zap.String("reason", "cache-cannot-serve"),
+		)
+	} else {
+		logutil.Info("FIND_TABLE loadTableFromStorage",
+			zap.String("table", name),
+			zap.Uint32("accountID", accountID),
+			zap.String("reason", "cache-miss-despite-serve-ok"),
+			zap.String("txn-ts", types.TimestampToTS(db.op.SnapshotTS()).ToString()),
+			zap.String("cache-start", c.GetStartTS().ToString()),
+		)
+	}
+	var tableitem *cache.TableItem
+	if tableitem, err = db.loadTableFromStorage(ctx, accountID, name); err != nil {
+		return nil, err
 	}
 	if tableitem == nil {
 		return nil, nil

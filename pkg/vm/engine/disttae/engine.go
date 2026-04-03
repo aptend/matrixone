@@ -398,21 +398,30 @@ func (e *Engine) Database(
 	catalog := e.GetLatestCatalogCache()
 
 	if ok := catalog.GetDatabase(item); !ok {
-		if !catalog.CanServe(types.TimestampToTS(op.SnapshotTS())) {
+		if !catalog.CanServe(types.TimestampToTS(op.SnapshotTS())) ||
+			!e.pClient.CanServeAccount(accountId, op.SnapshotTS()) {
 			logutil.Info(
 				"engine.database.load.from.storage",
 				zap.String("name", name),
-				zap.String("cache-start", catalog.GetStartTS().ToString()),
-				zap.String("txn", op.Txn().DebugString()),
+				zap.String("reason", "cache-cannot-serve"),
 			)
-			// read batch from storage
-			if item, err = e.loadDatabaseFromStorage(ctx, accountId, name, op); err != nil {
-				return nil, err
-			}
-			if item == nil {
-				return nil, moerr.GetOkExpectedEOB()
-			}
 		} else {
+			logutil.Info(
+				"engine.database.load.from.storage",
+				zap.String("name", name),
+				zap.String("reason", "cache-miss-despite-serve-ok"),
+				zap.String("txn-ts", types.TimestampToTS(op.SnapshotTS()).ToString()),
+				zap.String("cache-start", catalog.GetStartTS().ToString()),
+			)
+		}
+		// Always consult the PartitionState when the catalog cache
+		// doesn't have the entry. The BTree lookup can miss when the
+		// search Ts diverges from the cached entry's Ts (e.g. a stale
+		// txn snapshot from before an activation replay).
+		if item, err = e.loadDatabaseFromStorage(ctx, accountId, name, op); err != nil {
+			return nil, err
+		}
+		if item == nil {
 			return nil, moerr.GetOkExpectedEOB()
 		}
 	}
@@ -522,7 +531,8 @@ func (e *Engine) GetRelationById(ctx context.Context, op client.TxnOperator, tab
 		if cacheItem != nil {
 			tableName = cacheItem.Name
 			dbName = cacheItem.DatabaseName
-		} else if !cache.CanServe(types.TimestampToTS(op.SnapshotTS())) {
+		} else if !cache.CanServe(types.TimestampToTS(op.SnapshotTS())) ||
+			!e.pClient.CanServeAccount(accountId, op.SnapshotTS()) {
 			// not found in cache, try storage
 			logutil.Info(
 				"engine.relation.load.from.storage",
@@ -833,6 +843,11 @@ func (e *Engine) cleanMemoryTableWithTable(dbId, tblId uint64) {
 
 func (e *Engine) PushClient() *PushClient {
 	return &e.pClient
+}
+
+// ActivateTenantCatalog implements engine.TenantCatalogActivator.
+func (e *Engine) ActivateTenantCatalog(ctx context.Context, accountID uint32) error {
+	return e.pClient.ActivateTenantCatalog(ctx, e, accountID)
 }
 
 // TryToSubscribeTable implements the LogtailEngine interface.

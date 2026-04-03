@@ -606,7 +606,14 @@ func (db *txnDatabase) loadTableFromStorage(
 			return
 		}
 		if row := res.Batches[0].RowCount(); row != 1 {
-			panic(fmt.Sprintf("FIND_TABLE loadTableFromStorage failed: table result row cnt: %v, sql : %s", row, tblSql))
+			// Zero or multiple rows may happen for dropped accounts whose
+			// catalog was compacted by a checkpoint or hasn't been fully
+			// activated yet.  Return nil instead of panicking so the caller
+			// can handle the missing table gracefully.
+			logutil.Warn("FIND_TABLE loadTableFromStorage unexpected row count",
+				zap.Int("rows", row),
+				zap.String("sql", tblSql))
+			return
 		}
 		bat := res.Batches[0]
 
@@ -640,12 +647,24 @@ func (db *txnDatabase) loadTableFromStorage(
 				return
 			}
 		}
+		logutil.Info("FIND_TABLE loadTableFromStorage columns",
+			zap.String("table", name),
+			zap.Uint32("accountID", accountID),
+			zap.Int("batches", len(res.Batches)),
+			zap.Int("totalRows", bat.RowCount()),
+			zap.Uint64("tableID", tblid),
+		)
 		if err := fillTsVecForSysTableQueryBatch(bat, ts, res.Mp); err != nil {
 			return nil, err
 		}
 		cache.ParseColumnsBatchAnd(bat, func(m map[cache.TableItemKey]cache.Columns) {
 			if len(m) != 1 {
-				panic(fmt.Sprintf("FIND_TABLE loadTableFromStorage failed: columns touch %d tables", len(m)))
+				logutil.Warn("FIND_TABLE loadTableFromStorage columns touch unexpected tables",
+					zap.Int("count", len(m)),
+					zap.String("table", name))
+				// Clear tableitem so the caller sees nil.
+				tableitem = nil
+				return
 			}
 			for _, v := range m {
 				cache.InitTableItemWithColumns(tableitem, v)
@@ -669,20 +688,49 @@ func (db *txnDatabase) getTableItem(
 	}
 	var err error
 	c := engine.GetLatestCatalogCache()
-	if ok := c.GetTable(&item); !ok {
-		var tableitem *cache.TableItem
-		if !c.CanServe(types.TimestampToTS(db.op.SnapshotTS())) {
-			logutil.Info("FIND_TABLE loadTableFromStorage", zap.String("table", name), zap.Uint32("accountID", accountID), zap.String("txn", db.op.Txn().DebugString()), zap.String("cacheTS", c.GetStartTS().ToString()))
-			if tableitem, err = db.loadTableFromStorage(ctx, accountID, name); err != nil {
-				return nil, err
-			}
+	if ok := c.GetTable(&item); ok {
+		if item.Defs != nil {
+			return &item, nil
 		}
-		if tableitem == nil {
-			return nil, nil
-		}
-		return tableitem, nil
+		// Transient catalog-cache window: InsertTable created the BTree
+		// item with nil Defs, and InsertColumns hasn't populated it yet.
+		// Fall through to loadTableFromStorage unconditionally.
+		logutil.Warn("FIND_TABLE catalog-cache item has no column defs, falling through to storage",
+			zap.String("table", name),
+			zap.Uint32("accountID", accountID),
+			zap.Uint64("tableID", item.Id),
+		)
 	}
-	return &item, nil
+	// Cache miss: either the entry was not found in the BTree (e.g. the
+	// search Ts does not match the cached entry's Ts due to a stale
+	// transaction snapshot), or the entry has nil Defs (transient race).
+	// Always consult the authoritative PartitionState via storage instead
+	// of trusting the CanServe/CanServeAccount gate, which can produce
+	// false "not found" when the cache Ts diverges from the search Ts.
+	if !c.CanServe(types.TimestampToTS(db.op.SnapshotTS())) ||
+		!engine.pClient.CanServeAccount(accountID, db.op.SnapshotTS()) {
+		logutil.Info("FIND_TABLE loadTableFromStorage",
+			zap.String("table", name),
+			zap.Uint32("accountID", accountID),
+			zap.String("reason", "cache-cannot-serve"),
+		)
+	} else {
+		logutil.Info("FIND_TABLE loadTableFromStorage",
+			zap.String("table", name),
+			zap.Uint32("accountID", accountID),
+			zap.String("reason", "cache-miss-despite-serve-ok"),
+			zap.String("txn-ts", types.TimestampToTS(db.op.SnapshotTS()).ToString()),
+			zap.String("cache-start", c.GetStartTS().ToString()),
+		)
+	}
+	var tableitem *cache.TableItem
+	if tableitem, err = db.loadTableFromStorage(ctx, accountID, name); err != nil {
+		return nil, err
+	}
+	if tableitem == nil {
+		return nil, nil
+	}
+	return tableitem, nil
 }
 
 // syncLogicalIdIndexInsert synchronizes the logical_id index table for INSERT/UPDATE operations

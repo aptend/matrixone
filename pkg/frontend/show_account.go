@@ -77,16 +77,16 @@ const (
 		"		ma.created_time," +
 		"		ma.status," +
 		"		ma.suspended_time," +
-		"		db_tbl_counts.db_count," +
-		"		db_tbl_counts.tbl_count," +
+		"		COALESCE(db_tbl_counts.db_count, 0) AS db_count," +
+		"		COALESCE(db_tbl_counts.tbl_count, 0) AS tbl_count," +
 		"		CAST(0 AS DOUBLE) AS size," +
 		"		CAST(0 AS DOUBLE) AS snapshot_size," +
 		"		ma.comments" +
 		"		%s" + // possible placeholder for object count
 		"	FROM" +
-		"		db_tbl_counts" +
-		"	JOIN" +
 		"		mo_catalog.mo_account AS ma " +
+		"	LEFT JOIN" +
+		"		db_tbl_counts " +
 		"	ON " +
 		"		db_tbl_counts.account_id = ma.account_id " +
 		"		%s" + // where clause
@@ -549,7 +549,7 @@ func doShowAccounts(ctx context.Context, ses *Session, sa *tree.ShowAccounts) (e
 		}
 	}
 
-	specialTableCnt, specialDBCnt, err = getSpecialTableCnt(ctx, bh, accIds)
+	specialTableCnt, specialDBCnt, err = getSpecialTableCnt(ctx, ses, bh, accIds)
 	t1 := time.Now()
 	v2.TaskShowAccountsGetTableStatsDurationHistogram.Observe(t1.Sub(t0).Seconds())
 	if err != nil {
@@ -699,20 +699,24 @@ func getAccountInfo(ctx context.Context,
 	return rsOfMoAccount, accountIds, err
 }
 
-func getSpecialTableCnt(ctx context.Context, bh BackgroundExec, accIds [][]int64) (dbCnt, tblCnt int64, err error) {
+func getSpecialTableCnt(ctx context.Context, ses *Session, bh BackgroundExec, accIds [][]int64) (dbCnt, tblCnt int64, err error) {
 	for x := range accIds {
 		for y := range accIds[x] {
 			if accIds[x][y] == sysAccountID {
 				continue
 			}
-			dbCnt, tblCnt, err = getSpecialTableInfo(ctx, bh, accIds[x][y])
+			dbCnt, tblCnt, err = getSpecialTableInfo(ctx, ses, bh, accIds[x][y])
 			return
 		}
 	}
 	return
 }
 
-func getSpecialTableInfo(ctx context.Context, bh BackgroundExec, accId int64) (dbCnt, tblCnt int64, err error) {
+func getSpecialTableInfo(ctx context.Context, ses *Session, bh BackgroundExec, accId int64) (dbCnt, tblCnt int64, err error) {
+	// Activate target account's catalog so table resolution uses cache.
+	if err = activateAccountCatalogIfNeeded(ctx, ses, uint32(accId)); err != nil {
+		return 0, 0, err
+	}
 	sql := fmt.Sprintf(getSpecialTablesInfoFormat, sysAccountID, sysAccountID)
 	newCtx := defines.AttachAccountId(ctx, uint32(accId))
 

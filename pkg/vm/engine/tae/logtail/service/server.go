@@ -810,6 +810,24 @@ func (s *LogtailServer) sendActivation(ctx context.Context, p1 *catalogActivatio
 		).Merge()
 		allCloseCBs = append(allCloseCBs, mergedCloseCB)
 
+		// Diagnostic: log per-table TN-side row counts for activation, so we can
+		// cross-check against CN-side InsertColumns counts to localize partial
+		// catalog rows (TN-side aobj/flush window vs CN-side replay).
+		ins, del, other := countTailRowsByType(merged)
+		s.logger.Info("lazy-catalog.activation.tail",
+			zap.Uint32("account-id", act.accountID),
+			zap.Uint64("seq", act.seq),
+			zap.Uint64("table-id", merged.Table.GetTbId()),
+			zap.String("table-name", merged.Table.GetTbName()),
+			zap.String("phase1-ts", phase1Ts.String()),
+			zap.String("target-ts", targetTS.String()),
+			zap.Bool("ckp-location-present", merged.CkpLocation != ""),
+			zap.Int("entries", len(merged.Commands)),
+			zap.Int("insert-rows", ins),
+			zap.Int("delete-rows", del),
+			zap.Int("other-rows", other),
+		)
+
 		if !isEmptyLogtail(merged) {
 			responseTails = append(responseTails, merged)
 		}

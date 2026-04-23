@@ -21,11 +21,34 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/logtail"
+	"go.uber.org/zap"
 )
 
 var lazyCatalogSubscribeFilterMP = mpool.MustNew("lazy-catalog-subscribe-filter")
+
+// countTailRowsByType counts row counts in a tail's commands, broken down by
+// entry type. Used for activation/subscribe diagnostic logging.
+func countTailRowsByType(tail logtail.TableLogtail) (insertRows, deleteRows, otherRows int) {
+	for i := range tail.Commands {
+		entry := tail.Commands[i]
+		var n int
+		if entry.Bat != nil && len(entry.Bat.Vecs) > 0 {
+			n = int(entry.Bat.Vecs[0].Len)
+		}
+		switch entry.GetEntryType() {
+		case api.Entry_Insert, api.Entry_Update:
+			insertRows += n
+		case api.Entry_Delete:
+			deleteRows += n
+		default:
+			otherRows += n
+		}
+	}
+	return
+}
 
 // filterLazyCatalogPulledTail filters a pulled logtail for the three lazy
 // catalog tables, keeping only rows belonging to allowedAccounts.
@@ -191,6 +214,15 @@ func filterLazyCatalogSubscribeInsertOrUpdateEntry(
 			selectedRows = append(selectedRows, int64(row))
 		}
 	}
+	if dropped := len(accounts) - len(selectedRows); dropped > 0 {
+		logutil.Info("lazy-catalog.filter.drop",
+			zap.String("entry-type", entry.GetEntryType().String()),
+			zap.Uint64("table-id", entry.GetTableId()),
+			zap.String("table-name", entry.GetTableName()),
+			zap.Int("kept-rows", len(selectedRows)),
+			zap.Int("dropped-rows", dropped),
+		)
+	}
 	return buildFilteredCatalogEntry(entry, bat, selectedRows)
 }
 
@@ -226,6 +258,15 @@ func filterLazyCatalogSubscribeDeleteEntry(
 		if allowedAccounts.contains(accountID) {
 			selectedRows = append(selectedRows, int64(row))
 		}
+	}
+	if dropped := bat.RowCount() - len(selectedRows); dropped > 0 {
+		logutil.Info("lazy-catalog.filter.drop",
+			zap.String("entry-type", entry.GetEntryType().String()),
+			zap.Uint64("table-id", entry.GetTableId()),
+			zap.String("table-name", entry.GetTableName()),
+			zap.Int("kept-rows", len(selectedRows)),
+			zap.Int("dropped-rows", dropped),
+		)
 	}
 	return buildFilteredCatalogEntry(entry, bat, selectedRows)
 }

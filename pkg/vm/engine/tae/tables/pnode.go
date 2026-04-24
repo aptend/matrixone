@@ -22,12 +22,14 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/nulls"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/containers"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
+	"go.uber.org/zap"
 )
 
 type scanNoCopyKey struct{}
@@ -243,6 +245,25 @@ func (node *persistedNode) ScanDataInRange(
 	}
 	createAt := meta.GetCreatedAt()
 	deleteAt := meta.GetDeleteAt()
+	tbl := meta.GetTable()
+	tblName := ""
+	if tbl != nil {
+		tblName = tbl.GetLastestSchema(false).Name
+	}
+	logutil.Info("PNODE-SCAN-DATA-RANGE",
+		zap.String("tbl", tblName),
+		zap.Uint64("tblID", func() uint64 {
+			if tbl == nil {
+				return 0
+			}
+			return tbl.GetID()
+		}()),
+		zap.String("obj", meta.ID().ShortStringEx()),
+		zap.String("create", createAt.ToString()),
+		zap.String("delete", deleteAt.ToString()),
+		zap.String("start", start.ToString()),
+		zap.String("end", end.ToString()),
+	)
 	if createAt.GT(&end) {
 		return nil
 	}

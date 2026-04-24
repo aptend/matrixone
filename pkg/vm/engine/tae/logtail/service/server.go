@@ -470,6 +470,13 @@ func (s *LogtailServer) onActivateAccountForCatalog(
 		session.abortLazyCatalogActivation(accountID, seq)
 		return moerr.AttachCause(ctx, ctx.Err())
 	case s.activationReqChan <- act:
+		s.logger.Info("lazy-catalog.activation.enqueued",
+			zap.Uint32("account-id", accountID),
+			zap.Uint64("seq", seq),
+			zap.Int("activation-req-chan-depth", len(s.activationReqChan)),
+			zap.Int("activation-tail-chan-depth", len(s.activationTailChan)),
+			zap.Int("sub-tail-chan-depth", len(s.subTailChan)),
+		)
 		return nil
 	}
 }
@@ -538,7 +545,12 @@ func (s *LogtailServer) pullLogtailsPhase1(ctx context.Context, sub subscription
 	defer func() { <-s.pullWorkerPool }()
 
 	v2.LogTailSubscriptionCounter.Inc()
-	s.logger.Info("handle subscription asynchronously", zap.Any("table", sub.req.Table))
+	s.logger.Info("handle subscription asynchronously",
+		zap.Any("table", sub.req.Table),
+		zap.Int("pull-worker-inuse", len(s.pullWorkerPool)),
+		zap.Int("sub-tail-chan-depth", len(s.subTailChan)),
+		zap.Int("activation-tail-chan-depth", len(s.activationTailChan)),
+	)
 
 	start := time.Now()
 	// Get logtail of phase1. The 'from' time is zero and the 'to' time is the
@@ -550,6 +562,7 @@ func (s *LogtailServer) pullLogtailsPhase1(ctx context.Context, sub subscription
 		timestamp.Timestamp{},
 		s.waterline.Waterline(),
 	)
+	phase1Dur := time.Since(start)
 	if err != nil {
 		s.logger.Error("failed to get logtail of phase1 of subscription",
 			zap.String("table", string(sub.tableID)),
@@ -558,8 +571,14 @@ func (s *LogtailServer) pullLogtailsPhase1(ctx context.Context, sub subscription
 		sub.session.Unregister(sub.tableID)
 		return
 	}
-	v2.LogTailPullCollectionPhase1DurationHistogram.Observe(time.Since(start).Seconds())
+	v2.LogTailPullCollectionPhase1DurationHistogram.Observe(phase1Dur.Seconds())
+	s.logger.Info("lazy-catalog.sub.phase1.done",
+		zap.String("table", string(sub.tableID)),
+		zap.Duration("phase1-dur", phase1Dur),
+		zap.Int("sub-tail-chan-depth", len(s.subTailChan)),
+	)
 
+	enqueueStart := time.Now()
 	for {
 		select {
 		case <-ctx.Done():
@@ -567,10 +586,18 @@ func (s *LogtailServer) pullLogtailsPhase1(ctx context.Context, sub subscription
 			return
 
 		case s.subTailChan <- tail:
+			if d := time.Since(enqueueStart); d > 100*time.Millisecond {
+				s.logger.Warn("lazy-catalog.sub.phase1.enqueue.slow",
+					zap.String("table", string(sub.tableID)),
+					zap.Duration("enqueue-wait", d),
+				)
+			}
 			return
 
 		default:
-			s.logger.Warn("the queue of logtails of phase1 is full")
+			s.logger.Warn("the queue of logtails of phase1 is full",
+				zap.Int("sub-tail-chan-depth", len(s.subTailChan)),
+			)
 			time.Sleep(time.Second)
 		}
 	}
@@ -602,13 +629,20 @@ func (s *LogtailServer) activationPullWorker(ctx context.Context) {
 // pullActivationPhase1 concurrently pulls historical row-level delta for all
 // three catalog tables and sends the combined result to activationTailChan.
 func (s *LogtailServer) pullActivationPhase1(ctx context.Context, act catalogActivation) {
+	workerWaitStart := time.Now()
 	s.pullWorkerPool <- struct{}{}
+	workerWait := time.Since(workerWaitStart)
 	defer func() { <-s.pullWorkerPool }()
 
 	s.logger.Info("activation phase1 start",
 		zap.Uint32("account-id", act.accountID),
 		zap.Uint64("seq", act.seq),
+		zap.Duration("worker-wait", workerWait),
+		zap.Int("pull-worker-inuse", len(s.pullWorkerPool)),
+		zap.Int("activation-req-chan-depth", len(s.activationReqChan)),
+		zap.Int("activation-tail-chan-depth", len(s.activationTailChan)),
 	)
+	phase1Start := time.Now()
 
 	waterline := s.waterline.Waterline()
 	allowedAccounts := newLazyCatalogAllowedAccounts(act.accountID)
@@ -655,16 +689,19 @@ func (s *LogtailServer) pullActivationPhase1(ctx context.Context, act catalogAct
 		}(i, table)
 	}
 	wg.Wait()
+	phase1Dur := time.Since(phase1Start)
 
 	if firstErr != nil {
 		s.logger.Error("activation phase1 failed",
 			zap.Uint32("account-id", act.accountID),
 			zap.Uint64("seq", act.seq),
+			zap.Duration("phase1-dur", phase1Dur),
 			zap.Error(firstErr),
 		)
 		return
 	}
 
+	enqueueStart := time.Now()
 	for {
 		select {
 		case <-ctx.Done():
@@ -672,6 +709,13 @@ func (s *LogtailServer) pullActivationPhase1(ctx context.Context, act catalogAct
 			return
 		case s.activationTailChan <- &result:
 			enqueued = true
+			s.logger.Info("lazy-catalog.activation.phase1.done",
+				zap.Uint32("account-id", act.accountID),
+				zap.Uint64("seq", act.seq),
+				zap.Duration("phase1-dur", phase1Dur),
+				zap.Duration("enqueue-wait", time.Since(enqueueStart)),
+				zap.Int("activation-tail-chan-depth", len(s.activationTailChan)),
+			)
 			return
 		default:
 			s.logger.Warn("activation tail chan full, retrying")
@@ -740,12 +784,22 @@ func (s *LogtailServer) logtailSender(ctx context.Context) {
 				*tailPhase1.tail.Ts,
 				s.waterline.Waterline(),
 			)
+			phase2Dur := time.Since(start)
 			if err != nil {
 				tailPhase1.sub.session.Unregister(tailPhase1.sub.tableID)
 				s.logger.Error("fail to send subscription response", zap.Error(err))
 			} else {
-				v2.LogTailPullCollectionPhase2DurationHistogram.Observe(time.Since(start).Seconds())
+				v2.LogTailPullCollectionPhase2DurationHistogram.Observe(phase2Dur.Seconds())
+				sendStart := time.Now()
 				s.sendSubscription(ctx, tailPhase1, tailPhase2)
+				s.logger.Info("lazy-catalog.sub.done",
+					zap.String("table", string(tailPhase1.sub.tableID)),
+					zap.Duration("phase2-dur", phase2Dur),
+					zap.Duration("send-dur", time.Since(sendStart)),
+					zap.Int("sub-tail-chan-depth", len(s.subTailChan)),
+					zap.Int("activation-tail-chan-depth", len(s.activationTailChan)),
+					zap.Int("activation-req-chan-depth", len(s.activationReqChan)),
+				)
 			}
 
 		case actPhase1, ok := <-s.activationTailChan:
@@ -753,7 +807,16 @@ func (s *LogtailServer) logtailSender(ctx context.Context) {
 				s.logger.Info("activation channel closed")
 				return
 			}
+			sendStart := time.Now()
 			s.sendActivation(ctx, actPhase1)
+			s.logger.Info("lazy-catalog.activation.send.done",
+				zap.Uint32("account-id", actPhase1.activation.accountID),
+				zap.Uint64("seq", actPhase1.activation.seq),
+				zap.Duration("send-dur", time.Since(sendStart)),
+				zap.Int("sub-tail-chan-depth", len(s.subTailChan)),
+				zap.Int("activation-tail-chan-depth", len(s.activationTailChan)),
+				zap.Int("activation-req-chan-depth", len(s.activationReqChan)),
+			)
 
 		case e, ok := <-s.event.C:
 			if !ok {

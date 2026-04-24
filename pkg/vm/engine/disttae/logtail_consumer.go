@@ -1275,6 +1275,30 @@ func replayCatalogColumnCache(
 
 	logutil.Infof("FIND_TABLE read mo_catalog.mo_columns %v rows", rowCountString(result.Batches))
 
+	totalRows := 0
+	for _, b := range result.Batches {
+		totalRows += b.RowCount()
+	}
+	hasNonSys := false
+	for _, accID := range accountIDs {
+		if accID != 0 {
+			hasNonSys = true
+			break
+		}
+	}
+	if totalRows == 0 && hasNonSys {
+		logutil.Warn("MO_COLUMNS_ZERO",
+			zap.Uint32s("accountIDs", accountIDs),
+			zap.String("replayTS", typeTs.ToString()),
+		)
+	} else {
+		logutil.Info("MO_COLUMNS_APPLY",
+			zap.Uint32s("accountIDs", accountIDs),
+			zap.Int("rows", totalRows),
+			zap.String("replayTS", typeTs.ToString()),
+		)
+	}
+
 	if isColumnsBatchPerfectlySplitted(result.Batches) {
 		for _, b := range result.Batches {
 			if err = fillTsVecForSysTableQueryBatch(b, typeTs, result.Mp); err != nil {

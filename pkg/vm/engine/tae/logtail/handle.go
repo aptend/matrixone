@@ -260,29 +260,18 @@ func (b *TableLogtailRespBuilder) visitObjMeta(e *catalog.ObjectEntry) (bool, er
 		return nil
 	})
 
-	if e.IsAppendable() && !e.HasDropCommitted() {
-		return false, nil
-	}
-	// Diagnostic: an appendable object that HasDropCommitted() at scan time
-	// will be skipped below (no in-memory data collected). If that drop actually
-	// committed AFTER our snapshot end, then at `b.end` this aobj should still
-	// have been alive, and its in-memory rows should have been included. Since
-	// we skipped, and the new merged segment's CreateNode is ALSO later than
-	// b.end (same flush txn), the net effect is that the rows from this aobj
-	// are lost for this pull. This is the suspected lazy-catalog partial-rows bug.
-	if e.IsAppendable() && !e.DeleteNode.IsEmpty() {
-		dropEnd := e.DeleteNode.End
-		if dropEnd.GT(&b.end) {
-			logutil.Warn("logtail.pull.skip.just.dropped.aobj",
-				zap.Uint64("table-id", b.tid),
-				zap.String("table-name", b.tname),
-				zap.String("obj-id", e.ID().String()),
-				zap.String("created-at", e.CreatedAt.ToString()),
-				zap.String("drop-end", dropEnd.ToString()),
-				zap.String("scan-start", b.start.ToString()),
-				zap.String("scan-end", b.end.ToString()),
-				zap.Bool("is-tombstone", e.IsTombstone),
-			)
+	if e.IsAppendable() {
+		// Scan the aobj's in-memory rows unless its drop is visible within
+		// our snapshot window [b.start, b.end]. Using the global
+		// HasDropCommitted() races with concurrent compaction: if the drop
+		// commits AFTER b.end, the aobj is still alive at b.end and its rows
+		// must be included in this pull. Otherwise both this aobj (skipped)
+		// and the new merged nobj (CreateNode > b.end, so also out of range)
+		// fall outside the window, and the rows are silently dropped from the
+		// response. This was the root cause of the lazy-catalog partial-rows
+		// bug seen in mo_columns during high-concurrent CREATE/DROP ACCOUNT.
+		if e.DeleteNode.IsEmpty() || !e.DeleteNode.IsCommitted() || e.DeleteNode.End.GT(&b.end) {
+			return false, nil
 		}
 	}
 	return true, nil

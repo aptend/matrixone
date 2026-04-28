@@ -16,11 +16,24 @@ package logtail
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/container/types"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/catalog"
 	"github.com/tidwall/btree"
+	"go.uber.org/zap"
 )
+
+// moColumnsTableID matches catalog.MO_COLUMNS_ID. Hard-coded here to avoid an
+// import cycle with the higher-level catalog package; the value is also used
+// as a magic-id sentinel in handle.go (entry.ID > 3).
+const moColumnsTableID = uint64(3)
+const moCatalogDBID = uint64(1)
+
+func (c *BoundTableOperator) isMoColumns() bool {
+	return c.tbl != nil && c.tbl.ID == moColumnsTableID && c.tbl.GetDB() != nil && c.tbl.GetDB().ID == moCatalogDBID
+}
 
 type BoundTableOperator struct {
 	from, to types.TS
@@ -65,6 +78,9 @@ func (c *BoundTableOperator) iterObject(from, to types.TS, isTombstone bool) err
 		ok = it.Last()
 	}
 
+	traceMC := c.isMoColumns()
+	const slowVisit = 100 * time.Millisecond
+
 	// after seeking, the first object could be out of the range, but false positive is allowed.
 	earlybreak := false
 	for ; ok; ok = it.Prev() {
@@ -81,21 +97,75 @@ func (c *BoundTableOperator) iterObject(from, to types.TS, isTombstone bool) err
 			continue
 		}
 
+		var visitStart time.Time
+		if traceMC {
+			visitStart = time.Now()
+		}
 		if err := c.visitor.VisitObj(obj); err != nil {
 			return err
+		}
+		if traceMC {
+			if d := time.Since(visitStart); d >= slowVisit {
+				logutil.Info(
+					"LAZY-CATALOG-MC-VISIT-SLOW",
+					zap.Duration("duration", d),
+					zap.Bool("tombstone", isTombstone),
+					zap.Bool("appendable", obj.IsAppendable()),
+					zap.Bool("centry", obj.IsCEntry()),
+					zap.String("obj-id", obj.ID().String()),
+					zap.String("created", obj.CreatedAt.ToString()),
+					zap.String("deleted", obj.DeletedAt.ToString()),
+					zap.String("from", from.ToString()),
+					zap.String("to", to.ToString()),
+				)
+			}
 		}
 	}
 	return nil
 }
 
 func (c *BoundTableOperator) Run() error {
+	traceMC := c.isMoColumns()
+	var t0, t1, t2, t3, t4 time.Time
+	if traceMC {
+		t0 = time.Now()
+	}
 	c.tbl.WaitDataObjectCommitted(c.to)
+	if traceMC {
+		t1 = time.Now()
+	}
 	if err := c.iterObject(c.from, c.to, false); err != nil {
 		return err
 	}
+	if traceMC {
+		t2 = time.Now()
+	}
 	c.tbl.WaitTombstoneObjectCommitted(c.to)
+	if traceMC {
+		t3 = time.Now()
+	}
 	if err := c.iterObject(c.from, c.to, true); err != nil {
 		return err
+	}
+	if traceMC {
+		t4 = time.Now()
+		total := t4.Sub(t0)
+		if total >= 200*time.Millisecond {
+			logutil.Info(
+				"LAZY-CATALOG-MC-OPERATOR-RUN",
+				zap.Duration("total", total),
+				zap.Duration("wait-data", t1.Sub(t0)),
+				zap.Duration("iter-data", t2.Sub(t1)),
+				zap.Duration("wait-tomb", t3.Sub(t2)),
+				zap.Duration("iter-tomb", t4.Sub(t3)),
+				zap.String("from", c.from.ToString()),
+				zap.String("to", c.to.ToString()),
+				zap.Int("dAScanCnt", c.dAScanCnt),
+				zap.Int("dSScanCnt", c.dSScanCnt),
+				zap.Int("tAScanCnt", c.tAScanCnt),
+				zap.Int("tSScanCnt", c.tSScanCnt),
+			)
+		}
 	}
 	return nil
 }

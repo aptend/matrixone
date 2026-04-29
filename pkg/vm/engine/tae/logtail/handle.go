@@ -105,8 +105,12 @@ func HandleSyncLogTailReq(
 
 	var visitor *TableLogtailRespBuilder
 	var operator *BoundTableOperator
+	var ccrDur, runDur, buildDur, flushDur time.Duration
+	var preRespSize int
+	isMC := req.Table != nil && req.Table.DbId == moCatalogDBID && req.Table.TbId == moColumnsTableID
 	defer func() {
-		if elapsed := time.Since(now); elapsed > time.Second {
+		elapsed := time.Since(now)
+		if elapsed > time.Second {
 			logutil.Warn(
 				"LOGTAIL-SLOW-PULL",
 				zap.Duration("duration", elapsed),
@@ -117,6 +121,21 @@ func HandleSyncLogTailReq(
 				zap.String("respSize", common.HumanReadableBytes(resp.ProtoSize())),
 				zap.Int("entries", len(resp.Commands)),
 				zap.String("ckp", resp.CkpLocation),
+			)
+		}
+		if isMC && elapsed > 200*time.Millisecond {
+			logutil.Info(
+				"LAZY-CATALOG-MC-PHASE1-BREAKDOWN",
+				zap.Duration("total", elapsed),
+				zap.Duration("ccr_dur", ccrDur),
+				zap.Duration("run_dur", runDur),
+				zap.Duration("build_dur", buildDur),
+				zap.Duration("flush_dur", flushDur),
+				zap.Int("pre_resp_size", preRespSize),
+				zap.Int("resp_size", resp.ProtoSize()),
+				zap.String("ckp", resp.CkpLocation),
+				zap.Bool("can_retry", canRetry),
+				zap.Error(err),
 			)
 		}
 	}()
@@ -138,7 +157,9 @@ func HandleSyncLogTailReq(
 	req.Table.TbName = schema.Name
 	req.Table.PrimarySeqnum = uint32(schema.GetPrimaryKey().SeqNum)
 
+	ccrStart := time.Now()
 	ckpLoc, checkpointed, err := ckpClient.CollectCheckpointsInRange(ctx, start, end)
+	ccrDur = time.Since(ccrStart)
 	if err != nil {
 		return
 	}
@@ -155,24 +176,33 @@ func HandleSyncLogTailReq(
 	closeCB = visitor.Close
 
 	operator = mgr.GetTableOperator(start, end, tableEntry, visitor)
-	if err := operator.Run(); err != nil {
-		return api.SyncLogTailResp{}, visitor.Close, err
+	runStart := time.Now()
+	runErr := operator.Run()
+	runDur = time.Since(runStart)
+	if runErr != nil {
+		return api.SyncLogTailResp{}, visitor.Close, runErr
 	}
+	buildStart := time.Now()
 	resp, err = visitor.BuildResp()
+	buildDur = time.Since(buildStart)
+	preRespSize = resp.ProtoSize()
 
 	if canRetry { // check simple conditions first
 		_, name, forceFlush := fault.TriggerFault("logtail_max_size")
 		if (forceFlush && name == tableEntry.GetLastestSchemaLocked(false).Name) || resp.ProtoSize() > Size90M {
+			flushStart := time.Now()
 			flushErr := ckpClient.FlushTable(ctx, 0, did, tid, end)
 			// try again after flushing
 			closeCB()
 			newResp, closeCB, err := HandleSyncLogTailReq(ctx, ckpClient, mgr, c, req, false)
+			flushDur = time.Since(flushStart)
 			logutil.Info(
 				"LOGTAIL-WITH-FLUSH",
 				zap.Any("flush-err", flushErr),
 				zap.Error(err),
 				zap.Int("from-size", resp.ProtoSize()),
 				zap.Int("to-size", newResp.ProtoSize()),
+				zap.Duration("flush_phase_dur", flushDur),
 			)
 			return newResp, closeCB, err
 		}

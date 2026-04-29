@@ -18,6 +18,9 @@ import (
 	"context"
 	"time"
 
+	"go.uber.org/zap"
+
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/disttae/cache"
 
@@ -36,6 +39,7 @@ func consumeEntry(
 	state *logtailreplay.PartitionState,
 	e *api.Entry,
 	isSub bool,
+	skipCatalogCache bool,
 ) error {
 	// for test only.
 	if engine.skipConsume {
@@ -56,8 +60,15 @@ func consumeEntry(
 		v2.LogtailUpdatePartitonConsumeLogtailOneEntryLogtailReplayDurationHistogram.Observe(time.Since(t0).Seconds())
 	}
 
-	// Try to handle the memory records of the three tables
-	if !catalog.IsSystemTable(e.TableId) || logtailreplay.IsMetaEntry(e.TableName) || e.EntryType == api.Entry_DataObject || e.EntryType == api.Entry_TombstoneObject {
+	// Lazy catalog CN logic is scoped only to the three catalog tables.
+	if !catalog.IsLazyCatalogTableID(e.TableId) || logtailreplay.IsMetaEntry(e.TableName) || e.EntryType == api.Entry_DataObject || e.EntryType == api.Entry_TombstoneObject {
+		return nil
+	}
+
+	// Activation response data should only populate PartitionState; the
+	// catalog cache is built later by replayCatalogCacheAt. Skip all
+	// catalog-cache operations (both global DCA and per-account DCA).
+	if skipCatalogCache {
 		return nil
 	}
 
@@ -65,7 +76,25 @@ func consumeEntry(
 		return nil
 	}
 
-	applyToCatalogCache(cache, e)
+	lc := engine.PushClient().lazyCatalog
+	if lc != nil {
+		accountID, shouldDelay, err := lc.shouldDelayCatalogCacheApplyEntry(*e)
+		if err != nil {
+			return err
+		}
+		if shouldDelay && lc.delayAccountCacheApply(accountID, func() { applyToCatalogCache(cache, e) }) {
+			logutil.Warn("DIAG-consumeEntry per-account DCA delayed",
+				zap.Uint32("delayedAccount", accountID),
+				zap.Uint64("tableId", e.TableId),
+				zap.String("entryType", e.EntryType.String()),
+			)
+			return nil
+		}
+	}
+
+	engine.PushClient().applyCatalogCacheChange(func() {
+		applyToCatalogCache(cache, e)
+	})
 	return nil
 }
 

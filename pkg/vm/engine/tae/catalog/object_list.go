@@ -175,7 +175,7 @@ func (l *ObjectList) GetAllNodes(id *objectio.ObjectId) []*ObjectEntry {
 func (l *ObjectList) GetObjectByID(objectID *objectio.ObjectId) (obj *ObjectEntry, err error) {
 	obj = l.GetLastestNode(objectID)
 	if obj == nil {
-		logutil.Debug("GetObjectByID not found", zap.String("obj", objectID.ShortStringEx()))
+		logutil.Warn("eob-debug.tae.catalog.expected-eob.object-id-not-found", zap.String("obj", objectID.ShortStringEx()))
 		err = moerr.GetOkExpectedEOB()
 	}
 	return
@@ -244,7 +244,7 @@ func (l *ObjectList) DropObjectByID(
 		return
 	}
 	if obj.HasDropIntent() {
-		logutil.Error("DropObjectByID HasDropIntent", zap.String("obj", objectID.ShortStringEx()))
+		logutil.Warn("eob-debug.tae.catalog.expected-eob.drop-object-has-drop-intent", zap.String("obj", objectID.ShortStringEx()))
 		return nil, false, moerr.GetOkExpectedEOB()
 	}
 	if !obj.DeleteNode.IsEmpty() {

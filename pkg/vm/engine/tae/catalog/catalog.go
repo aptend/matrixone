@@ -224,6 +224,10 @@ func (catalog *Catalog) GetDatabaseByID(id uint64) (db *DBEntry, err error) {
 	defer catalog.RUnlock()
 	node := catalog.entries[id]
 	if node == nil {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.database-id-not-found",
+			zap.Uint64("db-id", id),
+		)
 		err = moerr.GetOkExpectedEOB()
 		return
 	}
@@ -282,6 +286,13 @@ func (catalog *Catalog) TxnGetDBEntryByID(id uint64, txn txnif.AsyncTxn) (*DBEnt
 	}
 	visiable, dropped := dbEntry.GetVisibility(txn)
 	if !visiable || dropped {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.database-not-visible",
+			zap.Uint64("db-id", id),
+			zap.Bool("visible", visiable),
+			zap.Bool("dropped", dropped),
+			zap.String("txn", txn.String()),
+		)
 		return nil, moerr.GetOkExpectedEOB()
 	}
 	return dbEntry, nil

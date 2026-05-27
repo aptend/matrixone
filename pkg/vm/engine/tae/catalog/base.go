@@ -25,6 +25,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/txn/txnbase"
+	"go.uber.org/zap"
 )
 
 type BaseEntry interface {
@@ -215,6 +216,11 @@ func (be *BaseEntryImpl[T]) DropEntryLocked(txn txnif.TxnReader) (isNewNode bool
 		return
 	}
 	if be.HasDropCommittedLocked() {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.drop-already-committed",
+			zap.String("entry", be.StringLocked()),
+			zap.String("txn", txn.String()),
+		)
 		return false, moerr.GetOkExpectedEOB()
 	}
 	isNewNode, err = be.DeleteLocked(txn)

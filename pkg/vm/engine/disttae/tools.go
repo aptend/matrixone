@@ -17,6 +17,7 @@ package disttae
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/catalog"
@@ -26,12 +27,19 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/defines"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/pb/api"
 	"github.com/matrixorigin/matrixone/pkg/pb/metadata"
 	"github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/matrixorigin/matrixone/pkg/pb/txn"
 	"github.com/matrixorigin/matrixone/pkg/txn/trace"
+	"go.uber.org/zap"
+)
+
+const (
+	largeTxnEntryLogThreshold = 50
+	largeTxnEntryLogChunkSize = 50
 )
 
 func genWriteReqs(
@@ -85,6 +93,7 @@ func genWriteReqs(
 	if len(entries) == 0 {
 		return nil, nil
 	}
+	logLargeTxnEntries("eob-debug.cn.txn.commit.entries", txnCommit.op.Txn().DebugString(), entries)
 	trace.GetService(txnCommit.proc.GetService()).TxnCommit(op, entries)
 	reqs := make([]txn.TxnRequest, 0, len(entries))
 	payload, err := types.Encode(&api.PrecommitWriteCmd{EntryList: entries})
@@ -114,6 +123,100 @@ func genWriteReqs(
 		})
 	}
 	return reqs, nil
+}
+
+func logLargeTxnEntries(msg string, txn string, entries []*api.Entry) {
+	if len(entries) < largeTxnEntryLogThreshold {
+		return
+	}
+	for start := 0; start < len(entries); start += largeTxnEntryLogChunkSize {
+		end := start + largeTxnEntryLogChunkSize
+		if end > len(entries) {
+			end = len(entries)
+		}
+		var b strings.Builder
+		for i := start; i < end; i++ {
+			if i > start {
+				b.WriteString("; ")
+			}
+			b.WriteString(formatPBEntry(i, entries[i]))
+		}
+		logutil.Info(
+			msg,
+			zap.String("txn", txn),
+			zap.Int("entry-total", len(entries)),
+			zap.Int("entry-start", start),
+			zap.Int("entry-end", end-1),
+			zap.String("entries", b.String()),
+		)
+	}
+}
+
+func formatPBEntry(idx int, e *api.Entry) string {
+	if e == nil {
+		return fmt.Sprintf("#%d <nil>", idx)
+	}
+	attrs, vecs := 0, 0
+	if e.Bat != nil {
+		attrs = len(e.Bat.Attrs)
+		vecs = len(e.Bat.Vecs)
+	}
+	return fmt.Sprintf(
+		"#%d type=%s db=%d/%s table=%d/%s file=%s attrs=%d vecs=%d pk-check=%d",
+		idx,
+		e.EntryType.String(),
+		e.DatabaseId,
+		e.DatabaseName,
+		e.TableId,
+		e.TableName,
+		e.FileName,
+		attrs,
+		vecs,
+		e.PkCheckByTn,
+	) + formatAPIEntryRows(e)
+}
+
+func formatAPIEntryRows(entry *api.Entry) string {
+	if entry == nil || entry.Bat == nil {
+		return ""
+	}
+	bat, err := batch.ProtoBatchToBatch(entry.Bat)
+	if err != nil {
+		return fmt.Sprintf(" rows=<decode-error:%v>", err)
+	}
+	return formatBatchRows(bat)
+}
+
+func formatBatchRows(bat *batch.Batch) string {
+	if bat == nil {
+		return ""
+	}
+	rows := bat.RowCount()
+	if rows == 0 {
+		return " rows=[]"
+	}
+	formattedRows := make([]string, 0, rows)
+	for row := 0; row < rows; row++ {
+		values := make([]string, 0, len(bat.Vecs))
+		for col, vec := range bat.Vecs {
+			attr := fmt.Sprintf("col%d", col)
+			if col < len(bat.Attrs) && bat.Attrs[col] != "" {
+				attr = bat.Attrs[col]
+			}
+			values = append(values, fmt.Sprintf("%s=%s", attr, safeVectorRowToString(vec, row)))
+		}
+		formattedRows = append(formattedRows, fmt.Sprintf("row%d{%s}", row, strings.Join(values, ",")))
+	}
+	return fmt.Sprintf(" rows=[%s]", strings.Join(formattedRows, ";"))
+}
+
+func safeVectorRowToString(vec interface{ RowToString(int) string }, row int) (value string) {
+	defer func() {
+		if r := recover(); r != nil {
+			value = fmt.Sprintf("<panic:%v>", r)
+		}
+	}()
+	return vec.RowToString(row)
 }
 
 func toPBEntry(e Entry) (*api.Entry, error) {

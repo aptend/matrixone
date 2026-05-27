@@ -22,8 +22,10 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	v2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
+	"go.uber.org/zap"
 )
 
 type PageT[T common.IRef] interface {
@@ -65,6 +67,11 @@ func (table *TransferTable[T]) Pin(id common.ID) (pinned *common.PinnedItem[T], 
 	defer table.RUnlock()
 	var found bool
 	if pinned, found = table.pages[id]; !found {
+		logutil.Warn(
+			"eob-debug.tae.model.expected-eob.transfer-page-not-found",
+			zap.String("id", id.String()),
+			zap.Int("pages", len(table.pages)),
+		)
 		err = moerr.GetOkExpectedEOB()
 	} else {
 		pinned = pinned.Item().Pin()

@@ -19,8 +19,10 @@ import (
 	"sync"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
+	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
+	"go.uber.org/zap"
 )
 
 type nodeList[T any] struct {
@@ -154,6 +156,12 @@ func (n *nodeList[T]) TxnGetNodeLocked(txn txnif.TxnReader, targetName string) (
 	}
 	n.ForEachNodes(fn)
 	if tn == nil {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.node-not-found",
+			zap.String("name-node", n.name),
+			zap.String("target-name", targetName),
+			zap.String("txn", txn.String()),
+		)
 		err = moerr.GetOkExpectedEOB()
 	}
 	return

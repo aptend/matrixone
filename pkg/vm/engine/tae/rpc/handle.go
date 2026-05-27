@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 	"sync/atomic"
 	"syscall"
 	"time"
@@ -59,6 +60,9 @@ import (
 const (
 	MAX_ALLOWED_TXN_LATENCY = time.Millisecond * 300
 	MAX_TXN_COMMIT_LATENCY  = time.Minute * 2
+
+	largeTxnEntryLogThreshold = 50
+	largeTxnEntryLogChunkSize = 50
 )
 
 type Handle struct {
@@ -267,9 +271,20 @@ func (h *Handle) handleRequests(
 		inMemoryTombstoneRows     int
 		persistedTombstoneRows    int
 		postFuncs                 []func()
+		entrySummaries            []string
 	)
 
 	defer func() {
+		if len(entrySummaries) >= largeTxnEntryLogThreshold ||
+			(err != nil && moerr.IsMoErrCode(err, moerr.OkExpectedEOB)) {
+			logTxnRequestSummaries(
+				"eob-debug.tn.handle.txn.entries",
+				txn.String(),
+				txnMeta.DebugString(),
+				entrySummaries,
+				err,
+			)
+		}
 		if err != nil {
 			txn.Rollback(ctx)
 		}
@@ -283,6 +298,7 @@ func (h *Handle) handleRequests(
 		if entry, err = iter.Entry(); err != nil {
 			return
 		}
+		entrySummaries = append(entrySummaries, formatTxnRequestEntry(len(entrySummaries), entry))
 
 		switch req := entry.(type) {
 		case *pkgcatalog.CreateDatabaseReq:
@@ -375,6 +391,160 @@ func (h *Handle) handleRequests(
 		}
 	}
 	return
+}
+
+func logTxnRequestSummaries(msg, tnTxn, cnTxn string, entries []string, err error) {
+	for start := 0; start < len(entries); start += largeTxnEntryLogChunkSize {
+		end := start + largeTxnEntryLogChunkSize
+		if end > len(entries) {
+			end = len(entries)
+		}
+		logutil.Info(
+			msg,
+			zap.Error(err),
+			zap.String("tn-txn", tnTxn),
+			zap.String("cn-txn", cnTxn),
+			zap.Int("entry-total", len(entries)),
+			zap.Int("entry-start", start),
+			zap.Int("entry-end", end-1),
+			zap.String("entries", strings.Join(entries[start:end], "; ")),
+		)
+	}
+}
+
+func formatTxnRequestEntry(idx int, entry any) string {
+	switch req := entry.(type) {
+	case *pkgcatalog.CreateDatabaseReq:
+		return fmt.Sprintf("#%d create-database %s", idx, formatCreateDatabaseReq(req))
+	case *pkgcatalog.DropDatabaseReq:
+		return fmt.Sprintf("#%d drop-database %s", idx, formatDropDatabaseReq(req))
+	case *pkgcatalog.CreateTableReq:
+		return fmt.Sprintf("#%d create-table %s", idx, formatCreateTableReq(req))
+	case *pkgcatalog.DropTableReq:
+		return fmt.Sprintf("#%d drop-table %s", idx, formatDropTableReq(req))
+	case *api.AlterTableReq:
+		return fmt.Sprintf("#%d alter-table db=%d table=%d kind=%s op=%T", idx, req.DbId, req.TableId, req.Kind.String(), req.Operation)
+	case []*api.AlterTableReq:
+		parts := make([]string, 0, len(req))
+		for i, r := range req {
+			if r == nil {
+				parts = append(parts, fmt.Sprintf("%d:<nil>", i))
+				continue
+			}
+			parts = append(parts, fmt.Sprintf("%d:db=%d table=%d kind=%s op=%T", i, r.DbId, r.TableId, r.Kind.String(), r.Operation))
+		}
+		return fmt.Sprintf("#%d alter-table-batch count=%d [%s]", idx, len(req), strings.Join(parts, ", "))
+	case *cmd_util.WriteReq:
+		return fmt.Sprintf("#%d write %s", idx, formatWriteReq(req))
+	case *api.Entry:
+		return fmt.Sprintf("#%d api-entry type=%s db=%d/%s table=%d/%s file=%s attrs=%d vecs=%d pk-check=%d",
+			idx, req.EntryType.String(), req.DatabaseId, req.DatabaseName, req.TableId, req.TableName,
+			req.FileName, apiBatchAttrCount(req.Bat), apiBatchVecCount(req.Bat), req.PkCheckByTn) +
+			formatAPIEntryRows(req)
+	default:
+		return fmt.Sprintf("#%d unknown type=%T", idx, entry)
+	}
+}
+
+func formatCreateDatabaseReq(req *pkgcatalog.CreateDatabaseReq) string {
+	parts := make([]string, 0, len(req.Cmds))
+	for _, cmd := range req.Cmds {
+		parts = append(parts, fmt.Sprintf("%d/%s", cmd.DatabaseId, cmd.Name))
+	}
+	return fmt.Sprintf("count=%d [%s]", len(req.Cmds), strings.Join(parts, ", "))
+}
+
+func formatDropDatabaseReq(req *pkgcatalog.DropDatabaseReq) string {
+	parts := make([]string, 0, len(req.Cmds))
+	for _, cmd := range req.Cmds {
+		parts = append(parts, fmt.Sprintf("%d/%s", cmd.Id, cmd.Name))
+	}
+	return fmt.Sprintf("count=%d [%s]", len(req.Cmds), strings.Join(parts, ", "))
+}
+
+func formatCreateTableReq(req *pkgcatalog.CreateTableReq) string {
+	parts := make([]string, 0, len(req.Cmds))
+	for _, cmd := range req.Cmds {
+		parts = append(parts, fmt.Sprintf("db=%d/%s table=%d/%s defs=%d", cmd.DatabaseId, cmd.DatabaseName, cmd.TableId, cmd.Name, len(cmd.Defs)))
+	}
+	return fmt.Sprintf("count=%d [%s]", len(req.Cmds), strings.Join(parts, ", "))
+}
+
+func formatDropTableReq(req *pkgcatalog.DropTableReq) string {
+	parts := make([]string, 0, len(req.Cmds))
+	for _, cmd := range req.Cmds {
+		parts = append(parts, fmt.Sprintf("db=%d/%s table=%d/%s new=%d is-drop=%v", cmd.DatabaseId, cmd.DatabaseName, cmd.Id, cmd.Name, cmd.NewId, cmd.IsDrop))
+	}
+	return fmt.Sprintf("count=%d [%s]", len(req.Cmds), strings.Join(parts, ", "))
+}
+
+func formatWriteReq(req *cmd_util.WriteReq) string {
+	rows, cols := 0, 0
+	if req.Batch != nil {
+		rows = req.Batch.RowCount()
+		cols = len(req.Batch.Vecs)
+	}
+	return fmt.Sprintf("type=%v db=%d/%s table=%d/%s file=%s rows=%d cols=%d data-objects=%d tombstone-objects=%d pk-check=%v",
+		req.Type, req.DatabaseId, req.DatabaseName, req.TableID, req.TableName, req.FileName, rows, cols,
+		len(req.DataObjectStats), len(req.TombstoneStats), req.PkCheck) +
+		formatBatchRows(req.Batch)
+}
+
+func formatAPIEntryRows(entry *api.Entry) string {
+	if entry == nil || entry.Bat == nil {
+		return ""
+	}
+	bat, err := batch.ProtoBatchToBatch(entry.Bat)
+	if err != nil {
+		return fmt.Sprintf(" rows=<decode-error:%v>", err)
+	}
+	return formatBatchRows(bat)
+}
+
+func formatBatchRows(bat *batch.Batch) string {
+	if bat == nil {
+		return ""
+	}
+	rows := bat.RowCount()
+	if rows == 0 {
+		return " rows=[]"
+	}
+	formattedRows := make([]string, 0, rows)
+	for row := 0; row < rows; row++ {
+		values := make([]string, 0, len(bat.Vecs))
+		for col, vec := range bat.Vecs {
+			attr := fmt.Sprintf("col%d", col)
+			if col < len(bat.Attrs) && bat.Attrs[col] != "" {
+				attr = bat.Attrs[col]
+			}
+			values = append(values, fmt.Sprintf("%s=%s", attr, safeVectorRowToString(vec, row)))
+		}
+		formattedRows = append(formattedRows, fmt.Sprintf("row%d{%s}", row, strings.Join(values, ",")))
+	}
+	return fmt.Sprintf(" rows=[%s]", strings.Join(formattedRows, ";"))
+}
+
+func safeVectorRowToString(vec interface{ RowToString(int) string }, row int) (value string) {
+	defer func() {
+		if r := recover(); r != nil {
+			value = fmt.Sprintf("<panic:%v>", r)
+		}
+	}()
+	return vec.RowToString(row)
+}
+
+func apiBatchAttrCount(bat *api.Batch) int {
+	if bat == nil {
+		return 0
+	}
+	return len(bat.Attrs)
+}
+
+func apiBatchVecCount(bat *api.Batch) int {
+	if bat == nil {
+		return 0
+	}
+	return len(bat.Vecs)
 }
 
 //#endregion

@@ -29,6 +29,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/common"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
+	"go.uber.org/zap"
 )
 
 type accessInfo struct {
@@ -227,6 +228,12 @@ func (e *DBEntry) GetTableEntryByID(id uint64) (table *TableEntry, err error) {
 	defer e.RUnlock()
 	node := e.entries[id]
 	if node == nil {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.table-id-not-found",
+			zap.Uint64("db-id", e.ID),
+			zap.String("db-name", e.name),
+			zap.Uint64("table-id", id),
+		)
 		return nil, moerr.GetOkExpectedEOB()
 	}
 	table = node.GetPayload()
@@ -242,6 +249,15 @@ func (e *DBEntry) txnGetNodeByName(
 	fullName := genTblFullName(tenantID, name)
 	node := e.nameNodes[fullName]
 	if node == nil {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.table-name-node-not-found",
+			zap.Uint64("db-id", e.ID),
+			zap.String("db-name", e.name),
+			zap.Uint32("tenant-id", tenantID),
+			zap.String("table-name", name),
+			zap.String("full-name", fullName),
+			zap.String("txn", txn.String()),
+		)
 		return nil, moerr.GetOkExpectedEOB()
 	}
 	return node.TxnGetNodeLocked(txn, name)
@@ -276,6 +292,16 @@ func (e *DBEntry) TxnGetTableEntryByID(id uint64, txn txnif.AsyncTxn) (entry *Ta
 	//check whether visible and dropped.
 	visible, dropped := entry.GetVisibility(txn)
 	if !visible || dropped {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.table-not-visible",
+			zap.Uint64("db-id", e.ID),
+			zap.String("db-name", e.name),
+			zap.Uint64("table-id", id),
+			zap.String("table", entry.String()),
+			zap.Bool("visible", visible),
+			zap.Bool("dropped", dropped),
+			zap.String("txn", txn.String()),
+		)
 		return nil, moerr.GetOkExpectedEOB()
 	}
 	return
@@ -425,6 +451,13 @@ func (e *DBEntry) RemoveEntry(table *TableEntry) (err error) {
 	e.Lock()
 	defer e.Unlock()
 	if n, ok := e.entries[table.ID]; !ok {
+		logutil.Warn(
+			"eob-debug.tae.catalog.expected-eob.remove-table-entry-not-found",
+			zap.Uint64("db-id", e.ID),
+			zap.String("db-name", e.name),
+			zap.Uint64("table-id", table.ID),
+			zap.String("table", table.String()),
+		)
 		return moerr.GetOkExpectedEOB()
 	} else {
 		table.RLock()

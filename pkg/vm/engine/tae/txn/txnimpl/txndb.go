@@ -505,6 +505,7 @@ func (db *txnDB) PrePrepare(ctx context.Context) (err error) {
 			txnif.PrePreparePhase,
 			table.store.rt.Now(),
 		); err != nil {
+			logTxnTableExpectedEOB("eob-debug.tae.txn.expected-eob.preprepare.transfer", db, table, err)
 			return
 		}
 	}
@@ -513,9 +514,11 @@ func (db *txnDB) PrePrepare(ctx context.Context) (err error) {
 	nowTS := db.store.rt.Now()
 	for _, table := range db.tables {
 		if err = table.PrePrepareDedup(ctx, true, txnif.PrePreparePhase, nowTS); err != nil {
+			logTxnTableExpectedEOB("eob-debug.tae.txn.expected-eob.preprepare.dedup-tombstone", db, table, err)
 			return
 		}
 		if err = table.PrePrepareDedup(ctx, false, txnif.PrePreparePhase, nowTS); err != nil {
+			logTxnTableExpectedEOB("eob-debug.tae.txn.expected-eob.preprepare.dedup-data", db, table, err)
 			return
 		}
 	}
@@ -532,6 +535,7 @@ func (db *txnDB) PrePrepare(ctx context.Context) (err error) {
 
 	for _, table := range db.tables {
 		if err = table.PrePrepare(); err != nil {
+			logTxnTableExpectedEOB("eob-debug.tae.txn.expected-eob.preprepare.table", db, table, err)
 			return
 		}
 	}
@@ -547,6 +551,7 @@ func (db *txnDB) PrepareCommit() (err error) {
 	}
 	for _, table := range db.tables {
 		if err = table.PrepareCommit(); err != nil {
+			logTxnTableExpectedEOB("eob-debug.tae.txn.expected-eob.prepare-commit.table", db, table, err)
 			break
 		}
 	}
@@ -561,6 +566,29 @@ func (db *txnDB) PrepareCommit() (err error) {
 	})
 
 	return
+}
+
+func logTxnTableExpectedEOB(msg string, db *txnDB, table *txnTable, err error) {
+	if !moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+		return
+	}
+	entryCount := 0
+	if table.txnEntries != nil {
+		entryCount = table.txnEntries.Len()
+	}
+	logutil.Warn(
+		msg,
+		zap.Error(err),
+		zap.String("txn", db.store.txn.String()),
+		zap.Uint64("db-id", db.entry.GetID()),
+		zap.String("db-name", db.entry.GetName()),
+		zap.Uint64("table-id", table.GetID()),
+		zap.String("table", table.GetMeta().String()),
+		zap.Int("table-count", len(db.tables)),
+		zap.Int("table-txn-entry-count", entryCount),
+		zap.Bool("has-create-entry", table.createEntry != nil),
+		zap.Bool("has-drop-entry", table.dropEntry != nil),
+	)
 }
 
 func (db *txnDB) PreApplyCommit() (err error) {

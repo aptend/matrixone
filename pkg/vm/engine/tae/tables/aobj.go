@@ -35,6 +35,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/iface/txnif"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/index"
 	"github.com/matrixorigin/matrixone/pkg/vm/engine/tae/tables/updates"
+	"go.uber.org/zap"
 )
 
 type aobject struct {
@@ -347,6 +348,10 @@ func (obj *aobject) OnReplayAppendPayload(bat *containers.Batch) (err error) {
 
 func (obj *aobject) MakeAppender() (appender data.ObjectAppender, err error) {
 	if obj == nil {
+		logutil.Warn(
+			"eob-debug.tae.tables.expected-eob.make-appender-nil-object",
+			zap.String("reason", "nil appendable object"),
+		)
 		err = moerr.GetOkExpectedEOB()
 		return
 	}

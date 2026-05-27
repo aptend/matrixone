@@ -53,6 +53,9 @@ var (
 
 const (
 	MaxWalSize = 70 * mpool.MB
+
+	largeTxnEntryLogThreshold = 50
+	largeTxnEntryLogChunkSize = 50
 )
 
 func getTracer() *txnTracer {
@@ -800,6 +803,18 @@ func (store *txnStore) Freeze(ctx context.Context) (err error) {
 func (store *txnStore) PrePrepare(ctx context.Context) (err error) {
 	for _, db := range store.dbs {
 		if err = db.PrePrepare(ctx); err != nil {
+			if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+				logutil.Warn(
+					"eob-debug.tae.txn.expected-eob.preprepare",
+					zap.Error(err),
+					zap.String("txn", store.txn.String()),
+					zap.Uint64("db-id", db.entry.GetID()),
+					zap.String("db-name", db.entry.GetName()),
+					zap.Int("db-count", len(store.dbs)),
+					zap.Int("table-count", len(db.tables)),
+					zap.Int("txn-entry-count", dbTxnEntryCount(db)),
+				)
+			}
 			return
 		}
 	}
@@ -832,11 +847,45 @@ func (store *txnStore) PrepareCommit() (err error) {
 	}
 	for _, db := range store.dbs {
 		if err = db.PrepareCommit(); err != nil {
+			if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+				logutil.Warn(
+					"eob-debug.tae.txn.expected-eob.prepare-commit",
+					zap.Error(err),
+					zap.String("txn", store.txn.String()),
+					zap.Uint64("db-id", db.entry.GetID()),
+					zap.String("db-name", db.entry.GetName()),
+					zap.Int("db-count", len(store.dbs)),
+					zap.Int("table-count", len(db.tables)),
+					zap.Int("txn-entry-count", dbTxnEntryCount(db)),
+				)
+			}
 			break
 		}
 	}
 
 	return
+}
+
+func dbTxnEntryCount(db *txnDB) int {
+	count := 0
+	if db.createEntry != nil {
+		count++
+	}
+	if db.dropEntry != nil {
+		count++
+	}
+	for _, table := range db.tables {
+		if table.txnEntries != nil {
+			count += table.txnEntries.Len()
+		}
+		if table.createEntry != nil {
+			count++
+		}
+		if table.dropEntry != nil {
+			count++
+		}
+	}
+	return count
 }
 
 func (store *txnStore) PreApplyCommit() (err error) {

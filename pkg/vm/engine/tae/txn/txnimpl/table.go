@@ -1447,11 +1447,15 @@ func (tbl *txnTable) dumpCore(errMsg string) {
 
 func (tbl *txnTable) PrepareCommit() (err error) {
 	nodeCount := len(tbl.txnEntries.entries)
+	tbl.logTxnEntriesIfNeeded("eob-debug.tae.txn.table.entries.prepare-commit", nil)
 	for idx, node := range tbl.txnEntries.entries {
 		if tbl.txnEntries.IsDeleted(idx) {
 			continue
 		}
 		if err = node.PrepareCommit(); err != nil {
+			if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+				tbl.logTxnEntriesIfNeeded("eob-debug.tae.txn.table.entries.prepare-commit.expected-eob", err)
+			}
 			if moerr.IsMoErrCode(err, moerr.ErrTxnNotFound) {
 				var buf bytes.Buffer
 				buf.WriteString(fmt.Sprintf("%d/%d No Txn, node type %T, ", idx, len(tbl.txnEntries.entries), node))
@@ -1480,11 +1484,59 @@ func (tbl *txnTable) PrepareCommit() (err error) {
 				continue
 			}
 			if err = tbl.txnEntries.entries[idx].PrepareCommit(); err != nil {
+				if moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+					tbl.logTxnEntriesIfNeeded("eob-debug.tae.txn.table.entries.prepare-commit-new.expected-eob", err)
+				}
 				break
 			}
 		}
 	}
 	return
+}
+
+func (tbl *txnTable) logTxnEntriesIfNeeded(msg string, err error) {
+	if tbl.txnEntries == nil {
+		return
+	}
+	total := len(tbl.txnEntries.entries)
+	if total < largeTxnEntryLogThreshold && !moerr.IsMoErrCode(err, moerr.OkExpectedEOB) {
+		return
+	}
+	for start := 0; start < total; start += largeTxnEntryLogChunkSize {
+		end := start + largeTxnEntryLogChunkSize
+		if end > total {
+			end = total
+		}
+		parts := make([]string, 0, end-start)
+		for i := start; i < end; i++ {
+			parts = append(parts, tbl.formatTxnEntry(i, tbl.txnEntries.entries[i]))
+		}
+		logutil.Info(
+			msg,
+			zap.Error(err),
+			zap.String("txn", tbl.store.txn.String()),
+			zap.Uint64("db-id", tbl.entry.GetDB().GetID()),
+			zap.Uint64("table-id", tbl.GetID()),
+			zap.String("table", tbl.entry.String()),
+			zap.Int("entry-total", total),
+			zap.Int("entry-start", start),
+			zap.Int("entry-end", end-1),
+			zap.String("entries", strings.Join(parts, "; ")),
+		)
+	}
+}
+
+func (tbl *txnTable) formatTxnEntry(idx int, entry txnif.TxnEntry) string {
+	deleted := false
+	if tbl.txnEntries != nil {
+		deleted = tbl.txnEntries.IsDeleted(idx)
+	}
+	switch e := entry.(type) {
+	case *catalog.ObjectEntry:
+		return fmt.Sprintf("#%d type=%T deleted=%v object=%s", idx, entry, deleted, e.StringWithLevel(1))
+	default:
+		return fmt.Sprintf("#%d type=%T deleted=%v value=%v", idx, entry, deleted, entry)
+	}
 }
 
 func (tbl *txnTable) PreApplyCommit() (err error) {

@@ -22,4 +22,17 @@ name = "ETL"
 backend = "DISK-ETL"
 
 [observability]
-status-port = 7001
+status-port = 8001
+
+[logservice]
+logservice-port = 33001
+logservice-address = "0.0.0.0:33001"
+logservice-listen-address = "0.0.0.0:33001"
+raft-address = "0.0.0.0:33000"
+raft-listen-address = "0.0.0.0:33000"
+gossip-address = "0.0.0.0:33002"
+gossip-listen-address = "0.0.0.0:33002"
+gossip-seed-addresses = ["127.0.0.1:33002"]
+
+[hakeeper-client]
+service-addresses = ["127.0.0.1:33001"]

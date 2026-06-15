@@ -8,7 +8,7 @@ max-size = 512
 
 [hakeeper-client]
 service-addresses = [
-  "127.0.0.1:32001",
+  "127.0.0.1:33001",
 ]
 
 [[fileservice]]
@@ -31,7 +31,7 @@ backend = "DISK-ETL"
 
 [tn]
 uuid = "dd4dccb4-4d3c-41f8-b482-5251dc7a41bf"
-port-base = 19000
+port-base = 20000
 
 [tn.Txn]
 

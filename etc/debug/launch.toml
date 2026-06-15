@@ -1,0 +1,12 @@
+logservices = [
+    "./etc/debug/log.toml",
+]
+
+tnservices = [
+    "./etc/debug/tn.toml"
+]
+
+cnservices = [
+    "./etc/debug/cn.toml"
+]
+

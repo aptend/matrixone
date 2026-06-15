@@ -86,7 +86,7 @@ import (
 	"go.uber.org/zap"
 )
 
-const Size90M = 90 * 1024 * 1024
+const Size30M = 30 * 1024 * 1024
 
 type CheckpointClient interface {
 	CollectCheckpointsInRange(ctx context.Context, start, end types.TS) (ckpLoc string, lastEnd types.TS, err error)
@@ -189,7 +189,7 @@ func HandleSyncLogTailReq(
 
 	if canRetry { // check simple conditions first
 		_, name, forceFlush := fault.TriggerFault("logtail_max_size")
-		if (forceFlush && name == tableEntry.GetLastestSchemaLocked(false).Name) || resp.ProtoSize() > Size90M {
+		if (forceFlush && name == tableEntry.GetLastestSchemaLocked(false).Name) || resp.ProtoSize() > Size30M {
 			flushStart := time.Now()
 			flushErr := ckpClient.FlushTable(ctx, 0, did, tid, end)
 			// try again after flushing

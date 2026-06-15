@@ -32,8 +32,8 @@ import (
 
 var (
 	baseUUID         = 0
-	basePort         = 18000
-	baseFrontendPort = 16001
+	basePort         = 21000
+	baseFrontendPort = 26001
 	baseUnixSocket   = 0
 )
 
@@ -64,7 +64,7 @@ func startDynamicCluster(
 	}
 
 	// TODO: make configurable for 6001
-	cnProxy = goetty.NewProxy("0.0.0.0:6001", logutil.GetGlobalLogger().Named("mysql-proxy"))
+	cnProxy = goetty.NewProxy("0.0.0.0:36001", logutil.GetGlobalLogger().Named("mysql-proxy"))
 	for i := 0; i < cfg.Dynamic.ServiceCount; i++ {
 		port := baseFrontendPort + i
 		cnProxy.AddUpStream(fmt.Sprintf("127.0.0.1:%d", port), time.Second*10)

@@ -383,7 +383,24 @@ func (s *Scope) Run(c *Compile) (err error) {
 			_, err = p.RunWithReader(s.DataSource.R, tag, s.Proc)
 		}
 	}
-	err, _ = normalizeScopeRunError(err, s.Proc.Ctx, scopeRunQueryContext(s.Proc))
+	rawErr := err
+	queryCtx := scopeRunQueryContext(s.Proc)
+	var normalized bool
+	err, normalized = normalizeScopeRunError(rawErr, s.Proc.Ctx, queryCtx)
+	if err != nil && isScopeCancellationError(rawErr) {
+		logInternalCancellationDiagnostic(
+			c.proc,
+			"scope-run-cancellation-escaped",
+			rawErr,
+			s.Proc.Ctx,
+			queryCtx,
+			c.proc.GetTopContext(),
+			zap.Bool("normalized", normalized),
+			zap.String("normalized-error", cancellationErrorString(err)),
+			zap.String("scope-magic", s.Magic.String()),
+			zap.String("sql", commonutil.Abbreviate(c.sql, 500)),
+		)
+	}
 	return err
 }
 

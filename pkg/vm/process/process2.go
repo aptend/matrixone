@@ -16,6 +16,7 @@ package process
 
 import (
 	"context"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -36,6 +37,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/txn/util"
 	"github.com/matrixorigin/matrixone/pkg/udf"
+	"go.uber.org/zap"
 )
 
 // NewTopProcess creates a new top process for the query.
@@ -221,10 +223,27 @@ func (proc *Process) GetQueryContextError() error {
 // ResetQueryContext cleans the context and cancel function for process reuse.
 func (proc *Process) ResetQueryContext() {
 	if proc.Base.sqlContext.queryCancel != nil {
+		if proc.GetBaseProcessRunningStatus() {
+			proc.Error(
+				context.Background(),
+				"query context reset while query is running",
+				zap.String("pipeline-context-err", contextErrorString(proc.Ctx)),
+				zap.String("query-context-err", contextErrorString(proc.Base.sqlContext.queryContext)),
+				zap.String("top-context-err", contextErrorString(proc.GetTopContext())),
+				zap.ByteString("reset-call-stack", debug.Stack()),
+			)
+		}
 		proc.Base.sqlContext.queryCancel()
 		proc.Base.sqlContext.queryCancel = nil
 	}
 	proc.doPrepareForRunningWithoutPipeline()
+}
+
+func contextErrorString(ctx context.Context) string {
+	if ctx == nil || ctx.Err() == nil {
+		return "<nil>"
+	}
+	return ctx.Err().Error()
 }
 
 // ResetCloneTxnOperator cleans the clone txn operator for process reuse.

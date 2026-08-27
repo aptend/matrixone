@@ -534,7 +534,6 @@ type CTERef struct {
 	snapshot       *Snapshot
 	declarationCtx *BindContext
 	occurrences    []cteOccurrence
-	hasNestedUse   bool
 }
 
 type cteOccurrence struct {

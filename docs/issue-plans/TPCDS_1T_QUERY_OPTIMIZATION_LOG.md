@@ -20,7 +20,7 @@
 
 - Q2 基线使用 `e866c535f5`；Q4 计划基线使用 `484d9815eb`。耗时受版本、缓存和对象布局影响，计划结构、扫描计数和结果一致性是主要验收依据。
 - 当前工作树下 Q1–Q10 的确切 SQL、普通 `EXPLAIN` 和输入 stats 保存在 [`tpcds-1t-q01-q10-baseline`](tpcds-1t-q01-q10-baseline/README.md)；Q11 以后按完成顺序保存在 [`tpcds-1t-q11-plus-baseline`](tpcds-1t-q11-plus-baseline/README.md)。
-- 目前 Q1–Q55 已实跑完成；Q56–Q99 待继续。
+- 目前 Q1–Q60 已实跑完成；Q61–Q99 待继续。
 
 ## 进度摘要
 
@@ -80,6 +80,11 @@
 | Q53 | 事实过滤后按季度聚合并计算 manufacturer 窗口平均 | window 位于低基数聚合后；无修改 | 30.222 秒，100 行 | 完成 |
 | Q54 | catalog/web 客户集合驱动后续 store revenue 分段 | 日期/item 先过滤客户集合，后续事实连接和聚合资源安全；无修改 | 55.165 秒，100 行 | 完成 |
 | Q55 | Q52 同类单次事实扫描 | 日期和 manager 过滤均提前；无修改 | 23.541 秒，100 行 | 完成 |
+| Q56 | store/catalog/web 三渠道月聚合 | 日期、时区和 item 集合均在渠道聚合前生效；无修改 | 43.369 秒，100 行 | 完成 |
+| Q57 | 同一窗口 CTE 被 lag/current/lead 三次引用 | 已命中 Q47 的三消费者 CTE 共享，只构造一次 producer | 156.025 秒，100 行 | 完成；CTE reuse 独立正向样本 |
+| Q58 | 三渠道单周 item revenue 聚合 | 每个渠道只扫描一次，周集合在事实连接前构造；无修改 | 30.534 秒，100 行 | 完成 |
+| Q59 | 全历史周聚合后，两个消费者只取相邻两年 | 记录可传播 week domain 的后续方向；当前一次事实扫描且资源安全，不扩大修改 | 330.993 秒，100 行 | 完成；后续机制优化 |
+| Q60 | Q56 同类三渠道月聚合 | 日期、时区和 category 条件均提前；无修改 | 53.487 秒，100 行 | 完成 |
 | Q4 | 共享前重复扫描；共享后仍把大量事实行直接送入 customer join 和最终聚合 | 复用一个可 spill producer；在有主键证明且成本显著下降时加入事实侧 partial SUM | 1176.530 → 588.892 秒，100 行 | 两阶段结构优化完成；spill 效率待优化 |
 
 ## Q1：统一 spill 阈值
@@ -698,6 +703,30 @@ catalog/web 两个渠道先由 1999 年 3 月和 Jewelry/consignment item 条件
 ## Q55：Q52 同类计划合理
 
 普通 `EXPLAIN` 只扫描一次 `store_sales`，2001 年 12 月和 manager 条件均通过主键维表 join 在 brand 聚合前生效。1TB 原 SQL成功：statement ID `01a0448a-3bc3-7b5b-a457-b0be00a048cb`，耗时 23.541 秒，读取 2,880,361,048 行、扫描 46,091,484,572 字节，返回 100 行；输出 SHA-256 `806a555bbb4ea6f54745f4deb4cd03e5d32828ae423bc597a9176553b8f13dba`。无需修改。
+
+## Q56：三渠道过滤与聚合均合理
+
+store/catalog/web 三个分支各扫描对应事实表一次。2000 年 1 月、GMT -8 和三种颜色 item 集合均在各自渠道聚合前生效；item SEMI 输入很小，没有 Q35 类型的大型 MARK build。1TB 原 SQL成功：statement ID `01a0448b-8c21-77c3-b9e4-dde817c19850`，耗时 43.369 秒，读取 5,059,987,938 行、扫描 101,086,405,584 字节，返回 100 行；输出 SHA-256 `0147a02bef91dfc2e3cff95a6bdb93d1ca243dd05bf13136542d83be498e8e08`。无需修改。
+
+## Q57：Q47 的三消费者 CTE 共享再次命中
+
+`v1` 同时被 lag/current/lead 三个位置完整消费。普通 `EXPLAIN` 只生成一个 `catalog_sales -> aggregate -> avg/rank window` producer 和三个 `Sink Scan`，事实表及维表均只扫描一次；这是 Q47 通用机制的独立正向样本。窗口位于按 category/brand/call-center/month 聚合后，状态规模受控。
+
+1TB 原 SQL成功：statement ID `01a0448c-6310-7a7b-b0d1-36ab8e4695ba`，耗时 156.025 秒，读取 1,440,353,507 行、扫描 28,816,086,084 字节，返回 100 行；输出 SHA-256 `a2ae8668c02732f95e6085888f093ec51de7d415cdf42f74ff2433f0bd55abd9`。无 OOM，无新增修改。
+
+## Q58：三渠道单周聚合计划合理
+
+store/catalog/web 每个事实表各扫描一次，并先与目标周的 `date_dim` 集合连接，再按 item 聚合。求目标 week 的标量子查询在三个分支内有少量重复，但只涉及小 date_dim，不值得扩大 CTE/CSE 边界。1TB 原 SQL成功：statement ID `01a0448e-f3cb-730d-b631-7a298b9302c3`，耗时 30.534 秒，读取 5,041,137,090 行、扫描 80,666,847,048 字节，返回 100 行；输出 SHA-256 `144b7f31f3c0b48617ca02eef4d1cc660f9cfd4f37e8c9d8cac388a4d1349d81`。无需修改。
+
+## Q59：安全完成，记录跨消费者 week domain 传播
+
+`wss` 被两个年份消费者复用，当前计划正确地只生成一个 producer 和两个 `Sink Scan`；但 producer 在按 `d_week_seq, ss_store_sk` 聚合前扫描全历史 `store_sales`，两个消费者的 month range 只在聚合后通过 `date_dim.d_week_seq` join 生效。可进一步做的通用方向，是把消费者从唯一维表得到的 week key domain 合并为 SEMI filter 再传回 producer，同时保留消费者 join 以维持边界周 multiplicity。该证明跨 join 和聚合，不能用简单 range 猜测替代，因此当前不为 Q59 扩大 rewrite。
+
+现计划只有一次事实扫描，聚合 key 规模受 week/store 上界约束，资源安全。1TB 原 SQL成功：statement ID `01a0448f-a15b-7da2-b9c0-5efe54c1eb00`，耗时 330.993 秒，读取 2,880,209,150 行、扫描 46,083,394,496 字节，返回 100 行；输出 SHA-256 `37f0c0ddd7a5bb3b8909535c4a03af22b45cae100b7c3c999e572d170c539488`。无需当前修改。
+
+## Q60：Q56 同类计划合理
+
+三渠道各扫描一次事实表，1999 年 9 月、GMT -6 和 Children category 都在聚合前生效。1TB 原 SQL成功：statement ID `01a04494-f0f3-7c46-81cf-0ad35d7cc7d5`，耗时 53.487 秒，读取 5,059,987,938 行、扫描 101,086,405,584 字节，返回 100 行；输出 SHA-256 `0d22a648ce620f92efca80cbbd54f6a292e941f43aa993d05ecf8909cd5ed9e2`。无 OOM，无需修改。
 
 ## 后续查询记录模板
 

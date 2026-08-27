@@ -20,7 +20,7 @@
 
 - Q2 基线使用 `e866c535f5`；Q4 计划基线使用 `484d9815eb`。耗时受版本、缓存和对象布局影响，计划结构、扫描计数和结果一致性是主要验收依据。
 - 当前工作树下 Q1–Q10 的确切 SQL、普通 `EXPLAIN` 和输入 stats 保存在 [`tpcds-1t-q01-q10-baseline`](tpcds-1t-q01-q10-baseline/README.md)；Q11 以后按完成顺序保存在 [`tpcds-1t-q11-plus-baseline`](tpcds-1t-q11-plus-baseline/README.md)。
-- 目前 Q1–Q49 已实跑完成；Q50–Q99 待继续。
+- 目前 Q1–Q55 已实跑完成；Q56–Q99 待继续。
 
 ## 进度摘要
 
@@ -74,6 +74,12 @@
 | Q47 | 同一聚合窗口 CTE 在 lag/current/lead 三个位置完整展开 | 对三消费者、完整消费且有 2 倍成本安全余量的 producer 开放有界 spill reuse；支持安全嵌套物化 | 844.957 → 250.868 秒，100 行 | 完成；扫描量降为 1/3 |
 | Q48 | DNF 被误判为单表条件，公共人口属性等值键未被提出，退化为非等值 join | 完整收集 DNF 中引用的 relation；仅对真正单表 DNF 保留原形，跨表 DNF 正常提出公共条件 | 1GB 227.546 → 0.231 秒；1TB 86.605 秒，1 行 | 完成；不依赖 stats |
 | Q49 | 三渠道 sales/returns 复合键连接与双排名 | nullable-side return amount 条件已将 LEFT JOIN 安全转为 INNER JOIN；无修改 | 92.743 秒，100 行 | 完成；无 OOM |
+| Q50 | 销售和退货按票据/item/customer 做复合键连接 | 一个月退货日期过滤先进入连接，最终只在门店粒度聚合；无修改 | 57.744 秒，100 行 | 完成；无 OOM |
+| Q51 | 累计 MIN/MAX 因缺少 source-preserving merge 契约而为每行重扫 partition prefix | 为 MIN/MAX 声明并验证只读 source 的 merge 契约，复用窗口已有 running aggregate 快路径 | 旧执行 655.073 秒时仍未完成并取消；修复后 733.427 秒完成，100 行 | 完成；复杂度由二次降为线性 |
+| Q52 | 单次事实扫描与月份/manager 过滤 | 两个维表过滤均通过主键 join 在聚合前生效；无修改 | 20.023 秒，100 行 | 完成 |
+| Q53 | 事实过滤后按季度聚合并计算 manufacturer 窗口平均 | window 位于低基数聚合后；无修改 | 30.222 秒，100 行 | 完成 |
+| Q54 | catalog/web 客户集合驱动后续 store revenue 分段 | 日期/item 先过滤客户集合，后续事实连接和聚合资源安全；无修改 | 55.165 秒，100 行 | 完成 |
+| Q55 | Q52 同类单次事实扫描 | 日期和 manager 过滤均提前；无修改 | 23.541 秒，100 行 | 完成 |
 | Q4 | 共享前重复扫描；共享后仍把大量事实行直接送入 customer join 和最终聚合 | 复用一个可 spill producer；在有主键证明且成本显著下降时加入事实侧 partial SUM | 1176.530 → 588.892 秒，100 行 | 两阶段结构优化完成；spill 效率待优化 |
 
 ## Q1：统一 spill 阈值
@@ -660,6 +666,38 @@ Q39 文件包含 Q39a、Q39b 两条 SQL。两条普通 `EXPLAIN` 均把 `inv` �
 普通 `EXPLAIN` 中 web、catalog、store 三个分支各只扫描对应 sales/returns 一次。虽然 SQL 写为 LEFT JOIN，但 `wr_return_amt/cr_return_amount/sr_return_amt > 10000` 会拒绝 NULL，计划已安全转为 INNER JOIN；年月与 sales 的利润、实付和数量条件都在复合键连接前生效。每个分支先按 item 聚合，再计算两个 rank，窗口不会处理事实明细。
 
 1TB 原 SQL成功，客户端实测 92.743 秒，返回 100 行，输出 SHA-256 `c0c56b88c4a27a39dc4453a9297c81d8781d9dfeaa10104710fbe24954df427f`。RSS 保持在约 5–6 GiB，无 OOM；无需修改。
+
+## Q50：退货日期先过滤，复合键连接计划合理
+
+普通 `EXPLAIN` 只扫描一次 `store_sales` 和一次 `store_returns`。2000 年 9 月条件先通过 `date_dim` 缩小 returns，再按 ticket/item/customer 复合键连接 sales；sales sold date 和 store 都是主键等值连接。最终只按门店聚合五个退货时延区间，没有重复事实扫描、危险 build side 或明细级窗口。
+
+1TB 原 SQL成功：statement ID `01a04469-57e0-71bd-b459-d8593ad3aaf6`，耗时 57.744 秒，读取 3,168,134,863 行、扫描 62,209,149,436 字节，返回 100 行；输出 SHA-256 `1545ba0fb06614fb307673994ce98e5db9e9e37af14bcfc4997058a64137a463`。无 OOM，无需修改。
+
+## Q51：累计 MIN/MAX 使用线性 running aggregate
+
+Q51 先分别计算 web/store 的按 item、date 累计销售额，FULL OUTER JOIN 后再计算两个累计 MAX。计划的表扫描、日期过滤和连接关系合理，但旧执行器只允许声明了 source-preserving merge 的聚合进入累计窗口快路径；SUM 已声明，MIN/MAX 没有。因此外层 MAX 对每个输出行重新扫描 partition prefix，CPU profile 中 `minMaxExecFixed.BatchFill` 一度占 66%–73%，总复杂度为各 partition 长度平方和。旧 1TB 执行在 655.073 秒时仍处于该阶段，主动取消以避免无收益地继续运行。
+
+MIN/MAX 的现有 `Merge` 实际只读取 source，并将值复制或比较到 destination，不转移所有权、也不修改 source。修复为定宽和 bytes 两种 MIN/MAX executor 声明这一既有契约，使累计窗口复用通用 running aggregate 路径：每个输入行只 Fill 一次，每个输出行只 snapshot 当前状态一次，复杂度降为线性。修改不检查查询、函数参数或 stats；所有累计 MIN/MAX 窗口均可受益。契约测试覆盖定宽/变长 source 被重复 merge 后仍不变，窗口测试覆盖跨 output chunk 保留 running state。
+
+1GB 修复前后输出逐字节一致，耗时 28.881 → 27.548 秒；该规模的固定扫描、排序和 partition 成本占主导。1TB 修复后 statement ID `01a04479-0600-7fb1-a881-c824e650b2e9`，733.427 秒成功完成，读取 3,600,134,473 行、扫描 57,601,567,176 字节，返回 100 行，输出 SHA-256 `b3969a77ba03b764105f5add1dae566fdae7701f50d0591df02b7eabaf4d389c`。后期 profile 中 MIN/MAX `BatchFill` 仅占约 6%–12%，RSS 峰值约 12 GiB 后回落，无 OOM。aggexec/window/compile 全量测试、定向 race 和 vet 均通过。
+
+## Q52：单次事实扫描，计划合理
+
+普通 `EXPLAIN` 只扫描一次 `store_sales`。1998 年 12 月日期和 manager 条件分别在 date/item 主键 join 前过滤，随后按 brand 聚合；没有重复子计划或高基数窗口。1TB 原 SQL成功：statement ID `01a04487-c08d-759b-9c9c-67fc0a4d297e`，耗时 20.023 秒，读取 2,880,361,048 行、扫描 46,091,484,572 字节，返回 100 行；输出 SHA-256 `bd8b35e9ecc42ca0d27abe3652314e78f3667d990bfff65326011c52fe9a09bf`。无需修改。
+
+## Q53：窗口位于聚合后，计划合理
+
+日期 12 个月和两组 item 属性 OR 条件均先进入事实路径，计划按 manufacturer/quarter 聚合后才计算 manufacturer 内平均值。窗口输入已缩到低基数季度结果，不会对事实明细执行。1TB 原 SQL成功：statement ID `01a04488-6e49-7ed0-89c1-afdbc48791a6`，耗时 30.222 秒，读取 2,880,362,050 行、扫描 57,624,640,576 字节，返回 100 行；输出 SHA-256 `303091c3d0fec5d1b9cebd17d299c4eed2a299a2be28ffb795ce330ab9cca8fd`。无需修改。
+
+## Q54：客户集合先缩减，后续 revenue 聚合安全
+
+catalog/web 两个渠道先由 1999 年 3 月和 Jewelry/consignment item 条件缩减，再与 customer 去重形成 `my_customers`。后续三个月 `store_sales` 与该客户集合连接并按 customer 聚合，county/state 与小 store 维表的连接虽会保留 SQL 本身要求的 multiplicity，但没有危险 build side。两个无相关月份标量已成为只扫描小 `date_dim` 的 SINGLE join，不构成主要成本。
+
+1TB 原 SQL成功：statement ID `01a04489-283e-7d77-9953-ca327cee1f14`，耗时 55.165 秒，读取 5,052,682,926 行、扫描 72,120,737,698 字节，返回 100 行；输出 SHA-256 `f713c36af53d45933cfbe5b89589ba9a6adec8bceaca39b0ab795571cce5d451`。无 OOM，无需修改。
+
+## Q55：Q52 同类计划合理
+
+普通 `EXPLAIN` 只扫描一次 `store_sales`，2001 年 12 月和 manager 条件均通过主键维表 join 在 brand 聚合前生效。1TB 原 SQL成功：statement ID `01a0448a-3bc3-7b5b-a457-b0be00a048cb`，耗时 23.541 秒，读取 2,880,361,048 行、扫描 46,091,484,572 字节，返回 100 行；输出 SHA-256 `806a555bbb4ea6f54745f4deb4cd03e5d32828ae423bc597a9176553b8f13dba`。无需修改。
 
 ## 后续查询记录模板
 

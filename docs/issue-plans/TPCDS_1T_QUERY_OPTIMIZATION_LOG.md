@@ -20,7 +20,7 @@
 
 - Q2 基线使用 `e866c535f5`；Q4 计划基线使用 `484d9815eb`。耗时受版本、缓存和对象布局影响，计划结构、扫描计数和结果一致性是主要验收依据。
 - 当前工作树下 Q1–Q10 的确切 SQL、普通 `EXPLAIN` 和输入 stats 保存在 [`tpcds-1t-q01-q10-baseline`](tpcds-1t-q01-q10-baseline/README.md)；Q11 以后按完成顺序保存在 [`tpcds-1t-q11-plus-baseline`](tpcds-1t-q11-plus-baseline/README.md)。
-- 目前 Q1–Q65 已实跑完成；Q66–Q99 待继续。
+- 目前 Q1–Q66 已实跑完成；Q67 在 20 分钟预算处取消，Q68–Q99 待继续。
 
 ## 进度摘要
 
@@ -90,6 +90,8 @@
 | Q63 | Q53 同类聚合后窗口 | window 输入已缩到 manager/month 粒度；无修改 | 35.099 秒，100 行 | 完成 |
 | Q64 | `cross_sales` 两次引用且内部依赖 `cs_ui` | 已命中 Q47 的安全嵌套 CTE 共享；两个 CTE 各构造一次，年份上界进入 producer | 145.852 秒，7094 行 | 完成；无 OOM |
 | Q65 | 相同 store/item 月聚合被两个派生表各执行一次 | 记录通用非 CTE 子计划共享候选；当前两路 spill 仍在资源预算内 | 272.469 秒，100 行 | 完成；后续机制优化 |
+| Q66 | web/catalog 两渠道 24 个条件聚合 | 两个事实分支均先按 year/warehouse 聚合，再连接宽 warehouse；无修改 | 81.115 秒，20 行 | 完成 |
+| Q67 | 9 级 ROLLUP 将每条明细扩成 9 个 grouping row，再对宽字符串 key 做大聚合 | 现有 grouping-set 共享只消除了重复扫描，未消除明细级 9 倍 hash/spill 放大 | 1202.352 秒时仍未完成并取消；spill 峰值约 112 GB | 阻塞；需要通用分层 rollup/聚合机制 |
 | Q4 | 共享前重复扫描；共享后仍把大量事实行直接送入 customer join 和最终聚合 | 复用一个可 spill producer；在有主键证明且成本显著下降时加入事实侧 partial SUM | 1176.530 → 588.892 秒，100 行 | 两阶段结构优化完成；spill 效率待优化 |
 
 ## Q1：统一 spill 阈值
@@ -758,6 +760,20 @@ promotional 和 total 两个无相关标量分支重复扫描相同月份的 `st
 同一个“12 个月 store_sales 按 store/item 聚合”子计划在 `sb` 和 `sc` 中各执行一次：一份继续按 store 求平均，另一份保留 item revenue。两路大聚合都发生 spill，CPU profile 显示正常的 group spill write/merge，没有无界状态；代价是事实扫描、聚合和 spill IO 全部重复。正确的后续方向是基于逻辑表达式和消费列证明的非 CTE common-subplan reuse，并让两个消费者共享一次 store/item producer，而不是匹配 Q65 文本。
 
 1TB 原 SQL成功：statement ID `01a0449c-8524-721b-8d6c-5ef800719fe3`，耗时 272.469 秒，读取 5,760,422,597 行、扫描 115,250,786,188 字节，返回 100 行；输出 SHA-256 `72828662ee045f652ae50853315b695940ce159f2811a89fe8bc6e8e94279a3d`。RSS 约 8–9 GiB，无 OOM；当前不扩大修改。
+
+## Q66：宽条件聚合已在维表展示列前完成
+
+web/catalog 两个分支各扫描对应事实表一次。2002 年、时间区间和两种 carrier 条件均先进入事实路径；计划先按 year/warehouse key 计算 24 个按月份的 sales/net SUM，再连接 warehouse 的名称、地址和面积列，最后合并两渠道。没有把宽 warehouse 列带入事实级 hash 状态。
+
+1TB 原 SQL成功：statement ID `01a044a1-de8b-7726-ba7e-500130466751`，耗时 81.115 秒，读取 2,160,299,770 行、扫描 77,762,450,328 字节，返回 20 行；输出 SHA-256 `ff002f9f4e471fee528ac1847158aa9faa0a24bfb438dfa2ba4c0c49f3cbb15f`。无需修改。
+
+## Q67：20 分钟目标的首个新阻塞点
+
+普通 `EXPLAIN` 已命中 grouping-set 共享：`store_sales` 只扫描一次，一个 Plan 0 producer 计算全部 ROLLUP level，Plan 1 的九个 `Sink Scan` 只按 grouping id 拆分结果。因此问题不再是重复事实扫描。
+
+剩余瓶颈在 grouping-set 的物理算法。当前 producer 在聚合前把每条明细扩成 9 个 grouping row，再以 category/class/brand/product/year/quarter/month/store 和 grouping id 的宽复合 key 做 hash aggregate。CPU profile 持续落在 `fillGroupingAwareStr`、hash rehash、`UnionOne` 和 `groupSpillWriter.Write`；运行到 20 分钟仍在 producer 聚合/spill 阶段，尚未进入后续 rank。statement ID `01a044a3-72ed-7807-910a-bf0d7485ae13`，1202.352 秒后因客户端预算取消，未产生结果；RSS 约 8–10 GiB，临时磁盘相对查询前峰值增长约 112 GB，取消后已回收。
+
+这不能再靠提高 spill 阈值或调整 join order解决：内存受控，但明细级 9 倍 hash、宽 key 和 spill IO 是算法性放大。通用修复方向应是分层 ROLLUP：先计算最细 level，再由其结果逐级聚合父 level；或者引入等价的 rollup-aware aggregate state，使每条事实不必进入九套宽 key 状态。必须同时验证 grouping id/NULL 语义、distinct/非可合并聚合反例、分布式 partial/final 合并、spill 和排序窗口消费。按既定规则，Q67 需要先确定这一机制设计，再继续 Q68。
 
 ## 后续查询记录模板
 

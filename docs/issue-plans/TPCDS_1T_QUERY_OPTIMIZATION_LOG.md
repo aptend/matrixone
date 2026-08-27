@@ -20,7 +20,7 @@
 
 - Q2 基线使用 `e866c535f5`；Q4 计划基线使用 `484d9815eb`。耗时受版本、缓存和对象布局影响，计划结构、扫描计数和结果一致性是主要验收依据。
 - 当前工作树下 Q1–Q10 的确切 SQL、普通 `EXPLAIN` 和输入 stats 保存在 [`tpcds-1t-q01-q10-baseline`](tpcds-1t-q01-q10-baseline/README.md)；Q11 以后按完成顺序保存在 [`tpcds-1t-q11-plus-baseline`](tpcds-1t-q11-plus-baseline/README.md)。
-- 目前 Q1–Q60 已实跑完成；Q61–Q99 待继续。
+- 目前 Q1–Q65 已实跑完成；Q66–Q99 待继续。
 
 ## 进度摘要
 
@@ -85,6 +85,11 @@
 | Q58 | 三渠道单周 item revenue 聚合 | 每个渠道只扫描一次，周集合在事实连接前构造；无修改 | 30.534 秒，100 行 | 完成 |
 | Q59 | 全历史周聚合后，两个消费者只取相邻两年 | 记录可传播 week domain 的后续方向；当前一次事实扫描且资源安全，不扩大修改 | 330.993 秒，100 行 | 完成；后续机制优化 |
 | Q60 | Q56 同类三渠道月聚合 | 日期、时区和 category 条件均提前；无修改 | 53.487 秒，100 行 | 完成 |
+| Q61 | promotional/total 两个标量聚合重复相同事实路径 | 记录为通用 conditional aggregate/subplan CSE 候选；当前资源安全 | 73.292 秒，1 行 | 完成；后续机制优化 |
+| Q62 | web shipping 时延条件聚合 | 已在 web_site join 前做 partial aggregate；无修改 | 45.151 秒，100 行 | 完成 |
+| Q63 | Q53 同类聚合后窗口 | window 输入已缩到 manager/month 粒度；无修改 | 35.099 秒，100 行 | 完成 |
+| Q64 | `cross_sales` 两次引用且内部依赖 `cs_ui` | 已命中 Q47 的安全嵌套 CTE 共享；两个 CTE 各构造一次，年份上界进入 producer | 145.852 秒，7094 行 | 完成；无 OOM |
+| Q65 | 相同 store/item 月聚合被两个派生表各执行一次 | 记录通用非 CTE 子计划共享候选；当前两路 spill 仍在资源预算内 | 272.469 秒，100 行 | 完成；后续机制优化 |
 | Q4 | 共享前重复扫描；共享后仍把大量事实行直接送入 customer join 和最终聚合 | 复用一个可 spill producer；在有主键证明且成本显著下降时加入事实侧 partial SUM | 1176.530 → 588.892 秒，100 行 | 两阶段结构优化完成；spill 效率待优化 |
 
 ## Q1：统一 spill 阈值
@@ -727,6 +732,32 @@ store/catalog/web 每个事实表各扫描一次，并先与目标周的 `date_d
 ## Q60：Q56 同类计划合理
 
 三渠道各扫描一次事实表，1999 年 9 月、GMT -6 和 Children category 都在聚合前生效。1TB 原 SQL成功：statement ID `01a04494-f0f3-7c46-81cf-0ad35d7cc7d5`，耗时 53.487 秒，读取 5,059,987,938 行、扫描 101,086,405,584 字节，返回 100 行；输出 SHA-256 `0d22a648ce620f92efca80cbbd54f6a292e941f43aa993d05ecf8909cd5ed9e2`。无 OOM，无需修改。
+
+## Q61：重复标量聚合安全完成，归入通用融合方向
+
+promotional 和 total 两个无相关标量分支重复扫描相同月份的 `store_sales` 及五张公共维表，前者仅多一个 promotion 过滤。正确的通用方向是识别共享事实路径，并将子集分支改成 conditional aggregate 或共享 producer；这与 Q9/Q28 的 scalar aggregate fusion 属于同一类问题。当前只有两路、日期选择性明确且资源安全，不为 Q61 单独实现 SQL 形状 rewrite。
+
+1TB 原 SQL成功：statement ID `01a04496-e118-74f0-a04d-7b1276e7c5f7`，耗时 73.292 秒，读取 5,796,725,600 行、扫描 150,114,067,172 字节，返回 1 行；输出 SHA-256 `7a80f2d76904863ae81a91380d4f01d62c4625d1c1de594a0be0e7a178f6a0b5`。无需当前修改。
+
+## Q62：partial aggregate 已提前
+
+目标 12 个月通过 ship date 主键 join 先过滤 `web_sales`；warehouse 和 ship mode join 后，计划先按 warehouse/type/web-site-key 计算五个时延条件 SUM，再连接带名称的 web_site 并完成最终聚合。宽展示列没有进入事实级聚合。1TB 原 SQL成功：statement ID `01a04498-44c4-7ab1-a001-3412acb53c32`，耗时 45.151 秒，读取 720,073,519 行、扫描 14,400,594,544 字节，返回 100 行；输出 SHA-256 `d9e99a1c1ba1d91890ad390fb437dbf54791ef633873229a4dc4f4bdb159a502`。无需修改。
+
+## Q63：Q53 同类聚合后窗口
+
+12 个月日期和 item 属性 OR 条件均先进入 `store_sales` 路径，计划按 manager/month 聚合后才计算 manager 内平均值。1TB 原 SQL成功：statement ID `01a04499-2191-71fe-9da1-485fc3de4caf`，耗时 35.099 秒，读取 2,880,362,050 行、扫描 57,624,640,576 字节，返回 100 行；输出 SHA-256 `70cb25329e061997d8a7f2d39ead42746c6500e6478be41e15dad1ae5f3bac4a`。无需修改。
+
+## Q64：安全嵌套 CTE 共享后 1TB 实测通过
+
+`cross_sales` 被 2000/2001 两个消费者完整引用，并在内部依赖 `cs_ui`。当前普通 `EXPLAIN` 命中 Q47 补齐的嵌套共享：`cs_ui` 只有一个 catalog sales/returns producer，`cross_sales` 也只有一个 producer，两个最终消费者通过 `Sink Scan` 读取；消费者年份条件合并为 `d1.d_year IN (2000, 2001)` 并进入 producer。事实/退货复合键、选择性 item 条件和维表主键 join 都在宽聚合前生效。
+
+1TB 原 SQL成功：statement ID `01a0449a-0ae5-7d26-81bb-fb412c0db568`，耗时 145.852 秒，读取 4,780,342,624 行、扫描 204,369,980,835 字节，返回 7,094 行；输出 SHA-256 `ec356895fe68f449532e5224ba4fcb988252a0c0fdb9175f16317056e71ef61a`。RSS 约 8 GiB 且稳定，无 OOM。该结果说明当前 Q64 已不再是危险计划，但不等于 stats 的系统性误差已经解决。
+
+## Q65：重复非 CTE 聚合安全完成
+
+同一个“12 个月 store_sales 按 store/item 聚合”子计划在 `sb` 和 `sc` 中各执行一次：一份继续按 store 求平均，另一份保留 item revenue。两路大聚合都发生 spill，CPU profile 显示正常的 group spill write/merge，没有无界状态；代价是事实扫描、聚合和 spill IO 全部重复。正确的后续方向是基于逻辑表达式和消费列证明的非 CTE common-subplan reuse，并让两个消费者共享一次 store/item producer，而不是匹配 Q65 文本。
+
+1TB 原 SQL成功：statement ID `01a0449c-8524-721b-8d6c-5ef800719fe3`，耗时 272.469 秒，读取 5,760,422,597 行、扫描 115,250,786,188 字节，返回 100 行；输出 SHA-256 `72828662ee045f652ae50853315b695940ce159f2811a89fe8bc6e8e94279a3d`。RSS 约 8–9 GiB，无 OOM；当前不扩大修改。
 
 ## 后续查询记录模板
 

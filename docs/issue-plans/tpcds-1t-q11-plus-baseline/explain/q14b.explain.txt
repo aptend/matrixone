@@ -1,0 +1,168 @@
+Plan 0:
+Sink
+  ->  Project
+        ->  Aggregate
+              Aggregate Functions: avg((cast(quantity AS DECIMAL64(18, 0)) * list_price))
+              ->  Union All
+                    ->  Union All
+                          ->  Project
+                                ->  Join
+                                      Join Type: INNER   hashOnPK
+                                      Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                      ->  Table Scan on tpcds_1t.store_sales
+                                      ->  Table Scan on tpcds_1t.date_dim
+                                            Filter Cond: date_dim.d_year BETWEEN 1998 AND 2000
+                          ->  Project
+                                ->  Join
+                                      Join Type: INNER   hashOnPK
+                                      Join Cond: (catalog_sales.cs_sold_date_sk = date_dim.d_date_sk)
+                                      ->  Table Scan on tpcds_1t.catalog_sales
+                                      ->  Table Scan on tpcds_1t.date_dim
+                                            Filter Cond: date_dim.d_year BETWEEN 1998 AND 2000
+                    ->  Project
+                          ->  Join
+                                Join Type: INNER   hashOnPK
+                                Join Cond: (web_sales.ws_sold_date_sk = date_dim.d_date_sk)
+                                ->  Table Scan on tpcds_1t.web_sales
+                                ->  Table Scan on tpcds_1t.date_dim
+                                      Filter Cond: date_dim.d_year BETWEEN 1998 AND 2000
+Plan 1:
+Project
+  ->  Sort
+        Sort Key: 'store' INTERNAL, item.i_brand_id INTERNAL, item.i_class_id INTERNAL, item.i_category_id INTERNAL
+        Limit: 100
+        ->  Join
+              Join Type: INNER
+              Join Cond: (item.i_brand_id = item.i_brand_id), (item.i_class_id = item.i_class_id), (item.i_category_id = item.i_category_id)
+              ->  Filter
+                    Filter Cond: (sum(store_sales.ss_quantity * store_sales.ss_list_price) > avg_sales.average_sales)
+                    ->  Join
+                          Join Type: LEFT
+                          ->  Aggregate
+                                Group Key: item.i_brand_id, item.i_class_id, item.i_category_id
+                                Aggregate Functions: sum((cast(store_sales.ss_quantity AS DECIMAL64(18, 0)) * store_sales.ss_list_price)), starcount(1)
+                                ->  Filter
+                                      Filter Cond: (date_dim.d_week_seq = date_dim.d_week_seq)
+                                      ->  Join
+                                            Join Type: SINGLE
+                                            ->  Join
+                                                  Join Type: SEMI
+                                                  Join Cond: (store_sales.ss_item_sk = item.i_item_sk) shuffle: range(store_sales.ss_item_sk)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                              ->  Table Scan on tpcds_1t.store_sales
+                                                              ->  Table Scan on tpcds_1t.date_dim
+                                                        ->  Table Scan on tpcds_1t.item
+                                                  ->  Join
+                                                        Join Type: INNER
+                                                        Join Cond: (brand_id = item.i_brand_id), (class_id = item.i_class_id), (category_id = item.i_category_id)
+                                                        ->  Intersect
+                                                              ->  Intersect
+                                                                    ->  Project
+                                                                          ->  Join
+                                                                                Join Type: INNER   hashOnPK
+                                                                                Join Cond: (store_sales.ss_item_sk = iss.i_item_sk)
+                                                                                ->  Join
+                                                                                      Join Type: INNER   hashOnPK
+                                                                                      Join Cond: (store_sales.ss_sold_date_sk = d1.d_date_sk)
+                                                                                      ->  Table Scan on tpcds_1t.store_sales
+                                                                                      ->  Table Scan on tpcds_1t.date_dim
+                                                                                            Filter Cond: d1.d_year BETWEEN 1998 AND 2000
+                                                                                ->  Table Scan on tpcds_1t.item
+                                                                    ->  Project
+                                                                          ->  Join
+                                                                                Join Type: INNER   hashOnPK
+                                                                                Join Cond: (catalog_sales.cs_item_sk = ics.i_item_sk)
+                                                                                ->  Join
+                                                                                      Join Type: INNER   hashOnPK
+                                                                                      Join Cond: (catalog_sales.cs_sold_date_sk = d2.d_date_sk)
+                                                                                      ->  Table Scan on tpcds_1t.catalog_sales
+                                                                                      ->  Table Scan on tpcds_1t.date_dim
+                                                                                            Filter Cond: d2.d_year BETWEEN 1998 AND 2000
+                                                                                ->  Table Scan on tpcds_1t.item
+                                                              ->  Project
+                                                                    ->  Join
+                                                                          Join Type: INNER   hashOnPK
+                                                                          Join Cond: (web_sales.ws_item_sk = iws.i_item_sk)
+                                                                          ->  Join
+                                                                                Join Type: INNER   hashOnPK
+                                                                                Join Cond: (web_sales.ws_sold_date_sk = d3.d_date_sk)
+                                                                                ->  Table Scan on tpcds_1t.web_sales
+                                                                                ->  Table Scan on tpcds_1t.date_dim
+                                                                                      Filter Cond: d3.d_year BETWEEN 1998 AND 2000
+                                                                          ->  Table Scan on tpcds_1t.item
+                                                        ->  Table Scan on tpcds_1t.item
+                                            ->  Table Scan on tpcds_1t.date_dim
+                                                  Filter Cond: (date_dim.d_year = 1999), (date_dim.d_dom = 16), (date_dim.d_moy = 12)
+                          ->  Sink Scan
+                                DataSource: Plan 0
+              ->  Filter
+                    Filter Cond: (sum(store_sales.ss_quantity * store_sales.ss_list_price) > avg_sales.average_sales)
+                    ->  Join
+                          Join Type: LEFT
+                          ->  Aggregate
+                                Group Key: item.i_brand_id, item.i_class_id, item.i_category_id
+                                Aggregate Functions: sum((cast(store_sales.ss_quantity AS DECIMAL64(18, 0)) * store_sales.ss_list_price)), starcount(1)
+                                ->  Filter
+                                      Filter Cond: (date_dim.d_week_seq = date_dim.d_week_seq)
+                                      ->  Join
+                                            Join Type: SINGLE
+                                            ->  Join
+                                                  Join Type: SEMI
+                                                  Join Cond: (store_sales.ss_item_sk = item.i_item_sk) shuffle: range(store_sales.ss_item_sk)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                              ->  Table Scan on tpcds_1t.store_sales
+                                                              ->  Table Scan on tpcds_1t.date_dim
+                                                        ->  Table Scan on tpcds_1t.item
+                                                  ->  Join
+                                                        Join Type: INNER
+                                                        Join Cond: (brand_id = item.i_brand_id), (class_id = item.i_class_id), (category_id = item.i_category_id)
+                                                        ->  Intersect
+                                                              ->  Intersect
+                                                                    ->  Project
+                                                                          ->  Join
+                                                                                Join Type: INNER   hashOnPK
+                                                                                Join Cond: (store_sales.ss_item_sk = iss.i_item_sk)
+                                                                                ->  Join
+                                                                                      Join Type: INNER   hashOnPK
+                                                                                      Join Cond: (store_sales.ss_sold_date_sk = d1.d_date_sk)
+                                                                                      ->  Table Scan on tpcds_1t.store_sales
+                                                                                      ->  Table Scan on tpcds_1t.date_dim
+                                                                                            Filter Cond: d1.d_year BETWEEN 1998 AND 2000
+                                                                                ->  Table Scan on tpcds_1t.item
+                                                                    ->  Project
+                                                                          ->  Join
+                                                                                Join Type: INNER   hashOnPK
+                                                                                Join Cond: (catalog_sales.cs_item_sk = ics.i_item_sk)
+                                                                                ->  Join
+                                                                                      Join Type: INNER   hashOnPK
+                                                                                      Join Cond: (catalog_sales.cs_sold_date_sk = d2.d_date_sk)
+                                                                                      ->  Table Scan on tpcds_1t.catalog_sales
+                                                                                      ->  Table Scan on tpcds_1t.date_dim
+                                                                                            Filter Cond: d2.d_year BETWEEN 1998 AND 2000
+                                                                                ->  Table Scan on tpcds_1t.item
+                                                              ->  Project
+                                                                    ->  Join
+                                                                          Join Type: INNER   hashOnPK
+                                                                          Join Cond: (web_sales.ws_item_sk = iws.i_item_sk)
+                                                                          ->  Join
+                                                                                Join Type: INNER   hashOnPK
+                                                                                Join Cond: (web_sales.ws_sold_date_sk = d3.d_date_sk)
+                                                                                ->  Table Scan on tpcds_1t.web_sales
+                                                                                ->  Table Scan on tpcds_1t.date_dim
+                                                                                      Filter Cond: d3.d_year BETWEEN 1998 AND 2000
+                                                                          ->  Table Scan on tpcds_1t.item
+                                                        ->  Table Scan on tpcds_1t.item
+                                            ->  Table Scan on tpcds_1t.date_dim
+                                                  Filter Cond: (date_dim.d_year = 1998), (date_dim.d_dom = 16), (date_dim.d_moy = 12)
+                          ->  Sink Scan
+                                DataSource: Plan 0

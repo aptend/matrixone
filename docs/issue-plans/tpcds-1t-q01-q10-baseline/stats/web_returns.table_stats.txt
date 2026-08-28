@@ -1,0 +1,357 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.web_returns	71997522	8789	93	93	1	{
+  "__mo_cpkey_col": 2359296,
+  "wr_account_credit": 445518.5895739249,
+  "wr_fee": 9903,
+  "wr_item_sk": 1075938,
+  "wr_net_loss": 1088997.1420887231,
+  "wr_order_number": 2382036,
+  "wr_reason_sk": 65,
+  "wr_refunded_addr_sk": 42497400.73677606,
+  "wr_refunded_cash": 870821.4346741089,
+  "wr_refunded_cdemo_sk": 24194556.33902173,
+  "wr_refunded_customer_sk": 49281862.6303634,
+  "wr_refunded_hdemo_sk": 7179,
+  "wr_return_amt": 1059994.3992159802,
+  "wr_return_amt_inc_tax": 1933089.1404788566,
+  "wr_return_quantity": 99,
+  "wr_return_ship_cost": 512972.4928740288,
+  "wr_return_tax": 102674.80886576026,
+  "wr_returned_date_sk": 3433.3639983041894,
+  "wr_returned_time_sk": 206447.6262911007,
+  "wr_returning_addr_sk": 42603409.09793966,
+  "wr_returning_cdemo_sk": 24197144.964556407,
+  "wr_returning_customer_sk": 49223956.73955425,
+  "wr_returning_hdemo_sk": 7179,
+  "wr_reversed_charge": 453841.5854892913,
+  "wr_web_page_sk": 3004
+}	{
+  "__mo_cpkey_col": 4185252777716531000,
+  "wr_account_credit": 0,
+  "wr_fee": 0.5,
+  "wr_item_sk": 1,
+  "wr_net_loss": 0.5,
+  "wr_order_number": 1,
+  "wr_reason_sk": 1,
+  "wr_refunded_addr_sk": 1,
+  "wr_refunded_cash": 0,
+  "wr_refunded_cdemo_sk": 1,
+  "wr_refunded_customer_sk": 1,
+  "wr_refunded_hdemo_sk": 1,
+  "wr_return_amt": 0,
+  "wr_return_amt_inc_tax": 0,
+  "wr_return_quantity": 1,
+  "wr_return_ship_cost": 0,
+  "wr_return_tax": 0,
+  "wr_returned_date_sk": 2450819,
+  "wr_returned_time_sk": 0,
+  "wr_returning_addr_sk": 1,
+  "wr_returning_cdemo_sk": 1,
+  "wr_returning_customer_sk": 1,
+  "wr_returning_hdemo_sk": 1,
+  "wr_reversed_charge": 0,
+  "wr_web_page_sk": 1
+}	{
+  "__mo_cpkey_col": 4185819411832772600,
+  "wr_account_credit": 23166.33,
+  "wr_fee": 100,
+  "wr_item_sk": 300000,
+  "wr_net_loss": 15887.84,
+  "wr_order_number": 60000000,
+  "wr_reason_sk": 65,
+  "wr_refunded_addr_sk": 6000000,
+  "wr_refunded_cash": 26992.92,
+  "wr_refunded_cdemo_sk": 1920800,
+  "wr_refunded_customer_sk": 12000000,
+  "wr_refunded_hdemo_sk": 7200,
+  "wr_return_amt": 29191,
+  "wr_return_amt_inc_tax": 30393.01,
+  "wr_return_quantity": 100,
+  "wr_return_ship_cost": 14352.1,
+  "wr_return_tax": 2551.16,
+  "wr_returned_date_sk": 2453002,
+  "wr_returned_time_sk": 86399,
+  "wr_returning_addr_sk": 6000000,
+  "wr_returning_cdemo_sk": 1920800,
+  "wr_returning_customer_sk": 12000000,
+  "wr_returning_hdemo_sk": 7200,
+  "wr_reversed_charge": 23194.77,
+  "wr_web_page_sk": 3000
+}	{
+  "__mo_cpkey_col": "VARCHAR",
+  "wr_account_credit": "DECIMAL64",
+  "wr_fee": "DECIMAL64",
+  "wr_item_sk": "INT",
+  "wr_net_loss": "DECIMAL64",
+  "wr_order_number": "INT",
+  "wr_reason_sk": "INT",
+  "wr_refunded_addr_sk": "INT",
+  "wr_refunded_cash": "DECIMAL64",
+  "wr_refunded_cdemo_sk": "INT",
+  "wr_refunded_customer_sk": "INT",
+  "wr_refunded_hdemo_sk": "INT",
+  "wr_return_amt": "DECIMAL64",
+  "wr_return_amt_inc_tax": "DECIMAL64",
+  "wr_return_quantity": "INT",
+  "wr_return_ship_cost": "DECIMAL64",
+  "wr_return_tax": "DECIMAL64",
+  "wr_returned_date_sk": "INT",
+  "wr_returned_time_sk": "INT",
+  "wr_returning_addr_sk": "INT",
+  "wr_returning_cdemo_sk": "INT",
+  "wr_returning_customer_sk": "INT",
+  "wr_returning_hdemo_sk": "INT",
+  "wr_reversed_charge": "DECIMAL64",
+  "wr_web_page_sk": "INT"
+}	{
+  "__mo_cpkey_col": 0,
+  "wr_account_credit": 3241972,
+  "wr_fee": 3238926,
+  "wr_item_sk": 0,
+  "wr_net_loss": 3240573,
+  "wr_order_number": 0,
+  "wr_reason_sk": 3238897,
+  "wr_refunded_addr_sk": 3239971,
+  "wr_refunded_cash": 3240493,
+  "wr_refunded_cdemo_sk": 3240352,
+  "wr_refunded_customer_sk": 3242433,
+  "wr_refunded_hdemo_sk": 3238545,
+  "wr_return_amt": 3238405,
+  "wr_return_amt_inc_tax": 3239765,
+  "wr_return_quantity": 3238643,
+  "wr_return_ship_cost": 3239048,
+  "wr_return_tax": 3237729,
+  "wr_returned_date_sk": 3239259,
+  "wr_returned_time_sk": 3238574,
+  "wr_returning_addr_sk": 3239658,
+  "wr_returning_cdemo_sk": 3239192,
+  "wr_returning_customer_sk": 3237281,
+  "wr_returning_hdemo_sk": 3238239,
+  "wr_reversed_charge": 3239546,
+  "wr_web_page_sk": 3240387
+}	{
+  "__mo_cpkey_col": 1728274510,
+  "wr_account_credit": 585525030,
+  "wr_fee": 585525030,
+  "wr_item_sk": 288324070,
+  "wr_net_loss": 585525030,
+  "wr_order_number": 288324070,
+  "wr_reason_sk": 297534942,
+  "wr_refunded_addr_sk": 297534942,
+  "wr_refunded_cash": 585525030,
+  "wr_refunded_cdemo_sk": 297534942,
+  "wr_refunded_customer_sk": 297534942,
+  "wr_refunded_hdemo_sk": 297534934,
+  "wr_return_amt": 585525030,
+  "wr_return_amt_inc_tax": 585525030,
+  "wr_return_quantity": 297534942,
+  "wr_return_ship_cost": 585525030,
+  "wr_return_tax": 585525030,
+  "wr_returned_date_sk": 297534942,
+  "wr_returned_time_sk": 297534942,
+  "wr_returning_addr_sk": 297534942,
+  "wr_returning_cdemo_sk": 297534942,
+  "wr_returning_customer_sk": 297534942,
+  "wr_returning_hdemo_sk": 297534942,
+  "wr_reversed_charge": 585525022,
+  "wr_web_page_sk": 297534942
+}	{
+  "wr_account_credit": {
+    "overlap": 0.8985854466182828,
+    "result": [
+      0,
+      "...",
+      22351.828800014246
+    ],
+    "uniform": 0.865822724130983
+  },
+  "wr_fee": {
+    "overlap": 0.9021307792310446,
+    "result": [
+      0.5000000000008558,
+      "...",
+      99.90273704789834
+    ],
+    "uniform": 0.999
+  },
+  "wr_item_sk": {
+    "overlap": 0.07006022349369911,
+    "result": [
+      280.023803003428,
+      "...",
+      299707.5724609846
+    ],
+    "uniform": 0.5579085519676269
+  },
+  "wr_net_loss": {
+    "overlap": 0.8998056321954233,
+    "result": [
+      0.5000000001061371,
+      "...",
+      15092.610031437767
+    ],
+    "uniform": 0.9324714377771939
+  },
+  "wr_order_number": {
+    "overlap": 0.9434954150772854,
+    "result": [
+      65054.27346331415,
+      "...",
+      59926609.48930315
+    ],
+    "uniform": 0.9925212354749609
+  },
+  "wr_refunded_addr_sk": {
+    "overlap": 0.9021024155622884,
+    "result": [
+      1.0000007222902778,
+      "...",
+      5994127.6684488645
+    ],
+    "uniform": 0.999
+  },
+  "wr_refunded_cash": {
+    "overlap": 0.8991278188785949,
+    "result": [
+      4.573226995511816e-11,
+      "...",
+      25990.390767134188
+    ],
+    "uniform": 0.899982470269072
+  },
+  "wr_refunded_cdemo_sk": {
+    "overlap": 0.9020925598751,
+    "result": [
+      1,
+      "...",
+      1918919.8711279165
+    ],
+    "uniform": 0.999
+  },
+  "wr_refunded_customer_sk": {
+    "overlap": 0.9020374866332077,
+    "result": [
+      1.000001572928146,
+      "...",
+      11988255.76478399
+    ],
+    "uniform": 0.999
+  },
+  "wr_refunded_hdemo_sk": {
+    "overlap": 0.902140799405453,
+    "result": [
+      1,
+      "...",
+      7192.962854349951
+    ],
+    "uniform": 0.999
+  },
+  "wr_return_amt": {
+    "overlap": 0.8999948195900422,
+    "result": [
+      1.8863555709634296e-10,
+      "...",
+      28001.327453699305
+    ],
+    "uniform": 0.9388113727884104
+  },
+  "wr_return_amt_inc_tax": {
+    "overlap": 0.9001332948837787,
+    "result": [
+      2.639940006850136e-10,
+      "...",
+      29155.99253040126
+    ],
+    "uniform": 0.9471323510349712
+  },
+  "wr_return_ship_cost": {
+    "overlap": 0.9003953503271948,
+    "result": [
+      0,
+      "...",
+      13808.074732314279
+    ],
+    "uniform": 0.9588694919314482
+  },
+  "wr_return_tax": {
+    "overlap": 0.8988151553432344,
+    "result": [
+      0,
+      "...",
+      2398.404064729337
+    ],
+    "uniform": 0.8816840593322365
+  },
+  "wr_returned_date_sk": {
+    "overlap": 0.8999922655956631,
+    "result": [
+      2450819.000000004,
+      "...",
+      2452996.49041128
+    ],
+    "uniform": 0.999
+  },
+  "wr_returned_time_sk": {
+    "overlap": 0.9021379921713302,
+    "result": [
+      9.467019525919072e-10,
+      "...",
+      86314.37032601594
+    ],
+    "uniform": 0.999
+  },
+  "wr_returning_addr_sk": {
+    "overlap": 0.9021106578378122,
+    "result": [
+      1.0000015037782408,
+      "...",
+      5994127.646477382
+    ],
+    "uniform": 0.999
+  },
+  "wr_returning_cdemo_sk": {
+    "overlap": 0.9021229911163026,
+    "result": [
+      1,
+      "...",
+      1918919.8821343374
+    ],
+    "uniform": 0.999
+  },
+  "wr_returning_customer_sk": {
+    "overlap": 0.9021727479534432,
+    "result": [
+      1,
+      "...",
+      11988255.807520056
+    ],
+    "uniform": 0.999
+  },
+  "wr_returning_hdemo_sk": {
+    "overlap": 0.9021488199015912,
+    "result": [
+      1.0000000000361269,
+      "...",
+      7192.962854349951
+    ],
+    "uniform": 0.999
+  },
+  "wr_reversed_charge": {
+    "overlap": 0.8987794716998098,
+    "result": [
+      0,
+      "...",
+      22600.631314990263
+    ],
+    "uniform": 0.879407520353838
+  },
+  "wr_web_page_sk": {
+    "overlap": 0.902092433664883,
+    "result": [
+      1.0000000000248757,
+      "...",
+      2997.068426197458
+    ],
+    "uniform": 0.999
+  }
+}

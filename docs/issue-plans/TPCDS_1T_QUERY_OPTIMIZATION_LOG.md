@@ -1,6 +1,6 @@
 # TPC-DS 1TB 查询优化记录
 
-- 最后更新：2026-08-28
+- 最后更新：2026-08-29
 - 数据库：`tpcds_1t`，TPC-DS SF1000
 - 测试目录：`/d/mo-worktrees/tpcds-lab`
 - 目的：逐条记录每个查询的问题、通用修改和 1TB 实测结果，避免把查询特判混入优化器
@@ -20,7 +20,7 @@
 
 - Q2 基线使用 `e866c535f5`；Q4 计划基线使用 `484d9815eb`。耗时受版本、缓存和对象布局影响，计划结构、扫描计数和结果一致性是主要验收依据。
 - 当前工作树下 Q1–Q10 的确切 SQL、普通 `EXPLAIN` 和输入 stats 保存在 [`tpcds-1t-q01-q10-baseline`](tpcds-1t-q01-q10-baseline/README.md)；Q11 以后按完成顺序保存在 [`tpcds-1t-q11-plus-baseline`](tpcds-1t-q11-plus-baseline/README.md)。
-- 目前 Q1–Q66 已实跑完成；Q67 在 20 分钟预算处取消，Q68–Q99 待继续。
+- Q1–Q99 已全部实跑完成；Q78 在修正 ANTI 基数与 shuffle 复用选择后于 22 分 44 秒完成，无 OOM。
 
 ## 进度摘要
 
@@ -91,7 +91,39 @@
 | Q64 | `cross_sales` 两次引用且内部依赖 `cs_ui` | 已命中 Q47 的安全嵌套 CTE 共享；两个 CTE 各构造一次，年份上界进入 producer | 145.852 秒，7094 行 | 完成；无 OOM |
 | Q65 | 相同 store/item 月聚合被两个派生表各执行一次 | 记录通用非 CTE 子计划共享候选；当前两路 spill 仍在资源预算内 | 272.469 秒，100 行 | 完成；后续机制优化 |
 | Q66 | web/catalog 两渠道 24 个条件聚合 | 两个事实分支均先按 year/warehouse 聚合，再连接宽 warehouse；无修改 | 81.115 秒，20 行 | 完成 |
-| Q67 | 9 级 ROLLUP 将每条明细扩成 9 个 grouping row，再对宽字符串 key 做大聚合 | 现有 grouping-set 共享只消除了重复扫描，未消除明细级 9 倍 hash/spill 放大 | 1202.352 秒时仍未完成并取消；spill 峰值约 112 GB | 阻塞；需要通用分层 rollup/聚合机制 |
+| Q67 | 9 级 ROLLUP 的明细级展开、宽 key 聚合和后续 RANK 造成严重 spill 放大 | 实验通用的前缀分层 rollup、外排有序 rollup、流式 partition、保留 ties 的 RANK TopN，并以首分组键并行化最终 rollup；不含查询/表/stats 特判 | 1907.126 秒，100 行；spill 164.75 GB，RSS 峰值约 6.5 GiB | 完成且无 OOM；正确性通过，性能未达标，分布式实验暂不提交 |
+| Q68 | 选择性维表过滤后的票据聚合 | 日期、门店和人口过滤均在事实聚合前生效；无重复扫描或危险 build side，不修改 | 146.507 秒，100 行 | 完成；无 OOM |
+| Q69 | 三个月 store SEMI 与 web/catalog ANTI 过滤客户 | 三条事实路径均先按日期过滤，相关子查询均为可哈希 SEMI/ANTI join；不修改 | 51.883 秒，100 行 | 完成；无 OOM |
+| Q70 | 两级 ROLLUP 加 state Top-5 子查询 | 外层与子查询各需一次事实扫描；前缀分层 rollup、RANK TopN 均命中，日期过滤和事实侧 partial SUM 正常；不修改 | 162.070 秒，56 行 | 完成；无 OOM |
+| Q71 | 三渠道单月销售按品牌/时间聚合 | 三个事实分支均只扫描一次，日期、manager 和 meal-time 过滤提前；不修改 | 161.593 秒，296051 行 | 完成；无 OOM |
+| Q72 | catalog sales 与 inventory 按 item/week 连接 | 销售侧年份和人口过滤提前；inventory 仍全扫，安全的 week-domain 传播需保留跨年周语义，当前不做局部特判 | 270.140 秒，100 行；spill 约 1.05 GB | 完成；后续通用 domain propagation 候选 |
+| Q73 | 三年每月前两天的少量门店票据聚合 | 日期、门店、household 过滤均提前，HAVING 在聚合后，customer runtime filter 正常；不修改 | 38.725 秒，568 行 | 完成；无 OOM |
+| Q74 | 年度 CTE 被四次自连接 | 一次 producer/四次 Sink Scan 已消除重复事实扫描；profile 显示宽 varchar 在四路 hash join 反复复制，当前不做 reader-specific schema 大改 | 601.603 秒，100 行；spill 30.43 GB | 完成；后续 CTE consumer projection 候选 |
+| Q75 | 三渠道 `UNION DISTINCT` 后再做高基数聚合 | CTE 共享和 2001/2002 年条件回推均命中；末段单并发 aggregate spill merge 成为瓶颈，当前不做查询特判 | 1127.935 秒，100 行；spill 62.39 GB | 完成，刚好低于 20 分钟；通用并行 spill merge 候选 |
+| Q76 | 三渠道全历史 NULL 列质量统计 | 三个 NULL block filter 均命中；一次扫描后聚合，资源安全，不修改 | 253.774 秒，100 行 | 完成；无 OOM |
+| Q77 | 六个 30 天渠道 CTE 加两级 ROLLUP | 六张事实表各扫描一次；CTE reuse、事实侧 partial aggregate 和前缀 rollup 均命中 | 57.523 秒，100 行 | 完成；无 OOM |
+| Q78 | ANTI 输出被错估为 0，导致三个全年事实表作为 date join build side；外层连接又未优先复用已有分区 | 不再把子节点 `Selectivity` 当作键匹配率；完整 PK 等值 ANTI 使用 `left-right` 下界，其他情况保守退化；shuffle 候选优先精确 REUSE | 1364.189 秒，100 行，RSS 峰值约 15.8 GiB | 完成；无 OOM，全部 99 条计划已回归 |
+| Q79 | 三年选择性门店销售按票据聚合 | 日期、门店和 household 条件均在聚合前生效；宽 customer 列在聚合后读取，不修改 | 174.767 秒，100 行 | 完成；无 OOM |
+| Q80 | 三渠道 30 天 sales/returns 聚合加两级 ROLLUP | 三个事实分支各扫描一次，日期/item/promotion 条件提前；分层 rollup 命中，不修改 | 83.506 秒，100 行 | 完成；无 OOM |
+| Q81 | 按州聚合 catalog returns 后与州平均比较 | CTE 仍扫描两次，但年份路径选择性足且整体仅 6.179 秒；不扩大 CTE reuse 边界 | 6.179 秒，100 行 | 完成；无修改 |
+| Q82 | 选择性 item/inventory/store_sales 存在性连接 | 计划保留 INNER join 重复度，但 item 集合极小且 runtime filter 有效；不引入高风险 DISTINCT-join rewrite | 9.679 秒，23 行 | 完成；无修改 |
+| Q83 | 三渠道指定三周退货按 item 聚合 | 三条 returns 路径均为可哈希的周集合 SEMI 过滤；date_dim 重复很小，不修改 | 2.303 秒，100 行 | 完成；无 OOM |
+| Q84 | 人口/地址/收入维表缩小后连接 store_returns | 选择性 customer 路径先构造，returns 重复度是 SQL 结果语义；不修改 | 1.481 秒，100 行 | 完成；无 OOM |
+| Q85 | web sales/returns 复合键连接与两组 DNF 筛选 | 年份及 sales 价格/利润、地址、人口条件均提前；复合键 hash join 正常 | 15.312 秒，64 行 | 完成；无 OOM |
+| Q86 | 12 个月 web sales 聚合加两级 ROLLUP/RANK | 事实表先按 item partial SUM，分层 rollup 和低基数 window 均命中 | 6.560 秒，100 行 | 完成；无 OOM |
+| Q87 | 三渠道年度 customer/date DISTINCT 后做两次 EXCEPT | 三条事实路径各扫描一次，set 算子的紧凑 key-state 修复命中 | 192.832 秒，1 行，RSS 峰值约 17.7 GiB | 完成；无 OOM |
+| Q88 | 八个半小时区间的同路径标量 COUNT | 当前重复扫描 `store_sales` 八次；记录为通用 conditional-aggregate/subplan fusion 候选 | 216.180 秒，1 行，读取 230.41 亿行 | 完成；无 OOM |
+| Q89 | 年度 store sales 低基数聚合后做窗口偏差 | 维表筛选在事实聚合前，window 位于低基数结果上，不修改 | 62.206 秒，100 行 | 完成；无 OOM |
+| Q90 | 上午/下午两个同路径 web-sales COUNT | 重复扫描两次，属 Q88 同类 scalar aggregate fusion 候选；当前成本很低 | 8.198 秒，1 行 | 完成；无修改 |
+| Q91 | 单月 catalog returns 按 call-center/人口属性聚合 | 日期、地址、人口过滤提前，事实侧 partial SUM 在 call-center 前命中 | 1.401 秒，42 行 | 完成；无 OOM |
+| Q92 | 90 天 web-sales item 相关平均折扣 | 内层去相关为 item 聚合，manufacturer/date 条件进入两个分支 | 6.801 秒，1 行 | 完成；无 OOM |
+| Q93 | LEFT 右侧被后续 INNER 等值连接强制非空，却仍先产生全量外连接 | 将 `(A LEFT B) INNER C` 通用重排为 `A INNER (B INNER C)`；只接受右侧裸列等值的 null-rejecting 证明 | 260.044 → 58.122 秒，100 行，输出逐字一致 | 完成；不依赖 stats |
+| Q94 | 两月 web orders 的同仓库差异 EXISTS 与 returns NOT EXISTS | 去相关后为可哈希 RIGHT SEMI/ANTI，日期、州和 site 条件提前 | 13.405 秒，1 行 | 完成；无 OOM |
+| Q95 | 全量 web-sales 按 order 自连接构造跨仓库 CTE | CTE 只构造一次并以两个 SEMI reader 消费；自连接存在性改写需独立机制 | 628.559 秒，1 行，RSS 峰值约 13.1 GiB | 完成；无 OOM，后续机制候选 |
+| Q96 | 单个时间/门店/household 条件的 store-sales COUNT | 三个维表过滤均通过 PK join 提前，标量聚合资源稳定 | 25.696 秒，1 行 | 完成；无 OOM |
+| Q97 | store/catalog 年度 customer-item 去重后 FULL OUTER 计数 | 两条事实路径先独立去重，FULL OUTER 与标量条件计数正常 | 177.269 秒，1 行，RSS 峰值约 8.9 GiB | 完成；无 OOM |
+| Q98 | 单月三类 item revenue 与 class 窗口占比 | 日期/category 条件提前，事实侧先按 item partial SUM，window 位于低基数聚合后 | 25.553 秒，45000 行 | 完成；无 OOM |
+| Q99 | 全年 catalog shipping 时延条件聚合 | 日期条件提前，事实侧先按 warehouse/ship-mode/call-center partial aggregate | 95.952 秒，100 行 | 完成；无 OOM |
 | Q4 | 共享前重复扫描；共享后仍把大量事实行直接送入 customer join 和最终聚合 | 复用一个可 spill producer；在有主键证明且成本显著下降时加入事实侧 partial SUM | 1176.530 → 588.892 秒，100 行 | 两阶段结构优化完成；spill 效率待优化 |
 
 ## Q1：统一 spill 阈值
@@ -767,13 +799,241 @@ web/catalog 两个分支各扫描对应事实表一次。2002 年、时间区间
 
 1TB 原 SQL成功：statement ID `01a044a1-de8b-7726-ba7e-500130466751`，耗时 81.115 秒，读取 2,160,299,770 行、扫描 77,762,450,328 字节，返回 20 行；输出 SHA-256 `ff002f9f4e471fee528ac1847158aa9faa0a24bfb438dfa2ba4c0c49f3cbb15f`。无需修改。
 
-## Q67：20 分钟目标的首个新阻塞点
+## Q67：分层 ROLLUP 可稳定完成，但 spill 合并仍是瓶颈
 
-普通 `EXPLAIN` 已命中 grouping-set 共享：`store_sales` 只扫描一次，一个 Plan 0 producer 计算全部 ROLLUP level，Plan 1 的九个 `Sink Scan` 只按 grouping id 拆分结果。因此问题不再是重复事实扫描。
+原计划虽已把 `store_sales` 降为一次扫描，但仍在聚合前把每条明细扩成九个 grouping row，再对宽复合 key 做 hash aggregate。基线 statement `01a044a3-72ed-7807-910a-bf0d7485ae13` 运行 1202.352 秒仍未完成，spill 约 112 GB，因此问题是 grouping-set 物理算法的放大，而不是扫描复用、stats 或 spill 阈值。
 
-剩余瓶颈在 grouping-set 的物理算法。当前 producer 在聚合前把每条明细扩成 9 个 grouping row，再以 category/class/brand/product/year/quarter/month/store 和 grouping id 的宽复合 key 做 hash aggregate。CPU profile 持续落在 `fillGroupingAwareStr`、hash rehash、`UnionOne` 和 `groupSpillWriter.Write`；运行到 20 分钟仍在 producer 聚合/spill 阶段，尚未进入后续 rank。statement ID `01a044a3-72ed-7807-910a-bf0d7485ae13`，1202.352 秒后因客户端预算取消，未产生结果；RSS 约 8–10 GiB，临时磁盘相对查询前峰值增长约 112 GB，取消后已回收。
+本轮依次验证了以下通用机制：只有 grouping sets 构成前缀链，且所有聚合都可合并并保持父级结果类型时，才把最细级结果逐级汇总到父级；否则保留原路径。为避免新的无界状态，父级 rollup 使用外排排序后的流式聚合，后续 partition 改为有序流式消费，`RANK <= N` 使用有界且保留 ties 的 TopN。进一步的分布式实验按第一个 grouping key hash shuffle 到 DOP worker，各 worker 外排排序并执行 sorted rollup，协调端只合并 grand total。整个实现不读取 stats，也没有 Q67、表名或常量特判。
 
-这不能再靠提高 spill 阈值或调整 join order解决：内存受控，但明细级 9 倍 hash、宽 key 和 spill IO 是算法性放大。通用修复方向应是分层 ROLLUP：先计算最细 level，再由其结果逐级聚合父 level；或者引入等价的 rollup-aware aggregate state，使每条事实不必进入九套宽 key 状态。必须同时验证 grouping id/NULL 语义、distinct/非可合并聚合反例、分布式 partial/final 合并、spill 和排序窗口消费。按既定规则，Q67 需要先确定这一机制设计，再继续 Q68。
+1GB 上所有受影响的 ROLLUP 查询 Q5/Q14/Q18/Q22/Q27/Q36/Q67/Q70/Q77/Q80/Q86 均通过结果回归；Q77 仅有 SQL `ORDER BY` 未规定的同键行顺序互换，规范化多重集完全一致。白盒测试覆盖 planner 准入与反例、partition ties、远程 pipeline 拓扑、rollup grand-total reducer 和 spill 生命周期。
+
+1TB 结果如下：
+
+| 版本 | 结果 | Spill | 结论 |
+|---|---:|---:|---|
+| 全局外排 sorted rollup | 20 分钟未完成 | 108.09 GB | 消除了九倍 hash，但全局排序仍过重 |
+| 首键分布式 sorted rollup，首次冷运行 | 20 分钟未完成 | 111.33 GB | 并行化后仍受最终 spill merge 限制 |
+| 首键分布式 sorted rollup，热数据复跑 | 1907.126 秒，100 行 | 164.75 GB | 成功、无 OOM，但未达到 20 分钟目标 |
+
+成功 statement ID 为 `01a0476d-a22f-7a2e-8cf5-cf4e100dc22d`，输出 SHA-256 为 `33e287e2b509d3c1bf4cdcfc5b82a9a866a565cf0fa46cf7a174fc5f09f46f46`，RSS 峰值约 6.5 GiB，三个 spill 阈值均保持 128 MiB，结束后临时文件全部回收。结果保存在 `/d/mo-worktrees/tpcds-lab/results/q67-rollup-operator-v7-parallel-1t-retry25m`。
+
+结论：Q67 已证明能在当前机器资源内稳定完成，因而不再阻塞后续查询；但分布式实验将 spill 放大到 164.75 GB，不能作为最终性能修复提交。后续应降低中间表示和 merge pass，而不是提高 128 MiB 阈值；当前先继续 Q68。
+
+## Q68：过滤和聚合位置合理
+
+普通 `EXPLAIN` 只有一次 `store_sales` 扫描。三年中每月前两天、两个门店城市以及 household 条件都通过主键 join 在票据聚合前生效；事实侧先按 ticket/customer/address 聚合，再连接 customer 当前地址并比较城市。最终 Top-100 位于聚合和客户连接之后，符合 SQL 语义。没有重复大型子计划、loop join 或无界高基数窗口，因此不修改。
+
+1TB 原 SQL 成功：statement ID `01a04794-6be5-7198-baca-afb73a6443f9`，耗时 146.507 秒，读取 2,904,069,250 行、扫描 139,248,414,996 字节，返回 100 行；输出 SHA-256 `101369c528d523c4183fa465902911f3ed305b9f079ad19b08472f0e6a81d291`。RSS 约 5.5 GiB，未产生 spill，查询结束后回到约 5.2 GiB，无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q68-v7-1t`。
+
+## Q69：SEMI/ANTI 连接计划合理
+
+普通 `EXPLAIN` 将三个月内有门店购买转成按 customer key 的 hash SEMI join，将同期无 web、无 catalog 购买转成两次 hash ANTI join。三个事实分支都先经 date 主键 join 过滤到 1999 年前三个月，州过滤也在最终人口属性聚合前生效；不存在 loop join、重复子计划或危险的非等值 build。
+
+1TB 原 SQL 成功：statement ID `01a04797-c40a-77c8-879c-4e71dfeafe60`，耗时 51.883 秒，读取 5,060,108,738 行、扫描 40,834,143,292 字节，返回 100 行；输出 SHA-256 `f95d31403ca7b053f1654423a3368f0c9a8aac4b9b87f38543a4957c4e5b22ea`。RSS 峰值约 5.7 GiB，无 spill、无 OOM，因此不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q69-v7-1t`。
+
+## Q70：两级 ROLLUP 和 TopN 均正常
+
+SQL 语义要求外层州/县汇总和内层州排名各读取一次目标 12 个月的 `store_sales`。普通 `EXPLAIN` 中两次日期过滤均已下推；排名子查询先按 store key 做事实侧 partial SUM，再汇总到 state，并命中保留 ties 的 `RANK <= 5` Partition TopN。外层三层 ROLLUP 命中前缀分层路径，最终窗口位于低基数州/县汇总之后。没有不必要的事实扫描或危险状态。
+
+1GB 结果已在 Q67 的受影响查询回归中与旧执行器一致。1TB 原 SQL 成功：statement ID `01a04799-88a1-7cdd-99db-82f82af2ddde`，耗时 162.070 秒，读取 5,760,124,100 行、扫描 92,160,864,912 字节，返回 56 行；输出 SHA-256 `536997abbf19ac7d5a7968b6155689b288541f58bf4eb6fcbd520c5d3af5eaf6`。RSS 约 5.3 GiB，无 spill、无 OOM，因此不新增修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q70-v7-1t`。
+
+## Q71：三渠道单月聚合计划合理
+
+普通 `EXPLAIN` 对 web/catalog/store 三个渠道各扫描一次事实表，三个 2000 年 12 月条件均通过 date 主键 join 提前生效；manager 和 meal-time 小维表过滤也在最终品牌/分钟聚合前完成。没有重复分支、过晚过滤或危险 build side。
+
+1TB 原 SQL 成功：statement ID `01a0479c-d271-7ec2-b2a6-49e7474812d6`，耗时 161.593 秒，读取 5,040,574,338 行、扫描 100,815,915,984 字节，返回 296,051 行；输出 SHA-256 `37bfc5d83b8105c3d8e84ac26217f4b3e1541e49f0cb3e008aca380e6ebf1206`。RSS 约 5.4 GiB，无 spill、无 OOM，因此不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q71-v7-1t`。
+
+## Q72：完整 inventory 扫描可改进，但当前资源安全
+
+普通 `EXPLAIN` 先用 2001 年、人口属性和延迟发货条件缩减 `catalog_sales`，再按 item 和 week 与 inventory 连接。`catalog_returns` 的 LEFT JOIN 因 `(cr_item_sk, cr_order_number)` 复合主键保证至多一行且其列未被消费，被安全消除。主要剩余代价是 inventory 路径完整扫描后通过 `d2.d_week_seq = d1.d_week_seq` 过滤。
+
+不能简单给 d2 下推 `d_year = 2001`：同一个自然周可能跨年，会改变边界周语义。可泛化的后续方向是从已过滤的 d1 构造精确 week-key domain，作为 d2/inventory 的 SEMI filter，同时保留原 join；这与 Q59 的唯一维表 domain propagation 属于同一机制。当前查询 4.5 分钟稳定完成，因此本轮不做 SQL 形状特判。
+
+1TB 原 SQL 成功：statement ID `01a047a0-74a0-775a-901c-23946720a9cd`，耗时 270.140 秒，读取 2,225,429,083 行、扫描 52,941,863,192 字节，返回 100 行，spill 约 1.05 GB；输出 SHA-256 `89f25679433051e500bb27943fe5737ea083df638cc9adc79a2942711342a9e8`。RSS 峰值约 6.3 GiB，无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q72-v7-1t`。
+
+## Q73：选择性票据聚合计划合理
+
+普通 `EXPLAIN` 只有一次 `store_sales` 扫描；三年每月前两天、四个 county 以及 household 条件均通过主键 join 在票据聚合前生效。`count(*) BETWEEN 1 AND 5` 正确保留在聚合后，customer 连接带 runtime filter。没有重复大型子计划或危险状态。
+
+1TB 原 SQL 成功：statement ID `01a047a5-78fd-7776-831b-05ec737d952b`，耗时 38.725 秒，读取 2,880,069,818 行、扫描 57,600,980,624 字节，返回 568 行；输出 SHA-256 `17dfce5aa0651cfd07df61d427e48ca243c4969f6dd38e8287fc55c9af2ecf0d`。RSS 约 5.4 GiB，无 spill、无 OOM，因此不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q73-v7-1t`。
+
+## Q74：共享消除了重复扫描，宽 consumer schema 仍昂贵
+
+普通 `EXPLAIN` 已把 `year_total` 变成一个 producer 和四个 `Sink Scan`，store/web 两张事实表各扫描一次，而不是随四个引用重复展开。两个年份条件进入 producer，逻辑计划正确。
+
+耗时主要不在扫描。15 秒 CPU profile 中约 70% 样本位于四路 hash join，`UnionOne`/`BuildVarlenaFromVarlena` 持续复制 customer 姓名等 varchar。共享 source 只能存所有消费者所需列的并集；虽然三个消费者只需 id/year/type/amount，只要一个消费者需要姓名，当前四个 reader 都读取同一宽物理 schema。RSS 一度升到约 11.8 GiB，随后随 producer 生命周期回落，未持续增长。
+
+正确的通用优化是让 materialized source 支持每个 reader 独立的列投影/物理 schema 映射，避免窄消费者读取和 hash-copy 宽 payload；这涉及 source 存储格式、reader 映射和 spill 恢复契约，不属于本轮的小范围修改，不能为 Q74 特判。
+
+1TB 原 SQL 成功：statement ID `01a047a6-fa0c-7a6f-9564-98451e43e1d1`，耗时 601.603 秒，读取 3,624,134,473 行、扫描 59,424,982,784 字节，返回 100 行，spill 30.43 GB；输出 SHA-256 `2d82d48d13467c35ae00fde0d0b261b1c528e01b522ee0be9482a281a0084614`。查询低于 20 分钟且无 OOM，当前只记录。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q74-v7-1t`。
+
+## Q75：通过但逼近预算，瓶颈是串行 spill merge
+
+普通 `EXPLAIN` 已把 `all_sales` 变成一个 producer 和两个年份 reader；consumer 的 2001/2002 条件回推到 catalog/store/web 三个事实分支。三条 sales/returns 路径各扫描一次，Sports 过滤和复合键 LEFT JOIN 正常。SQL 使用 `UNION` 而非 `UNION ALL`，因此跨渠道明细去重不能直接删除。
+
+运行末段的 10 秒 CPU profile 只有约 1.1 核有效工作，约 80% 时间位于 `Group.outputOneBatchFinal -> loadSpilledData`，反复读写和解码 aggregate spill。此时表扫描已结束；真正瓶颈是 `UNION DISTINCT` 后高基数聚合的单并发 spill merge，而不是 stats、join order 或内存阈值。可泛化方向是让最终 hash-aggregate bucket merge 并行化，或在保持 DISTINCT 语义的前提下融合相邻 distinct/group 阶段；两者都需要执行器级设计，不能为 Q75 改写 SQL 形状。
+
+1TB 原 SQL 成功：statement ID `01a047b1-c86b-7d1a-b848-a790f26ab36a`，耗时 1127.935 秒，读取 5,545,081,980 行、扫描 131,080,485,000 字节，返回 100 行，spill 62.39 GB；输出 SHA-256 `481e8b0419ac4c1f394411e691115140b431b6847caadfd3f15e16e4cb31aedb`。RSS 峰值约 9.8 GiB，无 OOM，刚好满足 20 分钟目标。计划、结果和 CPU profile 保存在 `/d/mo-worktrees/tpcds-lab/results/q75-v7-1t`。
+
+## Q76：NULL 质量统计正常完成
+
+普通 `EXPLAIN` 对 store/web/catalog 三张事实表各扫描一次，`ss_addr_sk IS NULL`、`ws_web_page_sk IS NULL`、`cs_warehouse_sk IS NULL` 同时成为行过滤和 block filter；date/item 主键 join 后统一按 channel/year/quarter/category 聚合。可进一步把分配律聚合下推到三个 `UNION ALL` 分支，但当前无 spill、资源安全，不能仅为本查询增加 rewrite。
+
+1TB 原 SQL 成功：statement ID `01a047c3-e600-7791-9c52-d2305e8ee30f`，耗时 253.774 秒，读取 4,947,572,236 行、扫描 98,956,891,544 字节，返回 100 行；输出 SHA-256 `649f4da79a161838a801c1310d01d04756321f0372e6879ad0c445f8e31c89bd`。RSS 约 8.5 GiB，无 spill、无 OOM，因此不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q76-v7-1t`。
+
+## Q77：CTE reuse 与分层 ROLLUP 的组合验证
+
+普通 `EXPLAIN` 为 store/catalog/web 的 sales/returns 各建立一个 30 天 producer，六张事实表均只扫描一次；sales/returns 在连接展示维表前先按 store/call-center/web-page key 做 partial aggregate。三层 ROLLUP 的逻辑 reader 会重复消费六个 producer，但不会重复扫描基础表，物理执行命中前缀分层 rollup。
+
+1GB 受影响查询回归中，结果规范化多重集与旧执行器完全一致；仅两条 `ORDER BY channel,id` 同键行顺序互换，属于 SQL 未规定顺序。1TB 原 SQL 成功：statement ID `01a047c8-a869-7484-bad5-5562aa33552f`，耗时 57.523 秒，读取 5,544,019,989 行、扫描 133,055,533,224 字节，返回 100 行；输出 SHA-256 `c43714f0ae112bd8e4ccd925bbb3106e6ce7aa309055eed8bfe7a7c77bb57723`。RSS 约 8.7 GiB，无 spill、无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q77-v7-1t`。
+
+## Q78：ANTI 基数为 0 导致事实表成为 build side
+
+普通 `EXPLAIN` 中 ws/cs/ss 三个分支都先把全年 sales 与完整 returns 做复合键 LEFT JOIN，再用 `return_key IS NULL` 过滤，随后按 year/item/customer 做高基数聚合。外层同时需要 ws、cs 两个 build 以及 ss probe；多个 hash/aggregate state 因而在同一时刻驻留。
+
+第一轮 1TB 基线 statement `01a047ca-a700-7f59-bc08-174007460558` 到 1202.628 秒仍未完成并被客户端取消，spill 129.49 GB；RSS 峰值约 19.3 GiB，swap 几乎耗尽。第一版 ANTI 计划在 84.910 秒时 RSS 已升到 26.5 GiB，因此主动取消；当时的 malloc profile 显示保留内存主要在 HashBuild。
+
+局部机制缺口仍应修复：当过滤恰为右侧表达式 `IS NULL`，且该表达式在匹配行上可证明非空、右侧列不被其他地方消费、join 为确定性等值 join 时，LEFT JOIN 与左 ANTI JOIN 等价。新规则不读取 stats，并对 nullable marker、右侧 payload 消费、额外右侧谓词、OR 和 volatile ON 条件全部 fail closed。`pkg/sql/plan` 全量单测通过；Q78 1GB 三处目标 join 全部变为 `ANTI hashOnPK`，输出与旧计划逐字一致，SHA-256 均为 `32abbdfe98d3d1aa904cda1bd6ac52b805c20fad0f0dae5b907949fdfdc2ecf3`。
+
+进一步对照发现，三个 ANTI 的输出基数都被计算为 0。旧公式把 returns 子节点的 `Selectivity=1` 误当成 join key 的匹配率，使用 `left * (1-rightSelectivity) * 0.5` 直接得到 0。后续三个 date join 因此都选择数亿行事实路径作为 build side，而不是估算仅 361.63 行的 `date_dim`。这是危险内存计划的直接原因。
+
+修复遵循两个通用约束。第一，子节点 `Selectivity` 只表示本地过滤比例，不能代替键域重叠率；无重叠证据时使用中性 50% 生存率。第二，当 ANTI 左边是直接基表且裸列等值条件覆盖完整复合主键时，每个右行最多消除一个左行，因此对输入行数估计应用 `max(leftRows-rightRows, 0)` 结构下界；不完整 PK、间接输入和非裸列条件全部 fail closed。同时，join 有多个合法 shuffle key 时优先精确复用已有分区，否则保持原有谓词顺序。前者仍依赖输入行数估计，但不再依赖不存在的 key-overlap stats；后者是完全的分布属性证明。
+
+修复后三个 ANTI 估算分别为 2,591,988,235、648,002,854 和 1,295,983,660 行；三个 date join 全部改为小 `date_dim` build side，两个外层 LEFT join 都命中 `shuffle: REUSE`。全量 99 条普通 `EXPLAIN` 中只有 Q24、Q47、Q69、Q78、Q97 文本变化：Q24/Q47 仅为等值参数方向归一；Q69 的大 RIGHT ANTI 获得 range shuffle；Q97 复用 item-key 分区。这 5 条在 1GB 上与旧基线输出逐字一致，其余 94 条计划不变。
+
+1TB 新 statement `01a0492c-21ab-7b1b-87d4-b87032682d2c` 成功完成：1364.189 秒，读取 5,544,181,980 行、扫描 185,472,581,988 字节，返回 100 行。MO RSS 峰值约 15.8 GiB，中后期稳定在 9–11 GiB，无 OOM。新计划仍有大量 spill/I/O，但已从不受控的巨大事实表 hash build 变为受 128 MiB 阈值约束的 ANTI 和聚合状态。计划、结果、statement plan 和 90 秒 malloc profile 保存在 `/d/mo-worktrees/tpcds-lab/results/q78-anti-stats-v2-plans-1t`、`q78-anti-stats-v2-1t` 与 `q78-anti-stats-v2-1t/malloc-90s.pprof`。
+
+## Q79：选择性票据聚合计划合理
+
+普通 `EXPLAIN` 只扫描一次 `store_sales`。三个年份、周一、门店员工数和 household 条件均通过主键 join 在票据聚合前生效；只有聚合后的 100 行候选路径再连接 customer 宽列。没有重复大子计划或危险 build side，因此不修改。
+
+1TB 原 SQL 成功：statement ID `01a047f1-66b7-737d-9688-977b2ee7f554`，耗时 174.767 秒，读取 2,892,069,250 行、扫描 115,824,515,012 字节，返回 100 行；输出 SHA-256 `80bf44cc44e1276ec8523167bbc251c4924bf03eaf8b48f8b5efa524684fe7da`。运行时无 OOM，计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q79-left-null-anti-v1-1t`。
+
+## Q80：三渠道聚合与 ROLLUP 正常完成
+
+普通 `EXPLAIN` 对 store/catalog/web 三条 sales/returns 路径各扫描一次。30 天日期、item 价格和 promotion 条件在渠道聚合前生效，三个结果再以 `UNION ALL` 进入两级 ROLLUP；分层 rollup 和共享 reader 均已命中。没有重复事实扫描或危险的高基数 build，因此不修改。
+
+1TB 原 SQL 成功：statement ID `01a0489f-6234-780e-8467-b5a4f1ad34fb`，耗时 83.506 秒，读取 5,544,922,965 行、扫描 193,546,725,660 字节，返回 100 行；输出 SHA-256 `796c549f5af3fe22319fea9a5616a8d728bb41b40d8b85f001174737409ac5c6`。RSS 约 5.0 GiB，无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q80-left-null-anti-v1-1t`。
+
+## Q81：重复 CTE 不是当前瓶颈
+
+普通 `EXPLAIN` 将 `customer_total_return` 在明细分支和州平均分支各展开一次，因此 `catalog_returns` 扫描两次。但两个分支都先用 1998 年条件缩小事实路径，分组后才读取 customer 宽列；整体已属低成本查询。为了避免强制物化损失不同 consumer 的投影和谓词下推，当前不扩大 CTE reuse 边界。
+
+1TB 原 SQL 成功：statement ID `01a048a1-f03b-7628-a487-407b32374b1f`，耗时 6.179 秒，读取 318,139,610 行、扫描 8,857,512,689 字节，返回 100 行；输出 SHA-256 `1a3e24465c1418c62afe60b1aa3da0e41e27a97761b5f8ccb03fe3e76a6bff14`。无 spill、无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q81-left-null-anti-v1-1t`。
+
+## Q82：计划形状可继续简化，但实测无瓶颈
+
+普通 `EXPLAIN` 仍用 INNER join 把 store-sales 和 inventory 的重复度带到最终纯 `GROUP BY`；从关系代数看，它可改成只保留 item 的两次 SEMI join。但 item 价格/manufacturer 过滤只产生很小的键集，runtime filter 已将两个大事实路径限制到可控范围。为了一个已经很快的查询引入 DISTINCT 下 INNER-to-SEMI 的新语义边界，收益不足以覆盖风险，因此不修改。
+
+1GB 上原 SQL 与等价 `EXISTS` SQL 的输出逐字一致。1TB 原 SQL 成功：statement ID `01a048a4-5fb0-7927-aa14-e1178f4e05d5`，耗时 9.679 秒，读取 3,663,296,191 行、扫描 20,964,900,948 字节，返回 23 行；输出 SHA-256 `3428c5ccc16225c4b1b45fee424572e67533a5010a334b404ed5c1f7a8f538ff`。无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q82-semi-design-baseline-1t`，1GB 对照保存在 `q82-semi-design-1g`。
+
+## Q83：三条退货路径均已正确缩小
+
+普通 `EXPLAIN` 中 store/catalog/web returns 各扫描一次，指定三个日期先转换成三个 week key，再以两层可哈希 SEMI join 过滤事实表。每个分支都在 item join 前完成日期缩小，最后只连接三个 item 粒度聚合结果。date_dim 文本上重复九次，但它是极小维表，不是可观测瓶颈。
+
+1TB 原 SQL 成功：statement ID `01a048a5-b81c-7a4a-9780-4c9646bff99d`，耗时 2.303 秒，读取 504,967,770 行、扫描 6,073,718,328 字节，返回 100 行；输出 SHA-256 `89c994ba2b1d3ff4126eebae3c0496dc12bf82f30456e7a82c288ed735de2939`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q83-left-null-anti-v1-1t`。
+
+## Q84：选择性 customer 路径在 returns 之前生效
+
+普通 `EXPLAIN` 先由 Hopewell 城市、收入区间以及人口维表构造 customer 路径，再以 `cd_demo_sk = sr_cdemo_sk` 连接 `store_returns`。SQL 没有 DISTINCT，所以同一 customer 对应的 returns 重复行是结果语义的一部分，不能改成 SEMI join。Top-100 排序成本可控，计划无异常。
+
+1TB 原 SQL 成功：statement ID `01a048a6-a625-740c-95fa-e9bf71a5fd44`，耗时 1.481 秒，读取 306,025,922 行、扫描 2,328,132,648 字节，返回 100 行；输出 SHA-256 `7ec57121463db4744e38f71f53a7aa87a424793d413b3545434189fa20ebf89d`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q84-left-null-anti-v1-1t`。
+
+## Q85：复合键连接与 DNF 筛选正常
+
+普通 `EXPLAIN` 以 item/order 复合键哈希连接 web sales/returns。1998 年、sales price/net profit 范围先进入 `web_sales`，九个州和美国条件先进入 address，婚姻/教育条件先进入 demographics；跨表 DNF 正确保留在相应 join 上。最后仅按 reason 聚合，无重复大路径。
+
+1TB 原 SQL 成功：statement ID `01a048a7-8ca7-7f73-b6db-dd7370dbced2`，耗时 15.312 秒，读取 800,054,645 行、扫描 29,215,505,744 字节，返回 64 行；输出 SHA-256 `8a959196ebb8f27e74a4dea219f072d4adff1415de98850ef911c23f1a9ee50b`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q85-left-null-anti-v1-1t`。
+
+## Q86：事实侧 partial SUM 和分层 ROLLUP 均命中
+
+普通 `EXPLAIN` 只扫描一次 `web_sales`，12 个月条件先通过 date PK join 生效，事实侧在 item 维表连接前先按 `ws_item_sk` 做 partial SUM。后续两级 ROLLUP 使用共享 reader，RANK 只处理 category/class 低基数结果，计划正常。
+
+1TB 原 SQL 成功：statement ID `01a048a8-bbe0-74e4-80b3-03a95f2da41d`，耗时 6.560 秒，读取 720,373,425 行、扫描 11,536,190,408 字节，返回 100 行；输出 SHA-256 `3df982425ec1694deb925280022c53a2fd53b97ada8806f2bd0f86d18731924b`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q86-left-null-anti-v1-1t`。
+
+## Q87：EXCEPT 高基数 state 可控完成
+
+普通 `EXPLAIN` 对 store/catalog/web sales 各扫描一次，12 个月条件先通过 date PK join 生效，三个分支分别在 customer/date 粒度去重，然后连续做两次 EXCEPT。它与 Q38 同属高基数 set 算子；当前每 key 一个布尔状态的修复已命中，没有再为每 key 分配大 selection buffer。RSS 一度约 17.7 GiB，随分支结束回落，未持续增长。
+
+1TB 原 SQL 成功：statement ID `01a048a9-d5bb-7ec1-b862-d1dffba4ef5b`，耗时 192.832 秒，读取 5,076,187,938 行、扫描 42,194,380,092 字节，返回 1 行；输出 SHA-256 `cfe7f755ea6b42bdedfcbeff9e75992f015c867db58abdb2e6cdfc39c777c561`。无 OOM，不增加新修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q87-left-null-anti-v1-1t`。
+
+## Q88：八次同路径扫描，但当前仍在时间预算内
+
+普通 `EXPLAIN` 把八个标量 COUNT 完全独立构造，每个都扫描 `store_sales`，只有互斥的半小时 time 条件不同，store 和 household 路径相同。它与 Q9/Q28 是同一类机制缺口：应将兼容的同源标量聚合融合为一次扫描和多个 conditional aggregate。这要求等价子计划识别、条件互斥/包含证明及标量结果重建，不属于小范围修补，不为 Q88 特判。
+
+1TB 原 SQL 成功：statement ID `01a048ad-ebb6-7b56-96b9-94fba479ebc6`，耗时 216.180 秒，读取 23,040,660,808 行、扫描 276,488,057,952 字节，返回 1 行；输出 SHA-256 `af5d3af731e6ba52f9887ac8d8cd26fa9f1935c046c832d8f0c84ff9b05f7ed4`。RSS 稳定，无 spill、无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q88-left-null-anti-v1-1t`。
+
+## Q89：聚合后窗口计划正常
+
+普通 `EXPLAIN` 只扫描一次 `store_sales`。2000 年和 item category/class 条件先通过 PK join 生效，再按 category/class/brand/store/month 聚合；窗口平均只处理该低基数聚合结果，偏差过滤在 window 之后。无重复事实路径或高基数窗口。
+
+1TB 原 SQL 成功：statement ID `01a048b2-2122-7c8b-8cf6-1a41d4a2a807`，耗时 62.206 秒，读取 2,880,362,050 行、扫描 57,623,488,672 字节，返回 100 行；输出 SHA-256 `bb2c27b61b4752830b82c83e2ed2c454505858bfe73816530b2da8d044978b4b`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q89-left-null-anti-v1-1t`。
+
+## Q90：两次重复扫描不是当前瓶颈
+
+普通 `EXPLAIN` 将上午与下午 COUNT 分别构造，因而扫描 `web_sales` 两次；两条路径只有 time hour 区间不同，household 和 web-page 条件相同。它是 Q88 同类的 conditional-aggregate/subplan fusion 正向样本，但当前两次扫描整体仅数秒，不值得单独扩大改动。
+
+1TB 原 SQL 成功：statement ID `01a048b3-e92d-7d03-9f3c-759160e66ff4`，耗时 8.198 秒，读取 1,440,193,952 行、扫描 17,281,554,624 字节，返回 1 行；输出 SHA-256 `6c771949fb2c8637bd04e36a87a47aca96af4883aea49478558824786de2c90a`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q90-left-null-anti-v1-1t`。
+
+## Q91：选择性退货聚合计划正常
+
+普通 `EXPLAIN` 先以 1999 年 11 月、GMT -7、婚姻/教育和 buy-potential 条件缩小 catalog-returns 路径，然后在 call-center 维表连接前按 demographics/call-center key 做 partial SUM。最终聚合只处理低基数结果，无重复大路径。
+
+1TB 原 SQL 成功：statement ID `01a048b5-1f52-7e55-b8cc-70d17414b2b7`，耗时 1.401 秒，读取 163,997,847 行、扫描 3,244,898,100 字节，返回 42 行；输出 SHA-256 `81818f9655907bd6fd0da3b3e6130cca2b99282bcbda07cde93b8b3f6d07df9b`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q91-left-null-anti-v1-1t`。
+
+## Q92：相关平均已正确去相关
+
+普通 `EXPLAIN` 将相关子查询改写为按 `ws_item_sk` 聚合的平均值分支，再与外层销售路径 LEFT join。manufacturer 269 和同一 90 天日期范围均进入两个 `web_sales` 分支，内层还以 item SEMI join 缩小键域。两次事实扫描是该关系语义下的常规去相关计划，整体成本很低。
+
+1TB 原 SQL 成功：statement ID `01a048b6-0c1a-7bcf-a385-342256e560ba`，耗时 6.801 秒，读取 1,440,617,136 行、扫描 23,044,943,104 字节，返回 1 行；输出 SHA-256 `061b0b13d497746854cdf6dd705727a97ee9522ffd94acfe440ecd6988e6a6c8`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q92-left-null-anti-v1-1t`。
+
+## Q93：右侧 null-rejecting INNER join 应跨过 LEFT join
+
+旧普通 `EXPLAIN` 先对全量 store-sales/returns 做 LEFT join，然后再以 `sr_reason_sk = r_reason_sk` INNER join 选择单一 reason。该等值条件在 returns 缺失时必然为 NULL，所以后续 INNER join 已经使 LEFT 的 null-extended 行不可观测；仍保留 LEFT 只会让大量未退货 sales 行进入后续 join 和聚合。
+
+新规则从关系语义重排 `(A LEFT JOIN B ON p) INNER JOIN C ON q(B,C)` 为 `A INNER JOIN (B INNER JOIN C ON q) ON p`。准入不读取 stats：上层条件只能引用 B/C，至少一个普通等值参数必须是 B 的裸列，两层 join 不得有 limit/project/filter 等局部语义，且所有 join 条件必须非 volatile。保留侧引用、不拒绝 NULL 的条件、混合 A/C 条件和局部 limit 均 fail closed。
+
+`pkg/sql/plan` 定向与全包单测通过。1GB 原 SQL 输出与旧版逐字一致；进一步执行完整 Q1–Q99 1GB 回归，99 条全部成功。相对 main 基线，97 条逐字一致，Q31 仅为无 `ORDER BY` 的行序变化且排序后的多重集一致，Q48 得到已有修复基线值 19869（main 基线当时为空输出）。完整结果保存在 `/d/mo-worktrees/tpcds-lab/results/q93-null-reject-v1-full-1g`。
+
+1TB 旧 statement `01a048b7-b325-7553-882a-34720c782455` 耗时 260.044 秒；新 statement `01a048c1-b514-7c97-962f-a7a61684fe1a` 耗时 58.122 秒，读取 3,167,987,828 行、扫描 73,727,710,220 字节，返回 100 行。新旧输出 SHA-256 均为 `034b138a8b55da51e26c719f358eb072d394e91c9a371b7a2d089340e2e27589`。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q93-left-null-anti-v1-1t`、`q93-null-reject-v1-1g` 与 `q93-null-reject-v1-1t`。
+
+## Q94：SEMI/ANTI 去相关计划正常
+
+普通 `EXPLAIN` 将“同订单不同仓库” EXISTS 改写为 RIGHT SEMI，将“无退货” NOT EXISTS 改写为 RIGHT ANTI。两个订单号条件均可哈希；两月日期、TX 和 web-company 条件先缩小主路径。最终只做标量 distinct count/sum，无高基数输出状态。
+
+1TB 原 SQL 成功：statement ID `01a048c4-f569-7fe8-beab-4e119fd3709b`，耗时 13.405 秒，读取 1,518,006,520 行、扫描 32,136,073,680 字节，返回 1 行；输出 SHA-256 `fe45c82cde48d62c7f1f53ab887e35e7e69503782cec5f05cb1881efd8063913`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q94-null-reject-v1-1t`。
+
+## Q95：全量 order 自连接是主要成本
+
+普通 `EXPLAIN` 已将 `ws_wh` 只物化一次，两个 `IN` consumer 均使用 SEMI join 和 `Sink Scan`，避免重复扫描四次 `web_sales`。但 producer 仍需对全量 web-sales 按 order-number 自连接，再过滤仓库不等；这会先构造大量同 order 行组合，而 consumer 最终只观测 order-number 是否存在。
+
+通用改进方向是识别“同 key 自连接 + 属性不等 + 外层只做存在性”，将它改写为每 order 聚合后判定 warehouse NDV/min-max，或让 SEMI consumer 的键域反向限制 producer。这需要完整的重复度、NULL 和 consumer 投影证明，不是小范围修补，本轮不为 Q95 特判。
+
+1TB 原 SQL 成功：statement ID `01a048c6-712b-71b5-810e-0004cdd1d8c7`，耗时 628.559 秒，读取 2,238,006,896 行、扫描 35,016,075,184 字节，返回 1 行；输出 SHA-256 `e955e55d195551286068159741a8dded30c38984bd6c24410f0dd7c201f5a6b4`。RSS 峰值约 13.1 GiB，无 OOM，低于 20 分钟目标。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q95-null-reject-v1-1g` 与 `q95-null-reject-v1-1t`。
+
+## Q96：单路径标量 COUNT 计划正常
+
+普通 `EXPLAIN` 只扫描一次 `store_sales`，8:30 之后、门店 ese 和 household dependent-count 条件分别通过 time/store/household 的 PK join 生效。最终为无分组的标量 COUNT，不产生高基数 state。它也说明 Q88 的时间主要来自同路径扫描八次，而非单分支计划异常。
+
+1TB 原 SQL 成功：statement ID `01a048d1-b6d5-78af-9630-5ed6eded1d70`，耗时 25.696 秒，读取 2,880,082,601 行、扫描 34,560,978,444 字节，返回 1 行；输出 SHA-256 `c385a5e8feaa21d40b3c20620d873e302657680a854bb5f7627ed81efd4c90dd`。无 spill、无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q96-null-reject-v1-1t`。
+
+## Q97：高基数去重与 FULL OUTER 可控完成
+
+普通 `EXPLAIN` 对 store/catalog sales 各扫描一次，12 个月条件先生效，两个分支分别在 customer/item 粒度去重。FULL OUTER 只保留两侧的 customer/item key，最上层以三个 conditional SUM 统计 store-only/catalog-only/both。这些高基数 state 在执行中按分支生命周期消费，没有 Q78 那样的多 build 同时驻留。
+
+1TB 原 SQL 成功：statement ID `01a048d3-3d91-76ba-ae4d-d3b82e3801ee`，耗时 177.269 秒，读取 4,320,114,513 行、扫描 51,840,789,764 字节，返回 1 行；输出 SHA-256 `c813fcf492beaa9841e5f127adc6c355c2d902c6c806ce3ab3e43414656a925e`。RSS 峰值约 8.9 GiB，无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q97-null-reject-v1-1t`。
+
+## Q98：事实侧 partial SUM 与聚合后窗口正常
+
+普通 `EXPLAIN` 只扫描一次 `store_sales`。30 天日期范围和 Jewelry/Sports/Books 三类 item 条件先通过 PK join 生效，事实侧在读取 item 宽列前按 `ss_item_sk` 做 partial SUM；后续只在 item 粒度聚合，并在 class 分区上计算 revenue 占比。没有重复事实路径或高基数窗口 state。
+
+1TB 原 SQL 成功：statement ID `01a048d8-f211-7398-b1c9-437ce7ff056a`，耗时 25.553 秒，读取 2,880,296,191 行、扫描 46,141,956,936 字节，返回 45,000 行；输出 SHA-256 `29e8e987b9e687d0c0741ce512518bb30e201c897b773b7ef7f8ee6559d33629`。无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q98-null-reject-v1-1t`。
+
+## Q99：事实侧条件聚合正常
+
+普通 `EXPLAIN` 只扫描一次 `catalog_sales`。12 个月条件先通过 date PK join 生效，warehouse 和 ship-mode 连接后，事实侧先按 warehouse-name、ship-mode、call-center key 计算五个 shipping-delay conditional SUM，再关联 call-center 并完成低基数聚合。没有重复大路径，Top-100 排序成本可控。
+
+1TB 原 SQL 成功：statement ID `01a048da-0cef-7797-a0d7-611d67ab932f`，耗时 95.952 秒，读取 1,440,053,547 行、扫描 28,800,195,008 字节，返回 100 行；输出 SHA-256 `f039a625efa9705dd93cf773d411f8814a19b43a5e9b9d4250a66d1b57d01f84`。无 OOM，不修改。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q99-null-reject-v1-1t`。
 
 ## 后续查询记录模板
 

@@ -1,0 +1,62 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.catalog_page	30000	4	4	4	1	{
+  "cp_catalog_number": 31,
+  "cp_catalog_page_id": 24795,
+  "cp_catalog_page_number": 276,
+  "cp_catalog_page_sk": 24576,
+  "cp_department": 2,
+  "cp_description": 24489,
+  "cp_end_date_sk": 28,
+  "cp_start_date_sk": 27,
+  "cp_type": 4
+}	{
+  "cp_catalog_number": 1,
+  "cp_catalog_page_id": 4702111234474983000,
+  "cp_catalog_page_number": 1,
+  "cp_catalog_page_sk": 1,
+  "cp_department": 0,
+  "cp_description": 0,
+  "cp_end_date_sk": 2450844,
+  "cp_start_date_sk": 2450815,
+  "cp_type": 0
+}	{
+  "cp_catalog_number": 109,
+  "cp_catalog_page_id": 4702111234474983000,
+  "cp_catalog_page_number": 277,
+  "cp_catalog_page_sk": 30000,
+  "cp_department": 4919426409456487000,
+  "cp_description": 6444498708832941000,
+  "cp_end_date_sk": 2453186,
+  "cp_start_date_sk": 2453005,
+  "cp_type": 8175547842767975000
+}	{
+  "cp_catalog_number": "INT",
+  "cp_catalog_page_id": "CHAR",
+  "cp_catalog_page_number": "INT",
+  "cp_catalog_page_sk": "INT",
+  "cp_department": "VARCHAR",
+  "cp_description": "VARCHAR",
+  "cp_end_date_sk": "INT",
+  "cp_start_date_sk": "INT",
+  "cp_type": "VARCHAR"
+}	{
+  "cp_catalog_number": 297,
+  "cp_catalog_page_id": 0,
+  "cp_catalog_page_number": 294,
+  "cp_catalog_page_sk": 0,
+  "cp_department": 0,
+  "cp_description": 0,
+  "cp_end_date_sk": 302,
+  "cp_start_date_sk": 286,
+  "cp_type": 0
+}	{
+  "cp_catalog_number": 123944,
+  "cp_catalog_page_id": 720152,
+  "cp_catalog_page_number": 123992,
+  "cp_catalog_page_sk": 120152,
+  "cp_department": 720152,
+  "cp_description": 2935786,
+  "cp_end_date_sk": 123992,
+  "cp_start_date_sk": 123984,
+  "cp_type": 720152
+}	{}

@@ -1,0 +1,360 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.store_sales	2879987999	351562	4654	3672	0.09749455337690632	{
+  "__mo_cpkey_col": 95039603.967,
+  "ss_addr_sk": 18591928.170368444,
+  "ss_cdemo_sk": 12331667.190267729,
+  "ss_coupon_amt": 474957.1144268161,
+  "ss_customer_sk": 20537833.922983978,
+  "ss_ext_discount_amt": 474957.1144268161,
+  "ss_ext_list_price": 20488711.275488663,
+  "ss_ext_sales_price": 5659328.9697210975,
+  "ss_ext_tax": 205419.7098467909,
+  "ss_ext_wholesale_cost": 7992911.60464669,
+  "ss_hdemo_sk": 16225.738559127947,
+  "ss_item_sk": 1939674.549300815,
+  "ss_list_price": 49811.50199475383,
+  "ss_net_paid": 7054818.4033505395,
+  "ss_net_paid_inc_tax": 17117002.449995793,
+  "ss_net_profit": 12060437.696008895,
+  "ss_promo_sk": 1488,
+  "ss_quantity": 99,
+  "ss_sales_price": 43417.75257331639,
+  "ss_sold_date_sk": 1989.9,
+  "ss_sold_time_sk": 124014.83112318823,
+  "ss_store_sk": 498,
+  "ss_ticket_number": 17083060.184956864,
+  "ss_wholesale_cost": 22860.137840122923
+}	{
+  "__mo_cpkey_col": 4185252777708302300,
+  "ss_addr_sk": 1,
+  "ss_cdemo_sk": 1,
+  "ss_coupon_amt": 0,
+  "ss_customer_sk": 1,
+  "ss_ext_discount_amt": 0,
+  "ss_ext_list_price": 1,
+  "ss_ext_sales_price": 0,
+  "ss_ext_tax": 0,
+  "ss_ext_wholesale_cost": 1,
+  "ss_hdemo_sk": 1,
+  "ss_item_sk": 1,
+  "ss_list_price": 1,
+  "ss_net_paid": 0,
+  "ss_net_paid_inc_tax": 0,
+  "ss_net_profit": -10000,
+  "ss_promo_sk": 1,
+  "ss_quantity": 1,
+  "ss_sales_price": 0,
+  "ss_sold_date_sk": 2450816,
+  "ss_sold_time_sk": 28800,
+  "ss_store_sk": 1,
+  "ss_ticket_number": 1,
+  "ss_wholesale_cost": 1
+}	{
+  "__mo_cpkey_col": 4185819411832772600,
+  "ss_addr_sk": 6000000,
+  "ss_cdemo_sk": 1920800,
+  "ss_coupon_amt": 19336.68,
+  "ss_customer_sk": 12000000,
+  "ss_ext_discount_amt": 19336.68,
+  "ss_ext_list_price": 20000,
+  "ss_ext_sales_price": 19972,
+  "ss_ext_tax": 1797.48,
+  "ss_ext_wholesale_cost": 10000,
+  "ss_hdemo_sk": 7200,
+  "ss_item_sk": 300000,
+  "ss_list_price": 200,
+  "ss_net_paid": 19972,
+  "ss_net_paid_inc_tax": 21769.48,
+  "ss_net_profit": 9986,
+  "ss_promo_sk": 1500,
+  "ss_quantity": 100,
+  "ss_sales_price": 200,
+  "ss_sold_date_sk": 2452642,
+  "ss_sold_time_sk": 75599,
+  "ss_store_sk": 1000,
+  "ss_ticket_number": 239999975,
+  "ss_wholesale_cost": 100
+}	{
+  "__mo_cpkey_col": "VARCHAR",
+  "ss_addr_sk": "INT",
+  "ss_cdemo_sk": "INT",
+  "ss_coupon_amt": "DECIMAL64",
+  "ss_customer_sk": "INT",
+  "ss_ext_discount_amt": "DECIMAL64",
+  "ss_ext_list_price": "DECIMAL64",
+  "ss_ext_sales_price": "DECIMAL64",
+  "ss_ext_tax": "DECIMAL64",
+  "ss_ext_wholesale_cost": "DECIMAL64",
+  "ss_hdemo_sk": "INT",
+  "ss_item_sk": "INT",
+  "ss_list_price": "DECIMAL64",
+  "ss_net_paid": "DECIMAL64",
+  "ss_net_paid_inc_tax": "DECIMAL64",
+  "ss_net_profit": "DECIMAL64",
+  "ss_promo_sk": "INT",
+  "ss_quantity": "INT",
+  "ss_sales_price": "DECIMAL64",
+  "ss_sold_date_sk": "INT",
+  "ss_sold_time_sk": "INT",
+  "ss_store_sk": "INT",
+  "ss_ticket_number": "INT",
+  "ss_wholesale_cost": "DECIMAL64"
+}	{
+  "__mo_cpkey_col": 0,
+  "ss_addr_sk": 129595211,
+  "ss_cdemo_sk": 129578556,
+  "ss_coupon_amt": 129577732,
+  "ss_customer_sk": 129560335,
+  "ss_ext_discount_amt": 129577732,
+  "ss_ext_list_price": 129574405,
+  "ss_ext_sales_price": 129618705,
+  "ss_ext_tax": 129491026,
+  "ss_ext_wholesale_cost": 129542464,
+  "ss_hdemo_sk": 129509154,
+  "ss_item_sk": 0,
+  "ss_list_price": 129544298,
+  "ss_net_paid": 129532618,
+  "ss_net_paid_inc_tax": 129571140,
+  "ss_net_profit": 129564239,
+  "ss_promo_sk": 129613535,
+  "ss_quantity": 129521679,
+  "ss_sales_price": 129558316,
+  "ss_sold_date_sk": 129596148,
+  "ss_sold_time_sk": 129556380,
+  "ss_store_sk": 129575878,
+  "ss_ticket_number": 0,
+  "ss_wholesale_cost": 129570501
+}	{
+  "__mo_cpkey_col": 69133071295,
+  "ss_addr_sk": 11901747280,
+  "ss_cdemo_sk": 11901747280,
+  "ss_coupon_amt": 23421699111,
+  "ss_customer_sk": 11901747280,
+  "ss_ext_discount_amt": 23421699111,
+  "ss_ext_list_price": 23421699276,
+  "ss_ext_sales_price": 23421699276,
+  "ss_ext_tax": 23421699276,
+  "ss_ext_wholesale_cost": 23421699276,
+  "ss_hdemo_sk": 11901747115,
+  "ss_item_sk": 11533311315,
+  "ss_list_price": 23421699276,
+  "ss_net_paid": 23421699276,
+  "ss_net_paid_inc_tax": 23421699276,
+  "ss_net_profit": 23421699276,
+  "ss_promo_sk": 11901747115,
+  "ss_quantity": 11901747197,
+  "ss_sales_price": 23421699276,
+  "ss_sold_date_sk": 11901747197,
+  "ss_sold_time_sk": 11901747280,
+  "ss_store_sk": 11901747197,
+  "ss_ticket_number": 11533311315,
+  "ss_wholesale_cost": 23421699276
+}	{
+  "ss_addr_sk": {
+    "overlap": 0.9094569564577221,
+    "result": [
+      1.0000018279555098,
+      "...",
+      5994080.688222756
+    ],
+    "uniform": 0.999
+  },
+  "ss_cdemo_sk": {
+    "overlap": 0.9094680734425897,
+    "result": [
+      1,
+      "...",
+      1918908.144203537
+    ],
+    "uniform": 0.999
+  },
+  "ss_coupon_amt": {
+    "overlap": 0.9087351772840983,
+    "result": [
+      1.1334308517648931e-10,
+      "...",
+      18153.974368170144
+    ],
+    "uniform": 0.999
+  },
+  "ss_customer_sk": {
+    "overlap": 0.9094799259369828,
+    "result": [
+      1.0000031213556888,
+      "...",
+      11988167.533757316
+    ],
+    "uniform": 0.999
+  },
+  "ss_ext_discount_amt": {
+    "overlap": 0.9087351772840983,
+    "result": [
+      1.1334308517648931e-10,
+      "...",
+      18153.974368170144
+    ],
+    "uniform": 0.999
+  },
+  "ss_ext_list_price": {
+    "overlap": 0.9094320341651673,
+    "result": [
+      1.000000139359412,
+      "...",
+      19896.553937315333
+    ],
+    "uniform": 0.999
+  },
+  "ss_ext_sales_price": {
+    "overlap": 0.9092110562483472,
+    "result": [
+      0,
+      "...",
+      19466.391414978476
+    ],
+    "uniform": 0.999
+  },
+  "ss_ext_tax": {
+    "overlap": 0.9090441138782689,
+    "result": [
+      0,
+      "...",
+      1715.8492158889223
+    ],
+    "uniform": 0.999
+  },
+  "ss_ext_wholesale_cost": {
+    "overlap": 0.9094957839549461,
+    "result": [
+      1.000000000411179,
+      "...",
+      9989.30744060626
+    ],
+    "uniform": 0.999
+  },
+  "ss_hdemo_sk": {
+    "overlap": 0.9095191675048026,
+    "result": [
+      1,
+      "...",
+      7192.962854349951
+    ],
+    "uniform": 0.999
+  },
+  "ss_item_sk": {
+    "overlap": 0.813455460104199,
+    "result": [
+      332.57004614719204,
+      "...",
+      299689.219903141
+    ],
+    "uniform": 0.999
+  },
+  "ss_list_price": {
+    "overlap": 0.9094660146749497,
+    "result": [
+      1,
+      "...",
+      199.7825446262154
+    ],
+    "uniform": 0.999
+  },
+  "ss_net_paid": {
+    "overlap": 0.9092535280813532,
+    "result": [
+      2.421111279378865e-10,
+      "...",
+      19425.64467659689
+    ],
+    "uniform": 0.999
+  },
+  "ss_net_paid_inc_tax": {
+    "overlap": 0.9091056570626459,
+    "result": [
+      2.819399306681911e-10,
+      "...",
+      20833.688572319243
+    ],
+    "uniform": 0.999
+  },
+  "ss_net_profit": {
+    "overlap": 0.9056325622854321,
+    "result": [
+      -9999.99999997405,
+      "...",
+      9575.830299906685
+    ],
+    "uniform": 0.999
+  },
+  "ss_promo_sk": {
+    "overlap": 0.9094501337441776,
+    "result": [
+      1,
+      "...",
+      1498.5347018572825
+    ],
+    "uniform": 0.999
+  },
+  "ss_quantity": {
+    "overlap": 0.9089965249524561,
+    "result": [
+      1,
+      "...",
+      99.90322580645162
+    ],
+    "uniform": 0.999
+  },
+  "ss_sales_price": {
+    "overlap": 0.9094486151262965,
+    "result": [
+      2.121867461202449e-12,
+      "...",
+      198.9535750761631
+    ],
+    "uniform": 0.999
+  },
+  "ss_sold_date_sk": {
+    "overlap": 0.9094616338102713,
+    "result": [
+      2450816,
+      "...",
+      2452640.2150537632
+    ],
+    "uniform": 0.999
+  },
+  "ss_sold_time_sk": {
+    "overlap": 0.9094831093481696,
+    "result": [
+      28800.00000000091,
+      "...",
+      75552.72989245356
+    ],
+    "uniform": 0.999
+  },
+  "ss_store_sk": {
+    "overlap": 0.9094750400218164,
+    "result": [
+      1,
+      "...",
+      999.0234604105572
+    ],
+    "uniform": 0.999
+  },
+  "ss_ticket_number": {
+    "overlap": 0.7301198174596167,
+    "result": [
+      73124.41841432868,
+      "...",
+      238370411.75751033
+    ],
+    "uniform": 0.999
+  },
+  "ss_wholesale_cost": {
+    "overlap": 0.9094785959424491,
+    "result": [
+      1.000000000001027,
+      "...",
+      99.90322580645162
+    ],
+    "uniform": 0.999
+  }
+}

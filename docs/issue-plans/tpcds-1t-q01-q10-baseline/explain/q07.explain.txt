@@ -1,0 +1,27 @@
+Project
+  ->  Sort
+        Sort Key: item.i_item_id INTERNAL
+        Limit: 100
+        ->  Aggregate
+              Group Key: item.i_item_id
+              Aggregate Functions: avg(store_sales.ss_quantity), avg(store_sales.ss_list_price), avg(store_sales.ss_coupon_amt), avg(store_sales.ss_sales_price)
+              ->  Join
+                    Join Type: INNER   hashOnPK
+                    Join Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                    ->  Join
+                          Join Type: INNER   hashOnPK
+                          Join Cond: (store_sales.ss_promo_sk = promotion.p_promo_sk)
+                          ->  Join
+                                Join Type: INNER   hashOnPK
+                                Join Cond: (store_sales.ss_cdemo_sk = customer_demographics.cd_demo_sk)
+                                ->  Join
+                                      Join Type: INNER   hashOnPK
+                                      Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                      ->  Table Scan on tpcds_1t.store_sales
+                                      ->  Table Scan on tpcds_1t.date_dim
+                                            Filter Cond: (date_dim.d_year = 1998)
+                                ->  Table Scan on tpcds_1t.customer_demographics
+                                      Filter Cond: (customer_demographics.cd_education_status = 'Primary'), (customer_demographics.cd_marital_status = 'W'), (customer_demographics.cd_gender = 'F')
+                          ->  Table Scan on tpcds_1t.promotion
+                                Filter Cond: ((promotion.p_channel_event = 'N') or (promotion.p_channel_email = 'N'))
+                    ->  Table Scan on tpcds_1t.item

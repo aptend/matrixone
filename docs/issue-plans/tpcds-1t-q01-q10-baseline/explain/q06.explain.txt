@@ -1,0 +1,43 @@
+Project
+  ->  Sort
+        Sort Key: count(*) INTERNAL, a.ca_state INTERNAL
+        Limit: 100
+        ->  Aggregate
+              Group Key: a.ca_state
+              Aggregate Functions: starcount(1)
+              Filter Cond: (count(*) >= 10)
+              ->  Filter
+                    Filter Cond: (cast(i.i_current_price AS DECIMAL128(38, 2)) > (1.2 * avg(j.i_current_price)))
+              -- HINT: Cast expression may prevent index usage
+                    ->  Join
+                          Join Type: LEFT
+                          Join Cond: (i.i_category = j.i_category)
+                          ->  Filter
+                                Filter Cond: (d.d_month_seq = date_dim.d_month_seq)
+                                ->  Join
+                                      Join Type: SINGLE
+                                      ->  Join
+                                            Join Type: INNER   hashOnPK
+                                            Join Cond: (s.ss_customer_sk = c.c_customer_sk) shuffle: range(s.ss_customer_sk) HYBRID 
+                                            ->  Join
+                                                  Join Type: INNER   hashOnPK
+                                                  Join Cond: (s.ss_item_sk = i.i_item_sk)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (s.ss_sold_date_sk = d.d_date_sk)
+                                                        ->  Table Scan on tpcds_1t.store_sales
+                                                        ->  Table Scan on tpcds_1t.date_dim
+                                                  ->  Table Scan on tpcds_1t.item
+                                            ->  Join
+                                                  Join Type: INNER   hashOnPK
+                                                  Join Cond: (c.c_current_addr_sk = a.ca_address_sk) shuffle: range(c.c_current_addr_sk)
+                                                  ->  Table Scan on tpcds_1t.customer
+                                                  ->  Table Scan on tpcds_1t.customer_address
+                                      ->  Aggregate
+                                            Group Key: date_dim.d_month_seq
+                                            ->  Table Scan on tpcds_1t.date_dim
+                                                  Filter Cond: (date_dim.d_year = 2000), (date_dim.d_moy = 2)
+                          ->  Aggregate
+                                Group Key: j.i_category
+                                Aggregate Functions: avg(j.i_current_price)
+                                ->  Table Scan on tpcds_1t.item

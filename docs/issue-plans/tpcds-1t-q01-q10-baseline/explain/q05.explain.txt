@@ -1,0 +1,207 @@
+Project
+  ->  Sort
+        Sort Key: channel INTERNAL, id INTERNAL
+        Limit: 100
+        ->  Union All
+              ->  Union All
+                    ->  Project
+                          ->  Aggregate
+                                Group Key: channel, id
+                                Aggregate Functions: sum(sales), sum(returns), sum(profit)
+                                ->  Union All
+                                      ->  Union All
+                                            ->  Project
+                                                  ->  Aggregate
+                                                        Group Key: store.s_store_id
+                                                        Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (store_sk = store.s_store_sk)
+                                                              ->  Join
+                                                                    Join Type: INNER   hashOnPK
+                                                                    Join Cond: (date_sk = date_dim.d_date_sk)
+                                                                    ->  Union All
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.store_sales
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.store_returns
+                                                                    ->  Table Scan on tpcds_1t.date_dim
+                                                                          Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                          Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                              ->  Table Scan on tpcds_1t.store
+                                            ->  Project
+                                                  ->  Aggregate
+                                                        Group Key: catalog_page.cp_catalog_page_id
+                                                        Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (page_sk = catalog_page.cp_catalog_page_sk)
+                                                              ->  Join
+                                                                    Join Type: INNER   hashOnPK
+                                                                    Join Cond: (date_sk = date_dim.d_date_sk)
+                                                                    ->  Union All
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.catalog_sales
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.catalog_returns
+                                                                    ->  Table Scan on tpcds_1t.date_dim
+                                                                          Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                          Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                              ->  Table Scan on tpcds_1t.catalog_page
+                                      ->  Project
+                                            ->  Aggregate
+                                                  Group Key: web_site.web_site_id
+                                                  Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (wsr_web_site_sk = web_site.web_site_sk)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (date_sk = date_dim.d_date_sk)
+                                                              ->  Union All
+                                                                    ->  Project
+                                                                          ->  Table Scan on tpcds_1t.web_sales
+                                                                    ->  Project
+                                                                          ->  Join
+                                                                                Join Type: RIGHT   hashOnPK
+                                                                                Join Cond: (web_sales.ws_item_sk = web_returns.wr_item_sk), (web_sales.ws_order_number = web_returns.wr_order_number) shuffle: range(web_sales.ws_item_sk)
+                                                                                ->  Table Scan on tpcds_1t.web_sales
+                                                                                ->  Table Scan on tpcds_1t.web_returns
+                                                              ->  Table Scan on tpcds_1t.date_dim
+                                                                    Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                    Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                        ->  Table Scan on tpcds_1t.web_site
+                    ->  Project
+                          ->  Aggregate
+                                Group Key: channel, id
+                                Aggregate Functions: sum(sales), sum(returns), sum(profit)
+                                ->  Union All
+                                      ->  Union All
+                                            ->  Project
+                                                  ->  Aggregate
+                                                        Group Key: store.s_store_id
+                                                        Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (store_sk = store.s_store_sk)
+                                                              ->  Join
+                                                                    Join Type: INNER   hashOnPK
+                                                                    Join Cond: (date_sk = date_dim.d_date_sk)
+                                                                    ->  Union All
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.store_sales
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.store_returns
+                                                                    ->  Table Scan on tpcds_1t.date_dim
+                                                                          Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                          Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                              ->  Table Scan on tpcds_1t.store
+                                            ->  Project
+                                                  ->  Aggregate
+                                                        Group Key: catalog_page.cp_catalog_page_id
+                                                        Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (page_sk = catalog_page.cp_catalog_page_sk)
+                                                              ->  Join
+                                                                    Join Type: INNER   hashOnPK
+                                                                    Join Cond: (date_sk = date_dim.d_date_sk)
+                                                                    ->  Union All
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.catalog_sales
+                                                                          ->  Project
+                                                                                ->  Table Scan on tpcds_1t.catalog_returns
+                                                                    ->  Table Scan on tpcds_1t.date_dim
+                                                                          Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                          Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                              ->  Table Scan on tpcds_1t.catalog_page
+                                      ->  Project
+                                            ->  Aggregate
+                                                  Group Key: web_site.web_site_id
+                                                  Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (wsr_web_site_sk = web_site.web_site_sk)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (date_sk = date_dim.d_date_sk)
+                                                              ->  Union All
+                                                                    ->  Project
+                                                                          ->  Table Scan on tpcds_1t.web_sales
+                                                                    ->  Project
+                                                                          ->  Join
+                                                                                Join Type: RIGHT   hashOnPK
+                                                                                Join Cond: (web_sales.ws_item_sk = web_returns.wr_item_sk), (web_sales.ws_order_number = web_returns.wr_order_number) shuffle: range(web_sales.ws_item_sk)
+                                                                                ->  Table Scan on tpcds_1t.web_sales
+                                                                                ->  Table Scan on tpcds_1t.web_returns
+                                                              ->  Table Scan on tpcds_1t.date_dim
+                                                                    Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                    Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                        ->  Table Scan on tpcds_1t.web_site
+              ->  Project
+                    ->  Aggregate
+                          Group Key: channel, id
+                          Aggregate Functions: sum(sales), sum(returns), sum(profit)
+                          ->  Union All
+                                ->  Union All
+                                      ->  Project
+                                            ->  Aggregate
+                                                  Group Key: store.s_store_id
+                                                  Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (store_sk = store.s_store_sk)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (date_sk = date_dim.d_date_sk)
+                                                              ->  Union All
+                                                                    ->  Project
+                                                                          ->  Table Scan on tpcds_1t.store_sales
+                                                                    ->  Project
+                                                                          ->  Table Scan on tpcds_1t.store_returns
+                                                              ->  Table Scan on tpcds_1t.date_dim
+                                                                    Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                    Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                        ->  Table Scan on tpcds_1t.store
+                                      ->  Project
+                                            ->  Aggregate
+                                                  Group Key: catalog_page.cp_catalog_page_id
+                                                  Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (page_sk = catalog_page.cp_catalog_page_sk)
+                                                        ->  Join
+                                                              Join Type: INNER   hashOnPK
+                                                              Join Cond: (date_sk = date_dim.d_date_sk)
+                                                              ->  Union All
+                                                                    ->  Project
+                                                                          ->  Table Scan on tpcds_1t.catalog_sales
+                                                                    ->  Project
+                                                                          ->  Table Scan on tpcds_1t.catalog_returns
+                                                              ->  Table Scan on tpcds_1t.date_dim
+                                                                    Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                                    Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                        ->  Table Scan on tpcds_1t.catalog_page
+                                ->  Project
+                                      ->  Aggregate
+                                            Group Key: web_site.web_site_id
+                                            Aggregate Functions: sum(sales_price), sum(profit), sum(return_amt), sum(net_loss)
+                                            ->  Join
+                                                  Join Type: INNER   hashOnPK
+                                                  Join Cond: (wsr_web_site_sk = web_site.web_site_sk)
+                                                  ->  Join
+                                                        Join Type: INNER   hashOnPK
+                                                        Join Cond: (date_sk = date_dim.d_date_sk)
+                                                        ->  Union All
+                                                              ->  Project
+                                                                    ->  Table Scan on tpcds_1t.web_sales
+                                                              ->  Project
+                                                                    ->  Join
+                                                                          Join Type: RIGHT   hashOnPK
+                                                                          Join Cond: (web_sales.ws_item_sk = web_returns.wr_item_sk), (web_sales.ws_order_number = web_returns.wr_order_number) shuffle: range(web_sales.ws_item_sk)
+                                                                          ->  Table Scan on tpcds_1t.web_sales
+                                                                          ->  Table Scan on tpcds_1t.web_returns
+                                                        ->  Table Scan on tpcds_1t.date_dim
+                                                              Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                              Block Filter Cond: date_dim.d_date BETWEEN 1998-08-04 AND 1998-08-18
+                                                  ->  Table Scan on tpcds_1t.web_site

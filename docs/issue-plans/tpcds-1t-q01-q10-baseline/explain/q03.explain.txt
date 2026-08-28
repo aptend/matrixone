@@ -1,0 +1,19 @@
+Project
+  ->  Sort
+        Sort Key: dt.d_year INTERNAL, sum(store_sales.ss_ext_sales_price) DESC, item.i_brand_id INTERNAL
+        Limit: 100
+        ->  Aggregate
+              Group Key: dt.d_year, item.i_brand, item.i_brand_id
+              Aggregate Functions: sum(store_sales.ss_ext_sales_price)
+              ->  Join
+                    Join Type: INNER   hashOnPK
+                    Join Cond: (store_sales.ss_sold_date_sk = dt.d_date_sk)
+                    ->  Join
+                          Join Type: INNER   hashOnPK
+                          Join Cond: (store_sales.ss_item_sk = item.i_item_sk)
+                          ->  Table Scan on tpcds_1t.store_sales
+                          ->  Table Scan on tpcds_1t.item
+                                Filter Cond: (item.i_manufact_id = 436)
+                                Block Filter Cond: (item.i_manufact_id = 436)
+                    ->  Table Scan on tpcds_1t.date_dim
+                          Filter Cond: (dt.d_moy = 12)

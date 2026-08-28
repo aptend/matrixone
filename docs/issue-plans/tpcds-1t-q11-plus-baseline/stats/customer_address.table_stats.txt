@@ -1,0 +1,109 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.customer_address	6000000	733	14	14	1	{
+  "ca_address_id": 1414836,
+  "ca_address_sk": 6000000,
+  "ca_city": 1084.6000000000001,
+  "ca_country": 2,
+  "ca_county": 1857,
+  "ca_gmt_offset": 6,
+  "ca_location_type": 4,
+  "ca_state": 52,
+  "ca_street_name": 10254.58503564076,
+  "ca_street_number": 1011,
+  "ca_street_type": 21,
+  "ca_suite_number": 76,
+  "ca_zip": 7837.16399414806
+}	{
+  "ca_address_id": 4702111234474983000,
+  "ca_address_sk": 1,
+  "ca_city": 0,
+  "ca_country": 0,
+  "ca_county": 0,
+  "ca_gmt_offset": -10,
+  "ca_location_type": 0,
+  "ca_state": 0,
+  "ca_street_name": 0,
+  "ca_street_number": 0,
+  "ca_street_type": 0,
+  "ca_suite_number": 0,
+  "ca_zip": 0
+}	{
+  "ca_address_id": 4702111234474983000,
+  "ca_address_sk": 6000000,
+  "ca_city": 6514860854205219000,
+  "ca_country": 6155973689300230000,
+  "ca_county": 6514849809183238000,
+  "ca_gmt_offset": -5,
+  "ca_location_type": 8316299577395585000,
+  "ca_state": 6294061954226979000,
+  "ca_street_name": 6300376880820351000,
+  "ca_street_number": 4123389605997183000,
+  "ca_street_type": 6303069153481720000,
+  "ca_suite_number": 6013828826056907000,
+  "ca_zip": 4123389847337435000
+}	{
+  "ca_address_id": "CHAR",
+  "ca_address_sk": "INT",
+  "ca_city": "VARCHAR",
+  "ca_country": "VARCHAR",
+  "ca_county": "VARCHAR",
+  "ca_gmt_offset": "DECIMAL64",
+  "ca_location_type": "CHAR",
+  "ca_state": "CHAR",
+  "ca_street_name": "VARCHAR",
+  "ca_street_number": "CHAR",
+  "ca_street_type": "CHAR",
+  "ca_suite_number": "CHAR",
+  "ca_zip": "CHAR"
+}	{
+  "ca_address_id": 0,
+  "ca_address_sk": 0,
+  "ca_city": 0,
+  "ca_country": 0,
+  "ca_county": 0,
+  "ca_gmt_offset": 180219,
+  "ca_location_type": 0,
+  "ca_state": 0,
+  "ca_street_name": 0,
+  "ca_street_number": 0,
+  "ca_street_type": 0,
+  "ca_suite_number": 0,
+  "ca_zip": 0
+}	{
+  "ca_address_id": 144027854,
+  "ca_address_sk": 24027854,
+  "ca_city": 144027854,
+  "ca_country": 144027854,
+  "ca_county": 144501519,
+  "ca_gmt_offset": 48796030,
+  "ca_location_type": 144027854,
+  "ca_state": 144027854,
+  "ca_street_name": 144027854,
+  "ca_street_number": 144027854,
+  "ca_street_type": 144027854,
+  "ca_suite_number": 144027854,
+  "ca_zip": 144027854
+}	{
+  "ca_address_sk": {
+    "overlap": 0.10766396362438813,
+    "result": [
+      11616.941399018157,
+      "...",
+      5988136.652869491
+    ],
+    "uniform": 0.9855804579714947
+  },
+  "ca_street_name": {
+    "overlap": 0.9251333807217778,
+    "result": [
+      6293595037081101000,
+      "...",
+      6300376880685474000
+    ],
+    "uniform": 0.999
+  },
+  "ca_zip": {
+    "overlap": 0.9251333807217778,
+    "uniform": 0.999
+  }
+}

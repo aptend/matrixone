@@ -1,0 +1,507 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.web_sales	720000376	87907	2167	1275	0.10588235294117647	{
+  "__mo_cpkey_col": 23760012.408,
+  "ws_bill_addr_sk": 22761911.71679723,
+  "ws_bill_cdemo_sk": 20664461.065352034,
+  "ws_bill_customer_sk": 23296356.16116625,
+  "ws_bill_hdemo_sk": 7896.900000000001,
+  "ws_coupon_amt": 3419169.7410427015,
+  "ws_ext_discount_amt": 10493350.762185752,
+  "ws_ext_list_price": 14215873.113870693,
+  "ws_ext_sales_price": 10475720.923361309,
+  "ws_ext_ship_cost": 7485946.296190789,
+  "ws_ext_tax": 2690921.6375273387,
+  "ws_ext_wholesale_cost": 10355208.730032682,
+  "ws_item_sk": 9418150.642813696,
+  "ws_list_price": 1225604.1878395926,
+  "ws_net_paid": 10984124.032511853,
+  "ws_net_paid_inc_ship": 13558950.895527234,
+  "ws_net_paid_inc_ship_tax": 16555525.223992495,
+  "ws_net_paid_inc_tax": 13369940.888263114,
+  "ws_net_profit": 12230055.555407196,
+  "ws_order_number": 8910004.653,
+  "ws_promo_sk": 1488,
+  "ws_quantity": 99,
+  "ws_sales_price": 1015778.0586967486,
+  "ws_ship_addr_sk": 22760971.766457837,
+  "ws_ship_cdemo_sk": 20681818.37232564,
+  "ws_ship_customer_sk": 23285006.88523854,
+  "ws_ship_date_sk": 2123,
+  "ws_ship_hdemo_sk": 7896.900000000001,
+  "ws_ship_mode_sk": 20,
+  "ws_sold_date_sk": 1809,
+  "ws_sold_time_sk": 3557697.174966278,
+  "ws_warehouse_sk": 20,
+  "ws_web_page_sk": 3304.4,
+  "ws_web_site_sk": 54,
+  "ws_wholesale_cost": 10841.6
+}	{
+  "__mo_cpkey_col": 4185252777717105000,
+  "ws_bill_addr_sk": 1,
+  "ws_bill_cdemo_sk": 1,
+  "ws_bill_customer_sk": 1,
+  "ws_bill_hdemo_sk": 1,
+  "ws_coupon_amt": 0,
+  "ws_ext_discount_amt": 0,
+  "ws_ext_list_price": 1,
+  "ws_ext_sales_price": 0,
+  "ws_ext_ship_cost": 0,
+  "ws_ext_tax": 0,
+  "ws_ext_wholesale_cost": 1,
+  "ws_item_sk": 1,
+  "ws_list_price": 1,
+  "ws_net_paid": 0,
+  "ws_net_paid_inc_ship": 0,
+  "ws_net_paid_inc_ship_tax": 0,
+  "ws_net_paid_inc_tax": 0,
+  "ws_net_profit": -10000,
+  "ws_order_number": 3,
+  "ws_promo_sk": 1,
+  "ws_quantity": 1,
+  "ws_sales_price": 0,
+  "ws_ship_addr_sk": 1,
+  "ws_ship_cdemo_sk": 1,
+  "ws_ship_customer_sk": 1,
+  "ws_ship_date_sk": 2450817,
+  "ws_ship_hdemo_sk": 1,
+  "ws_ship_mode_sk": 1,
+  "ws_sold_date_sk": 2450816,
+  "ws_sold_time_sk": 0,
+  "ws_warehouse_sk": 1,
+  "ws_web_page_sk": 1,
+  "ws_web_site_sk": 1,
+  "ws_wholesale_cost": 1
+}	{
+  "__mo_cpkey_col": 4185819411832772600,
+  "ws_bill_addr_sk": 6000000,
+  "ws_bill_cdemo_sk": 1920800,
+  "ws_bill_customer_sk": 12000000,
+  "ws_bill_hdemo_sk": 7200,
+  "ws_coupon_amt": 27773.91,
+  "ws_ext_discount_amt": 29847,
+  "ws_ext_list_price": 29991,
+  "ws_ext_sales_price": 29703,
+  "ws_ext_ship_cost": 14905,
+  "ws_ext_tax": 2614.77,
+  "ws_ext_wholesale_cost": 10000,
+  "ws_item_sk": 300000,
+  "ws_list_price": 300,
+  "ws_net_paid": 29703,
+  "ws_net_paid_inc_ship": 43252.11,
+  "ws_net_paid_inc_ship_tax": 44688.99,
+  "ws_net_paid_inc_tax": 31891.32,
+  "ws_net_profit": 19802,
+  "ws_order_number": 59999999,
+  "ws_promo_sk": 1500,
+  "ws_quantity": 100,
+  "ws_sales_price": 299.97,
+  "ws_ship_addr_sk": 6000000,
+  "ws_ship_cdemo_sk": 1920800,
+  "ws_ship_customer_sk": 12000000,
+  "ws_ship_date_sk": 2452762,
+  "ws_ship_hdemo_sk": 7200,
+  "ws_ship_mode_sk": 20,
+  "ws_sold_date_sk": 2452642,
+  "ws_sold_time_sk": 86399,
+  "ws_warehouse_sk": 20,
+  "ws_web_page_sk": 3000,
+  "ws_web_site_sk": 54,
+  "ws_wholesale_cost": 100
+}	{
+  "__mo_cpkey_col": "VARCHAR",
+  "ws_bill_addr_sk": "INT",
+  "ws_bill_cdemo_sk": "INT",
+  "ws_bill_customer_sk": "INT",
+  "ws_bill_hdemo_sk": "INT",
+  "ws_coupon_amt": "DECIMAL64",
+  "ws_ext_discount_amt": "DECIMAL64",
+  "ws_ext_list_price": "DECIMAL64",
+  "ws_ext_sales_price": "DECIMAL64",
+  "ws_ext_ship_cost": "DECIMAL64",
+  "ws_ext_tax": "DECIMAL64",
+  "ws_ext_wholesale_cost": "DECIMAL64",
+  "ws_item_sk": "INT",
+  "ws_list_price": "DECIMAL64",
+  "ws_net_paid": "DECIMAL64",
+  "ws_net_paid_inc_ship": "DECIMAL64",
+  "ws_net_paid_inc_ship_tax": "DECIMAL64",
+  "ws_net_paid_inc_tax": "DECIMAL64",
+  "ws_net_profit": "DECIMAL64",
+  "ws_order_number": "INT",
+  "ws_promo_sk": "INT",
+  "ws_quantity": "INT",
+  "ws_sales_price": "DECIMAL64",
+  "ws_ship_addr_sk": "INT",
+  "ws_ship_cdemo_sk": "INT",
+  "ws_ship_customer_sk": "INT",
+  "ws_ship_date_sk": "INT",
+  "ws_ship_hdemo_sk": "INT",
+  "ws_ship_mode_sk": "INT",
+  "ws_sold_date_sk": "INT",
+  "ws_sold_time_sk": "INT",
+  "ws_warehouse_sk": "INT",
+  "ws_web_page_sk": "INT",
+  "ws_web_site_sk": "INT",
+  "ws_wholesale_cost": "DECIMAL64"
+}	{
+  "__mo_cpkey_col": 0,
+  "ws_bill_addr_sk": 180772,
+  "ws_bill_cdemo_sk": 179188,
+  "ws_bill_customer_sk": 177528,
+  "ws_bill_hdemo_sk": 178884,
+  "ws_coupon_amt": 179548,
+  "ws_ext_discount_amt": 177376,
+  "ws_ext_list_price": 178694,
+  "ws_ext_sales_price": 180032,
+  "ws_ext_ship_cost": 178400,
+  "ws_ext_tax": 177955,
+  "ws_ext_wholesale_cost": 179614,
+  "ws_item_sk": 0,
+  "ws_list_price": 179539,
+  "ws_net_paid": 178514,
+  "ws_net_paid_inc_ship": 0,
+  "ws_net_paid_inc_ship_tax": 0,
+  "ws_net_paid_inc_tax": 179444,
+  "ws_net_profit": 0,
+  "ws_order_number": 0,
+  "ws_promo_sk": 179453,
+  "ws_quantity": 176883,
+  "ws_sales_price": 179216,
+  "ws_ship_addr_sk": 180696,
+  "ws_ship_cdemo_sk": 181151,
+  "ws_ship_customer_sk": 178600,
+  "ws_ship_date_sk": 178675,
+  "ws_ship_hdemo_sk": 179709,
+  "ws_ship_mode_sk": 179330,
+  "ws_sold_date_sk": 179083,
+  "ws_sold_time_sk": 178713,
+  "ws_warehouse_sk": 179055,
+  "ws_web_page_sk": 177993,
+  "ws_web_site_sk": 179226,
+  "ws_wholesale_cost": 179007
+}	{
+  "__mo_cpkey_col": 17283349802,
+  "ws_bill_addr_sk": 2964005311,
+  "ws_bill_cdemo_sk": 2963697546,
+  "ws_bill_customer_sk": 2963604898,
+  "ws_bill_hdemo_sk": 2963150004,
+  "ws_coupon_amt": 5843153936,
+  "ws_ext_discount_amt": 5843289380,
+  "ws_ext_list_price": 5843072973,
+  "ws_ext_sales_price": 5843702844,
+  "ws_ext_ship_cost": 5843210314,
+  "ws_ext_tax": 5843159475,
+  "ws_ext_wholesale_cost": 5843133752,
+  "ws_item_sk": 2883342282,
+  "ws_list_price": 5843687441,
+  "ws_net_paid": 5842829402,
+  "ws_net_paid_inc_ship": 5763343786,
+  "ws_net_paid_inc_ship_tax": 5763343786,
+  "ws_net_paid_inc_tax": 5842842832,
+  "ws_net_profit": 5763343786,
+  "ws_order_number": 2883342282,
+  "ws_promo_sk": 2963319366,
+  "ws_quantity": 2963199780,
+  "ws_sales_price": 5843574078,
+  "ws_ship_addr_sk": 2963727974,
+  "ws_ship_cdemo_sk": 2963861293,
+  "ws_ship_customer_sk": 2962971612,
+  "ws_ship_date_sk": 2963348275,
+  "ws_ship_hdemo_sk": 2963413607,
+  "ws_ship_mode_sk": 2963020023,
+  "ws_sold_date_sk": 2963331886,
+  "ws_sold_time_sk": 2963409130,
+  "ws_warehouse_sk": 2963357912,
+  "ws_web_page_sk": 2963115251,
+  "ws_web_site_sk": 2963073594,
+  "ws_wholesale_cost": 5842927893
+}	{
+  "ws_bill_addr_sk": {
+    "overlap": 0.9919957229348687,
+    "result": [
+      4365.971889469357,
+      "...",
+      5994128.253695301
+    ],
+    "uniform": 0.999
+  },
+  "ws_bill_cdemo_sk": {
+    "overlap": 0.9920002869604717,
+    "result": [
+      1402.087493891891,
+      "...",
+      1918920.8561207983
+    ],
+    "uniform": 0.999
+  },
+  "ws_bill_customer_sk": {
+    "overlap": 0.9920042611792311,
+    "result": [
+      8787.401112217955,
+      "...",
+      11988257.9127805
+    ],
+    "uniform": 0.999
+  },
+  "ws_bill_hdemo_sk": {
+    "overlap": 0.992002647353532,
+    "result": [
+      6.242979490612812,
+      "...",
+      7192.967979452093
+    ],
+    "uniform": 0.999
+  },
+  "ws_coupon_amt": {
+    "overlap": 0.9899795346377503,
+    "result": [
+      17.6106963493345,
+      "...",
+      26726.374786877117
+    ],
+    "uniform": 0.999
+  },
+  "ws_ext_discount_amt": {
+    "overlap": 0.9912570296432031,
+    "result": [
+      20.714119915083515,
+      "...",
+      28951.521714027982
+    ],
+    "uniform": 0.999
+  },
+  "ws_ext_list_price": {
+    "overlap": 0.9918373600955614,
+    "result": [
+      22.851070078601342,
+      "...",
+      29777.07802489004
+    ],
+    "uniform": 0.999
+  },
+  "ws_ext_sales_price": {
+    "overlap": 0.9912911655646185,
+    "result": [
+      20.585151784869712,
+      "...",
+      29109.448372001512
+    ],
+    "uniform": 0.999
+  },
+  "ws_ext_ship_cost": {
+    "overlap": 0.991310507476861,
+    "result": [
+      10.371345866966614,
+      "...",
+      14562.057402557293
+    ],
+    "uniform": 0.999
+  },
+  "ws_ext_tax": {
+    "overlap": 0.9907005506553301,
+    "result": [
+      1.7476565803325326,
+      "...",
+      2518.1868041137454
+    ],
+    "uniform": 0.999
+  },
+  "ws_ext_wholesale_cost": {
+    "overlap": 0.9919974787394805,
+    "result": [
+      8.285285317663336,
+      "...",
+      9989.025055197792
+    ],
+    "uniform": 0.999
+  },
+  "ws_item_sk": {
+    "overlap": 0.07613120355332935,
+    "result": [
+      3622.8891848156604,
+      "...",
+      299930.1637636517
+    ],
+    "uniform": 0.999
+  },
+  "ws_list_price": {
+    "overlap": 0.9919486111593998,
+    "result": [
+      1.2326167132593988,
+      "...",
+      299.6172500639685
+    ],
+    "uniform": 0.999
+  },
+  "ws_net_paid": {
+    "overlap": 0.9912277250593414,
+    "result": [
+      20.553878958030527,
+      "...",
+      29077.282286134792
+    ],
+    "uniform": 0.999
+  },
+  "ws_net_paid_inc_ship": {
+    "overlap": 0.9914115544230855,
+    "result": [
+      39.249924018913724,
+      "...",
+      42069.40641013749
+    ],
+    "uniform": 0.999
+  },
+  "ws_net_paid_inc_ship_tax": {
+    "overlap": 0.9914585145062934,
+    "result": [
+      40.71233673913232,
+      "...",
+      43475.11865639515
+    ],
+    "uniform": 0.999
+  },
+  "ws_net_paid_inc_tax": {
+    "overlap": 0.990990774381349,
+    "result": [
+      21.688879676595437,
+      "...",
+      30797.738280961203
+    ],
+    "uniform": 0.999
+  },
+  "ws_net_profit": {
+    "overlap": 0.9887939921463276,
+    "result": [
+      -9896.127795790822,
+      "...",
+      19209.940583334792
+    ],
+    "uniform": 0.999
+  },
+  "ws_order_number": {
+    "overlap": 0.992494091200593,
+    "result": [
+      58693.25866425264,
+      "...",
+      59941291.04664019
+    ],
+    "uniform": 0.999
+  },
+  "ws_promo_sk": {
+    "overlap": 0.9920010768282702,
+    "result": [
+      2.090526579140171,
+      "...",
+      1498.5357678656687
+    ],
+    "uniform": 0.999
+  },
+  "ws_quantity": {
+    "overlap": 0.9919441853062935,
+    "result": [
+      1.0720163008177552,
+      "...",
+      99.90329620361761
+    ],
+    "uniform": 0.999
+  },
+  "ws_sales_price": {
+    "overlap": 0.9918387699400023,
+    "result": [
+      0.2159759803872797,
+      "...",
+      297.67995731491885
+    ],
+    "uniform": 0.999
+  },
+  "ws_ship_addr_sk": {
+    "overlap": 0.9919961810612699,
+    "result": [
+      4364.785987168614,
+      "...",
+      5994129.767867494
+    ],
+    "uniform": 0.999
+  },
+  "ws_ship_cdemo_sk": {
+    "overlap": 0.9919949393146729,
+    "result": [
+      1397.0690155599139,
+      "...",
+      1918921.0173731907
+    ],
+    "uniform": 0.999
+  },
+  "ws_ship_customer_sk": {
+    "overlap": 0.9920014300396697,
+    "result": [
+      8769.101728303938,
+      "...",
+      11988255.577561395
+    ],
+    "uniform": 0.999
+  },
+  "ws_ship_date_sk": {
+    "overlap": 0.9919021374610631,
+    "result": [
+      2450818.639435113,
+      "...",
+      2452760.091196842
+    ],
+    "uniform": 0.999
+  },
+  "ws_ship_hdemo_sk": {
+    "overlap": 0.992000373132492,
+    "result": [
+      6.234732757096314,
+      "...",
+      7192.967971390769
+    ],
+    "uniform": 0.999
+  },
+  "ws_sold_date_sk": {
+    "overlap": 0.9920020978606049,
+    "result": [
+      2450817.3293576515,
+      "...",
+      2452640.2163532334
+    ],
+    "uniform": 0.999
+  },
+  "ws_sold_time_sk": {
+    "overlap": 0.9919985425764896,
+    "result": [
+      63.2974458600701,
+      "...",
+      86314.40072045676
+    ],
+    "uniform": 0.999
+  },
+  "ws_web_page_sk": {
+    "overlap": 0.9920051045447144,
+    "result": [
+      3.187861829381298,
+      "...",
+      2997.0705648698236
+    ],
+    "uniform": 0.999
+  },
+  "ws_web_site_sk": {
+    "overlap": 0.9919377322152734,
+    "result": [
+      1.0383819042326317,
+      "...",
+      53.94822911232085
+    ],
+    "uniform": 0.999
+  },
+  "ws_wholesale_cost": {
+    "overlap": 0.9920023068688091,
+    "result": [
+      1.072084035964396,
+      "...",
+      99.90329626982988
+    ],
+    "uniform": 0.999
+  }
+}

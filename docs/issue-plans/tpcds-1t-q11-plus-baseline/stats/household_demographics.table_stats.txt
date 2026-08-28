@@ -1,0 +1,38 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.household_demographics	7200	1	1	1	1	{
+  "hd_buy_potential": 6,
+  "hd_demo_sk": 7200,
+  "hd_dep_count": 10,
+  "hd_income_band_sk": 20,
+  "hd_vehicle_count": 6
+}	{
+  "hd_buy_potential": 3471489368852529000,
+  "hd_demo_sk": 1,
+  "hd_dep_count": 0,
+  "hd_income_band_sk": 1,
+  "hd_vehicle_count": -1
+}	{
+  "hd_buy_potential": 6155975862722720000,
+  "hd_demo_sk": 7200,
+  "hd_dep_count": 9,
+  "hd_income_band_sk": 20,
+  "hd_vehicle_count": 4
+}	{
+  "hd_buy_potential": "CHAR",
+  "hd_demo_sk": "INT",
+  "hd_dep_count": "INT",
+  "hd_income_band_sk": "INT",
+  "hd_vehicle_count": "INT"
+}	{
+  "hd_buy_potential": 0,
+  "hd_demo_sk": 0,
+  "hd_dep_count": 0,
+  "hd_income_band_sk": 0,
+  "hd_vehicle_count": 0
+}	{
+  "hd_buy_potential": 172838,
+  "hd_demo_sk": 28838,
+  "hd_dep_count": 28838,
+  "hd_income_band_sk": 28838,
+  "hd_vehicle_count": 28838
+}	{}

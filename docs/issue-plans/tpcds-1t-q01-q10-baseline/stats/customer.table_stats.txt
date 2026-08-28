@@ -1,0 +1,198 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.customer	12000000	1465	24	24	1	{
+  "c_birth_country": 212,
+  "c_birth_day": 31,
+  "c_birth_month": 12,
+  "c_birth_year": 69,
+  "c_current_addr_sk": 1476306,
+  "c_current_cdemo_sk": 6818391.027003091,
+  "c_current_hdemo_sk": 7179,
+  "c_customer_id": 1547328,
+  "c_customer_sk": 12000000,
+  "c_email_address": 1490700,
+  "c_first_name": 5602.3,
+  "c_first_sales_date_sk": 3617,
+  "c_first_shipto_date_sk": 3613,
+  "c_last_name": 5062,
+  "c_last_review_date_sk": 363,
+  "c_login": 1,
+  "c_preferred_cust_flag": 3,
+  "c_salutation": 7
+}	{
+  "c_birth_country": 0,
+  "c_birth_day": 1,
+  "c_birth_month": 1,
+  "c_birth_year": 1924,
+  "c_current_addr_sk": 3,
+  "c_current_cdemo_sk": 1,
+  "c_current_hdemo_sk": 1,
+  "c_customer_id": 4702111234474983000,
+  "c_customer_sk": 1,
+  "c_email_address": 0,
+  "c_first_name": 0,
+  "c_first_sales_date_sk": 2448998,
+  "c_first_shipto_date_sk": 2449028,
+  "c_last_name": 0,
+  "c_last_review_date_sk": 2452283,
+  "c_login": 0,
+  "c_preferred_cust_flag": 0,
+  "c_salutation": 0
+}	{
+  "c_birth_country": 6505816083671439000,
+  "c_birth_day": 31,
+  "c_birth_month": 12,
+  "c_birth_year": 1992,
+  "c_current_addr_sk": 6000000,
+  "c_current_cdemo_sk": 1920800,
+  "c_current_hdemo_sk": 7200,
+  "c_customer_id": 4702111234474983000,
+  "c_customer_sk": 12000000,
+  "c_email_address": 6518235252726323000,
+  "c_first_name": 6518235252723286000,
+  "c_first_sales_date_sk": 2452648,
+  "c_first_shipto_date_sk": 2452678,
+  "c_last_name": 6518237434673693000,
+  "c_last_review_date_sk": 2452648,
+  "c_login": 0,
+  "c_preferred_cust_flag": 6413125869375586000,
+  "c_salutation": 6010460522028204000
+}	{
+  "c_birth_country": "VARCHAR",
+  "c_birth_day": "INT",
+  "c_birth_month": "INT",
+  "c_birth_year": "INT",
+  "c_current_addr_sk": "INT",
+  "c_current_cdemo_sk": "INT",
+  "c_current_hdemo_sk": "INT",
+  "c_customer_id": "CHAR",
+  "c_customer_sk": "INT",
+  "c_email_address": "CHAR",
+  "c_first_name": "CHAR",
+  "c_first_sales_date_sk": "INT",
+  "c_first_shipto_date_sk": "INT",
+  "c_last_name": "CHAR",
+  "c_last_review_date_sk": "INT",
+  "c_login": "CHAR",
+  "c_preferred_cust_flag": "CHAR",
+  "c_salutation": "CHAR"
+}	{
+  "c_birth_country": 0,
+  "c_birth_day": 420361,
+  "c_birth_month": 419629,
+  "c_birth_year": 419584,
+  "c_current_addr_sk": 0,
+  "c_current_cdemo_sk": 419895,
+  "c_current_hdemo_sk": 418736,
+  "c_customer_id": 0,
+  "c_customer_sk": 0,
+  "c_email_address": 0,
+  "c_first_name": 0,
+  "c_first_sales_date_sk": 419856,
+  "c_first_shipto_date_sk": 420769,
+  "c_last_name": 0,
+  "c_last_review_date_sk": 419900,
+  "c_login": 0,
+  "c_preferred_cust_flag": 0,
+  "c_salutation": 0
+}	{
+  "c_birth_country": 288055670,
+  "c_birth_day": 49590966,
+  "c_birth_month": 49590990,
+  "c_birth_year": 49590982,
+  "c_current_addr_sk": 48055670,
+  "c_current_cdemo_sk": 49590990,
+  "c_current_hdemo_sk": 49590990,
+  "c_customer_id": 288055670,
+  "c_customer_sk": 48055670,
+  "c_email_address": 546002137,
+  "c_first_name": 288055670,
+  "c_first_sales_date_sk": 49590974,
+  "c_first_shipto_date_sk": 49590974,
+  "c_last_name": 288055670,
+  "c_last_review_date_sk": 49590990,
+  "c_login": 288055670,
+  "c_preferred_cust_flag": 288055670,
+  "c_salutation": 288055670
+}	{
+  "c_current_addr_sk": {
+    "overlap": 0.9582114128252229,
+    "result": [
+      5871.589385677128,
+      "...",
+      5994130.529698184
+    ],
+    "uniform": 0.999
+  },
+  "c_current_cdemo_sk": {
+    "overlap": 0.8923256140522848,
+    "result": [
+      1.0000000677314294,
+      "...",
+      1918917.350882934
+    ],
+    "uniform": 0.999
+  },
+  "c_current_hdemo_sk": {
+    "overlap": 0.8925071790578334,
+    "result": [
+      1.0000000000987506,
+      "...",
+      7192.962854349952
+    ],
+    "uniform": 0.999
+  },
+  "c_customer_sk": {
+    "overlap": 0.023105997620728506,
+    "result": [
+      11719.726927232827,
+      "...",
+      11988281.27707059
+    ],
+    "uniform": 0.7799701556787828
+  },
+  "c_email_address": {
+    "overlap": 0.958213235796287,
+    "result": [
+      3327688796868268500,
+      "...",
+      6518223076380666000
+    ],
+    "uniform": 0.999
+  },
+  "c_first_name": {
+    "overlap": 0.9581910940407081,
+    "result": [
+      6510615555544777000,
+      "...",
+      6518235248771006000
+    ],
+    "uniform": 0.999
+  },
+  "c_first_sales_date_sk": {
+    "overlap": 0.8923346237992084,
+    "result": [
+      2448998,
+      "...",
+      2452644.432062561
+    ],
+    "uniform": 0.999
+  },
+  "c_first_shipto_date_sk": {
+    "overlap": 0.8921936397751389,
+    "result": [
+      2449028,
+      "...",
+      2452674.432062561
+    ],
+    "uniform": 0.999
+  },
+  "c_last_name": {
+    "overlap": 0.9582133320817777,
+    "result": [
+      6510615555544777000,
+      "...",
+      6518237434456900000
+    ],
+    "uniform": 0.999
+  }
+}

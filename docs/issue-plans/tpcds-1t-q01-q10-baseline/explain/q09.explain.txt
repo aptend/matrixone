@@ -1,0 +1,94 @@
+Project
+  ->  Join
+        Join Type: LEFT
+        ->  Join
+              Join Type: LEFT
+              ->  Join
+                    Join Type: LEFT
+                    ->  Join
+                          Join Type: LEFT
+                          ->  Join
+                                Join Type: LEFT
+                                ->  Join
+                                      Join Type: LEFT
+                                      ->  Join
+                                            Join Type: LEFT
+                                            ->  Join
+                                                  Join Type: LEFT
+                                                  ->  Join
+                                                        Join Type: LEFT
+                                                        ->  Join
+                                                              Join Type: LEFT
+                                                              ->  Join
+                                                                    Join Type: LEFT
+                                                                    ->  Join
+                                                                          Join Type: LEFT
+                                                                          ->  Join
+                                                                                Join Type: LEFT
+                                                                                ->  Join
+                                                                                      Join Type: LEFT
+                                                                                      ->  Join
+                                                                                            Join Type: LEFT
+                                                                                            ->  Table Scan on tpcds_1t.reason
+                                                                                                  Filter Cond: (reason.r_reason_sk = 1)
+                                                                                                  Block Filter Cond: (reason.r_reason_sk = 1)
+                                                                                            ->  Aggregate
+                                                                                                  Aggregate Functions: starcount(1)
+                                                                                                  ->  Table Scan on tpcds_1t.store_sales
+                                                                                                        Filter Cond: store_sales.ss_quantity BETWEEN 1 AND 20
+                                                                                      ->  Aggregate
+                                                                                            Aggregate Functions: avg(store_sales.ss_ext_discount_amt)
+                                                                                            ->  Table Scan on tpcds_1t.store_sales
+                                                                                                  Filter Cond: store_sales.ss_quantity BETWEEN 1 AND 20
+                                                                                ->  Aggregate
+                                                                                      Aggregate Functions: avg(store_sales.ss_net_profit)
+                                                                                      ->  Table Scan on tpcds_1t.store_sales
+                                                                                            Filter Cond: store_sales.ss_quantity BETWEEN 1 AND 20
+                                                                          ->  Aggregate
+                                                                                Aggregate Functions: starcount(1)
+                                                                                ->  Table Scan on tpcds_1t.store_sales
+                                                                                      Filter Cond: store_sales.ss_quantity BETWEEN 21 AND 40
+                                                                    ->  Aggregate
+                                                                          Aggregate Functions: avg(store_sales.ss_ext_discount_amt)
+                                                                          ->  Table Scan on tpcds_1t.store_sales
+                                                                                Filter Cond: store_sales.ss_quantity BETWEEN 21 AND 40
+                                                              ->  Aggregate
+                                                                    Aggregate Functions: avg(store_sales.ss_net_profit)
+                                                                    ->  Table Scan on tpcds_1t.store_sales
+                                                                          Filter Cond: store_sales.ss_quantity BETWEEN 21 AND 40
+                                                        ->  Aggregate
+                                                              Aggregate Functions: starcount(1)
+                                                              ->  Table Scan on tpcds_1t.store_sales
+                                                                    Filter Cond: store_sales.ss_quantity BETWEEN 41 AND 60
+                                                  ->  Aggregate
+                                                        Aggregate Functions: avg(store_sales.ss_ext_discount_amt)
+                                                        ->  Table Scan on tpcds_1t.store_sales
+                                                              Filter Cond: store_sales.ss_quantity BETWEEN 41 AND 60
+                                            ->  Aggregate
+                                                  Aggregate Functions: avg(store_sales.ss_net_profit)
+                                                  ->  Table Scan on tpcds_1t.store_sales
+                                                        Filter Cond: store_sales.ss_quantity BETWEEN 41 AND 60
+                                      ->  Aggregate
+                                            Aggregate Functions: starcount(1)
+                                            ->  Table Scan on tpcds_1t.store_sales
+                                                  Filter Cond: store_sales.ss_quantity BETWEEN 61 AND 80
+                                ->  Aggregate
+                                      Aggregate Functions: avg(store_sales.ss_ext_discount_amt)
+                                      ->  Table Scan on tpcds_1t.store_sales
+                                            Filter Cond: store_sales.ss_quantity BETWEEN 61 AND 80
+                          ->  Aggregate
+                                Aggregate Functions: avg(store_sales.ss_net_profit)
+                                ->  Table Scan on tpcds_1t.store_sales
+                                      Filter Cond: store_sales.ss_quantity BETWEEN 61 AND 80
+                    ->  Aggregate
+                          Aggregate Functions: starcount(1)
+                          ->  Table Scan on tpcds_1t.store_sales
+                                Filter Cond: store_sales.ss_quantity BETWEEN 81 AND 100
+              ->  Aggregate
+                    Aggregate Functions: avg(store_sales.ss_ext_discount_amt)
+                    ->  Table Scan on tpcds_1t.store_sales
+                          Filter Cond: store_sales.ss_quantity BETWEEN 81 AND 100
+        ->  Aggregate
+              Aggregate Functions: avg(store_sales.ss_net_profit)
+              ->  Table Scan on tpcds_1t.store_sales
+                    Filter Cond: store_sales.ss_quantity BETWEEN 81 AND 100

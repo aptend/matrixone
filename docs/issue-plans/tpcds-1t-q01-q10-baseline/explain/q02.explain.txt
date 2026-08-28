@@ -1,0 +1,36 @@
+Plan 0:
+Sink
+  ->  Project
+        ->  Aggregate
+              Group Key: date_dim.d_week_seq
+              Aggregate Functions: sum(CASE WHEN (date_dim.d_day_name = 'Sunday') THEN sales_price ELSE (null) END), sum(CASE WHEN (date_dim.d_day_name = 'Monday') THEN sales_price ELSE (null) END), sum(CASE WHEN (date_dim.d_day_name = 'Tuesday') THEN sales_price ELSE (null) END), sum(CASE WHEN (date_dim.d_day_name = 'Wednesday') THEN sales_price ELSE (null) END), sum(CASE WHEN (date_dim.d_day_name = 'Thursday') THEN sales_price ELSE (null) END), sum(CASE WHEN (date_dim.d_day_name = 'Friday') THEN sales_price ELSE (null) END), sum(CASE WHEN (date_dim.d_day_name = 'Saturday') THEN sales_price ELSE (null) END)
+              ->  Join
+                    Join Type: INNER   hashOnPK
+                    Join Cond: (sold_date_sk = date_dim.d_date_sk)
+                    ->  Union All
+                          ->  Project
+                                ->  Table Scan on tpcds_1t.web_sales
+                          ->  Project
+                                ->  Table Scan on tpcds_1t.catalog_sales
+                    ->  Table Scan on tpcds_1t.date_dim
+Plan 1:
+Project
+  ->  Sort
+        Sort Key: wswscs.d_week_seq INTERNAL
+        ->  Join
+              Join Type: INNER
+              Join Cond: (wswscs.d_week_seq = date_dim.d_week_seq)
+              ->  Join
+                    Join Type: INNER
+                    Join Cond: (cast((cast(wswscs.d_week_seq AS BIGINT) - 53) AS INT) = wswscs.d_week_seq)
+                    ->  Sink Scan
+                          DataSource: Plan 0
+                    ->  Join
+                          Join Type: INNER
+                          Join Cond: (wswscs.d_week_seq = date_dim.d_week_seq)
+                          ->  Sink Scan
+                                DataSource: Plan 0
+                          ->  Table Scan on tpcds_1t.date_dim
+                                Filter Cond: (date_dim.d_year = 2001)
+              ->  Table Scan on tpcds_1t.date_dim
+                    Filter Cond: (date_dim.d_year = 2002)

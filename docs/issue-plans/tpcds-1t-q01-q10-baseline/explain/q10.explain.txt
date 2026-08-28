@@ -1,0 +1,48 @@
+Project
+  ->  Sort
+        Sort Key: customer_demographics.cd_gender INTERNAL, customer_demographics.cd_marital_status INTERNAL, customer_demographics.cd_education_status INTERNAL, customer_demographics.cd_purchase_estimate INTERNAL, customer_demographics.cd_credit_rating INTERNAL, customer_demographics.cd_dep_count INTERNAL, customer_demographics.cd_dep_employed_count INTERNAL, customer_demographics.cd_dep_college_count INTERNAL
+        Limit: 100
+        ->  Aggregate
+              Group Key: customer_demographics.cd_gender, customer_demographics.cd_marital_status, customer_demographics.cd_education_status, customer_demographics.cd_purchase_estimate, customer_demographics.cd_credit_rating, customer_demographics.cd_dep_count, customer_demographics.cd_dep_employed_count, customer_demographics.cd_dep_college_count
+              Aggregate Functions: starcount(1)
+              ->  Filter
+                    Filter Cond: ((#[0,8] IS TRUE) or (#[0,9] IS TRUE))
+                    ->  Join
+                          Join Type: MARK
+                          Join Cond: (c.c_customer_sk = catalog_sales.cs_ship_customer_sk)
+                          ->  Join
+                                Join Type: MARK
+                                Join Cond: (c.c_customer_sk = web_sales.ws_bill_customer_sk)
+                                ->  Join
+                                      Join Type: INNER
+                                      Join Cond: (customer_demographics.cd_demo_sk = c.c_current_cdemo_sk) shuffle: range(customer_demographics.cd_demo_sk)
+                                      ->  Table Scan on tpcds_1t.customer_demographics
+                                      ->  Join
+                                            Join Type: RIGHT SEMI   hashOnPK
+                                            Join Cond: (store_sales.ss_customer_sk = c.c_customer_sk) shuffle: range(store_sales.ss_customer_sk)
+                                            ->  Join
+                                                  Join Type: INNER   hashOnPK
+                                                  Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                                  ->  Table Scan on tpcds_1t.store_sales
+                                                  ->  Table Scan on tpcds_1t.date_dim
+                                                        Filter Cond: (date_dim.d_year = 2002), date_dim.d_moy BETWEEN 4 AND 7
+                                            ->  Join
+                                                  Join Type: INNER   hashOnPK
+                                                  Join Cond: (c.c_current_addr_sk = ca.ca_address_sk)
+                                                  Runtime Filter Build: #[-1,0]
+                                                  ->  Table Scan on tpcds_1t.customer
+                                                        Runtime Filter Probe: c.c_current_addr_sk
+                                                  ->  Table Scan on tpcds_1t.customer_address
+                                                        Filter Cond: ca.ca_county in ([Dona Ana County Douglas County Gaines County Richland County Walker County])
+                                ->  Join
+                                      Join Type: INNER   hashOnPK
+                                      Join Cond: (web_sales.ws_sold_date_sk = date_dim.d_date_sk)
+                                      ->  Table Scan on tpcds_1t.web_sales
+                                      ->  Table Scan on tpcds_1t.date_dim
+                                            Filter Cond: (date_dim.d_year = 2002), date_dim.d_moy BETWEEN 4 AND 7
+                          ->  Join
+                                Join Type: INNER   hashOnPK
+                                Join Cond: (catalog_sales.cs_sold_date_sk = date_dim.d_date_sk)
+                                ->  Table Scan on tpcds_1t.catalog_sales
+                                ->  Table Scan on tpcds_1t.date_dim
+                                      Filter Cond: (date_dim.d_year = 2002), date_dim.d_moy BETWEEN 4 AND 7

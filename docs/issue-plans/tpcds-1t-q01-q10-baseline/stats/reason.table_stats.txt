@@ -1,0 +1,26 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.reason	65	1	1	1	1	{
+  "r_reason_desc": 64,
+  "r_reason_id": 65,
+  "r_reason_sk": 65
+}	{
+  "r_reason_desc": 4929581357588248000,
+  "r_reason_id": 4702111234474983000,
+  "r_reason_sk": 1
+}	{
+  "r_reason_desc": 8461807906967810000,
+  "r_reason_id": 4702111234474983000,
+  "r_reason_sk": 65
+}	{
+  "r_reason_desc": "CHAR",
+  "r_reason_id": "CHAR",
+  "r_reason_sk": "INT"
+}	{
+  "r_reason_desc": 0,
+  "r_reason_id": 0,
+  "r_reason_sk": 0
+}	{
+  "r_reason_desc": 1798,
+  "r_reason_id": 1598,
+  "r_reason_sk": 298
+}	{}

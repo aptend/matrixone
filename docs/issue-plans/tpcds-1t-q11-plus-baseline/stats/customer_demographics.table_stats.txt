@@ -1,0 +1,72 @@
+table_name	table_cnt	block_number	approx_object_number	accurate_object_number	sampling_ratio	ndv_map	min_val_map	max_val_map	data_type_map	null_cnt_map	size_map	shuffle_range_map
+tpcds_1t.customer_demographics	1920800	235	2	2	1	{
+  "cd_credit_rating": 4,
+  "cd_demo_sk": 1920800,
+  "cd_dep_college_count": 4,
+  "cd_dep_count": 7,
+  "cd_dep_employed_count": 7,
+  "cd_education_status": 7,
+  "cd_gender": 2,
+  "cd_marital_status": 5,
+  "cd_purchase_estimate": 20
+}	{
+  "cd_credit_rating": 5147455374395179000,
+  "cd_demo_sk": 1,
+  "cd_dep_college_count": 0,
+  "cd_dep_count": 0,
+  "cd_dep_employed_count": 0,
+  "cd_education_status": 3612020432225724000,
+  "cd_gender": 5044031582654956000,
+  "cd_marital_status": 4899916394579100000,
+  "cd_purchase_estimate": 500
+}	{
+  "cd_credit_rating": 6155975862722720000,
+  "cd_demo_sk": 1920800,
+  "cd_dep_college_count": 6,
+  "cd_dep_count": 6,
+  "cd_dep_employed_count": 6,
+  "cd_education_status": 6155975862722720000,
+  "cd_gender": 5548434740920451000,
+  "cd_marital_status": 6269010681299730000,
+  "cd_purchase_estimate": 10000
+}	{
+  "cd_credit_rating": "CHAR",
+  "cd_demo_sk": "INT",
+  "cd_dep_college_count": "INT",
+  "cd_dep_count": "INT",
+  "cd_dep_employed_count": "INT",
+  "cd_education_status": "CHAR",
+  "cd_gender": "CHAR",
+  "cd_marital_status": "CHAR",
+  "cd_purchase_estimate": "INT"
+}	{
+  "cd_credit_rating": 0,
+  "cd_demo_sk": 0,
+  "cd_dep_college_count": 0,
+  "cd_dep_count": 0,
+  "cd_dep_employed_count": 0,
+  "cd_education_status": 0,
+  "cd_gender": 0,
+  "cd_marital_status": 0,
+  "cd_purchase_estimate": 0
+}	{
+  "cd_credit_rating": 46108130,
+  "cd_demo_sk": 7692130,
+  "cd_dep_college_count": 7692130,
+  "cd_dep_count": 7692130,
+  "cd_dep_employed_count": 7692130,
+  "cd_education_status": 46108130,
+  "cd_gender": 46108130,
+  "cd_marital_status": 46108130,
+  "cd_purchase_estimate": 7692130
+}	{
+  "cd_demo_sk": {
+    "overlap": 0,
+    "result": [
+      1876.7794611155987,
+      "...",
+      1918924.2209005728
+    ],
+    "uniform": 0.999
+  }
+}

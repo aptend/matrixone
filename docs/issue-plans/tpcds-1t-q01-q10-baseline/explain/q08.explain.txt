@@ -1,0 +1,35 @@
+Project
+  ->  Sort
+        Sort Key: store.s_store_name INTERNAL
+        Limit: 100
+        ->  Aggregate
+              Group Key: store.s_store_name
+              Aggregate Functions: sum(store_sales.ss_net_profit)
+              ->  Join
+                    Join Type: INNER
+                    Join Cond: (substr(store.s_zip, 1, 2) = substr(ca_zip, 1, 2))
+                    ->  Join
+                          Join Type: INNER   hashOnPK
+                          Join Cond: (store_sales.ss_store_sk = store.s_store_sk)
+                          ->  Join
+                                Join Type: INNER   hashOnPK
+                                Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                ->  Table Scan on tpcds_1t.store_sales
+                                ->  Table Scan on tpcds_1t.date_dim
+                                      Filter Cond: (date_dim.d_year = 2002), (date_dim.d_qoy = 1)
+                          ->  Table Scan on tpcds_1t.store
+                    ->  Intersect
+                          ->  Project
+                                ->  Table Scan on tpcds_1t.customer_address
+                                      Filter Cond: substr(customer_address.ca_zip, 1, 5) in ([10094 10391 10502 10688 10827 10866 11110 11201 11357 11376 11395 11433 11622 11635 11929 13036]... 400 values)
+                          ->  Project
+                                ->  Aggregate
+                                      Group Key: customer_address.ca_zip
+                                      Aggregate Functions: starcount(1)
+                                      Filter Cond: (count(*) > 10)
+                                      ->  Join
+                                            Join Type: INNER
+                                            Join Cond: (customer_address.ca_address_sk = customer.c_current_addr_sk) shuffle: range(customer_address.ca_address_sk)
+                                            ->  Table Scan on tpcds_1t.customer_address
+                                            ->  Table Scan on tpcds_1t.customer
+                                                  Filter Cond: (customer.c_preferred_cust_flag = 'Y')

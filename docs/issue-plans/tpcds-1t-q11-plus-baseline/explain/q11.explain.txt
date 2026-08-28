@@ -1,0 +1,67 @@
+Plan 0:
+Sink
+  ->  Project
+        ->  Union All
+              ->  Project
+                    ->  Aggregate
+                          Group Key: customer.c_customer_id, customer.c_first_name, customer.c_last_name, customer.c_preferred_cust_flag, customer.c_birth_country, customer.c_login, customer.c_email_address, #[0,0] shuffle: hash(customer.c_customer_id)
+                          Aggregate Functions: sum(#[0,1])
+                          ->  Join
+                                Join Type: INNER   hashOnPK
+                                Join Cond: (#[0,1] = customer.c_customer_sk) shuffle: REUSE
+                                ->  Aggregate
+                                      Group Key: date_dim.d_year, store_sales.ss_customer_sk shuffle: range(store_sales.ss_customer_sk)
+                                      Aggregate Functions: sum((store_sales.ss_ext_list_price - store_sales.ss_ext_discount_amt))
+                                      ->  Join
+                                            Join Type: INNER   hashOnPK
+                                            Join Cond: (store_sales.ss_sold_date_sk = date_dim.d_date_sk)
+                                            ->  Table Scan on tpcds_1t.store_sales
+                                            ->  Table Scan on tpcds_1t.date_dim
+                                                  Filter Cond: ((true and (date_dim.d_year = 2001)) or (true and (date_dim.d_year = 2002)) or (false and (date_dim.d_year = 2001)) or (false and (date_dim.d_year = 2002)))
+                                ->  Table Scan on tpcds_1t.customer
+              ->  Project
+                    ->  Aggregate
+                          Group Key: customer.c_customer_id, customer.c_first_name, customer.c_last_name, customer.c_preferred_cust_flag, customer.c_birth_country, customer.c_login, customer.c_email_address, date_dim.d_year shuffle: hash(customer.c_customer_id)
+                          Aggregate Functions: sum((web_sales.ws_ext_list_price - web_sales.ws_ext_discount_amt))
+                          ->  Join
+                                Join Type: INNER   hashOnPK
+                                Join Cond: (web_sales.ws_bill_customer_sk = customer.c_customer_sk) shuffle: range(web_sales.ws_bill_customer_sk)
+                                ->  Join
+                                      Join Type: INNER   hashOnPK
+                                      Join Cond: (web_sales.ws_sold_date_sk = date_dim.d_date_sk)
+                                      ->  Table Scan on tpcds_1t.web_sales
+                                      ->  Table Scan on tpcds_1t.date_dim
+                                            Filter Cond: ((false and (date_dim.d_year = 2001)) or (false and (date_dim.d_year = 2002)) or (true and (date_dim.d_year = 2001)) or (true and (date_dim.d_year = 2002)))
+                                ->  Table Scan on tpcds_1t.customer
+Plan 1:
+Project
+  ->  Sort
+        Sort Key: t_s_secyear.customer_id INTERNAL, t_s_secyear.customer_first_name INTERNAL, t_s_secyear.customer_last_name INTERNAL, t_s_secyear.customer_email_address INTERNAL
+        Limit: 100
+        ->  Filter
+              Filter Cond: (CASE WHEN (t_w_firstyear.year_total > 0) THEN (t_w_secyear.year_total / t_w_firstyear.year_total) ELSE 0.00000000 END > CASE WHEN (t_s_firstyear.year_total > 0) THEN (t_s_secyear.year_total / t_s_firstyear.year_total) ELSE 0.00000000 END)
+              ->  Join
+                    Join Type: INNER
+                    Join Cond: (t_s_secyear.customer_id = t_s_firstyear.customer_id)
+                    ->  Filter
+                          Filter Cond: (t_s_secyear.sale_type = 's'), (t_s_secyear.dyear = 2002)
+                          ->  Sink Scan
+                                DataSource: Plan 0
+                    ->  Join
+                          Join Type: INNER
+                          Join Cond: (t_s_firstyear.customer_id = t_w_firstyear.customer_id)
+                          ->  Filter
+                                Filter Cond: (t_s_firstyear.sale_type = 's'), (t_s_firstyear.dyear = 2001), (t_s_firstyear.year_total > 0)
+                                ->  Sink Scan
+                                      DataSource: Plan 0
+                          ->  Join
+                                Join Type: INNER
+                                Join Cond: (t_w_secyear.customer_id = t_w_firstyear.customer_id) shuffle: hash(t_w_secyear.customer_id)
+                                ->  Filter
+                                      Filter Cond: (t_w_secyear.sale_type = 'w'), (t_w_secyear.dyear = 2002)
+                                      ->  Sink Scan
+                                            DataSource: Plan 0
+                                ->  Filter
+                                      Filter Cond: (t_w_firstyear.sale_type = 'w'), (t_w_firstyear.dyear = 2001), (t_w_firstyear.year_total > 0)
+                                      ->  Sink Scan
+                                            DataSource: Plan 0

@@ -3647,6 +3647,7 @@ func (builder *QueryBuilder) createQuery() (*Query, error) {
 		builder.rewriteEffectlessAggToProject(rootID)
 		rootID = builder.optimizeFilters(rootID)
 		rootID = builder.pushdownUncorrelatedSingleJoinFilters(rootID)
+		rootID = builder.rewriteLeftJoinNullFiltersToAnti(rootID, make(map[int32]int))
 		ReCalcNodeStats(rootID, builder, true, true, true)
 		if err = builder.checkPlanningCanceled(); err != nil {
 			return nil, err

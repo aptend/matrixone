@@ -20,7 +20,7 @@
 
 - Q2 基线使用 `e866c535f5`；Q4 计划基线使用 `484d9815eb`。耗时受版本、缓存和对象布局影响，计划结构、扫描计数和结果一致性是主要验收依据。
 - 当前工作树下 Q1–Q10 的确切 SQL、普通 `EXPLAIN` 和输入 stats 保存在 [`tpcds-1t-q01-q10-baseline`](tpcds-1t-q01-q10-baseline/README.md)；Q11 以后按完成顺序保存在 [`tpcds-1t-q11-plus-baseline`](tpcds-1t-q11-plus-baseline/README.md)。
-- Q1–Q99 已全部实跑完成；Q78 在修正 ANTI 基数与 shuffle 复用选择后于 22 分 44 秒完成，无 OOM。
+- Q1–Q99 已全部实跑完成；103 条最终成功 SQL 的记录耗时合计 21,060.584 秒（约 5 小时 51 分 1 秒）。
 
 ## 进度摘要
 
@@ -30,7 +30,7 @@
 | Q2 | 外层多引用 CTE 因内部引用另一个 CTE 而被整体 inline 两次 | 放宽外层 CTE reuse；保留全部安全、成本和内存保护 | 1980.838 → 855.284 秒，结果仍为 2513 行 | 完成 |
 | Q3 | 未发现明显危险计划 | 不修改 | 17.214 秒，100 行 | 完成 |
 | Q5 | `ROLLUP` 将完整输入复制三份，但原 SQL 可在 spill 保护下完成 | 记录；共享 grouping-set 输入需要独立设计，不在此处做大改 | 250.914 秒，100 行 | 完成 |
-| Q6 | 无相关标量等值条件位于大连接之后，月份选择性未进入事实表路径 | 将确定性的 `FILTER + SINGLE JOIN` 整体移到最小相关输入；不依赖 stats | 原计划 813.478 秒；新计划已命中，1TB 待复测 | 计划修复完成 |
+| Q6 | 无相关标量等值条件位于大连接之后，月份选择性未进入事实表路径 | 将确定性的 `FILTER + SINGLE JOIN` 整体移到最小相关输入；不依赖 stats | 813.478 → 20.745 秒，52 行 | 完成；约 39.2 倍加速 |
 | Q7 | 维表过滤和 PK join 均合理 | 不修改 | 122.506 秒，100 行 | 完成 |
 | Q8 | 日期过滤、地址集合缩减和小 build side 均合理 | 不修改 | 32.712 秒，11 行 | 完成 |
 | Q9 | 15 个同源标量聚合分别全扫 `store_sales` | 记录；正确方向是通用子查询 CSE/聚合融合 | 253.277 秒，1 行 | 完成 |
@@ -318,18 +318,18 @@ CTE 复用后，每个渠道分支仍先把日期过滤后的事实行连接 `cu
 
 通用修复将“原谓词 `FILTER` + 无相关 `SINGLE JOIN`”作为整体，穿过只依赖一侧的 `INNER JOIN`，以及 `SEMI/ANTI JOIN` 的保留左侧，直到最小相关输入。`SINGLE JOIN` 仍负责标量子查询多行报错，原 `FILTER` 仍负责 SQL 三值逻辑；相关、非确定、right-SINGLE、outer join、`LIMIT/OFFSET` 等边界全部拒绝改写。
 
-改写是否发生只由表达式依赖和语义边界决定，不使用 stats。stats 只在改写后参与 build/probe、shuffle 和 runtime filter 等物理选择。当前普通 `EXPLAIN` 已把月份标量条件放到 `date_dim` 输入，再连接 `store_sales`；Q6 的 1TB 性能尚未复测，因此保留原运行结果作为修复前基线。
+改写是否发生只由表达式依赖和语义边界决定，不使用 stats。stats 只在改写后参与 build/probe、shuffle 和 runtime filter 等物理选择。当前普通 `EXPLAIN` 已把月份标量条件放到 `date_dim` 输入，再连接 `store_sales`。
 
-| 指标 | 结果 |
-|---|---:|
-| statement ID | `01a0419f-dede-7881-8204-966b6076b522` |
-| 耗时 | 813.478 秒 |
-| `rows_read` | 2,898,734,097 |
-| `bytes_scan` | 34,845,716,968 |
-| `result_count` | 52 |
-| 观察到的 MO RSS 峰值 | 约 10.3 GiB |
+| 指标 | 修复前 | 修复后 |
+|---|---:|---:|
+| statement ID | `01a0419f-dede-7881-8204-966b6076b522` | `01a04b28-d9c2-7033-bd6e-a1c8df26fdd0` |
+| 耗时 | 813.478 秒 | 20.745 秒 |
+| `rows_read` | 2,898,734,097 | 2,898,734,097 |
+| `bytes_scan` | 34,845,716,968 | 34,845,716,968 |
+| `result_count` | 52 | 52 |
+| 观察到的 MO RSS 峰值 | 约 10.3 GiB | 约 4.5 GiB |
 
-原 SQL 成功完成且没有 OOM，但持续约 13.6 分钟的 CPU 处理说明该放置规则值得后续独立设计。
+新运行返回 52 行，stderr 为空，读取行数和扫描字节与旧运行完全一致。耗时下降 792.733 秒，约 39.2 倍加速，无 OOM。计划和结果保存在 `/d/mo-worktrees/tpcds-lab/results/q6-rerun-latest-1t`。
 
 ## Q7：计划合理，无需修改
 

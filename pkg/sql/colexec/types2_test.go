@@ -16,6 +16,7 @@ package colexec
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -25,6 +26,20 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
 )
+
+func requirePipelineCancellationCause(
+	t *testing.T,
+	ctx context.Context,
+	source process.PipelineCancellationSource,
+	streamID uint64,
+) *process.PipelineCancellationCause {
+	t.Helper()
+	var cause *process.PipelineCancellationCause
+	require.True(t, errors.As(context.Cause(ctx), &cause))
+	require.Equal(t, source, cause.Source())
+	require.Equal(t, streamID, cause.StreamID())
+	return cause
+}
 
 // mockClientSession is a simple mock implementation of morpc.ClientSession for testing
 type mockClientSession struct {
@@ -299,6 +314,12 @@ func TestRecordBuiltPipeline(t *testing.T) {
 	require.True(t, record2.alreadyDone, "Record should still be marked as done")
 	require.ErrorIs(t, proc2.Ctx.Err(), context.Canceled,
 		"Pipeline should be canceled when a tombstone already exists")
+	requirePipelineCancellationCause(
+		t,
+		proc2.Ctx,
+		process.PipelineCancelStopSendingBeforePublish,
+		streamID2,
+	)
 	require.NoError(t, proc2.GetQueryContextError(),
 		"A pre-registration StopSending must not cancel the query context")
 }
@@ -327,6 +348,12 @@ func TestCancelPipelineSending(t *testing.T) {
 	// Verify only the remote pipeline tree is canceled. The query may still be
 	// consuming other pipelines after a normal downstream early stop.
 	require.ErrorIs(t, proc.Ctx.Err(), context.Canceled)
+	requirePipelineCancellationCause(
+		t,
+		proc.Ctx,
+		process.PipelineCancelStopSending,
+		streamID,
+	)
 	require.NoError(t, proc.GetQueryContextError(),
 		"StopSending must not cancel the query context")
 
@@ -502,6 +529,12 @@ func TestCleanupPipelinesForSession_CancelsRegisteredPipelines(t *testing.T) {
 	require.Equal(t, 0, waiterCount, "Session cleanup should remove the waiter registration")
 	require.ErrorIs(t, proc.Ctx.Err(), context.Canceled,
 		"Session cleanup should cancel registered non-dispatch pipelines")
+	requirePipelineCancellationCause(
+		t,
+		proc.Ctx,
+		process.PipelineCancelRPCSessionClosed,
+		streamID,
+	)
 	require.NoError(t, proc.GetQueryContextError(),
 		"Session cleanup should not take ownership of the query context")
 }
@@ -541,6 +574,13 @@ func TestRecordBuiltPipeline_CleansOnSessionClose(t *testing.T) {
 		srv.receivedRunningPipeline.Unlock()
 		return !exists && !waiterExists && proc.Ctx.Err() != nil
 	}, time.Second, 10*time.Millisecond, "Session close should remove and cancel registered pipelines")
+	cause := requirePipelineCancellationCause(
+		t,
+		proc.Ctx,
+		process.PipelineCancelRPCSessionClosed,
+		streamID,
+	)
+	require.ErrorIs(t, cause.Detail(), context.Canceled)
 	require.NoError(t, proc.GetQueryContextError(),
 		"Session close should not cancel the query context through the pipeline registry")
 }

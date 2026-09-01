@@ -166,20 +166,60 @@ func (connector *Connector) sendTerminalWithLog(ctx context.Context, proc *proce
 			err)
 		return false
 	}
-	if process.SendPipelineSignalWithContext(ctx, connector.Reg, signal) {
+	delivered := process.SendPipelineSignalWithContext(ctx, connector.Reg, signal)
+	if delivered {
 		return true
 	}
-	chLen, chCap := process.WaitRegisterChannelState(connector.Reg)
+	edgeState := process.PipelineEdgeDiagnostics(connector.Reg)
+	queryID := ""
+	pipelineCancelDiagnostic := "owner=none"
+	var pipelineErr, pipelineCause, queryErr, queryCause error
+	if proc != nil {
+		queryID = proc.QueryId()
+		pipelineCancelDiagnostic = process.PipelineCancellationDiagnostic(proc.Ctx)
+		if proc.Ctx != nil {
+			pipelineErr = proc.Ctx.Err()
+			pipelineCause = context.Cause(proc.Ctx)
+		}
+		if proc.Base != nil {
+			queryCtx, _ := process.GetQueryCtxFromProc(proc)
+			if queryCtx != nil {
+				queryErr = queryCtx.Err()
+				queryCause = context.Cause(queryCtx)
+			}
+		}
+	}
+	fatalEvent := "None"
+	if edgeState.FatalTerminal {
+		fatalEvent = edgeState.FatalEvent.String()
+	}
 	process.WarnPipelineCleanupf(
 		proc,
 		"connector_cleanup_send_terminal_signal",
-		"connector cleanup timed out sending terminal %s signal: timeout=%s channel_len=%d channel_cap=%d pipeline_failed=%t err=%v",
+		"connector cleanup failed sending terminal %s signal: timeout=%s query_id=%s edge_id=%d edge_generation=%d channel_len=%d channel_cap=%d expected_ends=%d recorded_ends=%d fatal_terminal=%t fatal_event=%s fatal_err=%v fatal_delivered=%d fatal_remaining=%d done_closed=%t abort_closed=%t pipeline_failed=%t err=%v pipeline_err=%v pipeline_cause=%v pipeline_cancel=%s query_err=%v query_cause=%v",
 		signal.EventType.String(),
 		process.PipelineSignalSendTimeout,
-		chLen,
-		chCap,
+		queryID,
+		edgeState.ID,
+		edgeState.Generation,
+		edgeState.ChannelLen,
+		edgeState.ChannelCap,
+		edgeState.ExpectedEnds,
+		edgeState.RecordedEnds,
+		edgeState.FatalTerminal,
+		fatalEvent,
+		edgeState.FatalErr,
+		edgeState.FatalDelivered,
+		edgeState.FatalRemaining,
+		edgeState.DoneClosed,
+		edgeState.AbortClosed,
 		pipelineFailed,
-		err)
+		err,
+		pipelineErr,
+		pipelineCause,
+		pipelineCancelDiagnostic,
+		queryErr,
+		queryCause)
 	return false
 }
 

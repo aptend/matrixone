@@ -16,6 +16,7 @@ package compile
 
 import (
 	"context"
+	"errors"
 	"sync"
 	"testing"
 	"time"
@@ -37,6 +38,19 @@ import (
 	promtestutil "github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/require"
 )
+
+func requireIssue27261CancellationSource(
+	t *testing.T,
+	ctx context.Context,
+	source process.PipelineCancellationSource,
+	streamID uint64,
+) {
+	t.Helper()
+	var cause *process.PipelineCancellationCause
+	require.True(t, errors.As(context.Cause(ctx), &cause))
+	require.Equal(t, source, cause.Source())
+	require.Equal(t, streamID, cause.StreamID())
+}
 
 // issue27261BlockingScan models a remote table reader that is still in flight
 // when its downstream LIMIT stops consuming and sends StopSending.
@@ -130,9 +144,73 @@ func TestIssue27261StopSendingCancelsOnlyRemotePipeline(t *testing.T) {
 			"the client/frontend context is still active")
 		require.NoError(t, rootProc.GetQueryContextError(),
 			"StopSending must not cancel the query context")
+		requireIssue27261CancellationSource(
+			t,
+			rootProc.Ctx,
+			process.PipelineCancelStopSending,
+			streamID,
+		)
 	case <-time.After(time.Second):
 		t.Fatal("remote scan did not stop")
 	}
+}
+
+// Session teardown and downstream StopSending previously both called
+// CancelCauseFunc(nil), making their effects indistinguishable in production.
+// This keeps the existing graceful remote unwind while proving that the first
+// owner survives in context.Cause.
+func TestIssue27261SessionCloseWhileRemoteReaderRunsRetainsCause(t *testing.T) {
+	oldRuntime := runtime.ServiceRuntime("")
+	runtime.SetupServiceBasedRuntime("", runtime.DefaultRuntime())
+	t.Cleanup(func() { runtime.SetupServiceBasedRuntime("", oldRuntime) })
+
+	server := colexec.NewServer("")
+	ctrl := gomock.NewController(t)
+	session := mock_morpc.NewMockClientSession(ctrl)
+	sessionCtx, cancelSession := context.WithCancel(context.Background())
+	session.EXPECT().SessionCtx().Return(sessionCtx).AnyTimes()
+
+	rootProc := testutil.NewProcess(t)
+	remoteCtx := context.WithValue(rootProc.GetTopContext(), defines.RemoteRunContext{}, true)
+	queryCtx := rootProc.Base.GetContextBase().BuildQueryCtx(remoteCtx)
+	rootProc.BuildPipelineContext(queryCtx)
+	t.Cleanup(func() { rootProc.Cancel(nil) })
+	readerProc := rootProc.NewContextChildProc(0)
+
+	const streamID = uint64(27262)
+	server.RecordBuiltPipeline(session, streamID, rootProc)
+	t.Cleanup(func() { server.RemoveRelatedPipeline(session, streamID) })
+
+	op := &issue27261BlockingScan{
+		MockOperator: colexec.NewMockOperator(),
+		started:      make(chan struct{}),
+	}
+	result := make(chan error, 1)
+	go func() {
+		result <- (&Scope{Proc: readerProc, RootOp: op}).Run(&Compile{proc: rootProc})
+	}()
+
+	select {
+	case <-op.started:
+	case <-time.After(time.Second):
+		t.Fatal("remote scan did not start")
+	}
+	cancelSession()
+
+	select {
+	case err := <-result:
+		require.NoError(t, err)
+	case <-time.After(time.Second):
+		t.Fatal("remote scan did not stop after session close")
+	}
+
+	var cause *process.PipelineCancellationCause
+	require.True(t, errors.As(context.Cause(rootProc.Ctx), &cause))
+	require.Equal(t, process.PipelineCancelRPCSessionClosed, cause.Source())
+	require.Equal(t, streamID, cause.StreamID())
+	require.ErrorIs(t, cause.Detail(), context.Canceled)
+	require.NoError(t, rootProc.GetQueryContextError(),
+		"remote session cleanup must not cancel the query context")
 }
 
 // A remote SAMPLE scan can still be constructing its parallel readers when a
@@ -218,6 +296,12 @@ func TestIssue27261StopSendingDuringParallelReaderBuildStaysGraceful(t *testing.
 	require.NoError(t, reg.Err(), "StopSending cancellation must publish End, not Error")
 	require.NoError(t, rootProc.GetQueryContextError(),
 		"StopSending must leave the remote query context active")
+	requireIssue27261CancellationSource(
+		t,
+		rootProc.Ctx,
+		process.PipelineCancelStopSending,
+		streamID,
+	)
 	require.Equal(t, cleanupCountBefore+1, promtestutil.ToFloat64(cleanupCounter),
 		"the cleanup decision must leave a durable internal-cancellation signal")
 }
@@ -276,4 +360,24 @@ func TestParallelReaderBuildPreservesQueryCancellation(t *testing.T) {
 		"query cancellation must remain a terminal pipeline error")
 	require.Equal(t, cleanupCountBefore+1, promtestutil.ToFloat64(cleanupCounter),
 		"the cleanup decision must leave a durable query-cancellation signal")
+}
+
+func TestUnattributedPipelineCancellationReportsOnce(t *testing.T) {
+	counter := metricv2.PipelineCleanupEventCounter.WithLabelValues(
+		pipelineUnattributedCancellation,
+	)
+	countBefore := promtestutil.ToFloat64(counter)
+
+	proc := testutil.NewProcess(t)
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(proc.GetTopContext())
+	proc.BuildPipelineContext(queryCtx)
+	proc.Cancel(context.Canceled)
+
+	reportUnattributedPipelineCancellation(
+		proc, "test", context.Canceled, context.Canceled)
+	reportUnattributedPipelineCancellation(
+		proc, "test", context.Canceled, context.Canceled)
+
+	require.Equal(t, countBefore+1, promtestutil.ToFloat64(counter),
+		"one canceled pipeline context must emit at most one anomaly event")
 }

@@ -25,6 +25,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/stretchr/testify/require"
 )
 
 // TestPipelineEdgeSendEndIsIdempotent verifies that calling SendEnd
@@ -734,6 +735,38 @@ func TestPipelineEdgeConcurrentAbort(t *testing.T) {
 	default:
 		t.Fatal("Aborted was not closed after concurrent Abort")
 	}
+}
+
+func TestPipelineEdgeDiagnosticSnapshotTracksFirstFatalAndReuse(t *testing.T) {
+	edge := NewPipelineEdge(2, 2)
+	initial := PipelineEdgeDiagnostics(edge)
+	require.NotZero(t, initial.ID)
+	require.Equal(t, uint64(1), initial.Generation)
+	require.Equal(t, 2, initial.ExpectedEnds)
+	require.False(t, initial.FatalTerminal)
+
+	require.True(t, edge.SendEnd())
+	firstErr := moerr.NewInternalErrorNoCtx("first fatal")
+	require.True(t, edge.SendError(firstErr))
+	require.False(t, edge.TryAbort(moerr.NewInternalErrorNoCtx("later fatal")))
+
+	fatal := PipelineEdgeDiagnostics(edge)
+	require.Equal(t, initial.ID, fatal.ID)
+	require.Equal(t, initial.Generation, fatal.Generation)
+	require.Equal(t, 1, fatal.RecordedEnds)
+	require.True(t, fatal.FatalTerminal)
+	require.Equal(t, EventError, fatal.FatalEvent)
+	require.ErrorIs(t, fatal.FatalErr, firstErr)
+	require.True(t, fatal.DoneClosed)
+	require.False(t, fatal.AbortClosed)
+
+	edge.ResetTerminalStateForReuse()
+	reused := PipelineEdgeDiagnostics(edge)
+	require.Equal(t, initial.ID, reused.ID)
+	require.Equal(t, initial.Generation+1, reused.Generation)
+	require.Zero(t, reused.RecordedEnds)
+	require.False(t, reused.FatalTerminal)
+	require.False(t, reused.DoneClosed)
 }
 
 // TestPipelineEdgeMixedConcurrentTerminal verifies that SendEnd and Abort

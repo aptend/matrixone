@@ -384,7 +384,9 @@ func (s *Scope) Run(c *Compile) (err error) {
 			_, err = p.RunWithReader(s.DataSource.R, tag, s.Proc)
 		}
 	}
+	rawErr := err
 	err, _ = normalizeScopeRunError(err, s.Proc.Ctx, scopeRunQueryContext(s.Proc))
+	reportUnattributedPipelineCancellation(s.Proc, "scope_run", rawErr, err)
 	return err
 }
 
@@ -764,6 +766,7 @@ const (
 	parallelScopeBuildQueryCancel        = "parallel_scope_build_query_cancel"
 	parallelScopeBuildCancelWithCause    = "parallel_scope_build_cancel_with_cause"
 	parallelScopeBuildUnattributedCancel = "parallel_scope_build_unattributed_cancel"
+	pipelineUnattributedCancellation     = "pipeline_unattributed_cancellation"
 )
 
 func scopeCancellationContextState(ctx context.Context) (error, error) {
@@ -771,6 +774,45 @@ func scopeCancellationContextState(ctx context.Context) (error, error) {
 		return nil, nil
 	}
 	return ctx.Err(), context.Cause(ctx)
+}
+
+// reportUnattributedPipelineCancellation emits at most one warning per directly
+// canceled pipeline context when context.Canceled escapes while the query owner
+// is still active. Ordinary StopSending and external query cancellation do not
+// satisfy this predicate. The pipeline context and edge each retain their
+// first-wins state, and WarnPipelineCleanupf applies the global limiter.
+func reportUnattributedPipelineCancellation(
+	proc *process.Process,
+	phase string,
+	rawErr error,
+	finalErr error,
+) {
+	if proc == nil || finalErr == nil ||
+		!isScopeCancellationFrom(finalErr, context.Canceled) {
+		return
+	}
+	queryCtx := scopeRunQueryContext(proc)
+	if queryCtx == nil || queryCtx.Err() != nil ||
+		!process.ClaimPipelineCancellationDiagnostic(proc.Ctx) {
+		return
+	}
+
+	pipelineErr, pipelineCause := scopeCancellationContextState(proc.Ctx)
+	queryErr, queryCause := scopeCancellationContextState(queryCtx)
+	process.WarnPipelineCleanupf(
+		proc,
+		pipelineUnattributedCancellation,
+		"pipeline cancellation escaped while query context remained active: phase=%s query_id=%s raw_err=%v final_err=%v pipeline_err=%v pipeline_cause=%v pipeline_cancel=%s query_err=%v query_cause=%v",
+		phase,
+		proc.QueryId(),
+		rawErr,
+		finalErr,
+		pipelineErr,
+		pipelineCause,
+		process.PipelineCancellationDiagnostic(proc.Ctx),
+		queryErr,
+		queryCause,
+	)
 }
 
 func reportParallelScopeBuildCancellation(

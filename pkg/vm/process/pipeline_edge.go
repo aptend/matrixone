@@ -17,6 +17,7 @@ package process
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
@@ -59,6 +60,32 @@ type PipelineEdge struct {
 	endRecorded    int
 	doneClosed     bool
 	abortClosed    bool
+
+	// diagnosticID is stable for the edge object; diagnosticGeneration advances
+	// whenever a reusable edge is reset. They are emitted only on anomalous
+	// cleanup paths and never used as metric labels.
+	diagnosticID         uint64
+	diagnosticGeneration uint64
+}
+
+var nextPipelineEdgeDiagnosticID atomic.Uint64
+
+// PipelineEdgeDiagnosticSnapshot is a lock-consistent view of the edge's
+// terminal protocol state for bounded anomaly diagnostics.
+type PipelineEdgeDiagnosticSnapshot struct {
+	ID             uint64
+	Generation     uint64
+	ExpectedEnds   int
+	RecordedEnds   int
+	FatalTerminal  bool
+	FatalEvent     PipelineEventType
+	FatalErr       error
+	FatalDelivered int
+	FatalRemaining int
+	DoneClosed     bool
+	AbortClosed    bool
+	ChannelLen     int
+	ChannelCap     int
 }
 
 // NewPipelineEdge creates a new PipelineEdge.
@@ -163,6 +190,11 @@ func (signal *PipelineSignal) release() {
 }
 
 func (e *PipelineEdge) resetTerminalStateLocked() {
+	if e.diagnosticGeneration == 0 {
+		e.diagnosticGeneration = 2
+	} else {
+		e.diagnosticGeneration++
+	}
 	e.done = make(chan struct{})
 	e.abrt = make(chan struct{})
 	e.initOnce = sync.Once{}
@@ -174,6 +206,46 @@ func (e *PipelineEdge) resetTerminalStateLocked() {
 	e.endRecorded = 0
 	e.doneClosed = false
 	e.abortClosed = false
+}
+
+func (e *PipelineEdge) ensureDiagnosticIdentityLocked() {
+	if e.diagnosticID == 0 {
+		e.diagnosticID = nextPipelineEdgeDiagnosticID.Add(1)
+	}
+	if e.diagnosticGeneration == 0 {
+		e.diagnosticGeneration = 1
+	}
+}
+
+// PipelineEdgeDiagnostics returns a synchronized terminal-state snapshot. It
+// is intended for rare warning paths; data send/receive paths do not call it.
+func PipelineEdgeDiagnostics(e *WaitRegister) PipelineEdgeDiagnosticSnapshot {
+	if e == nil {
+		return PipelineEdgeDiagnosticSnapshot{}
+	}
+	e.initTerminalState()
+	e.terminalMu.Lock()
+	defer e.terminalMu.Unlock()
+	e.ensureDiagnosticIdentityLocked()
+
+	snapshot := PipelineEdgeDiagnosticSnapshot{
+		ID:             e.diagnosticID,
+		Generation:     e.diagnosticGeneration,
+		ExpectedEnds:   e.expectedEndCountLocked(),
+		RecordedEnds:   e.endRecorded,
+		FatalTerminal:  e.fatalTerminal,
+		FatalDelivered: e.fatalDelivered,
+		FatalRemaining: e.fatalRemaining,
+		DoneClosed:     e.doneClosed,
+		AbortClosed:    e.abortClosed,
+		ChannelLen:     len(e.Ch2),
+		ChannelCap:     cap(e.Ch2),
+	}
+	if e.fatalTerminal {
+		snapshot.FatalEvent = e.fatalSignal.EventType
+		snapshot.FatalErr = e.terminalErr
+	}
+	return snapshot
 }
 
 // NewPipelineEdgeFromReg returns the same edge object behind a WaitRegister name.
@@ -295,6 +367,9 @@ func (e *PipelineEdge) TryAbort(err error) bool {
 
 func (e *PipelineEdge) initTerminalState() {
 	e.initOnce.Do(func() {
+		if e.diagnosticGeneration == 0 {
+			e.diagnosticGeneration = 1
+		}
 		if e.done == nil {
 			e.done = make(chan struct{})
 		}

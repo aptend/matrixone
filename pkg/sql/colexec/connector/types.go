@@ -16,6 +16,8 @@ package connector
 
 import (
 	"context"
+	"sync"
+	"sync/atomic"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/common/reuse"
@@ -34,8 +36,18 @@ type Connector struct {
 	Reg               *process.WaitRegister
 	cleanupSpool      *pSpool.PipelineSpool
 	allocationAccount *mpool.AllocationAccount
+	diagnostics       *connectorDiagnosticState
 	vm.OperatorBase
 }
+
+type connectorDiagnosticState struct {
+	mu         sync.Mutex
+	id         uint64
+	generation uint64
+	attempt    uint64
+}
+
+var nextConnectorDiagnosticID atomic.Uint64
 
 type container struct {
 	sp *pSpool.PipelineSpool
@@ -67,7 +79,50 @@ func (connector *Connector) OpType() vm.OpType {
 }
 
 func NewArgument() *Connector {
-	return reuse.Alloc[Connector](nil)
+	connector := reuse.Alloc[Connector](nil)
+	connector.diagnostics = &connectorDiagnosticState{
+		id: nextConnectorDiagnosticID.Add(1),
+	}
+	return connector
+}
+
+func (connector *Connector) beginDiagnosticGeneration() {
+	if connector.diagnostics == nil {
+		connector.diagnostics = &connectorDiagnosticState{
+			id: nextConnectorDiagnosticID.Add(1),
+		}
+	}
+	connector.diagnostics.mu.Lock()
+	defer connector.diagnostics.mu.Unlock()
+	connector.diagnostics.generation++
+	connector.diagnostics.attempt = 0
+}
+
+func (connector *Connector) nextTerminalDiagnosticOwner(
+	proc *process.Process,
+) process.PipelineTerminalDiagnosticOwner {
+	if connector.diagnostics == nil {
+		connector.diagnostics = &connectorDiagnosticState{
+			id: nextConnectorDiagnosticID.Add(1),
+		}
+	}
+	connector.diagnostics.mu.Lock()
+	defer connector.diagnostics.mu.Unlock()
+	if connector.diagnostics.generation == 0 {
+		connector.diagnostics.generation = 1
+	}
+	connector.diagnostics.attempt++
+	pipelineContextID := uint64(0)
+	if proc != nil {
+		pipelineContextID = process.PipelineContextDiagnosticID(proc.Ctx)
+	}
+	return process.PipelineTerminalDiagnosticOwner{
+		Kind:              "connector_reset",
+		ID:                connector.diagnostics.id,
+		Generation:        connector.diagnostics.generation,
+		Attempt:           connector.diagnostics.attempt,
+		PipelineContextID: pipelineContextID,
+	}
 }
 
 func (connector *Connector) WithReg(reg *process.WaitRegister) *Connector {
@@ -121,12 +176,15 @@ func (connector *Connector) Release() {
 }
 
 func (connector *Connector) Reset(proc *process.Process, pipelineFailed bool, err error) {
+	diagnosticOwner := connector.nextTerminalDiagnosticOwner(proc)
 	terminalSignal := process.BuildCleanupSignal(pipelineFailed, err)
 	terminalErr := terminalSignal.TerminalErr()
 	signalCtx, signalCancel := context.WithTimeout(context.TODO(), process.PipelineSignalSendTimeout)
 	defer signalCancel()
+	signalCtx = process.WithPipelineTerminalDiagnosticOwner(signalCtx, diagnosticOwner)
 
-	terminalDelivered := connector.sendTerminalWithLog(signalCtx, proc, terminalSignal, pipelineFailed, terminalErr)
+	terminalDelivered := connector.sendTerminalWithLog(
+		signalCtx, proc, terminalSignal, pipelineFailed, terminalErr, diagnosticOwner)
 
 	if connector.ctr.sp != nil {
 		sp := connector.ctr.sp
@@ -137,7 +195,8 @@ func (connector *Connector) Reset(proc *process.Process, pipelineFailed bool, er
 			abortErr := terminalErr
 			if terminalSignal.EventType == process.EventEnd && !terminalDelivered {
 				fallbackErr := process.ResolvePipelineSpoolAbortError(connector.Reg)
-				connector.sendTerminalWithLog(signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr)
+				connector.sendTerminalWithLog(
+					signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr, diagnosticOwner)
 				abortErr = fallbackErr
 			}
 			sp.Abort(abortErr)
@@ -150,18 +209,27 @@ func (connector *Connector) Reset(proc *process.Process, pipelineFailed bool, er
 		connector.ctr.sp = nil
 	} else if terminalSignal.EventType == process.EventEnd && !terminalDelivered {
 		fallbackErr := process.ErrPipelineEndSignalDeliveryFailed
-		connector.sendTerminalWithLog(signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr)
+		connector.sendTerminalWithLog(
+			signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr, diagnosticOwner)
 	}
 }
 
 // sendTerminalWithLog sends a terminal signal to Reg, logging a warning on failure.
-func (connector *Connector) sendTerminalWithLog(ctx context.Context, proc *process.Process, signal process.PipelineSignal, pipelineFailed bool, err error) bool {
+func (connector *Connector) sendTerminalWithLog(
+	ctx context.Context,
+	proc *process.Process,
+	signal process.PipelineSignal,
+	pipelineFailed bool,
+	err error,
+	diagnosticOwner process.PipelineTerminalDiagnosticOwner,
+) bool {
 	if connector.Reg == nil {
 		process.WarnPipelineCleanupf(
 			proc,
 			"connector_cleanup_nil_reg",
-			"connector cleanup skipped terminal %s signal because Reg is nil: pipeline_failed=%t err=%v",
+			"connector cleanup skipped terminal %s signal because Reg is nil: terminal_owner=%s pipeline_failed=%t err=%v",
 			signal.EventType.String(),
+			diagnosticOwner.String(),
 			pipelineFailed,
 			err)
 		return false
@@ -193,19 +261,38 @@ func (connector *Connector) sendTerminalWithLog(ctx context.Context, proc *proce
 	if edgeState.FatalTerminal {
 		fatalEvent = edgeState.FatalEvent.String()
 	}
+	firstTerminalEvent := "None"
+	lastTerminalEvent := "None"
+	doneTerminalEvent := "None"
+	if edgeState.TerminalApplied > 0 {
+		firstTerminalEvent = edgeState.FirstTerminalEvent.String()
+		lastTerminalEvent = edgeState.LastTerminalEvent.String()
+	}
+	if edgeState.DoneClosed {
+		doneTerminalEvent = edgeState.DoneTerminalEvent.String()
+	}
 	process.WarnPipelineCleanupf(
 		proc,
 		"connector_cleanup_send_terminal_signal",
-		"connector cleanup failed sending terminal %s signal: timeout=%s query_id=%s edge_id=%d edge_generation=%d channel_len=%d channel_cap=%d expected_ends=%d recorded_ends=%d fatal_terminal=%t fatal_event=%s fatal_err=%v fatal_delivered=%d fatal_remaining=%d done_closed=%t abort_closed=%t pipeline_failed=%t err=%v pipeline_err=%v pipeline_cause=%v pipeline_cancel=%s query_err=%v query_cause=%v",
+		"connector cleanup failed sending terminal %s signal: timeout=%s query_id=%s terminal_owner=%s edge_id=%d edge_generation=%d channel_len=%d channel_cap=%d expected_ends=%d recorded_ends=%d terminal_attempts=%d terminal_applied=%d first_terminal_event=%s first_terminal_owner=%s last_terminal_event=%s last_terminal_owner=%s done_terminal_event=%s done_terminal_owner=%s fatal_terminal=%t fatal_event=%s fatal_err=%v fatal_delivered=%d fatal_remaining=%d done_closed=%t abort_closed=%t pipeline_failed=%t err=%v pipeline_err=%v pipeline_cause=%v pipeline_cancel=%s query_err=%v query_cause=%v",
 		signal.EventType.String(),
 		process.PipelineSignalSendTimeout,
 		queryID,
+		diagnosticOwner.String(),
 		edgeState.ID,
 		edgeState.Generation,
 		edgeState.ChannelLen,
 		edgeState.ChannelCap,
 		edgeState.ExpectedEnds,
 		edgeState.RecordedEnds,
+		edgeState.TerminalAttempts,
+		edgeState.TerminalApplied,
+		firstTerminalEvent,
+		edgeState.FirstTerminalOwner.String(),
+		lastTerminalEvent,
+		edgeState.LastTerminalOwner.String(),
+		doneTerminalEvent,
+		edgeState.DoneTerminalOwner.String(),
 		edgeState.FatalTerminal,
 		fatalEvent,
 		edgeState.FatalErr,

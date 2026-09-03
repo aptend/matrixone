@@ -20,6 +20,7 @@ import (
 	"slices"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/google/uuid"
@@ -385,7 +386,23 @@ func (s *Scope) Run(c *Compile) (err error) {
 		}
 	}
 	rawErr := err
-	err, _ = normalizeScopeRunError(err, s.Proc.Ctx, scopeRunQueryContext(s.Proc))
+	queryCtx := scopeRunQueryContext(s.Proc)
+	var normalized bool
+	err, normalized = normalizeScopeRunError(rawErr, s.Proc.Ctx, queryCtx)
+	if err != nil && isScopeCancellationError(rawErr) {
+		logInternalCancellationDiagnostic(
+			c.proc,
+			"scope-run-cancellation-escaped",
+			rawErr,
+			s.Proc.Ctx,
+			queryCtx,
+			c.proc.GetTopContext(),
+			zap.Bool("normalized", normalized),
+			zap.String("normalized-error", cancellationErrorString(err)),
+			zap.String("scope-magic", s.Magic.String()),
+			zap.String("sql", commonutil.Abbreviate(c.sql, 500)),
+		)
+	}
 	reportUnattributedPipelineCancellation(s.Proc, "scope_run", rawErr, err)
 	return err
 }
@@ -1478,6 +1495,20 @@ func sendRemoteNotifyCleanupTerminal(proc *process.Process, reg *process.WaitReg
 	terminalSignal := process.BuildCleanupSignal(false, err)
 	signalCtx, signalCancel := context.WithTimeout(context.TODO(), process.PipelineSignalSendTimeout)
 	defer signalCancel()
+	pipelineContextID := uint64(0)
+	if proc != nil {
+		pipelineContextID = process.PipelineContextDiagnosticID(proc.Ctx)
+	}
+	signalCtx = process.WithPipelineTerminalDiagnosticOwner(
+		signalCtx,
+		process.PipelineTerminalDiagnosticOwner{
+			Kind:              "remote_notify_cleanup",
+			ID:                nextRemoteNotifyCleanupDiagnosticID.Add(1),
+			Generation:        1,
+			Attempt:           1,
+			PipelineContextID: pipelineContextID,
+		},
+	)
 
 	if process.SendPipelineSignalWithContext(signalCtx, reg, terminalSignal) {
 		return true
@@ -1508,6 +1539,8 @@ func sendRemoteNotifyCleanupTerminal(proc *process.Process, reg *process.WaitReg
 		fallbackErr)
 	return false
 }
+
+var nextRemoteNotifyCleanupDiagnosticID atomic.Uint64
 
 func logRemoteNotifyCleanupSendFailure(
 	proc *process.Process,

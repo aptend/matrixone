@@ -16,6 +16,7 @@ package process
 
 import (
 	"context"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -36,6 +37,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/txn/util"
 	"github.com/matrixorigin/matrixone/pkg/udf"
+	"go.uber.org/zap"
 )
 
 // NewTopProcess creates a new top process for the query.
@@ -223,10 +225,61 @@ func (proc *Process) GetQueryContextError() error {
 // ResetQueryContext cleans the context and cancel function for process reuse.
 func (proc *Process) ResetQueryContext() {
 	if proc.Base.sqlContext.queryCancel != nil {
-		proc.Base.sqlContext.queryCancel()
+		queryCancel := proc.Base.sqlContext.queryCancel
+		if proc.GetBaseProcessRunningStatus() {
+			cancelRunningQueryContextWithDiagnostic(proc, queryCancel)
+		} else {
+			queryCancel()
+		}
 		proc.Base.sqlContext.queryCancel = nil
 	}
 	proc.doPrepareForRunningWithoutPipeline()
+}
+
+func cancelRunningQueryContextWithDiagnostic(proc *Process, queryCancel context.CancelFunc) {
+	delegated := false
+	delegate := func() {
+		if !delegated {
+			delegated = true
+			queryCancel()
+		}
+	}
+	defer delegate()
+	WarnPipelineCleanupLazy(
+		proc,
+		"query_context_reset_while_running",
+		"query context reset while query is running",
+		func() []zap.Field {
+			return []zap.Field{
+				zap.String("query-id", proc.QueryId()),
+				zap.String("pipeline-context-err", contextErrorString(proc.Ctx)),
+				zap.String("pipeline-context-cause", contextCauseString(proc.Ctx)),
+				zap.Uint64("pipeline-context-id", PipelineContextDiagnosticID(proc.Ctx)),
+				zap.String("pipeline-context-cancel", PipelineCancellationDiagnostic(proc.Ctx)),
+				zap.String("query-context-err", contextErrorString(proc.Base.sqlContext.queryContext)),
+				zap.String("query-context-cause", contextCauseString(proc.Base.sqlContext.queryContext)),
+				zap.String("top-context-err", contextErrorString(proc.GetTopContext())),
+				zap.String("top-context-cause", contextCauseString(proc.GetTopContext())),
+				zap.ByteString("reset-call-stack", debug.Stack()),
+			}
+		},
+		delegate,
+	)
+	delegate()
+}
+
+func contextErrorString(ctx context.Context) string {
+	if ctx == nil || ctx.Err() == nil {
+		return "<nil>"
+	}
+	return ctx.Err().Error()
+}
+
+func contextCauseString(ctx context.Context) string {
+	if ctx == nil || context.Cause(ctx) == nil {
+		return "<nil>"
+	}
+	return context.Cause(ctx).Error()
 }
 
 // ResetCloneTxnOperator cleans the clone txn operator for process reuse.

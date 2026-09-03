@@ -35,6 +35,7 @@ func (dispatch *Dispatch) String(buf *bytes.Buffer) {
 }
 
 func (dispatch *Dispatch) Prepare(proc *process.Process) error {
+	dispatch.beginDiagnosticGeneration()
 	if dispatch.OpAnalyzer == nil {
 		dispatch.OpAnalyzer = process.NewAnalyzer(dispatch.GetIdx(), dispatch.IsFirst, dispatch.IsLast, "dispatch")
 	} else {

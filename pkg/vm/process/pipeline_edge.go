@@ -16,6 +16,7 @@ package process
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -66,6 +67,14 @@ type PipelineEdge struct {
 	// cleanup paths and never used as metric labels.
 	diagnosticID         uint64
 	diagnosticGeneration uint64
+	terminalAttempts     uint64
+	terminalApplied      uint64
+	firstTerminalEvent   PipelineEventType
+	firstTerminalOwner   PipelineTerminalDiagnosticOwner
+	lastTerminalEvent    PipelineEventType
+	lastTerminalOwner    PipelineTerminalDiagnosticOwner
+	doneTerminalEvent    PipelineEventType
+	doneTerminalOwner    PipelineTerminalDiagnosticOwner
 }
 
 var nextPipelineEdgeDiagnosticID atomic.Uint64
@@ -73,19 +82,76 @@ var nextPipelineEdgeDiagnosticID atomic.Uint64
 // PipelineEdgeDiagnosticSnapshot is a lock-consistent view of the edge's
 // terminal protocol state for bounded anomaly diagnostics.
 type PipelineEdgeDiagnosticSnapshot struct {
-	ID             uint64
-	Generation     uint64
-	ExpectedEnds   int
-	RecordedEnds   int
-	FatalTerminal  bool
-	FatalEvent     PipelineEventType
-	FatalErr       error
-	FatalDelivered int
-	FatalRemaining int
-	DoneClosed     bool
-	AbortClosed    bool
-	ChannelLen     int
-	ChannelCap     int
+	ID                 uint64
+	Generation         uint64
+	ExpectedEnds       int
+	RecordedEnds       int
+	FatalTerminal      bool
+	FatalEvent         PipelineEventType
+	FatalErr           error
+	FatalDelivered     int
+	FatalRemaining     int
+	DoneClosed         bool
+	AbortClosed        bool
+	ChannelLen         int
+	ChannelCap         int
+	TerminalAttempts   uint64
+	TerminalApplied    uint64
+	FirstTerminalEvent PipelineEventType
+	FirstTerminalOwner PipelineTerminalDiagnosticOwner
+	LastTerminalEvent  PipelineEventType
+	LastTerminalOwner  PipelineTerminalDiagnosticOwner
+	DoneTerminalEvent  PipelineEventType
+	DoneTerminalOwner  PipelineTerminalDiagnosticOwner
+}
+
+type pipelineTerminalDiagnosticOwnerContextKey struct{}
+
+// PipelineTerminalDiagnosticOwner identifies one cleanup owner without
+// changing terminal delivery semantics. IDs are process-local diagnostics and
+// are never used as metric labels.
+type PipelineTerminalDiagnosticOwner struct {
+	Kind              string
+	ID                uint64
+	Generation        uint64
+	Attempt           uint64
+	PipelineContextID uint64
+}
+
+func (owner PipelineTerminalDiagnosticOwner) String() string {
+	if owner.Kind == "" {
+		return "owner=unknown"
+	}
+	return fmt.Sprintf(
+		"owner=%s id=%d generation=%d attempt=%d pipeline_context_id=%d",
+		owner.Kind,
+		owner.ID,
+		owner.Generation,
+		owner.Attempt,
+		owner.PipelineContextID,
+	)
+}
+
+// WithPipelineTerminalDiagnosticOwner attaches a fixed-size diagnostic owner
+// to a cleanup send. The value is read only while recording a terminal event.
+func WithPipelineTerminalDiagnosticOwner(
+	ctx context.Context,
+	owner PipelineTerminalDiagnosticOwner,
+) context.Context {
+	if ctx == nil {
+		ctx = context.TODO()
+	}
+	return context.WithValue(ctx, pipelineTerminalDiagnosticOwnerContextKey{}, owner)
+}
+
+func pipelineTerminalDiagnosticOwnerFromContext(
+	ctx context.Context,
+) PipelineTerminalDiagnosticOwner {
+	if ctx == nil {
+		return PipelineTerminalDiagnosticOwner{}
+	}
+	owner, _ := ctx.Value(pipelineTerminalDiagnosticOwnerContextKey{}).(PipelineTerminalDiagnosticOwner)
+	return owner
 }
 
 // NewPipelineEdge creates a new PipelineEdge.
@@ -206,6 +272,36 @@ func (e *PipelineEdge) resetTerminalStateLocked() {
 	e.endRecorded = 0
 	e.doneClosed = false
 	e.abortClosed = false
+	e.terminalAttempts = 0
+	e.terminalApplied = 0
+	e.firstTerminalEvent = EventData
+	e.firstTerminalOwner = PipelineTerminalDiagnosticOwner{}
+	e.lastTerminalEvent = EventData
+	e.lastTerminalOwner = PipelineTerminalDiagnosticOwner{}
+	e.doneTerminalEvent = EventData
+	e.doneTerminalOwner = PipelineTerminalDiagnosticOwner{}
+}
+
+func (e *PipelineEdge) recordTerminalAttemptLocked() {
+	e.terminalAttempts++
+}
+
+func (e *PipelineEdge) recordAppliedTerminalDiagnosticLocked(
+	signal PipelineSignal,
+	owner PipelineTerminalDiagnosticOwner,
+	closedDone bool,
+) {
+	e.terminalApplied++
+	if e.terminalApplied == 1 {
+		e.firstTerminalEvent = signal.EventType
+		e.firstTerminalOwner = owner
+	}
+	e.lastTerminalEvent = signal.EventType
+	e.lastTerminalOwner = owner
+	if closedDone {
+		e.doneTerminalEvent = signal.EventType
+		e.doneTerminalOwner = owner
+	}
 }
 
 func (e *PipelineEdge) ensureDiagnosticIdentityLocked() {
@@ -229,17 +325,25 @@ func PipelineEdgeDiagnostics(e *WaitRegister) PipelineEdgeDiagnosticSnapshot {
 	e.ensureDiagnosticIdentityLocked()
 
 	snapshot := PipelineEdgeDiagnosticSnapshot{
-		ID:             e.diagnosticID,
-		Generation:     e.diagnosticGeneration,
-		ExpectedEnds:   e.expectedEndCountLocked(),
-		RecordedEnds:   e.endRecorded,
-		FatalTerminal:  e.fatalTerminal,
-		FatalDelivered: e.fatalDelivered,
-		FatalRemaining: e.fatalRemaining,
-		DoneClosed:     e.doneClosed,
-		AbortClosed:    e.abortClosed,
-		ChannelLen:     len(e.Ch2),
-		ChannelCap:     cap(e.Ch2),
+		ID:                 e.diagnosticID,
+		Generation:         e.diagnosticGeneration,
+		ExpectedEnds:       e.expectedEndCountLocked(),
+		RecordedEnds:       e.endRecorded,
+		FatalTerminal:      e.fatalTerminal,
+		FatalDelivered:     e.fatalDelivered,
+		FatalRemaining:     e.fatalRemaining,
+		DoneClosed:         e.doneClosed,
+		AbortClosed:        e.abortClosed,
+		ChannelLen:         len(e.Ch2),
+		ChannelCap:         cap(e.Ch2),
+		TerminalAttempts:   e.terminalAttempts,
+		TerminalApplied:    e.terminalApplied,
+		FirstTerminalEvent: e.firstTerminalEvent,
+		FirstTerminalOwner: e.firstTerminalOwner,
+		LastTerminalEvent:  e.lastTerminalEvent,
+		LastTerminalOwner:  e.lastTerminalOwner,
+		DoneTerminalEvent:  e.doneTerminalEvent,
+		DoneTerminalOwner:  e.doneTerminalOwner,
 	}
 	if e.fatalTerminal {
 		snapshot.FatalEvent = e.fatalSignal.EventType
@@ -442,6 +546,8 @@ func (e *PipelineEdge) trySendTerminal(signal PipelineSignal) bool {
 
 	e.terminalMu.Lock()
 	defer e.terminalMu.Unlock()
+	e.recordTerminalAttemptLocked()
+	owner := PipelineTerminalDiagnosticOwner{}
 
 	if signal.EventType == EventEnd {
 		if !e.canDeliverEndLocked() {
@@ -455,14 +561,20 @@ func (e *PipelineEdge) trySendTerminal(signal PipelineSignal) bool {
 		case e.Ch2 <- signal:
 		default:
 		}
+		wasDone := e.doneClosed
 		e.recordEndLocked()
+		e.recordAppliedTerminalDiagnosticLocked(signal, owner, !wasDone && e.doneClosed)
 		return true
 	}
 
 	if e.doneClosed && !e.fatalTerminal {
 		return false
 	}
+	wasFatal := e.fatalTerminal
 	signal = e.recordFatalTerminalLocked(signal)
+	if !wasFatal && e.fatalTerminal {
+		e.recordAppliedTerminalDiagnosticLocked(signal, owner, true)
+	}
 	if e.fatalDelivered >= e.fatalRemaining {
 		return false
 	}
@@ -491,6 +603,8 @@ func (e *PipelineEdge) sendTerminalWithContext(ctx context.Context, signal Pipel
 
 	e.terminalMu.Lock()
 	defer e.terminalMu.Unlock()
+	e.recordTerminalAttemptLocked()
+	owner := pipelineTerminalDiagnosticOwnerFromContext(ctx)
 
 	if signal.EventType == EventEnd {
 		if !e.canDeliverEndLocked() {
@@ -503,14 +617,20 @@ func (e *PipelineEdge) sendTerminalWithContext(ctx context.Context, signal Pipel
 		case e.Ch2 <- signal:
 		default:
 		}
+		wasDone := e.doneClosed
 		e.recordEndLocked()
+		e.recordAppliedTerminalDiagnosticLocked(signal, owner, !wasDone && e.doneClosed)
 		return true
 	}
 
 	if e.doneClosed && !e.fatalTerminal {
 		return false
 	}
+	wasFatal := e.fatalTerminal
 	signal = e.recordFatalTerminalLocked(signal)
+	if !wasFatal && e.fatalTerminal {
+		e.recordAppliedTerminalDiagnosticLocked(signal, owner, true)
+	}
 	if e.fatalDelivered >= e.fatalRemaining {
 		return false
 	}

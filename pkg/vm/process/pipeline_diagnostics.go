@@ -91,6 +91,8 @@ func (e *PipelineCancellationCause) Detail() error {
 type pipelineCancellationDiagnosticState struct {
 	mu sync.Mutex
 
+	id          uint64
+	parent      *pipelineCancellationDiagnosticState
 	directOwner bool
 	caller      string
 	source      string
@@ -102,6 +104,8 @@ type pipelineCancellationDiagnosticState struct {
 type pipelineDiagnosticContextKey struct{}
 
 var pipelineDiagnosticKey pipelineDiagnosticContextKey
+
+var nextPipelineContextDiagnosticID atomic.Uint64
 
 // pipelineDiagnosticContext keeps diagnostics beside the cancel context
 // without wrapping context.Cause. Preserving the original concrete error is a
@@ -159,6 +163,8 @@ func (proc *Process) buildPipelineContextWithDiagnostics(
 ) (context.Context, context.CancelCauseFunc) {
 	cancelCtx, rawCancel := context.WithCancelCause(parent)
 	ctx := &pipelineDiagnosticContext{Context: cancelCtx}
+	ctx.diagnostics.id = nextPipelineContextDiagnosticID.Add(1)
+	ctx.diagnostics.parent, _ = parent.Value(pipelineDiagnosticKey).(*pipelineCancellationDiagnosticState)
 
 	cancel := func(cause error) {
 		if cause == errPipelineContextReplaced {
@@ -191,6 +197,36 @@ func (proc *Process) buildPipelineContextWithDiagnostics(
 	return ctx, cancel
 }
 
+// PipelineContextDiagnosticID returns the stable diagnostic identity assigned
+// to a pipeline context. Zero means the context was not built by Process.
+func PipelineContextDiagnosticID(ctx context.Context) uint64 {
+	if ctx == nil {
+		return 0
+	}
+	diagnostics, _ := ctx.Value(pipelineDiagnosticKey).(*pipelineCancellationDiagnosticState)
+	if diagnostics == nil {
+		return 0
+	}
+	return diagnostics.id
+}
+
+func cancellationDiagnosticStateSnapshot(
+	diagnostics *pipelineCancellationDiagnosticState,
+) (id uint64, parent *pipelineCancellationDiagnosticState, direct bool, caller string, source string, streamID uint64, cause string) {
+	if diagnostics == nil {
+		return 0, nil, false, "", "", 0, ""
+	}
+	diagnostics.mu.Lock()
+	defer diagnostics.mu.Unlock()
+	return diagnostics.id,
+		diagnostics.parent,
+		diagnostics.directOwner,
+		diagnostics.caller,
+		diagnostics.source,
+		diagnostics.streamID,
+		diagnostics.cause
+}
+
 // PipelineCancellationDiagnostic formats the first cancellation owner retained
 // by a pipeline context. It is called only from rate-limited anomaly logs.
 func PipelineCancellationDiagnostic(ctx context.Context) string {
@@ -206,17 +242,39 @@ func PipelineCancellationDiagnostic(ctx context.Context) string {
 	if diagnostics == nil {
 		return fmt.Sprintf("owner=parent_context cause=%q", cause.Error())
 	}
-	diagnostics.mu.Lock()
-	defer diagnostics.mu.Unlock()
-	if !diagnostics.directOwner {
-		return fmt.Sprintf("owner=parent_context cause=%q", cause.Error())
+	id, parent, directOwner, caller, source, streamID, diagnosticCause :=
+		cancellationDiagnosticStateSnapshot(diagnostics)
+	if !directOwner {
+		for ancestor := parent; ancestor != nil; {
+			ancestorID, next, ancestorDirect, ancestorCaller, ancestorSource,
+				ancestorStreamID, ancestorCause := cancellationDiagnosticStateSnapshot(ancestor)
+			if ancestorDirect {
+				return fmt.Sprintf(
+					"owner=parent_pipeline context_id=%d parent_context_id=%d inherited_owner=%s inherited_caller=%s inherited_stream_id=%d inherited_cause=%q cause=%q",
+					id,
+					ancestorID,
+					ancestorSource,
+					ancestorCaller,
+					ancestorStreamID,
+					ancestorCause,
+					cause.Error(),
+				)
+			}
+			ancestor = next
+		}
+		return fmt.Sprintf(
+			"owner=parent_context context_id=%d cause=%q",
+			id,
+			cause.Error(),
+		)
 	}
 	return fmt.Sprintf(
-		"owner=%s caller=%s stream_id=%d cause=%q",
-		diagnostics.source,
-		diagnostics.caller,
-		diagnostics.streamID,
-		diagnostics.cause,
+		"owner=%s context_id=%d caller=%s stream_id=%d cause=%q",
+		source,
+		id,
+		caller,
+		streamID,
+		diagnosticCause,
 	)
 }
 

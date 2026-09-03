@@ -17,6 +17,8 @@ package dispatch
 import (
 	"bytes"
 	"context"
+	"sync"
+	"sync/atomic"
 
 	"github.com/matrixorigin/matrixone/pkg/container/pSpool"
 
@@ -79,6 +81,7 @@ type Dispatch struct {
 	ctr               *container
 	cleanupSpool      *pSpool.PipelineSpool
 	allocationAccount *mpool.AllocationAccount
+	diagnostics       *dispatchDiagnosticState
 
 	// MaterializedSource is used by a multi-reference CTE whose consumers can
 	// have execution dependencies on one another. It is local-only and bypasses
@@ -105,6 +108,15 @@ type Dispatch struct {
 
 	vm.OperatorBase
 }
+
+type dispatchDiagnosticState struct {
+	mu         sync.Mutex
+	id         uint64
+	generation uint64
+	attempt    uint64
+}
+
+var nextDispatchDiagnosticID atomic.Uint64
 
 func (dispatch *Dispatch) GetOperatorBase() *vm.OperatorBase {
 	return &dispatch.OperatorBase
@@ -171,7 +183,50 @@ func (dispatch *Dispatch) OpType() vm.OpType {
 }
 
 func NewArgument() *Dispatch {
-	return reuse.Alloc[Dispatch](nil)
+	dispatch := reuse.Alloc[Dispatch](nil)
+	dispatch.diagnostics = &dispatchDiagnosticState{
+		id: nextDispatchDiagnosticID.Add(1),
+	}
+	return dispatch
+}
+
+func (dispatch *Dispatch) beginDiagnosticGeneration() {
+	if dispatch.diagnostics == nil {
+		dispatch.diagnostics = &dispatchDiagnosticState{
+			id: nextDispatchDiagnosticID.Add(1),
+		}
+	}
+	dispatch.diagnostics.mu.Lock()
+	defer dispatch.diagnostics.mu.Unlock()
+	dispatch.diagnostics.generation++
+	dispatch.diagnostics.attempt = 0
+}
+
+func (dispatch *Dispatch) nextTerminalDiagnosticOwner(
+	proc *process.Process,
+) process.PipelineTerminalDiagnosticOwner {
+	if dispatch.diagnostics == nil {
+		dispatch.diagnostics = &dispatchDiagnosticState{
+			id: nextDispatchDiagnosticID.Add(1),
+		}
+	}
+	dispatch.diagnostics.mu.Lock()
+	defer dispatch.diagnostics.mu.Unlock()
+	if dispatch.diagnostics.generation == 0 {
+		dispatch.diagnostics.generation = 1
+	}
+	dispatch.diagnostics.attempt++
+	pipelineContextID := uint64(0)
+	if proc != nil {
+		pipelineContextID = process.PipelineContextDiagnosticID(proc.Ctx)
+	}
+	return process.PipelineTerminalDiagnosticOwner{
+		Kind:              "dispatch_reset",
+		ID:                dispatch.diagnostics.id,
+		Generation:        dispatch.diagnostics.generation,
+		Attempt:           dispatch.diagnostics.attempt,
+		PipelineContextID: pipelineContextID,
+	}
 }
 
 func (dispatch *Dispatch) Release() {
@@ -189,8 +244,8 @@ func (dispatch *Dispatch) AdoptCleanupState(from *Dispatch) {
 }
 
 // sendTerminalSignalsToLocalRegs sends terminalSignal to each local receiver.
-// It first tries non-blocking sends via TrySendPipelineSignal, then retries
-// any pending receivers with the caller-provided cleanup context.
+// It first tries the edge's non-blocking terminal path, then retries any
+// partially delivered shared fatal signal with the same cleanup context.
 // Timeout failures are logged via WarnPipelineCleanupf.
 func sendTerminalSignalsToLocalRegs(ctx context.Context, proc *process.Process, localRegs []*process.WaitRegister, signal process.PipelineSignal, pipelineFailed bool, err error) []bool {
 	if ctx == nil {
@@ -199,7 +254,7 @@ func sendTerminalSignalsToLocalRegs(ctx context.Context, proc *process.Process, 
 	delivered := make([]bool, len(localRegs))
 	pendingLocalRegs := make([]int, 0, len(localRegs))
 	for i, reg := range localRegs {
-		if process.TrySendPipelineSignal(reg, signal) {
+		if process.SendPipelineSignalWithContext(ctx, reg, signal) {
 			delivered[i] = true
 			continue
 		}
@@ -264,6 +319,7 @@ func sendAbortSignalsToFailedLocalRegs(ctx context.Context, proc *process.Proces
 }
 
 func (dispatch *Dispatch) Reset(proc *process.Process, pipelineFailed bool, err error) {
+	diagnosticOwner := dispatch.nextTerminalDiagnosticOwner(proc)
 	terminalSignal := process.BuildCleanupSignal(pipelineFailed, err)
 	terminalErr := terminalSignal.TerminalErr()
 	if dispatch.MaterializedSource != nil {
@@ -309,6 +365,7 @@ func (dispatch *Dispatch) Reset(proc *process.Process, pipelineFailed bool, err 
 
 	signalCtx, signalCancel := context.WithTimeout(context.TODO(), process.PipelineSignalSendTimeout)
 	defer signalCancel()
+	signalCtx = process.WithPipelineTerminalDiagnosticOwner(signalCtx, diagnosticOwner)
 
 	if dispatch.ctr != nil && dispatch.ctr.sp != nil {
 		sp := dispatch.ctr.sp

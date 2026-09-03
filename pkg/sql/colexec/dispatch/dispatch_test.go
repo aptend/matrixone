@@ -48,6 +48,27 @@ type emptyDispatchChild struct {
 	called chan struct{}
 }
 
+func TestDispatchTerminalDiagnosticOwnerTracksAttemptsAndGeneration(t *testing.T) {
+	dispatch := NewArgument()
+	t.Cleanup(dispatch.Release)
+
+	dispatch.beginDiagnosticGeneration()
+	first := dispatch.nextTerminalDiagnosticOwner(nil)
+	second := dispatch.nextTerminalDiagnosticOwner(nil)
+	require.NotZero(t, first.ID)
+	require.Equal(t, first.ID, second.ID)
+	require.Equal(t, uint64(1), first.Generation)
+	require.Equal(t, first.Generation, second.Generation)
+	require.Equal(t, uint64(1), first.Attempt)
+	require.Equal(t, uint64(2), second.Attempt)
+
+	dispatch.beginDiagnosticGeneration()
+	third := dispatch.nextTerminalDiagnosticOwner(nil)
+	require.Equal(t, first.ID, third.ID)
+	require.Equal(t, uint64(2), third.Generation)
+	require.Equal(t, uint64(1), third.Attempt)
+}
+
 func TestMarshalRemoteBatchExplicitTextProtocolGate(t *testing.T) {
 	proc := testutil.NewProcess(t)
 	defer proc.Free()

@@ -769,6 +769,55 @@ func TestPipelineEdgeDiagnosticSnapshotTracksFirstFatalAndReuse(t *testing.T) {
 	require.False(t, reused.DoneClosed)
 }
 
+func TestPipelineEdgeDiagnosticSnapshotTracksTerminalOwners(t *testing.T) {
+	edge := NewPipelineEdge(2, 2)
+	firstOwner := PipelineTerminalDiagnosticOwner{
+		Kind:              "connector_reset",
+		ID:                11,
+		Generation:        3,
+		Attempt:           1,
+		PipelineContextID: 101,
+	}
+	secondOwner := PipelineTerminalDiagnosticOwner{
+		Kind:              "connector_reset",
+		ID:                12,
+		Generation:        7,
+		Attempt:           1,
+		PipelineContextID: 102,
+	}
+
+	require.True(t, edge.SendSignalWithContext(
+		WithPipelineTerminalDiagnosticOwner(context.Background(), firstOwner),
+		NewEndSignal(),
+	))
+	require.True(t, edge.SendSignalWithContext(
+		WithPipelineTerminalDiagnosticOwner(context.Background(), secondOwner),
+		NewEndSignal(),
+	))
+	require.False(t, edge.SendSignalWithContext(
+		WithPipelineTerminalDiagnosticOwner(context.Background(), secondOwner),
+		NewEndSignal(),
+	))
+
+	snapshot := PipelineEdgeDiagnostics(edge)
+	require.Equal(t, uint64(3), snapshot.TerminalAttempts)
+	require.Equal(t, uint64(2), snapshot.TerminalApplied)
+	require.Equal(t, EventEnd, snapshot.FirstTerminalEvent)
+	require.Equal(t, firstOwner, snapshot.FirstTerminalOwner)
+	require.Equal(t, EventEnd, snapshot.LastTerminalEvent)
+	require.Equal(t, secondOwner, snapshot.LastTerminalOwner)
+	require.Equal(t, EventEnd, snapshot.DoneTerminalEvent)
+	require.Equal(t, secondOwner, snapshot.DoneTerminalOwner)
+
+	edge.ResetTerminalStateForReuse()
+	reused := PipelineEdgeDiagnostics(edge)
+	require.Zero(t, reused.TerminalAttempts)
+	require.Zero(t, reused.TerminalApplied)
+	require.Equal(t, PipelineTerminalDiagnosticOwner{}, reused.FirstTerminalOwner)
+	require.Equal(t, PipelineTerminalDiagnosticOwner{}, reused.LastTerminalOwner)
+	require.Equal(t, PipelineTerminalDiagnosticOwner{}, reused.DoneTerminalOwner)
+}
+
 // TestPipelineEdgeMixedConcurrentTerminal verifies that SendEnd and Abort
 // called concurrently from different goroutines don't cause races.
 func TestPipelineEdgeMixedConcurrentTerminal(t *testing.T) {

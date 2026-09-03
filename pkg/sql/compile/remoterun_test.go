@@ -4628,6 +4628,9 @@ func TestRemoteNotifyCleanupUsesTypedErrorForSharedReceiver(t *testing.T) {
 	testErr := moerr.NewInternalErrorNoCtx("remote notify failed")
 
 	require.True(t, sendRemoteNotifyCleanupTerminal(nil, reg, testErr))
+	diagnostics := process.PipelineEdgeDiagnostics(reg)
+	require.Equal(t, "remote_notify_cleanup", diagnostics.FirstTerminalOwner.Kind)
+	require.NotZero(t, diagnostics.FirstTerminalOwner.ID)
 
 	receiver := process.InitPipelineSignalReceiver(context.Background(), []*process.WaitRegister{reg})
 	bat, err := receiver.GetNextBatch(nil)

@@ -21,6 +21,7 @@ import (
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
+	"go.uber.org/zap"
 )
 
 func TestPipelineSignalReceiverWaitingEndUsesCleanupTimeout(t *testing.T) {
@@ -311,4 +312,20 @@ func TestCleanupWarnLimiterSuppressesStorm(t *testing.T) {
 
 func TestWarnPipelineCleanupfNilProcessIsSafe(t *testing.T) {
 	WarnPipelineCleanupf(nil, "nil_proc_cleanup", "cleanup warning with nil process")
+	built := false
+	if WarnPipelineCleanupLazy(
+		nil,
+		"nil_proc_cleanup_lazy",
+		"lazy cleanup warning with nil process",
+		func() []zap.Field {
+			built = true
+			return nil
+		},
+		nil,
+	) {
+		t.Fatal("nil process unexpectedly emitted a lazy cleanup warning")
+	}
+	if built {
+		t.Fatal("nil process unexpectedly built lazy cleanup fields")
+	}
 }

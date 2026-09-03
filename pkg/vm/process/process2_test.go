@@ -130,6 +130,36 @@ func TestPipelineCancellationDiagnosticsIdentifyParentOwner(t *testing.T) {
 	)
 }
 
+func TestPipelineCancellationDiagnosticsIdentifyInheritedPipelineOwner(t *testing.T) {
+	root := &Process{Base: &BaseProcess{}}
+	queryCtx := root.Base.GetContextBase().BuildQueryCtx(context.Background())
+	root.BuildPipelineContext(queryCtx)
+	child := root.NewContextChildProc(0)
+
+	root.Cancel(NewPipelineCancellationCause(
+		PipelineCancelStopSending,
+		27261,
+		nil,
+	))
+
+	require.ErrorIs(t, child.Ctx.Err(), context.Canceled)
+	require.NotZero(t, PipelineContextDiagnosticID(root.Ctx))
+	require.NotZero(t, PipelineContextDiagnosticID(child.Ctx))
+	require.NotEqual(
+		t,
+		PipelineContextDiagnosticID(root.Ctx),
+		PipelineContextDiagnosticID(child.Ctx),
+	)
+	diagnostic := PipelineCancellationDiagnostic(child.Ctx)
+	require.Contains(t, diagnostic, "owner=parent_pipeline")
+	require.Contains(t, diagnostic, "inherited_owner=stop_sending")
+	require.Contains(t, diagnostic, "inherited_stream_id=27261")
+	require.Contains(t, diagnostic, fmt.Sprintf(
+		"context_id=%d", PipelineContextDiagnosticID(child.Ctx)))
+	require.Contains(t, diagnostic, fmt.Sprintf(
+		"parent_context_id=%d", PipelineContextDiagnosticID(root.Ctx)))
+}
+
 type childProcessSession struct{}
 
 func (*childProcessSession) GetTempTable(string, string) (string, bool) { return "", false }

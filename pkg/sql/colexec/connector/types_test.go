@@ -30,6 +30,27 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
 )
 
+func TestConnectorTerminalDiagnosticOwnerTracksAttemptsAndGeneration(t *testing.T) {
+	conn := NewArgument()
+	t.Cleanup(conn.Release)
+
+	conn.beginDiagnosticGeneration()
+	first := conn.nextTerminalDiagnosticOwner(nil)
+	second := conn.nextTerminalDiagnosticOwner(nil)
+	require.NotZero(t, first.ID)
+	require.Equal(t, first.ID, second.ID)
+	require.Equal(t, uint64(1), first.Generation)
+	require.Equal(t, first.Generation, second.Generation)
+	require.Equal(t, uint64(1), first.Attempt)
+	require.Equal(t, uint64(2), second.Attempt)
+
+	conn.beginDiagnosticGeneration()
+	third := conn.nextTerminalDiagnosticOwner(nil)
+	require.Equal(t, first.ID, third.ID)
+	require.Equal(t, uint64(2), third.Generation)
+	require.Equal(t, uint64(1), third.Attempt)
+}
+
 func TestConnectorResetAbortsSpoolWhenTerminalSignalCannotBeDelivered(t *testing.T) {
 	oldSignalSendTimeout := process.PipelineSignalSendTimeout
 	process.PipelineSignalSendTimeout = 10 * time.Millisecond

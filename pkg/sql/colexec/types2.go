@@ -15,6 +15,8 @@
 package colexec
 
 import (
+	"context"
+
 	"github.com/matrixorigin/matrixone/pkg/common/morpc"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
@@ -90,7 +92,11 @@ func (srv *Server) RecordBuiltPipeline(
 	// check if sender has sent a stop running message.
 	if v, ok := srv.receivedRunningPipeline.fromRpcClientToRelatedPipeline[key]; ok && v.alreadyDone {
 		if pipelineCancel != nil {
-			pipelineCancel(nil)
+			pipelineCancel(process.NewPipelineCancellationCause(
+				process.PipelineCancelStopSendingBeforePublish,
+				streamID,
+				nil,
+			))
 		}
 		return
 	}
@@ -127,7 +133,11 @@ func (srv *Server) CancelPipelineSending(
 			// Only cancel non-dispatch pipelines (query execution pipelines)
 			logutil.Debug("CancelPipelineSending canceling non-dispatch pipeline",
 				zap.Uint64("streamID", streamID))
-			v.cancelPipeline()
+			v.cancelPipeline(process.NewPipelineCancellationCause(
+				process.PipelineCancelStopSending,
+				streamID,
+				nil,
+			))
 		}
 		return
 	}
@@ -181,17 +191,32 @@ func (srv *Server) ensureSessionCleanupLocked(session morpc.ClientSession) {
 
 func (srv *Server) cleanupPipelinesForSession(session morpc.ClientSession) {
 	srv.receivedRunningPipeline.Lock()
-	var infos []runningPipelineInfo
+	type pipelineToCancel struct {
+		info     runningPipelineInfo
+		streamID uint64
+	}
+	var pipelines []pipelineToCancel
 	delete(srv.receivedRunningPipeline.sessionCleanupWaiters, session)
 	for key := range srv.receivedRunningPipeline.fromRpcClientToRelatedPipeline {
 		if key.tcp == session {
-			infos = append(infos, srv.receivedRunningPipeline.fromRpcClientToRelatedPipeline[key])
+			pipelines = append(pipelines, pipelineToCancel{
+				info:     srv.receivedRunningPipeline.fromRpcClientToRelatedPipeline[key],
+				streamID: key.id,
+			})
 			delete(srv.receivedRunningPipeline.fromRpcClientToRelatedPipeline, key)
 		}
 	}
 	srv.receivedRunningPipeline.Unlock()
 
-	for i := range infos {
-		infos[i].cancelPipeline()
+	var sessionCause error
+	if session != nil && session.SessionCtx() != nil {
+		sessionCause = context.Cause(session.SessionCtx())
+	}
+	for i := range pipelines {
+		pipelines[i].info.cancelPipeline(process.NewPipelineCancellationCause(
+			process.PipelineCancelRPCSessionClosed,
+			pipelines[i].streamID,
+			sessionCause,
+		))
 	}
 }

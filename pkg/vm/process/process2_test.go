@@ -16,8 +16,12 @@ package process
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"sync"
 	"testing"
 
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
@@ -27,6 +31,104 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestPipelineCancellationDiagnosticsPreserveFirstOwner(t *testing.T) {
+	proc := &Process{Base: &BaseProcess{}}
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(context.Background())
+	proc.BuildPipelineContext(queryCtx)
+
+	proc.Cancel(NewPipelineCancellationCause(
+		PipelineCancelStopSending,
+		27261,
+		nil,
+	))
+
+	require.ErrorIs(t, proc.Ctx.Err(), context.Canceled)
+	var cause *PipelineCancellationCause
+	require.True(t, errors.As(context.Cause(proc.Ctx), &cause))
+	require.Equal(t, PipelineCancelStopSending, cause.Source())
+	require.Equal(t, uint64(27261), cause.StreamID())
+
+	diagnostic := PipelineCancellationDiagnostic(proc.Ctx)
+	require.Contains(t, diagnostic, "owner=stop_sending")
+	require.Contains(t, diagnostic, "stream_id=27261")
+	require.Contains(t, diagnostic, "caller=")
+	require.True(t, ClaimPipelineCancellationDiagnostic(proc.Ctx))
+	require.False(t, ClaimPipelineCancellationDiagnostic(proc.Ctx))
+
+	proc.Cancel(errors.New("later cancellation must not replace the owner"))
+	require.Equal(t, diagnostic, PipelineCancellationDiagnostic(proc.Ctx))
+}
+
+func TestPipelineCancellationDiagnosticsConcurrentFirstOwner(t *testing.T) {
+	proc := &Process{Base: &BaseProcess{}}
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(context.Background())
+	proc.BuildPipelineContext(queryCtx)
+
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	for streamID := uint64(1); streamID <= 16; streamID++ {
+		streamID := streamID
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			<-start
+			proc.Cancel(NewPipelineCancellationCause(
+				PipelineCancelStopSending,
+				streamID,
+				nil,
+			))
+		}()
+	}
+	close(start)
+	wg.Wait()
+
+	var cause *PipelineCancellationCause
+	require.True(t, errors.As(context.Cause(proc.Ctx), &cause))
+	require.GreaterOrEqual(t, cause.StreamID(), uint64(1))
+	require.LessOrEqual(t, cause.StreamID(), uint64(16))
+	require.Contains(
+		t,
+		PipelineCancellationDiagnostic(proc.Ctx),
+		fmt.Sprintf("stream_id=%d", cause.StreamID()),
+	)
+}
+
+func TestPipelineCancellationDiagnosticsPreserveSubstantiveCause(t *testing.T) {
+	proc := &Process{Base: &BaseProcess{}}
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(context.Background())
+	proc.BuildPipelineContext(queryCtx)
+	sentinel := moerr.NewInternalErrorNoCtx("substantive pipeline failure")
+
+	proc.Cancel(sentinel)
+
+	require.Same(t, sentinel, context.Cause(proc.Ctx))
+	_, isMOError := context.Cause(proc.Ctx).(*moerr.Error)
+	require.True(t, isMOError, "remote error encoding depends on the concrete *moerr.Error")
+	require.ErrorIs(t, context.Cause(proc.Ctx), sentinel)
+	require.EqualError(t, context.Cause(proc.Ctx), sentinel.Error())
+	require.Contains(
+		t,
+		PipelineCancellationDiagnostic(proc.Ctx),
+		"owner=direct_process_cancel",
+	)
+}
+
+func TestPipelineCancellationDiagnosticsIdentifyParentOwner(t *testing.T) {
+	proc := &Process{Base: &BaseProcess{}}
+	parentCtx, cancelParent := context.WithCancel(context.Background())
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(parentCtx)
+	proc.BuildPipelineContext(queryCtx)
+
+	cancelParent()
+	proc.Cancel(nil)
+
+	require.Contains(
+		t,
+		PipelineCancellationDiagnostic(proc.Ctx),
+		"owner=parent_context",
+	)
+}
 
 type childProcessSession struct{}
 

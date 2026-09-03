@@ -257,6 +257,9 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 	// init context for pipeline.
 	c.proc.ResetQueryContext()
 	c.InitPipelineContextToExecuteQuery()
+	defer func() {
+		reportUnattributedPipelineCancellation(c.proc, "compile_run", err, err)
+	}()
 
 	// record this query to compile service.
 	if err = TryMarkQueryRunning(c, txnOperator); err != nil {

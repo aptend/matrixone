@@ -23,6 +23,7 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/pSpool"
 	"github.com/matrixorigin/matrixone/pkg/vm"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
+	"go.uber.org/zap"
 )
 
 var _ vm.Operator = new(Connector)
@@ -121,12 +122,14 @@ func (connector *Connector) Release() {
 }
 
 func (connector *Connector) Reset(proc *process.Process, pipelineFailed bool, err error) {
+	diagnosticOwner := connector.terminalDiagnosticOwner(proc)
 	terminalSignal := process.BuildCleanupSignal(pipelineFailed, err)
 	terminalErr := terminalSignal.TerminalErr()
 	signalCtx, signalCancel := context.WithTimeout(context.TODO(), process.PipelineSignalSendTimeout)
 	defer signalCancel()
 
-	terminalDelivered := connector.sendTerminalWithLog(signalCtx, proc, terminalSignal, pipelineFailed, terminalErr)
+	terminalDelivered := connector.sendTerminalWithLog(
+		signalCtx, proc, terminalSignal, pipelineFailed, terminalErr, diagnosticOwner)
 
 	if connector.ctr.sp != nil {
 		sp := connector.ctr.sp
@@ -137,7 +140,8 @@ func (connector *Connector) Reset(proc *process.Process, pipelineFailed bool, er
 			abortErr := terminalErr
 			if terminalSignal.EventType == process.EventEnd && !terminalDelivered {
 				fallbackErr := process.ResolvePipelineSpoolAbortError(connector.Reg)
-				connector.sendTerminalWithLog(signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr)
+				connector.sendTerminalWithLog(
+					signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr, diagnosticOwner)
 				abortErr = fallbackErr
 			}
 			sp.Abort(abortErr)
@@ -150,12 +154,39 @@ func (connector *Connector) Reset(proc *process.Process, pipelineFailed bool, er
 		connector.ctr.sp = nil
 	} else if terminalSignal.EventType == process.EventEnd && !terminalDelivered {
 		fallbackErr := process.ErrPipelineEndSignalDeliveryFailed
-		connector.sendTerminalWithLog(signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr)
+		connector.sendTerminalWithLog(
+			signalCtx, proc, process.NewAbortSignal(fallbackErr), true, fallbackErr, diagnosticOwner)
+	}
+}
+
+func (connector *Connector) terminalDiagnosticOwner(
+	proc *process.Process,
+) process.PipelineTerminalDiagnosticOwner {
+	if proc == nil {
+		return process.PipelineTerminalDiagnosticOwner{}
+	}
+	pipelineContextID := process.PipelineContextDiagnosticID(proc.Ctx)
+	if pipelineContextID == 0 {
+		return process.PipelineTerminalDiagnosticOwner{}
+	}
+	return process.PipelineTerminalDiagnosticOwner{
+		Kind:              "connector_reset",
+		OperatorID:        connector.GetOperatorID(),
+		ParallelID:        connector.GetParalleID(),
+		OperatorIdx:       connector.GetIdx(),
+		PipelineContextID: pipelineContextID,
 	}
 }
 
 // sendTerminalWithLog sends a terminal signal to Reg, logging a warning on failure.
-func (connector *Connector) sendTerminalWithLog(ctx context.Context, proc *process.Process, signal process.PipelineSignal, pipelineFailed bool, err error) bool {
+func (connector *Connector) sendTerminalWithLog(
+	ctx context.Context,
+	proc *process.Process,
+	signal process.PipelineSignal,
+	pipelineFailed bool,
+	err error,
+	diagnosticOwner process.PipelineTerminalDiagnosticOwner,
+) bool {
 	if connector.Reg == nil {
 		process.WarnPipelineCleanupf(
 			proc,
@@ -166,20 +197,72 @@ func (connector *Connector) sendTerminalWithLog(ctx context.Context, proc *proce
 			err)
 		return false
 	}
-	if process.SendPipelineSignalWithContext(ctx, connector.Reg, signal) {
+	delivered := false
+	if diagnosticOwner.PipelineContextID != 0 {
+		delivered = process.SendPipelineTerminalWithContextAndOwner(
+			ctx, connector.Reg, signal, diagnosticOwner)
+	} else {
+		delivered = process.SendPipelineSignalWithContext(ctx, connector.Reg, signal)
+	}
+	if delivered {
 		return true
 	}
-	chLen, chCap := process.WaitRegisterChannelState(connector.Reg)
-	process.WarnPipelineCleanupf(
+	edge := process.PipelineEdgeDiagnostics(connector.Reg)
+	queryID := ""
+	pipelineCancel := "owner=none"
+	var pipelineErr, pipelineCause, queryErr, queryCause error
+	if proc != nil {
+		queryID = proc.QueryId()
+		pipelineCancel = process.PipelineCancellationDiagnostic(proc.Ctx)
+		if proc.Ctx != nil {
+			pipelineErr = proc.Ctx.Err()
+			pipelineCause = context.Cause(proc.Ctx)
+		}
+		queryCtx, _ := process.GetQueryCtxFromProc(proc)
+		if queryCtx != nil {
+			queryErr = queryCtx.Err()
+			queryCause = context.Cause(queryCtx)
+		}
+	}
+	fatalEvent := "None"
+	if edge.FatalTerminal {
+		fatalEvent = edge.FatalEvent.String()
+	}
+	doneEvent := "None"
+	if edge.DoneClosed {
+		doneEvent = edge.DoneTerminalEvent.String()
+	}
+	process.WarnPipelineCleanup(
 		proc,
 		"connector_cleanup_send_terminal_signal",
-		"connector cleanup timed out sending terminal %s signal: timeout=%s channel_len=%d channel_cap=%d pipeline_failed=%t err=%v",
-		signal.EventType.String(),
-		process.PipelineSignalSendTimeout,
-		chLen,
-		chCap,
-		pipelineFailed,
-		err)
+		"connector cleanup failed sending terminal signal",
+		zap.String("terminal-event", signal.EventType.String()),
+		zap.Duration("timeout", process.PipelineSignalSendTimeout),
+		zap.String("query-id", queryID),
+		zap.String("terminal-owner", diagnosticOwner.String()),
+		zap.Uint64("edge-id", edge.ID),
+		zap.Uint64("edge-generation", edge.Generation),
+		zap.Int("channel-len", edge.ChannelLen),
+		zap.Int("channel-cap", edge.ChannelCap),
+		zap.Int("expected-ends", edge.ExpectedEnds),
+		zap.Int("recorded-ends", edge.RecordedEnds),
+		zap.Uint64("terminal-attempts", edge.TerminalAttempts),
+		zap.String("done-terminal-event", doneEvent),
+		zap.String("done-terminal-owner", edge.DoneTerminalOwner.String()),
+		zap.Bool("fatal-terminal", edge.FatalTerminal),
+		zap.String("fatal-event", fatalEvent),
+		zap.NamedError("fatal-error", edge.FatalErr),
+		zap.Int("fatal-delivered", edge.FatalDelivered),
+		zap.Int("fatal-remaining", edge.FatalRemaining),
+		zap.Bool("done-closed", edge.DoneClosed),
+		zap.Bool("abort-closed", edge.AbortClosed),
+		zap.Bool("pipeline-failed", pipelineFailed),
+		zap.NamedError("cleanup-error", err),
+		zap.NamedError("pipeline-error", pipelineErr),
+		zap.NamedError("pipeline-cause", pipelineCause),
+		zap.String("pipeline-cancel", pipelineCancel),
+		zap.NamedError("query-error", queryErr),
+		zap.NamedError("query-cause", queryCause))
 	return false
 }
 

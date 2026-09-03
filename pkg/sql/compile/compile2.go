@@ -257,6 +257,9 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 	// init context for pipeline.
 	c.proc.ResetQueryContext()
 	c.InitPipelineContextToExecuteQuery()
+	defer func() {
+		reportUnattributedPipelineCancellation(c.proc, "compile_run", err, err)
+	}()
 
 	// record this query to compile service.
 	if err = TryMarkQueryRunning(c, txnOperator); err != nil {
@@ -466,8 +469,23 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 			coordinatorPhaseStart = time.Time{}
 			coordinatorPhaseBase = 0
 
+			errSource := "run-once"
 			if err = runC.runOnce(); err == nil {
+				errSource = "query-context-check"
 				err = runC.proc.GetQueryContextError()
+			}
+			if err != nil && isScopeCancellationError(err) {
+				queryCtx, _ := process.GetQueryCtxFromProc(runC.proc)
+				logInternalCancellationDiagnostic(
+					runC.proc,
+					errSource,
+					err,
+					runC.proc.Ctx,
+					queryCtx,
+					runC.proc.GetTopContext(),
+					zap.String("sql", commonutil.Abbreviate(executeSQL, 500)),
+					zap.Int("retry-times", retryTimes),
+				)
 			}
 			if err == nil {
 				if runC.anal != nil {

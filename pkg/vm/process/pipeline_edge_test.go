@@ -736,6 +736,75 @@ func TestPipelineEdgeConcurrentAbort(t *testing.T) {
 	}
 }
 
+func TestPipelineEdgeDiagnosticsAreLazyAndTrackDoneOwner(t *testing.T) {
+	ordinary := NewPipelineEdge(1, 1)
+	if !ordinary.SendEnd() {
+		t.Fatal("ordinary End failed")
+	}
+	if got := PipelineEdgeDiagnostics(ordinary).ID; got != 0 {
+		t.Fatalf("ordinary edge unexpectedly allocated diagnostics: id=%d", got)
+	}
+
+	edge := NewPipelineEdge(2, 2)
+	first := PipelineTerminalDiagnosticOwner{
+		Kind:              "connector_reset",
+		OperatorID:        11,
+		ParallelID:        1,
+		OperatorIdx:       2,
+		PipelineContextID: 101,
+	}
+	second := PipelineTerminalDiagnosticOwner{
+		Kind:              "connector_reset",
+		OperatorID:        12,
+		ParallelID:        2,
+		OperatorIdx:       3,
+		PipelineContextID: 102,
+	}
+	if !TrySendPipelineTerminalWithOwner(edge, NewEndSignal(), first) {
+		t.Fatal("first diagnostic End failed")
+	}
+	if !SendPipelineTerminalWithContextAndOwner(
+		context.Background(), edge, NewEndSignal(), second) {
+		t.Fatal("second diagnostic End failed")
+	}
+	if SendPipelineTerminalWithContextAndOwner(
+		context.Background(), edge, NewEndSignal(), second) {
+		t.Fatal("extra End unexpectedly succeeded")
+	}
+
+	snapshot := PipelineEdgeDiagnostics(edge)
+	if snapshot.ID == 0 || snapshot.Generation != 1 {
+		t.Fatalf("unexpected diagnostic identity: id=%d generation=%d", snapshot.ID, snapshot.Generation)
+	}
+	if snapshot.RecordedEnds != 2 || snapshot.TerminalAttempts != 3 {
+		t.Fatalf("unexpected terminal counts: recorded=%d attempts=%d", snapshot.RecordedEnds, snapshot.TerminalAttempts)
+	}
+	if snapshot.DoneTerminalEvent != EventEnd || snapshot.DoneTerminalOwner != second {
+		t.Fatalf("unexpected done owner: event=%s owner=%s", snapshot.DoneTerminalEvent, snapshot.DoneTerminalOwner.String())
+	}
+
+	edge.ResetTerminalStateForReuse()
+	reused := PipelineEdgeDiagnostics(edge)
+	if reused.Generation != 2 || reused.TerminalAttempts != 0 || reused.DoneTerminalOwner.enabled() {
+		t.Fatalf("diagnostics not reset for reuse: %+v", reused)
+	}
+
+	concurrent := NewPipelineEdge(1, 16)
+	var wg sync.WaitGroup
+	for i := 0; i < 16; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			TrySendPipelineTerminalWithOwner(concurrent, NewEndSignal(), first)
+		}()
+	}
+	wg.Wait()
+	concurrentSnapshot := PipelineEdgeDiagnostics(concurrent)
+	if concurrentSnapshot.RecordedEnds != 16 || concurrentSnapshot.TerminalAttempts != 16 {
+		t.Fatalf("unexpected concurrent counts: %+v", concurrentSnapshot)
+	}
+}
+
 // TestPipelineEdgeMixedConcurrentTerminal verifies that SendEnd and Abort
 // called concurrently from different goroutines don't cause races.
 func TestPipelineEdgeMixedConcurrentTerminal(t *testing.T) {

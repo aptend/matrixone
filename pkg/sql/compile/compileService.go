@@ -15,6 +15,8 @@
 package compile
 
 import (
+	"sync/atomic"
+
 	"github.com/matrixorigin/matrixone/pkg/common/reuse"
 	txnClient "github.com/matrixorigin/matrixone/pkg/txn/client"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
@@ -47,6 +49,8 @@ func markQueryRunning(
 	if sqlText == "" {
 		sqlText = c.sql
 	}
+	var trackedToken atomic.Uint64
+	cancel = wrapRunSQLTrackerCancel(c, cancel, sqlText, &trackedToken)
 	var (
 		token uint64
 		err   error
@@ -64,6 +68,7 @@ func markQueryRunning(
 		c.proc.SetBaseProcessRunningStatus(false)
 		return err
 	}
+	trackedToken.Store(token)
 	c.runSqlToken = token
 	return nil
 }

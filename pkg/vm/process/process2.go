@@ -157,9 +157,17 @@ func (proc *Process) NewContextChildProc(dataEntryCount int) *Process {
 // BuildPipelineContext cleans the old pipeline context and creates a new one from the input parent context.
 func (proc *Process) BuildPipelineContext(parentContext context.Context) context.Context {
 	if proc.Cancel != nil {
-		proc.Cancel(nil)
+		if PipelineContextDiagnosticID(proc.Ctx) != 0 {
+			proc.Cancel(errPipelineContextReplaced)
+		} else {
+			proc.Cancel(nil)
+		}
 	}
-	proc.Ctx, proc.Cancel = context.WithCancelCause(parentContext)
+	if proc.GetTopContext() != nil && perfcounter.IsInternalExecutor(proc.GetTopContext()) {
+		proc.Ctx, proc.Cancel = proc.buildPipelineContextWithDiagnostics(parentContext)
+	} else {
+		proc.Ctx, proc.Cancel = context.WithCancelCause(parentContext)
+	}
 	return proc.Ctx
 }
 

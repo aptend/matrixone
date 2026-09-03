@@ -27,8 +27,25 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/pSpool"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/perfcounter"
+	"github.com/matrixorigin/matrixone/pkg/testutil"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
 )
+
+func TestConnectorTerminalDiagnosticOwnerOnlyForInternalSQL(t *testing.T) {
+	connector := NewArgument()
+	t.Cleanup(connector.Release)
+	proc := testutil.NewProcess(t)
+
+	require.Zero(t, connector.terminalDiagnosticOwner(proc).PipelineContextID)
+	proc.ReplaceTopCtx(perfcounter.AttachTxnExecutorKey(context.Background()))
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(proc.GetTopContext())
+	proc.BuildPipelineContext(queryCtx)
+
+	owner := connector.terminalDiagnosticOwner(proc)
+	require.Equal(t, "connector_reset", owner.Kind)
+	require.NotZero(t, owner.PipelineContextID)
+}
 
 func TestConnectorResetAbortsSpoolWhenTerminalSignalCannotBeDelivered(t *testing.T) {
 	oldSignalSendTimeout := process.PipelineSignalSendTimeout

@@ -16,6 +16,7 @@ package process
 
 import (
 	"context"
+	"sync"
 	"testing"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
@@ -24,9 +25,49 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/defines"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
+	"github.com/matrixorigin/matrixone/pkg/perfcounter"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestInternalPipelineDiagnosticsPreserveCancellationSemantics(t *testing.T) {
+	proc := &Process{Base: &BaseProcess{}}
+	proc.ReplaceTopCtx(perfcounter.AttachTxnExecutorKey(context.Background()))
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(proc.GetTopContext())
+	proc.BuildPipelineContext(queryCtx)
+
+	require.NotZero(t, PipelineContextDiagnosticID(proc.Ctx))
+	proc.Cancel(nil)
+	require.Equal(t, context.Canceled, context.Cause(proc.Ctx))
+	require.Contains(t, PipelineCancellationDiagnostic(proc.Ctx), "owner=direct_process_cancel")
+	require.Contains(t, PipelineCancellationDiagnostic(proc.Ctx), "caller=")
+
+	var wg sync.WaitGroup
+	for i := 0; i < 16; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			proc.Cancel(nil)
+		}()
+		go func() {
+			defer wg.Done()
+			_ = PipelineCancellationDiagnostic(proc.Ctx)
+		}()
+	}
+	wg.Wait()
+	require.Equal(t, context.Canceled, context.Cause(proc.Ctx))
+}
+
+func TestOrdinaryPipelineDoesNotAllocateDiagnostics(t *testing.T) {
+	proc := &Process{Base: &BaseProcess{}}
+	proc.ReplaceTopCtx(context.Background())
+	queryCtx := proc.Base.GetContextBase().BuildQueryCtx(proc.GetTopContext())
+	proc.BuildPipelineContext(queryCtx)
+
+	require.Zero(t, PipelineContextDiagnosticID(proc.Ctx))
+	proc.Cancel(nil)
+	require.Equal(t, context.Canceled, context.Cause(proc.Ctx))
+}
 
 type childProcessSession struct{}
 

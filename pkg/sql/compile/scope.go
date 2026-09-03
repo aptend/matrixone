@@ -384,7 +384,25 @@ func (s *Scope) Run(c *Compile) (err error) {
 			_, err = p.RunWithReader(s.DataSource.R, tag, s.Proc)
 		}
 	}
-	err, _ = normalizeScopeRunError(err, s.Proc.Ctx, scopeRunQueryContext(s.Proc))
+	rawErr := err
+	queryCtx := scopeRunQueryContext(s.Proc)
+	var normalized bool
+	err, normalized = normalizeScopeRunError(rawErr, s.Proc.Ctx, queryCtx)
+	if err != nil && isScopeCancellationError(rawErr) {
+		logInternalCancellationDiagnostic(
+			c.proc,
+			"scope-run-cancellation-escaped",
+			rawErr,
+			s.Proc.Ctx,
+			queryCtx,
+			c.proc.GetTopContext(),
+			zap.Bool("normalized", normalized),
+			zap.NamedError("normalized-error", err),
+			zap.String("scope-magic", s.Magic.String()),
+			zap.String("sql", commonutil.Abbreviate(c.sql, 500)),
+		)
+	}
+	reportUnattributedPipelineCancellation(s.Proc, "scope_run", rawErr, err)
 	return err
 }
 
@@ -764,6 +782,7 @@ const (
 	parallelScopeBuildQueryCancel        = "parallel_scope_build_query_cancel"
 	parallelScopeBuildCancelWithCause    = "parallel_scope_build_cancel_with_cause"
 	parallelScopeBuildUnattributedCancel = "parallel_scope_build_unattributed_cancel"
+	pipelineUnattributedCancellation     = "pipeline_unattributed_cancellation"
 )
 
 func scopeCancellationContextState(ctx context.Context) (error, error) {
@@ -771,6 +790,45 @@ func scopeCancellationContextState(ctx context.Context) (error, error) {
 		return nil, nil
 	}
 	return ctx.Err(), context.Cause(ctx)
+}
+
+// reportUnattributedPipelineCancellation emits once when cancellation escapes
+// an internal pipeline even though its query context is still active. Expected
+// StopSending is attributed by PipelineCancellationDiagnostic instead.
+func reportUnattributedPipelineCancellation(
+	proc *process.Process,
+	phase string,
+	rawErr error,
+	finalErr error,
+) {
+	if proc == nil || finalErr == nil ||
+		!isScopeCancellationFrom(finalErr, context.Canceled) {
+		return
+	}
+	if process.PipelineContextDiagnosticID(proc.Ctx) == 0 {
+		return
+	}
+	queryCtx := scopeRunQueryContext(proc)
+	if queryCtx == nil || queryCtx.Err() != nil ||
+		!process.ClaimPipelineCancellationDiagnostic(proc.Ctx) {
+		return
+	}
+	pipelineErr, pipelineCause := scopeCancellationContextState(proc.Ctx)
+	queryErr, queryCause := scopeCancellationContextState(queryCtx)
+	process.WarnPipelineCleanup(
+		proc,
+		pipelineUnattributedCancellation,
+		"pipeline cancellation escaped while query context remained active",
+		zap.String("phase", phase),
+		zap.String("query-id", proc.QueryId()),
+		zap.NamedError("raw-error", rawErr),
+		zap.NamedError("final-error", finalErr),
+		zap.NamedError("pipeline-error", pipelineErr),
+		zap.NamedError("pipeline-cause", pipelineCause),
+		zap.String("pipeline-cancel", process.PipelineCancellationDiagnostic(proc.Ctx)),
+		zap.NamedError("query-error", queryErr),
+		zap.NamedError("query-cause", queryCause),
+	)
 }
 
 func reportParallelScopeBuildCancellation(

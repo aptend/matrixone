@@ -256,6 +256,35 @@ func SendPipelineSignalWithContext(ctx context.Context, reg *WaitRegister, signa
 	}
 }
 
+// SendPipelineTerminalWithContextAndOwner is the diagnostic equivalent of
+// SendPipelineSignalWithContext for terminal signals. It preserves delivery
+// semantics and records fixed-size owner metadata only for instrumented
+// internal SQL pipelines.
+func SendPipelineTerminalWithContextAndOwner(
+	ctx context.Context,
+	reg *WaitRegister,
+	signal PipelineSignal,
+	owner PipelineTerminalDiagnosticOwner,
+) bool {
+	if reg == nil || reg.Ch2 == nil || !signal.EventType.IsTerminal() {
+		return false
+	}
+	return reg.sendTerminalWithContextAndOwner(ctx, signal, owner)
+}
+
+// TrySendPipelineTerminalWithOwner preserves TrySendPipelineSignal's
+// non-blocking terminal behavior while recording an internal owner.
+func TrySendPipelineTerminalWithOwner(
+	reg *WaitRegister,
+	signal PipelineSignal,
+	owner PipelineTerminalDiagnosticOwner,
+) bool {
+	if reg == nil || reg.Ch2 == nil || !signal.EventType.IsTerminal() {
+		return false
+	}
+	return reg.trySendTerminalWithOwner(signal, owner)
+}
+
 func TrySendPipelineSignal(reg *WaitRegister, signal PipelineSignal) bool {
 	if reg == nil || reg.Ch2 == nil {
 		return false

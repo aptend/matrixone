@@ -59,6 +59,10 @@ type PipelineEdge struct {
 	endRecorded    int
 	doneClosed     bool
 	abortClosed    bool
+
+	// Lazily allocated only for internal SQL pipelines whose terminal owners
+	// opt in to diagnostics.
+	diagnostics *pipelineEdgeDiagnosticState
 }
 
 // NewPipelineEdge creates a new PipelineEdge.
@@ -163,6 +167,7 @@ func (signal *PipelineSignal) release() {
 }
 
 func (e *PipelineEdge) resetTerminalStateLocked() {
+	e.resetEdgeDiagnosticsLocked()
 	e.done = make(chan struct{})
 	e.abrt = make(chan struct{})
 	e.initOnce = sync.Once{}
@@ -357,6 +362,13 @@ func (e *PipelineEdge) recordFatalTerminalLocked(signal PipelineSignal) Pipeline
 }
 
 func (e *PipelineEdge) trySendTerminal(signal PipelineSignal) bool {
+	return e.trySendTerminalWithOwner(signal, PipelineTerminalDiagnosticOwner{})
+}
+
+func (e *PipelineEdge) trySendTerminalWithOwner(
+	signal PipelineSignal,
+	owner PipelineTerminalDiagnosticOwner,
+) bool {
 	if e == nil || e.Ch2 == nil {
 		return false
 	}
@@ -367,6 +379,7 @@ func (e *PipelineEdge) trySendTerminal(signal PipelineSignal) bool {
 
 	e.terminalMu.Lock()
 	defer e.terminalMu.Unlock()
+	e.recordTerminalAttemptLocked(owner)
 
 	if signal.EventType == EventEnd {
 		if !e.canDeliverEndLocked() {
@@ -380,14 +393,22 @@ func (e *PipelineEdge) trySendTerminal(signal PipelineSignal) bool {
 		case e.Ch2 <- signal:
 		default:
 		}
+		wasDone := e.doneClosed
 		e.recordEndLocked()
+		if !wasDone && e.doneClosed {
+			e.recordDoneTerminalLocked(signal, owner)
+		}
 		return true
 	}
 
 	if e.doneClosed && !e.fatalTerminal {
 		return false
 	}
+	wasFatal := e.fatalTerminal
 	signal = e.recordFatalTerminalLocked(signal)
+	if !wasFatal && e.fatalTerminal {
+		e.recordDoneTerminalLocked(signal, owner)
+	}
 	if e.fatalDelivered >= e.fatalRemaining {
 		return false
 	}
@@ -403,6 +424,14 @@ func (e *PipelineEdge) trySendTerminal(signal PipelineSignal) bool {
 }
 
 func (e *PipelineEdge) sendTerminalWithContext(ctx context.Context, signal PipelineSignal) bool {
+	return e.sendTerminalWithContextAndOwner(ctx, signal, PipelineTerminalDiagnosticOwner{})
+}
+
+func (e *PipelineEdge) sendTerminalWithContextAndOwner(
+	ctx context.Context,
+	signal PipelineSignal,
+	owner PipelineTerminalDiagnosticOwner,
+) bool {
 	if e == nil || e.Ch2 == nil {
 		return false
 	}
@@ -416,6 +445,7 @@ func (e *PipelineEdge) sendTerminalWithContext(ctx context.Context, signal Pipel
 
 	e.terminalMu.Lock()
 	defer e.terminalMu.Unlock()
+	e.recordTerminalAttemptLocked(owner)
 
 	if signal.EventType == EventEnd {
 		if !e.canDeliverEndLocked() {
@@ -428,14 +458,22 @@ func (e *PipelineEdge) sendTerminalWithContext(ctx context.Context, signal Pipel
 		case e.Ch2 <- signal:
 		default:
 		}
+		wasDone := e.doneClosed
 		e.recordEndLocked()
+		if !wasDone && e.doneClosed {
+			e.recordDoneTerminalLocked(signal, owner)
+		}
 		return true
 	}
 
 	if e.doneClosed && !e.fatalTerminal {
 		return false
 	}
+	wasFatal := e.fatalTerminal
 	signal = e.recordFatalTerminalLocked(signal)
+	if !wasFatal && e.fatalTerminal {
+		e.recordDoneTerminalLocked(signal, owner)
+	}
 	if e.fatalDelivered >= e.fatalRemaining {
 		return false
 	}

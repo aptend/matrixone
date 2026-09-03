@@ -15,10 +15,12 @@
 package process
 
 import (
+	"context"
 	"sync"
 	"time"
 
 	metricv2 "github.com/matrixorigin/matrixone/pkg/util/metric/v2"
+	"go.uber.org/zap"
 )
 
 const (
@@ -79,16 +81,7 @@ func (l *cleanupWarnLimiter) allow(key string) (bool, int64, int64) {
 }
 
 func WarnPipelineCleanupf(proc *Process, key string, format string, args ...any) {
-	if key == "" {
-		key = "pipeline_cleanup"
-	}
-	metricv2.PipelineCleanupEventCounter.WithLabelValues(key).Inc()
-
-	if proc == nil {
-		return
-	}
-
-	allowed, occurrence, suppressed := pipelineCleanupWarnLimiter.allow(key)
+	allowed, occurrence, suppressed := allowPipelineCleanupWarning(proc, key)
 	if !allowed {
 		return
 	}
@@ -101,4 +94,65 @@ func WarnPipelineCleanupf(proc *Process, key string, format string, args ...any)
 	}
 
 	proc.Warnf(proc.Ctx, format, args...)
+}
+
+// WarnPipelineCleanup emits a structured warning under the existing global
+// rate bound. Keys must be fixed constants because they are metric labels.
+func WarnPipelineCleanup(proc *Process, key string, msg string, fields ...zap.Field) {
+	allowed, occurrence, suppressed := allowPipelineCleanupWarning(proc, key)
+	if !allowed {
+		return
+	}
+	fields = append(fields, zap.Int64("occurrence", occurrence))
+	if suppressed > 0 {
+		fields = append(fields, zap.Int64("suppressed", suppressed))
+	}
+	proc.Warn(proc.Ctx, msg, fields...)
+}
+
+// WarnPipelineCleanupLazy avoids constructing call stacks for suppressed
+// events. afterBuild runs before logging so cancellation is never delayed by
+// log I/O.
+func WarnPipelineCleanupLazy(
+	proc *Process,
+	ctx context.Context,
+	key string,
+	msg string,
+	buildFields func() []zap.Field,
+	afterBuild func(),
+) bool {
+	allowed, occurrence, suppressed := allowPipelineCleanupWarning(proc, key)
+	if !allowed {
+		return false
+	}
+	var fields []zap.Field
+	if buildFields != nil {
+		fields = buildFields()
+	}
+	if afterBuild != nil {
+		afterBuild()
+	}
+	fields = append(fields, zap.Int64("occurrence", occurrence))
+	if suppressed > 0 {
+		fields = append(fields, zap.Int64("suppressed", suppressed))
+	}
+	proc.Warn(ctx, msg, fields...)
+	return true
+}
+
+func allowPipelineCleanupWarning(proc *Process, key string) (bool, int64, int64) {
+	if key == "" {
+		key = "pipeline_cleanup"
+	}
+	metricv2.PipelineCleanupEventCounter.WithLabelValues(key).Inc()
+
+	if proc == nil {
+		return false, 0, 0
+	}
+
+	allowed, occurrence, suppressed := pipelineCleanupWarnLimiter.allow(key)
+	if !allowed {
+		return false, occurrence, 0
+	}
+	return true, occurrence, suppressed
 }

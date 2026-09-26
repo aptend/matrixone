@@ -168,16 +168,19 @@ func TestIssue28295RowConstructorScalarSubquery(t *testing.T) {
 		require.NoError(t, err)
 		assertHavingRows := func(query string, oracle func(int) string) {
 			t.Helper()
-			rows, queryErr := conn.QueryContext(ctx, query)
-			require.NoError(t, queryErr, query)
-			var got []sql.NullBool
-			for rows.Next() {
-				var value sql.NullBool
-				require.NoError(t, rows.Scan(&value), query)
-				got = append(got, value)
-			}
-			require.NoError(t, rows.Err(), query)
-			require.NoError(t, rows.Close())
+			got := func() []sql.NullBool {
+				rows, queryErr := conn.QueryContext(ctx, query)
+				require.NoError(t, queryErr, query)
+				defer func() { require.NoError(t, rows.Close()) }()
+				var values []sql.NullBool
+				for rows.Next() {
+					var value sql.NullBool
+					require.NoError(t, rows.Scan(&value), query)
+					values = append(values, value)
+				}
+				require.NoError(t, rows.Err(), query)
+				return values
+			}()
 			var want []sql.NullBool
 			for key := 0; key <= 2; key++ {
 				var value sql.NullBool
@@ -225,21 +228,23 @@ func TestIssue28295RowConstructorScalarSubquery(t *testing.T) {
 			where (1,10) <=> (select count(*),sum(i.v) from scalar_inner i
 				where i.k=o.k having count(*)=o.k)`).Scan(&repeatedMatches))
 		require.Equal(t, 2, repeatedMatches)
-		preparedHaving, err := conn.PrepareContext(ctx, `select (0,null) <=>
+		func() {
+			preparedHaving, prepareErr := conn.PrepareContext(ctx, `select (0,null) <=>
 			(select count(*),sum(i.v) from scalar_inner i where i.k=o.k
 				having count(*)<=? and o.k>=0)
 			from having_outer o where o.k=? limit 1`)
-		require.NoError(t, err)
-		for _, tc := range []struct {
-			threshold int
-			key       int
-			want      bool
-		}{{0, 0, true}, {0, 1, false}, {0, 2, true}, {-1, 0, false}, {0, 0, true}} {
-			var got sql.NullBool
-			require.NoError(t, preparedHaving.QueryRowContext(ctx, tc.threshold, tc.key).Scan(&got))
-			require.Equal(t, sql.NullBool{Bool: tc.want, Valid: true}, got)
-		}
-		require.NoError(t, preparedHaving.Close())
+			require.NoError(t, prepareErr)
+			defer func() { require.NoError(t, preparedHaving.Close()) }()
+			for _, tc := range []struct {
+				threshold int
+				key       int
+				want      bool
+			}{{0, 0, true}, {0, 1, false}, {0, 2, true}, {-1, 0, false}, {0, 0, true}} {
+				var got sql.NullBool
+				require.NoError(t, preparedHaving.QueryRowContext(ctx, tc.threshold, tc.key).Scan(&got))
+				require.Equal(t, sql.NullBool{Bool: tc.want, Valid: true}, got)
+			}
+		}()
 		require.ErrorContains(t, drainQueryError(ctx, conn, `select (0,null) <=>
 			(select count(*),sum(i.v) from scalar_inner i where i.k<o.k having count(*)=o.k)
 			from having_outer o`), "not yet implemented")

@@ -95,7 +95,44 @@ func mergeMinMaxFixedMetadata(
 }
 
 func (exec *minMaxExecFixed[T]) Fill(groupIndex int, row int, vectors []*vector.Vector) error {
-	return exec.BatchFill(row, []uint64{uint64(groupIndex + 1)}, vectors)
+	if groupIndex == -1 {
+		return nil
+	}
+	vec := vectors[0]
+	if vec.IsNull(uint64(row)) {
+		// A NULL does not inspect the destination value, but still closes any
+		// source-metadata reservation made for this work unit.
+		exec.finalizeStringSourcePreflights([]uint64{uint64(groupIndex + 1)})
+		return nil
+	}
+	x, y := exec.getXY(uint64(groupIndex))
+	aggVec := exec.state[x].vecs[0]
+	if !hasDefaultFixedMinMaxMetadata(vec) || !hasDefaultFixedMinMaxMetadata(aggVec) {
+		return exec.BatchFill(row, []uint64{uint64(groupIndex + 1)}, vectors)
+	}
+
+	// A scalar fill needs no per-batch hash table or local winner arrays. The
+	// same guard used by preflight proves that neither input nor destination
+	// can require a metadata sidecar; rich metadata retains the batch path.
+	if vec.IsConst() {
+		row = 0
+	}
+	value := vector.MustFixedColNoTypeCheck[T](vec)[row]
+	aggs := chunkArr[T](aggVec)
+	if aggVec.IsNull(uint64(y)) {
+		aggVec.UnsetNull(uint64(y))
+		aggs[y] = value
+	} else {
+		switch cmp := exec.comp(value, aggs[y]); {
+		case cmp < 0:
+			aggs[y] = value
+		case cmp > 0:
+			return nil
+		}
+	}
+	// Even an ordinary winner or tie must mark PrepareParamNone as observed,
+	// exactly as BatchFill does. Under the guard this setter cannot allocate.
+	return aggVec.SetPrepareParamKindAtWithMP(int(y), vector.PrepareParamNone, exec.mp)
 }
 
 func (exec *minMaxExecFixed[T]) BulkFill(groupIndex int, vectors []*vector.Vector) error {

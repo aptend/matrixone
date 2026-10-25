@@ -1802,7 +1802,20 @@ func (ctr *container) appendUniqueMatches(hashJoin *HashJoin, proc *process.Proc
 	}
 	for j, rp := range hashJoin.ResultCols {
 		if rp.Rel == 0 {
-			if err := ctr.resBat.Vecs[j].Union(ctr.leftBat.Vecs[rp.Pos], leftRows[:matched], proc.Mp()); err != nil {
+			src := ctr.leftBat.Vecs[rp.Pos]
+			// Whole flat varlena copies may retain unreferenced area bytes.
+			// Keep the exact selected-payload allocation behavior in that case.
+			wholeVarlena := ctr.lastIdx == 0 && count == src.Length() &&
+				!src.IsConst() && src.GetType().IsVarlen()
+			var err error
+			if matched == count && !wholeVarlena {
+				// Every probe row in this bounded Find window matched, so its
+				// selection is exactly the contiguous range starting at lastIdx.
+				err = ctr.resBat.Vecs[j].UnionBatch(src, int64(ctr.lastIdx), count, nil, proc.Mp())
+			} else {
+				err = ctr.resBat.Vecs[j].Union(src, leftRows[:matched], proc.Mp())
+			}
+			if err != nil {
 				return 0, err
 			}
 		}

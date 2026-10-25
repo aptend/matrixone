@@ -4599,6 +4599,7 @@ func (builder *QueryBuilder) createQuery() (*Query, error) {
 	//for i := 1; i < len(builder.qry.Steps); i++ {
 	//	builder.remapSinkScanColRefs(builder.qry.Steps[i], int32(i), sinkColRef)
 	//}
+	builder.pushdownGroupingExpressions()
 	builder.hintQueryType()
 	for _, scan := range builder.windowValidationScans {
 		if scan == nil {

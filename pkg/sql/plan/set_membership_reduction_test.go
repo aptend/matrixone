@@ -72,6 +72,75 @@ func TestSetMembershipJoinPublicPlan(t *testing.T) {
 	}
 }
 
+func TestSetMembershipJoinReducesFactMultiplicityAfterJoinOrdering(t *testing.T) {
+	// The written last join filters the fact table through another relation.
+	// Reducing that join before ordering would keep (supplier JOIN nation) as
+	// the SEMI output and would still emit a nation row for every supplier.
+	mock := NewMockCompilerContext(true, newPlanTestProcess(t))
+	cache := NewStatsCache()
+	for name, count := range map[string]float64{"supplier": 100000, "nation": 1000, "region": 100000} {
+		table := mock.tables[name]
+		stats := NewStatsInfo()
+		stats.TableName, stats.TableCnt = name, count
+		stats.AccurateObjectNumber, stats.BlockNumber = 1, 16
+		for _, col := range table.Cols {
+			ndv := count
+			if col.Name == "s_nationkey" {
+				ndv = 1000
+			}
+			stats.NdvMap[col.Name] = ndv
+			stats.MinValMap[col.Name], stats.MaxValMap[col.Name] = 1, ndv
+			stats.DataTypeMap[col.Name] = uint64(col.Typ.Id)
+			stats.SizeMap[col.Name] = uint64(count) * 8
+		}
+		cache.Set(table.TblId, stats)
+	}
+	ctx := &fixedStatsCompilerContext{&statsCacheCompilerContext{MockCompilerContext: mock, statsCache: cache}}
+	p, err := buildOneQuery(t, ctx, `
+		select n.n_name from supplier s
+		join nation n on s.s_nationkey = n.n_nationkey
+		join region r on s.s_suppkey = r.r_regionkey
+		where r.r_regionkey < 10
+		union select n_name from nation`, false)
+	require.NoError(t, err)
+	query := p.GetQuery()
+	var tables func(int32) []string
+	tables = func(id int32) []string {
+		node := query.Nodes[id]
+		if node.NodeType == planpb.Node_TABLE_SCAN {
+			return []string{node.TableDef.Name}
+		}
+		var names []string
+		for _, child := range node.Children {
+			names = append(names, tables(child)...)
+		}
+		return names
+	}
+	found := false
+	var visit func(int32)
+	visit = func(id int32) {
+		node := query.Nodes[id]
+		if node.NodeType == planpb.Node_JOIN && node.JoinType == planpb.Node_SEMI {
+			preserved, existence := 0, 1
+			if node.IsRightJoin {
+				preserved, existence = 1, 0
+			}
+			// Assert which relation's multiplicity is retained, not physical
+			// build/probe orientation or the inner ordering of the other side.
+			require.Equal(t, []string{"nation"}, tables(node.Children[preserved]))
+			require.ElementsMatch(t, []string{"supplier", "region"}, tables(node.Children[existence]))
+			found = true
+		}
+		for _, child := range node.Children {
+			visit(child)
+		}
+	}
+	for _, root := range query.Steps {
+		visit(root)
+	}
+	require.True(t, found, "the set arm must retain dimension multiplicity, not fact multiplicity")
+}
+
 func TestSetMembershipJoinOwnershipAndDependencies(t *testing.T) {
 	for _, tc := range []struct {
 		name   string

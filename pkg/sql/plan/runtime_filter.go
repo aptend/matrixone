@@ -478,11 +478,15 @@ func (builder *QueryBuilder) makeSerializedExactRuntimeFilterPair(
 }
 
 func (builder *QueryBuilder) generateRuntimeFilters(nodeID int32) {
+	builder.generateRuntimeFiltersInTree(nodeID, newDeepRuntimeFilterTree(builder.qry, nodeID))
+}
+
+func (builder *QueryBuilder) generateRuntimeFiltersInTree(nodeID int32, deepTree *deepRuntimeFilterTree) {
 	node := builder.qry.Nodes[nodeID]
 	sid := builder.compCtx.GetProcess().GetService()
 
 	for _, childID := range node.Children {
-		builder.generateRuntimeFilters(childID)
+		builder.generateRuntimeFiltersInTree(childID, deepTree)
 	}
 
 	if node.NodeType == plan.Node_FUZZY_FILTER {
@@ -527,8 +531,9 @@ func (builder *QueryBuilder) generateRuntimeFilters(nodeID int32) {
 
 	leftChild := builder.qry.Nodes[node.Children[0]]
 
-	// TODO: build runtime filters deeper than 1 level
-	if leftChild.NodeType != plan.Node_TABLE_SCAN || leftChild.Limit != nil || leftChild.Offset != nil {
+	deep := leftChild.NodeType != plan.Node_TABLE_SCAN
+	if leftChild.Limit != nil || leftChild.Offset != nil ||
+		(deep && (deepTree == nil || node.JoinType != plan.Node_INNER || node.IsRightJoin)) {
 		return
 	}
 
@@ -553,6 +558,12 @@ func (builder *QueryBuilder) generateRuntimeFilters(nodeID int32) {
 	var probeExprs, buildExprs []*plan.Expr
 
 	for _, expr := range node.OnList {
+		if deep {
+			// isEquiCond normalizes equality arguments in place. Deep admission
+			// may still fail below; neither success nor fallback should rewrite
+			// an existing join condition while merely extracting filter keys.
+			expr = DeepCopyExpr(expr)
+		}
 		if isEquiCond(expr, leftTags, rightTags) {
 			args := expr.GetF().Args
 			if !ExprIsZonemappable(builder.GetContext(), args[0]) &&
@@ -568,6 +579,15 @@ func (builder *QueryBuilder) generateRuntimeFilters(nodeID int32) {
 	// No equi condition found
 	if probeExprs == nil {
 		return
+	}
+	if deep {
+		if len(probeExprs) != 1 || probeExprs[0].GetCol() == nil || buildExprs[0].GetCol() == nil {
+			return
+		}
+		leftChild = builder.deepRuntimeFilterScan(deepTree, node.Children[0], probeExprs[0].GetCol())
+		if leftChild == nil {
+			return
+		}
 	}
 
 	for i := range probeExprs {
@@ -662,7 +682,7 @@ func (builder *QueryBuilder) generateRuntimeFilters(nodeID int32) {
 		}
 		leftChild.RuntimeFilterProbeList = append(leftChild.RuntimeFilterProbeList, probeSpec)
 		node.RuntimeFilterBuildList = append(node.RuntimeFilterBuildList, buildSpec)
-		if node.JoinType != plan.Node_SINGLE {
+		if node.JoinType != plan.Node_SINGLE && !deep {
 			recalcStatsByRuntimeFilter(leftChild, node, builder)
 		}
 		return
@@ -755,7 +775,7 @@ func (builder *QueryBuilder) generateRuntimeFilters(nodeID int32) {
 		// SINGLE output cardinality belongs to its semantic preserved side.  Do
 		// not feed the existing probe-side RF heuristic into SINGLE stats here;
 		// preserved-side cardinality and cost selection are a separate phase.
-		if node.JoinType != plan.Node_SINGLE {
+		if node.JoinType != plan.Node_SINGLE && !deep {
 			recalcStatsByRuntimeFilter(leftChild, node, builder)
 		}
 		return

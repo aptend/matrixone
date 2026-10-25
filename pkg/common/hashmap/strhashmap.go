@@ -145,10 +145,11 @@ func (itr *strHashmapIterator) prepareHashKeys(
 			continue
 		}
 
-		// Raw string keys need no per-row type/collation dispatch. Keep the
+		// Flat byte-domain strings need no per-row type/collation dispatch. Keep the
 		// exact sizing pass (and allocation admission) before encoding, but
 		// read the physical vector and nullable bitmap only once per column.
-		if isFlatRawStringHashKey(vec) {
+		flatChar := isFlatCharStringHashKey(vec)
+		if isFlatRawStringHashKey(vec) || flatChar {
 			values, area := vector.MustVarlenaRawData(vec)
 			nsp := vec.GetNulls()
 			hasNulls := nsp.Any()
@@ -162,7 +163,11 @@ func (itr *strHashmapIterator) prepareHashKeys(
 					}
 					continue
 				}
-				if err := add(i, prefix+4+len(values[row].GetByteSlice(area))); err != nil {
+				value := values[row].GetByteSlice(area)
+				if flatChar {
+					value = canonicalVarlenaHashValue(types.T_char, value)
+				}
+				if err := add(i, prefix+4+len(value)); err != nil {
 					return err
 				}
 			}
@@ -371,6 +376,10 @@ func (m *StrHashMap) Size() int64 {
 
 func (itr *strHashmapIterator) encodeHashKeys(vecs []*vector.Vector, start, count int) {
 	for _, vec := range vecs {
+		if isFlatCharStringHashKey(vec) {
+			fillFlatCharStringHashKey(itr, vec, count, start)
+			continue
+		}
 		if itr.mp.groupingAware || itr.mp.hasNull {
 			switch vec.GetType().Oid {
 			case types.T_json, types.T_array_float32, types.T_array_float64,
@@ -639,6 +648,39 @@ func isFlatRawStringHashKey(vec *vector.Vector) bool {
 	typ := vec.GetType()
 	return typ.Oid.IsMySQLString() && typ.Oid != types.T_char &&
 		!types.IsUnicodeCollation(typ.Charset) && !vec.IsConst() && !vec.HasGrouping()
+}
+
+// CHAR cannot use the raw-string path: its byte domain removes trailing ASCII
+// spaces. Unicode keys, constants and GROUPING rows keep their existing path.
+func isFlatCharStringHashKey(vec *vector.Vector) bool {
+	typ := vec.GetType()
+	return typ.Oid == types.T_char && !types.IsUnicodeCollation(typ.Charset) &&
+		!vec.IsConst() && !vec.HasGrouping()
+}
+
+func fillFlatCharStringHashKey(itr *strHashmapIterator, vec *vector.Vector, n, start int) {
+	values, area := vector.MustVarlenaRawData(vec)
+	nsp := vec.GetNulls()
+	hasNulls := nsp.Any()
+	withDomain := itr.mp.hasNull || itr.mp.groupingAware
+	for i := 0; i < n; i++ {
+		row := start + i
+		if hasNulls && nsp.Contains(uint64(row)) {
+			if itr.mp.hasNull {
+				itr.keys[i] = append(itr.keys[i], byte(1))
+			} else {
+				itr.zValues[i] = 0
+			}
+			continue
+		}
+		value := canonicalVarlenaHashValue(types.T_char, values[row].GetByteSlice(area))
+		length := uint32(len(value))
+		if withDomain {
+			itr.keys[i] = append(itr.keys[i], byte(0))
+		}
+		itr.keys[i] = append(itr.keys[i], util.UnsafeToBytes(&length)...)
+		itr.keys[i] = append(itr.keys[i], value...)
+	}
 }
 
 func fillFlatRawStringGroupingAwareStr(itr *strHashmapIterator, vec *vector.Vector, n, start int) {

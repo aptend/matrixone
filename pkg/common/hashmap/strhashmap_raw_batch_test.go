@@ -28,6 +28,7 @@ import (
 func TestStrHashMapFlatRawStringBatchGrammar(t *testing.T) {
 	for _, tc := range []struct {
 		name                    string
+		char                    bool
 		hasNull, groupingAware  bool
 		nullInside, nullOutside bool
 	}{
@@ -37,6 +38,9 @@ func TestStrHashMapFlatRawStringBatchGrammar(t *testing.T) {
 		{name: "join-null-skip", nullInside: true},
 		{name: "grouping-aware-null-skip", groupingAware: true, nullInside: true},
 		{name: "nullable-grouping-aware", hasNull: true, groupingAware: true, nullInside: true},
+		{name: "char-join-composite-offset", char: true},
+		{name: "char-nullable-inside-outside", char: true, hasNull: true, nullInside: true, nullOutside: true},
+		{name: "char-grouping-aware-null-skip", char: true, groupingAware: true, nullInside: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			mp := mpool.MustNewZero()
@@ -48,8 +52,13 @@ func TestStrHashMapFlatRawStringBatchGrammar(t *testing.T) {
 				require.NoError(t, m.SetGroupingAware())
 			}
 			wide := strings.Repeat("w", 65536)
-			values := []string{"prefix", "", "a\x00b", strings.Repeat("i", 23), strings.Repeat("a", 24), wide, wide, "last", "suffix"}
-			vecs := []*vector.Vector{vector.NewVec(types.T_varchar.ToType()), vector.NewVec(types.T_binary.ToType())}
+			values := []string{"prefix", "", "a\x00b  ", strings.Repeat("i", 23), strings.Repeat("a", 24), wide, wide, "last", "suffix"}
+			oid := types.T_varchar
+			if tc.char {
+				oid = types.T_char
+				values = []string{"prefix", "   ", " a\x00b  ", strings.Repeat("i", 23) + " ", strings.Repeat("a", 24) + "  ", wide + "   ", wide, "last\t ", "suffix"}
+			}
+			vecs := []*vector.Vector{vector.NewVec(oid.ToType()), vector.NewVec(types.T_binary.ToType())}
 			for column, vec := range vecs {
 				t.Cleanup(func() { vec.Free(mp) })
 				for _, value := range values {
@@ -89,6 +98,8 @@ func TestStrHashMapFlatRawStringBatchGrammar(t *testing.T) {
 					value := values[row+1]
 					if column == 1 {
 						value = "\x00\xff"
+					} else if tc.char {
+						value = strings.TrimRight(value, " ")
 					}
 					var size [4]byte
 					binary.LittleEndian.PutUint32(size[:], uint32(len(value)))
@@ -100,6 +111,17 @@ func TestStrHashMapFlatRawStringBatchGrammar(t *testing.T) {
 				}
 				require.Equal(t, want, itr.keys[row], "row %d encoded grammar", row)
 				require.Equal(t, len(want), cap(itr.keys[row]), "row %d sizing", row)
+			}
+			if tc.char && !tc.nullInside {
+				transactional := m.NewTransactionalIterator()
+				var plan InsertPlan
+				require.NoError(t, transactional.PreviewInsert(1, 7, vecs, 0, &plan))
+				require.Zero(t, m.GroupCount(), "sizing and preview do not publish groups")
+				require.Equal(t, uint64(6), plan.NewGroups())
+				ids, zs, err := transactional.CommitPreview(&plan)
+				require.NoError(t, err)
+				require.Equal(t, []uint64{1, 2, 3, 4, 5, 5, 6}, ids)
+				require.Equal(t, []int64{1, 1, 1, 1, 1, 1, 1}, zs)
 			}
 			ids, zs, err := itr.Insert(1, 7, vecs)
 			require.NoError(t, err)
@@ -129,18 +151,65 @@ func TestStrHashMapFlatRawStringBatchGrammar(t *testing.T) {
 	}
 }
 
-// The same existing iterator APIs run on base/head. CHAR is an explicit
-// canonicalization fallback control; no timing or allocation threshold is a UT.
+func TestStrHashMapFlatCharFallbacks(t *testing.T) {
+	for _, shape := range []string{"const", "grouping", "unicode"} {
+		t.Run(shape, func(t *testing.T) {
+			mp := mpool.MustNewZero()
+			t.Cleanup(func() { require.Zero(t, mp.CurrNB()) })
+			vec := vector.NewVec(types.T_char.ToType())
+			t.Cleanup(func() { vec.Free(mp) })
+			values := []string{"A ", "A", "B "}
+			want := []uint64{1, 1, 2}
+			if shape == "unicode" {
+				values[1] = "a"
+				vec.SetType(types.NewWithCharset(types.T_char, 8, 0, types.CharsetUTF8MB4UnicodeCI))
+			}
+			if shape == "const" {
+				values = values[:1]
+				want = []uint64{1, 1, 1}
+			}
+			for _, value := range values {
+				require.NoError(t, vector.AppendBytes(vec, []byte(value), false, mp))
+			}
+			if shape == "const" {
+				vec.ToConst()
+				vec.SetLength(3)
+			} else if shape == "grouping" {
+				vec.GetGrouping().Add(1)
+				want = []uint64{1, 2, 3}
+			}
+			m, err := NewStrHashMap(true, mp)
+			require.NoError(t, err)
+			t.Cleanup(m.Free)
+			itr := m.NewIterator()
+			ids, zs, err := itr.Insert(0, 3, []*vector.Vector{vec})
+			require.NoError(t, err)
+			require.Equal(t, want, ids)
+			require.Equal(t, []int64{1, 1, 1}, zs)
+			ids, zs, err = itr.Find(0, 3, []*vector.Vector{vec})
+			require.NoError(t, err)
+			require.Equal(t, want, ids)
+			require.Equal(t, []int64{1, 1, 1}, zs)
+		})
+	}
+}
+
+// The same existing iterator APIs run on base/head. No timing or allocation
+// threshold is a UT; CHAR cases include inline and external padded payloads.
 func BenchmarkNullableStrHashEncodeFlatString(b *testing.B) {
 	for _, tc := range []struct {
 		name    string
 		oid     types.T
 		nullRow int
+		value   string
 	}{
 		{name: "raw-flat", oid: types.T_varchar, nullRow: -1},
 		{name: "raw-null-outside", oid: types.T_varchar, nullRow: UnitLimit + 1},
 		{name: "raw-null-inside", oid: types.T_varchar, nullRow: 17},
-		{name: "char-fallback", oid: types.T_char, nullRow: -1},
+		{name: "char-inline", oid: types.T_char, nullRow: -1, value: "value   "},
+		{name: "char-external", oid: types.T_char, nullRow: -1, value: strings.Repeat("x", 96) + "   "},
+		{name: "char-null-outside", oid: types.T_char, nullRow: UnitLimit + 1, value: "value   "},
+		{name: "char-null-inside", oid: types.T_char, nullRow: 17, value: "value   "},
 	} {
 		b.Run(tc.name, func(b *testing.B) {
 			mp := mpool.MustNewZero()
@@ -151,7 +220,10 @@ func BenchmarkNullableStrHashEncodeFlatString(b *testing.B) {
 			defer m.Free()
 			vec := vector.NewVec(tc.oid.ToType())
 			defer vec.Free(mp)
-			value := []byte(strings.Repeat("x", 96))
+			value := []byte(tc.value)
+			if tc.value == "" {
+				value = []byte(strings.Repeat("x", 96))
+			}
 			for row := 0; row < UnitLimit+2; row++ {
 				if err := vector.AppendBytes(vec, value, false, mp); err != nil {
 					b.Fatal(err)

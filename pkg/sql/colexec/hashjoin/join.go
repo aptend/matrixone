@@ -1708,18 +1708,39 @@ func (ctr *container) finalize(hashJoin *HashJoin, proc *process.Process, result
 	}
 	rowCnt := 0
 
-	for ; rowCnt < colexec.DefaultBatchSize && ctr.rightMatchedIter.HasNext(); rowCnt++ {
+	rows := &hashJoin.uniqueRightRows
+	for rowCnt < colexec.DefaultBatchSize && ctr.rightMatchedIter.HasNext() {
 		row := ctr.rightMatchedIter.Next()
-		idx1, idx2 := row/colexec.DefaultBatchSize, row%colexec.DefaultBatchSize
+		batchIdx := row / colexec.DefaultBatchSize
+		rows[0] = int64(row % colexec.DefaultBatchSize)
+		count := 1
+		limit := min(len(rows), colexec.DefaultBatchSize-rowCnt)
+		// Finalize follows probe, so its bounded selection can reuse the
+		// operator's Find scratch. Only adjacent rows from the same source
+		// batch share a gather; the iterator and output order are unchanged.
+		for count < limit && ctr.rightMatchedIter.HasNext() &&
+			ctr.rightMatchedIter.PeekNext()/colexec.DefaultBatchSize == batchIdx {
+			rows[count] = int64(ctr.rightMatchedIter.Next() % colexec.DefaultBatchSize)
+			count++
+		}
 
 		for i, rp := range hashJoin.ResultCols {
 			if rp.Rel == 1 {
-				err := ctr.resBat.Vecs[i].UnionOne(ctr.rightBats[idx1].Vecs[rp.Pos], int64(idx2), proc.Mp())
+				src := ctr.rightBats[batchIdx].Vecs[rp.Pos]
+				var err error
+				if count == 1 {
+					err = ctr.resBat.Vecs[i].UnionOne(src, rows[0], proc.Mp())
+				} else {
+					// Selected gather does not retain unreferenced varlena area,
+					// even when the selection covers the entire source vector.
+					err = ctr.resBat.Vecs[i].Union(src, rows[:count], proc.Mp())
+				}
 				if err != nil {
 					return err
 				}
 			}
 		}
+		rowCnt += count
 	}
 
 	if rowCnt == 0 {

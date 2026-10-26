@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/matrixorigin/matrixone/pkg/common/bitmap"
 	"github.com/matrixorigin/matrixone/pkg/common/hashmap"
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
@@ -71,9 +72,16 @@ func TestHashJoinUniqueProjectionPreservesSelectionMetadata(t *testing.T) {
 	ctr.lastIdx, ctr.vsIdx = 1, 1
 	ctr.vs = []uint64{0, 1, 2, 0, colexec.DefaultBatchSize + 1, colexec.DefaultBatchSize + 2, 1, 1}
 	ctr.zvs = []int64{0, 1, 1, 1, 1, 1, 1, 0}
+	ctr.probeTrackBuildMatches = true
+	ctr.rightRowsMatched = new(bitmap.Bitmap)
+	ctr.rightRowsMatched.InitWithSize(colexec.DefaultBatchSize + 2)
 	matched, err := ctr.appendUniqueMatches(arg, proc, 7)
 	require.NoError(t, err)
 	require.Equal(t, 5, matched)
+	require.EqualValues(t, 4, ctr.rightRowsMatched.Count())
+	for _, row := range []uint64{0, 1, colexec.DefaultBatchSize, colexec.DefaultBatchSize + 1} {
+		require.True(t, ctr.rightRowsMatched.Contains(row))
+	}
 	require.Equal(t, []int32{1, 2, 4, 5, 6}, vector.MustFixedColWithTypeCheck[int32](ctr.resBat.Vecs[0]))
 	payload := ctr.resBat.Vecs[1]
 	for row, value := range []string{"a", "", "c", "d", "a"} {
@@ -183,19 +191,26 @@ func TestHashJoinUniqueProjectionResumesAndReuses(t *testing.T) {
 		tc.cancel()
 		require.Zero(t, tc.proc.Mp().CurrNB())
 	})
-	for generation := range 3 {
+	for generation := range 4 {
 		// Exercise both declared PK and actual-map uniqueness, with a result
 		// boundary in the middle of a Find chunk after NULL/nonmatch exclusion.
 		tc.arg.HashOnPK, tc.barg.HashOnPK = generation == 0, generation == 0
 		// Internal control: the join type alone must not bypass an existing
 		// build-match tracking obligation, even for a right-oriented INNER.
-		tc.arg.IsRightJoin = generation == 2
+		tc.arg.IsRightJoin = generation >= 2
+		if generation == 3 {
+			tc.arg.JoinType = plan.Node_RIGHT
+		}
 		values := make([]int32, colexec.DefaultBatchSize+4)
 		for row := range values {
 			values[row] = int32(row%2 + 1)
 		}
 		values[1] = 3
-		probe, build := makeInt32Batch(tc.proc, values), makeInt32Batch(tc.proc, []int32{1, 2})
+		buildValues := []int32{1, 2}
+		if generation == 3 {
+			buildValues = append(buildValues, 4) // Unmatched build row survives finalization.
+		}
+		probe, build := makeInt32Batch(tc.proc, values), makeInt32Batch(tc.proc, buildValues)
 		probe.Vecs[0].GetNulls().Add(0)
 		inputs = append(inputs, probe, build)
 		for side, input := range []*batch.Batch{probe, build} {
@@ -230,9 +245,18 @@ func TestHashJoinUniqueProjectionResumesAndReuses(t *testing.T) {
 			}
 			seen += count
 		}
-		if generation == 2 {
+		if generation >= 2 {
 			require.True(t, tc.arg.ctr.rightRowsMatched.Contains(0))
 			require.True(t, tc.arg.ctr.rightRowsMatched.Contains(1))
+		}
+		if generation == 3 {
+			require.False(t, tc.arg.ctr.rightRowsMatched.Contains(2))
+			res, err := vm.Exec(tc.arg, tc.proc)
+			require.NoError(t, err)
+			require.NotNil(t, res.Batch)
+			require.Equal(t, 1, res.Batch.RowCount())
+			require.True(t, res.Batch.Vecs[0].IsNull(0))
+			require.Equal(t, int32(4), vector.GetFixedAtNoTypeCheck[int32](res.Batch.Vecs[1], 0))
 		}
 		res, err := vm.Exec(tc.arg, tc.proc)
 		require.NoError(t, err)
@@ -308,11 +332,15 @@ func TestHashJoinUniqueProjectionPropagatesAllocationFailure(t *testing.T) {
 	require.NoError(t, arg.SetAllocationAccount(account))
 	require.NoError(t, arg.resetResultBat())
 	arg.ctr.leftBat, arg.ctr.vs, arg.ctr.zvs = left, []uint64{1}, []int64{1}
+	arg.ctr.probeTrackBuildMatches = true
+	arg.ctr.rightRowsMatched = new(bitmap.Bitmap)
+	arg.ctr.rightRowsMatched.InitWithSize(1)
 	matched, err := arg.ctr.appendUniqueMatches(arg, proc, 1)
 	require.ErrorIs(t, err, mpool.ErrAllocationAccountCapacity)
 	require.Zero(t, matched)
 	require.Zero(t, arg.ctr.resBat.RowCount())
 	require.Zero(t, account.Snapshot().Used)
+	require.True(t, arg.ctr.rightRowsMatched.Contains(0), "failed projection is cleaned, never finalized")
 	arg.ctr.probeLeftSemi = true
 	matched, err = arg.ctr.appendMembershipMatches(arg, proc, 1)
 	require.ErrorIs(t, err, mpool.ErrAllocationAccountCapacity)

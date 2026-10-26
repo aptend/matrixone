@@ -714,8 +714,8 @@ func (ctr *container) probe(hashJoin *HashJoin, proc *process.Process, result *v
 	}
 	leftRowCnt := ctr.leftBat.RowCount()
 	resRowCnt := 0
-	batchUnique := ctr.probeHashOnPK && hashJoin.IsInner() &&
-		!ctr.probeTrackBuildMatches && hashJoin.NonEqCond == nil
+	batchUnique := ctr.probeHashOnPK && hashJoin.NonEqCond == nil &&
+		((hashJoin.IsInner() && !ctr.probeTrackBuildMatches) || hashJoin.JoinType == plan.Node_RIGHT)
 	batchMembership := (ctr.probeLeftSemi || ctr.probeLeftAnti) &&
 		!ctr.probeTrackBuildMatches && hashJoin.NonEqCond == nil
 	if batchMembership {
@@ -1806,7 +1806,8 @@ func (ctr *container) appendMembershipMatches(hashJoin *HashJoin, proc *process.
 }
 
 // appendUniqueMatches projects one bounded Find chunk for a unique, residual-free
-// inner join. Selections preserve probe order, including repeated build matches.
+// INNER/RIGHT join. Selections preserve probe order, including repeated build
+// matches. RIGHT still tracks build matches for the existing finalize phase.
 func (ctr *container) appendUniqueMatches(hashJoin *HashJoin, proc *process.Process, count int) (int, error) {
 	leftRows, rightRows := &hashJoin.uniqueLeftRows, &hashJoin.uniqueRightRows
 	matched := 0
@@ -1820,6 +1821,11 @@ func (ctr *container) appendUniqueMatches(hashJoin *HashJoin, proc *process.Proc
 	}
 	if matched == 0 {
 		return 0, nil
+	}
+	if ctr.probeTrackBuildMatches {
+		for _, row := range rightRows[:matched] {
+			ctr.rightRowsMatched.Add(uint64(row))
+		}
 	}
 	for j, rp := range hashJoin.ResultCols {
 		if rp.Rel == 0 {

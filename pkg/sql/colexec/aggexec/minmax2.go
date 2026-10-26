@@ -110,6 +110,7 @@ func (exec *minMaxExecFixed[T]) Fill(groupIndex int, row int, vectors []*vector.
 	if !hasDefaultFixedMinMaxMetadata(vec) || !hasDefaultFixedMinMaxMetadata(aggVec) {
 		return exec.BatchFill(row, []uint64{uint64(groupIndex + 1)}, vectors)
 	}
+	defer aggVec.FinalizeStringSourcePreflight()
 
 	// A scalar fill needs no per-batch hash table or local winner arrays. The
 	// same guard used by preflight proves that neither input nor destination
@@ -313,7 +314,40 @@ func (exec *minMaxExecFixed[T]) BatchFill(offset int, groups []uint64, vectors [
 }
 
 func (exec *minMaxExecFixed[T]) Merge(next AggFuncExec, groupIdx1, groupIdx2 int) error {
-	return exec.BatchMerge(next, groupIdx2, []uint64{uint64(groupIdx1 + 1)})
+	if groupIdx1 == -1 {
+		return exec.BatchMerge(next, groupIdx2, []uint64{GroupNotMatched})
+	}
+	other := next.(*minMaxExecFixed[T])
+	x1, y1 := exec.getXY(uint64(groupIdx1))
+	x2, y2 := other.getXY(uint64(groupIdx2))
+	dst, src := exec.state[x1].vecs[0], other.state[x2].vecs[0]
+	if !hasDefaultFixedMinMaxMetadata(src) || !hasDefaultFixedMinMaxMetadata(dst) {
+		return exec.BatchMerge(next, groupIdx2, []uint64{uint64(groupIdx1 + 1)})
+	}
+	defer dst.FinalizeStringSourcePreflight()
+	if src.IsNull(uint64(y2)) {
+		return nil
+	}
+	// Scalar window snapshots need only the two touched states, not a scan of
+	// every chunk or per-row metadata merging. The guard excludes metadata
+	// allocation, but a preflight flag may survive a collapsed sidecar, so it
+	// must still be finalized as in BatchMerge.
+	// Spill-decoded sources may be compact; only the destination is chunk-sized.
+	value := chunkRows[T](src)[y2]
+	aggs := chunkArr[T](dst)
+	if dst.IsNull(uint64(y1)) {
+		dst.UnsetNull(uint64(y1))
+		aggs[y1] = value
+	} else {
+		switch cmp := exec.comp(value, aggs[y1]); {
+		case cmp < 0:
+			aggs[y1] = value
+		case cmp > 0:
+			return nil
+		}
+	}
+	// A winner/tie must observe None, including an initially unobserved state.
+	return dst.SetPrepareParamKindAtWithMP(int(y1), vector.PrepareParamNone, exec.mp)
 }
 
 func (exec *minMaxExecFixed[T]) BatchMerge(next AggFuncExec, offset int, groups []uint64) error {

@@ -17,6 +17,7 @@ package aggexec
 import (
 	"bytes"
 	"fmt"
+	"math"
 	"testing"
 
 	"github.com/matrixorigin/matrixone/pkg/common/mpool"
@@ -162,6 +163,141 @@ func TestFixedMinMaxScalarFillMetadataAdmission(t *testing.T) {
 				require.NoError(t, f.exec.Fill(0, 0, []*vector.Vector{null}))
 				require.Nil(t, target.GetStringSources())
 				require.Equal(t, types.StringSourceLiteral, target.GetStringSourceAt(0))
+			}
+		})
+	}
+}
+
+func TestFixedMinMaxScalarMerge(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		typ    types.Type
+		values []any
+	}{
+		{"int64", types.T_int64.ToType(), []any{int64(8), int64(-3), int64(12), nil}},
+		{"decimal256", types.New(types.T_decimal256, 65, 0), []any{
+			types.Decimal256FromInt64(8), types.Decimal256FromInt64(-3), types.Decimal256FromInt64(12), nil}},
+		{"float64", types.T_float64.ToType(), []any{
+			math.Copysign(0, -1), float64(0), math.Float64frombits(0x7ff8000000000001), nil,
+			math.Float64frombits(0x7ff8000000000002)}},
+	} {
+		for _, id := range []int64{AggIdOfMin, AggIdOfMax} {
+			t.Run(fmt.Sprintf("%s/%d", tc.name, id), func(t *testing.T) {
+				mp := mpool.MustNewZero()
+				t.Cleanup(func() { require.Zero(t, mp.CurrNB()) })
+				input := vector.NewVec(tc.typ)
+				t.Cleanup(func() { input.Free(mp) })
+				for _, value := range tc.values {
+					require.NoError(t, vector.AppendAny(input, value, value == nil, mp))
+				}
+				makeState := func() AggFuncExec {
+					exec := makeMinMaxExec(mp, id, id == AggIdOfMin, tc.typ)
+					t.Cleanup(exec.Free)
+					return exec
+				}
+				scalar, batched, source := makeState(), makeState(), makeState()
+				for _, exec := range []AggFuncExec{scalar, batched, source} {
+					require.NoError(t, exec.GroupGrow(AggBatchSize+1))
+				}
+				for row := range tc.values {
+					require.NoError(t, source.Fill(row, row, []*vector.Vector{input}))
+				}
+				require.NoError(t, source.Fill(AggBatchSize, 1, []*vector.Vector{input}))
+				snapshot := func(exec AggFuncExec, chunks int) []byte {
+					var buf bytes.Buffer
+					for chunk := range chunks {
+						require.NoError(t, exec.SaveIntermediateResultOfChunk(chunk, &buf))
+					}
+					return buf.Bytes()
+				}
+				sourceBefore := snapshot(source, 2)
+				for _, step := range []struct {
+					target, source int
+					self           bool
+				}{
+					{-1, 0, false}, {0, 3, false}, // Skip and NULL.
+					{0, 0, false}, {0, 1, false}, {0, 2, false}, {0, 1, false},
+					{0, len(tc.values) - 1, false},
+					{AggBatchSize, 2, false}, {1, AggBatchSize, false},
+					{2, 0, true}, {0, 0, true}, {AggBatchSize, 1, true},
+				} {
+					scalarSource, batchSource := source, source
+					if step.self {
+						scalarSource, batchSource = scalar, batched
+					}
+					require.NoError(t, scalar.Merge(scalarSource, step.target, step.source))
+					require.NoError(t, batched.BatchMerge(batchSource, step.source, []uint64{uint64(step.target + 1)}))
+					require.Equal(t, snapshot(batched, 2), snapshot(scalar, 2))
+				}
+				require.Equal(t, sourceBefore, snapshot(source, 2), "merge borrows its source")
+
+				// Spill sources have compact logical rows, not destination-sized
+				// arrays. Scalar merge must retain the chunkRows source contract.
+				var encoded bytes.Buffer
+				require.NoError(t, source.(SpillStateCodec).SaveSpillIntermediateRows(0, []int32{0, 1, 2, 3}, &encoded))
+				compact := makeState()
+				require.NoError(t, compact.(SpillStateCodec).UnmarshalSpillFromReader(&encoded, mp))
+				compactBefore := snapshot(compact, 1)
+				require.NoError(t, scalar.Merge(compact, 4, 2))
+				require.NoError(t, batched.BatchMerge(compact, 2, []uint64{5}))
+				require.Equal(t, snapshot(batched, 2), snapshot(scalar, 2))
+				require.Equal(t, compactBefore, snapshot(compact, 1))
+			})
+		}
+	}
+}
+
+func TestFixedMinMaxScalarClosesSourceReservation(t *testing.T) {
+	for _, op := range []string{"fill", "merge"} {
+		t.Run(op, func(t *testing.T) {
+			f := newFixedMetadataPreflightFixture(t, AggIdOfMin, types.T_int64.ToType())
+			require.NoError(t, f.exec.GroupGrow(2))
+			input := f.intInput(t, []int64{7, 0}, []bool{false, true})
+			source := f.mergeSource(t, []int64{7, 0}, []bool{false, true})
+			for _, collapsed := range []bool{false, true} {
+				for _, null := range []bool{false, true} {
+					t.Run(fmt.Sprintf("collapsed=%t/null=%t", collapsed, null), func(t *testing.T) {
+						target := f.base.state[0].vecs[0]
+						require.NoError(t, target.SetStringSource(types.StringSourceLiteral))
+						require.NoError(t, target.PreflightSetStringSourceAt(0, types.StringSourceExpression, f.mp))
+						target.RetainStringSourcePreflight()
+						require.NotNil(t, target.GetStringSources())
+						if collapsed {
+							// SetStringSource releases the sidecar but does not close
+							// its retained preflight flag. The work unit still must.
+							require.NoError(t, target.SetStringSource(types.StringSourceExpression))
+							require.True(t, hasDefaultFixedMinMaxMetadata(target))
+						}
+						row := 0
+						if null {
+							row = 1
+						}
+						calls := f.controller.calls
+						f.controller.failAt = calls + 1
+						defer func() { f.controller.failAt = 0 }()
+						if op == "fill" {
+							require.NoError(t, f.exec.Fill(0, row, []*vector.Vector{input}))
+						} else {
+							require.NoError(t, f.exec.Merge(source.exec, 0, row))
+						}
+						require.Equal(t, calls, f.controller.calls, "reserved publication does not allocate")
+						require.False(t, f.controller.rejected)
+						f.controller.failAt = 0
+						if collapsed {
+							// Subsequent setters must normalize normally; a stale
+							// preflight flag would retain this now-uniform sidecar.
+							require.NoError(t, target.SetStringSourceAtWithMP(0, types.StringSourceLiteral, f.mp))
+							require.NoError(t, target.SetStringSourceAtWithMP(0, types.StringSourceExpression, f.mp))
+							require.Nil(t, target.GetStringSources())
+						} else if null {
+							require.Nil(t, target.GetStringSources())
+							require.Equal(t, types.StringSourceLiteral, target.GetStringSourceAt(0))
+						} else {
+							require.Equal(t, types.StringSourceExpression, target.GetStringSourceAt(0))
+							require.Equal(t, types.StringSourceLiteral, target.GetStringSourceAt(1))
+						}
+					})
+				}
 			}
 		})
 	}

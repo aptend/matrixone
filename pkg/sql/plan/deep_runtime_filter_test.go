@@ -18,6 +18,7 @@ import (
 	"testing"
 
 	"github.com/gogo/protobuf/proto"
+	"github.com/matrixorigin/matrixone/pkg/container/types"
 	planpb "github.com/matrixorigin/matrixone/pkg/pb/plan"
 	"github.com/stretchr/testify/require"
 )
@@ -55,6 +56,20 @@ func TestDeepRuntimeFilterLineageAndGuards(t *testing.T) {
 		{name: "commuted equality retains original ON", want: true, edit: func(b *QueryBuilder) {
 			args := b.qry.Nodes[2].OnList[0].GetF().Args
 			args[0], args[1] = args[1], args[0]
+		}},
+		{name: "total widening text predicate on probe path", want: true, edit: func(b *QueryBuilder) {
+			charType := planpb.Type{Id: int32(types.T_char), Width: 1}
+			varcharType := planpb.Type{Id: int32(types.T_varchar), Width: types.MaxVarcharLen}
+			for _, id := range []int{0, 3} {
+				b.qry.Nodes[id].TableDef.Cols[1].Typ = charType
+			}
+			left, err := appendCastBeforeExpr(b.GetContext(), GetColExpr(charType, 1, 1), varcharType)
+			require.NoError(t, err)
+			right, err := appendCastBeforeExpr(b.GetContext(), GetColExpr(charType, 3, 1), varcharType)
+			require.NoError(t, err)
+			predicate, err := BindFuncExprImplByPlanExpr(b.GetContext(), "<>", []*planpb.Expr{left, right})
+			require.NoError(t, err)
+			b.qry.Nodes[5].FilterList = []*planpb.Expr{predicate}
 		}},
 		{name: "fallible skipped sibling", edit: func(b *QueryBuilder) {
 			b.qry.Nodes[3].FilterList = []*planpb.Expr{makeMixedSideRuntimeFilterResidual(b.qry.Nodes[0].TableDef.Cols[0].Typ, 3, 3)}

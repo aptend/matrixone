@@ -375,6 +375,10 @@ func (m *StrHashMap) Size() int64 {
 }
 
 func (itr *strHashmapIterator) encodeHashKeys(vecs []*vector.Vector, start, count int) {
+	if count == UnitLimit && len(vecs) >= 2 && len(vecs) <= 16 &&
+		itr.encodeFlatFixedKeyRows(vecs, start, count) {
+		return
+	}
 	for _, vec := range vecs {
 		if isFlatCharStringHashKey(vec) {
 			fillFlatCharStringHashKey(itr, vec, count, start)
@@ -415,6 +419,56 @@ func (itr *strHashmapIterator) encodeHashKeys(vecs []*vector.Vector, start, coun
 			keys[i] = append(keys[i], hashtable.StrKeyPadding[l:]...)
 		}
 	}
+}
+
+// encodeFlatFixedKeyRows writes complete fixed-width keys in one pass over the
+// rows. prepareHashKeys has already validated the vectors and allocated each
+// key's exact capacity, including its domain bytes and minimum padding.
+// Representations needing normalization or per-row metadata use the original
+// column-wise encoder.
+func (itr *strHashmapIterator) encodeFlatFixedKeyRows(vecs []*vector.Vector, start, count int) bool {
+	if len(vecs) < 2 || len(vecs) > 16 {
+		return false
+	}
+	type fixedKeyColumn struct {
+		data  []byte
+		width int
+	}
+	var columns [16]fixedKeyColumn
+	withDomain := itr.mp.hasNull || itr.mp.groupingAware
+	keySize := 0
+	for i, vec := range vecs {
+		typ := vec.GetType()
+		if !typ.IsFixedLen() || typ.Oid == types.T_float32 || typ.Oid == types.T_float64 ||
+			vec.IsConst() || vec.HasGrouping() || vec.GetNulls().Any() {
+			return false
+		}
+		width := typ.TypeSize()
+		columns[i] = fixedKeyColumn{data: vec.GetData(), width: width}
+		keySize += width
+		if withDomain {
+			keySize++
+		}
+	}
+	bufferSize := max(16, keySize)
+	for row := 0; row < count; row++ {
+		key := itr.keys[row][:bufferSize]
+		offset := 0
+		for _, column := range columns[:len(vecs)] {
+			if withDomain {
+				key[offset] = 0
+				offset++
+			}
+			from := (start + row) * column.width
+			copy(key[offset:offset+column.width], column.data[from:from+column.width])
+			offset += column.width
+		}
+		if offset < 16 {
+			copy(key[offset:16], hashtable.StrKeyPadding[offset:])
+		}
+		itr.keys[row] = key
+	}
+	return true
 }
 
 func appendVarlenaHashKey(dst []byte, typ types.Type, value []byte) []byte {

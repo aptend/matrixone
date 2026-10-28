@@ -3167,6 +3167,37 @@ func TestFlowControlShortCircuitInvalidCast(t *testing.T) {
 		}
 	}
 
+	t.Run("case null else selection and reuse", func(t *testing.T) {
+		input := testutil.NewBatchWithVectors([]*vector.Vector{
+			testutil.NewVector(4, types.T_bool.ToType(), proc.Mp(), false, []bool{true, false, true, false}),
+			testutil.NewVector(4, types.T_varchar.ToType(), proc.Mp(), false, []string{"42", "bad", "bad", "bad"}),
+		}, nil)
+		defer input.Clean(proc.Mp())
+		expr := bindTestFunction(t, proc, "case", column(0, types.T_bool.ToType()),
+			castToInt64(column(1, types.T_varchar.ToType())), typedNull(types.T_int64.ToType()))
+		executor, err := NewExpressionExecutor(proc, expr)
+		require.NoError(t, err)
+		defer executor.Free()
+
+		result, err := executor.Eval(proc, []*batch.Batch{input}, []bool{true, true, false, false})
+		require.NoError(t, err)
+		require.False(t, result.IsNull(0))
+		require.Equal(t, int64(42), vector.MustFixedColWithTypeCheck[int64](result)[0])
+		require.True(t, result.IsNull(1))
+
+		result, err = executor.Eval(proc, []*batch.Batch{input}, []bool{false, true, false, true})
+		require.NoError(t, err)
+		require.True(t, result.IsNull(1))
+		require.True(t, result.IsNull(3))
+		result, err = executor.Eval(proc, []*batch.Batch{input}, []bool{false, false, false, false})
+		require.NoError(t, err)
+		for row := 0; row < 4; row++ {
+			require.True(t, result.IsNull(uint64(row)))
+		}
+		_, err = executor.Eval(proc, []*batch.Batch{input}, []bool{false, false, true, false})
+		require.Error(t, err)
+	})
+
 	t.Run("if skips unresolved variable leaf across reuse", func(t *testing.T) {
 		checkExpressionStorageAfterCleanup(t, proc)
 		previousResolver := proc.GetResolveVariableFunc()

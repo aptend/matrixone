@@ -648,6 +648,35 @@ func caseFn(parameters []*vector.Vector, result vector.FunctionResultWrapper, pr
 
 func generalCaseFn[T constraints.Integer | constraints.Float | bool | types.Date | types.Datetime |
 	types.Decimal64 | types.Decimal128 | types.Decimal256 | types.Timestamp | types.Uuid](vecs []*vector.Vector, result vector.FunctionResultWrapper, _ *process.Process, length int, selectList *FunctionSelectList) error {
+	if len(vecs) == 3 && vecs[2].IsConstNull() {
+		cond := vector.GenerateFunctionFixedTypeParameter[bool](vecs[0])
+		value := vector.GenerateFunctionFixedTypeParameter[T](vecs[1])
+		rs := vector.MustFunctionResult[T](result)
+		var zero T
+		nullStart := uint64(0)
+		inNull := false
+		for i := uint64(0); i < uint64(length); i++ {
+			if c, n := cond.GetValue(i); !n && c {
+				if v, n := value.GetValue(i); !n {
+					if inNull {
+						rs.AddNullRange(nullStart, i)
+						inNull = false
+					}
+					rs.AppendMustValue(v)
+					continue
+				}
+			}
+			if !inNull {
+				nullStart = i
+				inNull = true
+			}
+			rs.AppendMustValue(zero)
+		}
+		if inNull {
+			rs.AddNullRange(nullStart, uint64(length))
+		}
+		return nil
+	}
 	// case Xn then Yn else Z
 	xs := make([]vector.FunctionParameterWrapper[bool], 0, len(vecs)/2)
 	ys := make([]vector.FunctionParameterWrapper[T], 0, len(vecs)/2)

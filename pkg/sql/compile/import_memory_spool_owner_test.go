@@ -21,7 +21,10 @@ import (
 	"testing"
 
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
+	"github.com/matrixorigin/matrixone/pkg/sql/colexec/connector"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec/merge"
+	"github.com/matrixorigin/matrixone/pkg/sql/colexec/table_scan"
+	plan2 "github.com/matrixorigin/matrixone/pkg/sql/plan"
 	"github.com/matrixorigin/matrixone/pkg/vm/pipeline"
 
 	"github.com/matrixorigin/matrixone/pkg/common/rscthrottler"
@@ -31,6 +34,8 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
 	"github.com/matrixorigin/matrixone/pkg/fileservice"
 	"github.com/matrixorigin/matrixone/pkg/objectio"
+	"github.com/matrixorigin/matrixone/pkg/pb/plan"
+	"github.com/matrixorigin/matrixone/pkg/vm/engine"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
 	"github.com/stretchr/testify/require"
 )
@@ -79,6 +84,51 @@ func TestImportMemoryRetiresFilesWithoutConsumer(t *testing.T) {
 	_, err = fs.StatFile(context.Background(), name.String())
 	require.Error(t, err)
 	require.ErrorIs(t, memory.TrackInsertFile(fs, *name.Short()), rscthrottler.ErrWorkingSetClosed)
+}
+
+type importReaderBuildRelation struct {
+	engine.Relation
+	build func(context.Context) error
+}
+
+func (r *importReaderBuildRelation) BuildReaders(ctx context.Context, _ any, _ *plan.Expr, _ engine.RelData, _ int, _ int, _ bool, _ engine.TombstoneApplyPolicy, _ engine.FilterHint) ([]engine.Reader, error) {
+	return nil, r.build(ctx)
+}
+
+func TestImportMemoryReaderBuildCancelsWithPipeline(t *testing.T) {
+	c := memoryCompileFixture(t, 1)
+	queryCtx := c.proc.Base.GetContextBase().BuildQueryCtx(c.proc.GetTopContext())
+	c.proc.BuildPipelineContext(queryCtx)
+	t.Cleanup(func() { c.proc.Cancel(nil) })
+	source := c.proc.NewContextChildProc(0)
+	t.Cleanup(func() { source.Cancel(nil) })
+	reg := process.NewPipelineEdge(1, 1)
+	conn := connector.NewArgument().WithReg(reg)
+	t.Cleanup(conn.Release)
+	scan := table_scan.NewArgument()
+	t.Cleanup(scan.Release)
+	conn.AppendChild(scan)
+	failed := errors.New("sibling import writer failed")
+	wrongContext := errors.New("reader construction is still waiting on the query context")
+	rel := &importReaderBuildRelation{build: func(ctx context.Context) error {
+		source.Cancel(failed)
+		if ctx.Err() == nil {
+			return wrongContext
+		}
+		return ctx.Err()
+	}}
+	scope := &Scope{Proc: source, RootOp: conn, NodeInfo: engine.Node{Mcpu: 2}, DataSource: &Source{
+		Rel: rel, FilterList: []*plan.Expr{plan2.MakeFalseExpr()},
+	}}
+	c.scopes = append(c.scopes, scope)
+	ticket := installSpoolTestMemory(t, c)
+	require.ErrorIs(t, scope.ParallelRun(c), failed)
+	require.ErrorIs(t, reg.Err(), failed)
+	require.NoError(t, queryCtx.Err())
+	_, err := c.endImportMemory()
+	require.NoError(t, err)
+	_, err = ticket.AcquireInput(context.Background(), 0)
+	require.ErrorIs(t, err, rscthrottler.ErrWorkingSetClosed)
 }
 
 func TestJoinedLegacySpoolCleanupPreservesUnownedControlledBase(t *testing.T) {

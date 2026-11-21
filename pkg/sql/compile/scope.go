@@ -691,6 +691,9 @@ func (s *Scope) ParallelRun(c *Compile) (err error) {
 		// if codes run here, it means some error happens during build the parallel scope.
 		// we should do clean work for source-scope to avoid receiver hung.
 		if parallelScope == nil {
+			if s.usesImportMemory() {
+				err, _ = normalizeScopeRunError(err, s.Proc.Ctx, scopeRunQueryContext(s.Proc))
+			}
 			err = cleanupScopePipeline(pipeline.NewMerge(s.RootOp), s.Proc, c.isPrepare, err)
 		}
 	}()
@@ -1576,6 +1579,10 @@ func findMergeGroup(op vm.Operator) *group.MergeGroup {
 	return findMergeGroup(base.GetChildren(0))
 }
 
+func (s *Scope) usesImportMemory() bool {
+	return s.Proc != nil && s.Proc.Base != nil && s.Proc.Base.ImportMemory != nil
+}
+
 func (s *Scope) buildReaders(c *Compile) (readers []engine.Reader, err error) {
 	// StarCount-only path: aggOptimize already called rel.StarCount() and set PartialResults.
 	// Return EmptyReaders so no data flows; MergeGroup will use PartialResults only.
@@ -1612,6 +1619,12 @@ func (s *Scope) buildReaders(c *Compile) (readers []engine.Reader, err error) {
 		}
 	}
 
+	// An admitted local reader must observe sibling cancellation before the
+	// compiler can join the pipeline and return the import memory ticket.
+	readerCtx := c.proc.Ctx
+	if s.usesImportMemory() && s.Proc.Ctx != nil {
+		readerCtx = s.Proc.Ctx
+	}
 	switch {
 	// If this was a remote-run pipeline. Reader should be generated from Engine.
 	case s.IsRemote:
@@ -1637,7 +1650,7 @@ func (s *Scope) buildReaders(c *Compile) (readers []engine.Reader, err error) {
 		}
 	// Reader can be generated from local relation.
 	case s.DataSource.Rel != nil:
-		ctx := c.proc.Ctx
+		ctx := readerCtx
 		stats := statistic.StatsInfoFromContext(ctx)
 		crs := new(perfcounter.CounterSet)
 		newCtx := perfcounter.AttachS3RequestKey(ctx, crs)
@@ -1695,7 +1708,7 @@ func (s *Scope) buildReaders(c *Compile) (readers []engine.Reader, err error) {
 		// This cannot modify the c.proc.Ctx here, but I don't know why.
 		// Maybe there are some account related things stores in the context (using the context.WithValue),
 		// and modify action will change the account.
-		ctx := c.proc.Ctx
+		ctx := readerCtx
 
 		if util.TableIsClusterTable(s.DataSource.TableDef.GetTableType()) {
 			ctx = defines.AttachAccountId(ctx, catalog.System_Account)

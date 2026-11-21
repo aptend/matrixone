@@ -25,3 +25,11 @@ func WithMemorySampleForTesting(total, rss int64) MemThrottlerOption {
 		m.coordinator = c
 	}
 }
+
+// WithAdmissionQueueForTesting observes admission order in an isolated
+// WithMemorySampleForTesting coordinator. The observer must not block.
+func WithAdmissionQueueForTesting(queued func(string)) MemThrottlerOption {
+	return func(m *memThrottler) {
+		m.coordinator.queued = queued
+	}
+}

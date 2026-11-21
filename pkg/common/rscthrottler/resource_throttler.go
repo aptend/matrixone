@@ -88,6 +88,7 @@ type memThrottler struct {
 	cgroupInactiveFile atomic.Int64
 	cgroupHeadroom     atomic.Pointer[int64]
 	sampleInvalid      atomic.Bool
+	dataCoverage       atomic.Pointer[dataSampleCoverage]
 	refreshMu          sync.Mutex
 	limit              atomic.Int64
 	rss                atomic.Int64
@@ -175,10 +176,13 @@ func (m *memThrottler) refresh(force bool) {
 	c.sampleMu.Lock()
 	if c.lastSample.IsZero() || now.Sub(c.lastSample) >= admissionFallbackInterval {
 		c.sampleCount.Add(1)
+		coverage := c.dataCoverage()
 		c.sample = c.readSample()
+		coverage.bytes = min(coverage.bytes, max(0, c.sample.rss))
+		c.sampleCoverage = coverage
 		c.lastSample = now
 	}
-	sample := c.sample
+	sample, coverage := c.sample, c.sampleCoverage
 	if sample.cgroupErr == nil && (sample.cgroupObserved || sample.limit > 0 || sample.current > 0) {
 		c.knownCgroup = true
 		if sample.limit > 0 {
@@ -187,6 +191,8 @@ func (m *memThrottler) refresh(force bool) {
 	}
 	knownCgroup, knownLimit := c.knownCgroup, c.knownCgroupLimit
 	c.sampleMu.Unlock()
+	c.mu.Lock()
+	m.dataCoverage.Store(&coverage)
 	m.lastRefresh.Store(now.UnixNano())
 	if sample.total > 0 {
 		m.total.Store(uint64(sample.total))
@@ -219,8 +225,7 @@ func (m *memThrottler) refresh(force bool) {
 		m.cgroupInactiveFile.Store(sample.inactiveFile)
 		m.cgroupHeadroom.Store(sample.cgroupHeadroom)
 	}
-	// Freed reservations do not retain RSS credit. The conservative admission
-	// model adds commitments without assuming allocator reuse or residency.
+	c.mu.Unlock()
 	m.tryScavengeRSS(now.UnixNano(), m.physicalUsed())
 	if sample.err != nil {
 		logutil.Debug("memory sample incomplete", zap.Error(sample.err))
@@ -471,6 +476,19 @@ func (m *memThrottler) PrintUsage() {
 // it returns (new available, true) if success, or
 // (available, false).
 func (m *memThrottler) Acquire(ask int64) (int64, bool) {
+	return m.acquire(ask, false)
+}
+
+// AcquireForRunningWriter lets a writer reach its next flush while a new
+// working set waits. Both the pool and the shared physical bound still apply.
+func AcquireForRunningWriter(t RSCThrottler, ask int64) (int64, bool) {
+	if m, ok := t.(*memThrottler); ok {
+		return m.acquire(ask, true)
+	}
+	return t.Acquire(ask)
+}
+
+func (m *memThrottler) acquire(ask int64, runningWriter bool) (int64, bool) {
 	if ask < 0 {
 		return m.Available(), false
 	}
@@ -481,9 +499,10 @@ func (m *memThrottler) Acquire(ask int64) (int64, bool) {
 	c := m.memoryCoordinator()
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	// Do not bypass an older request for this same ordinary-data pool.
+	// New admissions honor the queue. A running writer still honors older
+	// requests for the same data pool.
 	for _, waiter := range c.queue {
-		if waiter.throttler == m {
+		if waiter.throttler == m && (!runningWriter || waiter.kind != "working-set") {
 			return m.Available(), false
 		}
 	}
@@ -650,13 +669,13 @@ func AcquirePolicyForCNFlushS3(
 	return acquireWithinRSSLimit(throttler, ask)
 }
 
-func cnFlushS3PhysicalAvailable(m *memThrottler, reserved int64) int64 {
+func cnFlushS3PhysicalAvailable(m *memThrottler) int64 {
 	remaining := m.physicalHeadroom()
 	if remaining == math.MaxInt64 {
 		return math.MaxInt64
 	}
 	c := m.memoryCoordinator()
-	return max(0, remaining-c.inputPromise.Load()-c.workspacePromise.Load()-max(c.dataReserved.Load(), reserved))
+	return max(0, remaining-c.inputPromise.Load()-c.workspacePromise.Load()-m.uncoveredData())
 }
 
 // ShouldRefreshBeforeRelease remains for older consumers. No sampled credit
@@ -705,12 +724,10 @@ func acquireWithinRSSLimit(throttler *memThrottler, ask int64) (int64, bool) {
 		}
 
 		newReserved := reserved + ask
-		// The physical guard includes I/W promises and all ordinary grants.
-		// Capacity or a freed reservation is never assumed to be resident
-		// coverage; only a new sample/reclaim can restore physical headroom.
+		// The physical guard includes I/W promises and grants beyond sampled coverage.
 		if !throttler.options.allowOutOfMemoryAcquire &&
 			!throttler.physicalFits(ask) {
-			return min(avail, cnFlushS3PhysicalAvailable(throttler, reserved)), false
+			return min(avail, cnFlushS3PhysicalAvailable(throttler)), false
 		}
 		if !throttler.options.allowOutOfMemoryAcquire && newReserved > hardCap {
 			return max(0, hardCap-reserved), false

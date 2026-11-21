@@ -23,6 +23,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/matrixorigin/matrixone/pkg/catalog"
+	"github.com/matrixorigin/matrixone/pkg/common/rscthrottler"
 	"github.com/matrixorigin/matrixone/pkg/common/runtime"
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
@@ -713,4 +714,46 @@ func testInsertS3TableDef() *plan.TableDef {
 		},
 	}
 	return tableDef
+}
+
+func TestOrdinaryInsertCanFinishWhileImportWaitsForAdmission(t *testing.T) {
+	proc := testutil.NewProc(t)
+	defer proc.Free()
+
+	const MiB = int64(1 << 20)
+	const total = 1024 * MiB
+	queued := make(chan string, 1)
+	throttler := rscthrottler.NewMemThrottler(t.Name(), 1,
+		rscthrottler.WithConstLimit(total), rscthrottler.WithMemorySampleForTesting(total, 0),
+		rscthrottler.WithAdmissionQueueForTesting(func(kind string) { queued <- kind }),
+		rscthrottler.WithAcquirePolicy(rscthrottler.AcquirePolicyForCNFlushS3, rscthrottler.MaxAcquireForCNFlushS3))
+	_, ok := throttler.Acquire(256 * MiB)
+	require.True(t, ok)
+	defer throttler.Release(256 * MiB)
+
+	ctx, cancel := context.WithTimeout(proc.Ctx, 10*time.Second)
+	done := make(chan error, 1)
+	go func() {
+		ticket, err := throttler.(rscthrottler.WorkingSetThrottler).ReserveWorkingSetCandidatesUntilFit(ctx, []rscthrottler.WorkingSetSpec{{
+			UnitBytes: 1, Inputs: []rscthrottler.InputSlotSpec{{Count: 1, Bytes: 900 * MiB}},
+		}})
+		if ticket != nil {
+			ticket.Close()
+		}
+		done <- err
+	}()
+	defer func() {
+		cancel()
+		require.ErrorIs(t, <-done, context.Canceled)
+	}()
+	select {
+	case kind := <-queued:
+		require.Equal(t, "working-set", kind)
+	case <-ctx.Done():
+		t.Fatal(ctx.Err())
+	}
+	op := &Insert{ctr: container{s3MemThrottler: throttler}}
+	defer op.releaseS3MemGrant()
+	require.NoError(t, op.acquireS3WriteMemory(proc, process.NewAnalyzer(0, false, false, "insert"), 1024))
+	require.EqualValues(t, 1024, op.ctr.s3MemGranted)
 }

@@ -65,6 +65,19 @@ func TestImportMemoryRetiresAbandonedSpoolsAndTicket(t *testing.T) {
 	require.Equal(t, baseline, c.proc.Mp().AllocatedBytes())
 }
 
+type importCleanupRetryFS struct {
+	fileservice.FileService
+	failed int
+}
+
+func (fs *importCleanupRetryFS) Delete(ctx context.Context, names ...string) error {
+	if fs.failed > 0 {
+		fs.failed--
+		return errors.New("storage temporarily refused cleanup")
+	}
+	return fs.FileService.Delete(ctx, names...)
+}
+
 func TestImportMemoryRetiresFilesWithoutConsumer(t *testing.T) {
 	c := memoryCompileFixture(t, 1)
 	installSpoolTestMemory(t, c)
@@ -77,13 +90,20 @@ func TestImportMemoryRetiresFilesWithoutConsumer(t *testing.T) {
 		FilePath: name.String(),
 		Entries:  []fileservice.IOEntry{{Size: 1, Data: []byte{1}}},
 	}))
-	require.NoError(t, memory.TrackInsertFile(fs, *name.Short()))
+	// The first bulk and individual deletes both fail. The terminal
+	// retry must still have the original name after both errors.
+	owner, err := memory.NewInsertFileOwner(&importCleanupRetryFS{FileService: fs, failed: 2})
+	require.NoError(t, err)
+	require.NoError(t, owner.Retain([]objectio.ObjectStats{*objectio.NewObjectStatsWithObjectID(&id, false, true, true)}, nil))
+	_, err = owner.Publish(*name.Short())
+	require.NoError(t, err)
 	count, err := c.endImportMemory()
 	require.NoError(t, err)
 	require.Equal(t, 1, count)
 	_, err = fs.StatFile(context.Background(), name.String())
 	require.Error(t, err)
-	require.ErrorIs(t, memory.TrackInsertFile(fs, *name.Short()), rscthrottler.ErrWorkingSetClosed)
+	_, err = memory.NewInsertFileOwner(fs)
+	require.ErrorIs(t, err, rscthrottler.ErrWorkingSetClosed)
 }
 
 type importReaderBuildRelation struct {

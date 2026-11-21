@@ -44,6 +44,8 @@ type container struct {
 	buf                 *batch.Batch
 	affectedRows        uint64
 	s3MemGranted        int64
+	s3MemMaterialized   int64
+	s3StagedGeneration  uint64
 	s3MemThrottler      rscthrottler.RSCThrottler
 	s3MemNoThresholdCap bool
 
@@ -186,7 +188,22 @@ func (insert *Insert) Free(proc *process.Process, pipelineFailed bool, err error
 	insert.ctr.source = nil
 }
 
+func (insert *Insert) reportS3WriterMaterialization() {
+	ctr := &insert.ctr
+	generation := ctr.s3Writer.StagedGeneration()
+	if ctr.s3StagedGeneration != generation {
+		rscthrottler.ReportWriterMaterialization(ctr.s3MemThrottler, -ctr.s3MemMaterialized)
+		ctr.s3MemMaterialized = 0
+		ctr.s3StagedGeneration = generation
+	}
+	bytes := min(ctr.s3MemGranted, ctr.s3Writer.StagedSize())
+	rscthrottler.ReportWriterMaterialization(ctr.s3MemThrottler, bytes-ctr.s3MemMaterialized)
+	ctr.s3MemMaterialized = bytes
+}
+
 func (insert *Insert) releaseS3MemGrant() {
+	rscthrottler.ReportWriterMaterialization(insert.ctr.s3MemThrottler, -insert.ctr.s3MemMaterialized)
+	insert.ctr.s3MemMaterialized = 0
 	if insert.ctr.s3MemThrottler != nil && insert.ctr.s3MemGranted > 0 {
 		insert.ctr.s3MemThrottler.Release(insert.ctr.s3MemGranted)
 		insert.ctr.s3MemGranted = 0

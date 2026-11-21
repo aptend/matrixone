@@ -234,6 +234,8 @@ func (w *CNS3Writer) RetainedBitmapBytes() int64 { return w.sinker.RetainedBitma
 
 func (w *CNS3Writer) StagedSize() int64 { return int64(w.sinker.StagedSize()) }
 
+func (w *CNS3Writer) StagedGeneration() uint64 { return w.sinker.StagedGeneration() }
+
 func (w *CNS3Writer) Flush(ctx context.Context) error { return w.sinker.Flush(ctx) }
 
 func (w *CNS3Writer) TakeCompletedStats() ([]objectio.ObjectStats, error) {
@@ -275,6 +277,10 @@ func (w *CNS3Writer) SyncAndFillBlockInfoBat(ctx context.Context) (*batch.Batch,
 	}
 
 	return w.blockInfoBat, nil
+}
+
+func (w *CNS3Writer) TakePersistedForCleanup() [][]objectio.ObjectStats {
+	return w.sinker.TakePersistedForCleanup()
 }
 
 // Discard removes untransferred outputs before closing an aborted writer.

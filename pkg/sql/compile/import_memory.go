@@ -295,7 +295,7 @@ func (c *Compile) endImportMemory() (int, error) {
 	if c.proc != nil && c.proc.Ctx != nil {
 		ctx = c.proc.Ctx
 	}
-	pending, err := c.importMemory.CleanupInsertFiles(ctx)
+	pending, err := c.importMemory.FinishInsertFileCleanup(ctx)
 	for base, previous := range c.importMemoryBases {
 		if base.ImportMemory == c.importMemory {
 			base.ImportMemory = previous

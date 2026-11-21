@@ -16,15 +16,8 @@ package process
 
 import (
 	"context"
-	"errors"
-	"math"
-	"sync"
-	"time"
 
-	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/common/rscthrottler"
-	"github.com/matrixorigin/matrixone/pkg/fileservice"
-	"github.com/matrixorigin/matrixone/pkg/objectio"
 )
 
 // MemoryAdmissionNoWait prevents a transaction from waiting for workspace or
@@ -52,84 +45,6 @@ type ImportMemory struct {
 	RecordBytes int64
 	GrowRecord  func(context.Context, int64) (int64, error)
 	insertFiles importInsertFiles
-}
-
-// Operators can reset while an output frame is still queued in another scope.
-// The statement owns emitted files until MergeBlock records them in the txn.
-type importInsertFiles struct {
-	mu       sync.Mutex
-	fs       fileservice.FileService
-	pending  map[objectio.ObjectNameShort]struct{}
-	capacity int64
-	closed   bool
-}
-
-// Allow for map storage, proportionally unused slots and growth overlap.
-const insertFileCreditBytes = 128
-
-func (m *ImportMemory) TrackInsertFile(fs fileservice.FileService, name objectio.ObjectNameShort) error {
-	files := &m.insertFiles
-	files.mu.Lock()
-	defer files.mu.Unlock()
-	if files.closed {
-		return rscthrottler.ErrWorkingSetClosed
-	}
-	if int64(len(files.pending)) == files.capacity {
-		if files.capacity > math.MaxInt64/(2*insertFileCreditBytes) {
-			return moerr.NewInternalErrorNoCtx("insert file ownership capacity overflow")
-		}
-		next := max(int64(16), 2*files.capacity)
-		if err := m.WorkingSet.TryAcquireData((next - files.capacity) * insertFileCreditBytes); err != nil {
-			return err
-		}
-		if files.pending == nil {
-			files.pending = make(map[objectio.ObjectNameShort]struct{}, next)
-			files.fs = fs
-		}
-		files.capacity = next
-	}
-	files.pending[name] = struct{}{}
-	return nil
-}
-
-func (m *ImportMemory) AcceptInsertFile(name objectio.ObjectNameShort) {
-	files := &m.insertFiles
-	files.mu.Lock()
-	delete(files.pending, name)
-	files.mu.Unlock()
-}
-
-// CleanupInsertFiles runs after all pipeline readers and writers have joined.
-// Its count also detects a successful execution with unregistered outputs.
-func (m *ImportMemory) CleanupInsertFiles(ctx context.Context) (int, error) {
-	files := &m.insertFiles
-	files.mu.Lock()
-	pending, fs, capacity := files.pending, files.fs, files.capacity
-	files.pending, files.fs, files.capacity, files.closed = nil, nil, 0, true
-	files.mu.Unlock()
-	if capacity > 0 {
-		defer m.WorkingSet.ReleaseData(capacity * insertFileCreditBytes)
-	}
-	if len(pending) == 0 {
-		return 0, nil
-	}
-	cleanupCtx, cancel := context.WithTimeoutCause(context.WithoutCancel(ctx), 10*time.Second, moerr.CauseCleanUpUselessFiles)
-	defer cancel()
-	var firstErr error
-	names := make([]string, 0, 128)
-	for name := range pending {
-		if err := cleanupCtx.Err(); err != nil {
-			return len(pending), errors.Join(firstErr, context.Cause(cleanupCtx))
-		}
-		names = append(names, objectio.BuildObjectName(name.Segmentid(), name.Num()).String())
-		if len(names) == cap(names) {
-			if err := fileservice.DeleteBatchBestEffort(cleanupCtx, fs, names); firstErr == nil {
-				firstErr = err
-			}
-			names = names[:0]
-		}
-	}
-	return len(pending), errors.Join(firstErr, fileservice.DeleteBatchBestEffort(cleanupCtx, fs, names))
 }
 
 func (m *ImportMemory) AcquireInput(ctx context.Context) (*rscthrottler.InputLease, error) {

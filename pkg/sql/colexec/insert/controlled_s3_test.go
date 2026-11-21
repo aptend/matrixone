@@ -87,22 +87,29 @@ func (t *controlledTestThrottler) AcquireContext(context.Context, int64) error {
 func (t *controlledTestThrottler) MaxAcquire() int64 { return 64 << 20 }
 func (t *controlledTestThrottler) BatchBytes() int64 { return 64 << 20 }
 
-func controlledInsertFixture(t *testing.T, throttler *controlledTestThrottler) (*process.Process, *Insert, *rscthrottler.WorkingSet) {
+func controlledInsertFixture(t *testing.T, throttler rscthrottler.RSCThrottler) (*process.Process, *Insert, *rscthrottler.WorkingSet) {
 	t.Helper()
 	return controlledInsertFixtureWithUnit(t, throttler, 512<<10)
 }
 
-func controlledInsertFixtureWithUnit(t *testing.T, throttler *controlledTestThrottler, unit int64) (*process.Process, *Insert, *rscthrottler.WorkingSet) {
+func controlledInsertFixtureWithUnit(t *testing.T, throttler rscthrottler.RSCThrottler, unit int64) (*process.Process, *Insert, *rscthrottler.WorkingSet) {
 	t.Helper()
 	proc := testutil.NewProc(t)
 	t.Cleanup(proc.Free)
 	oldRuntime := runtime.ServiceRuntime(proc.GetService())
 	runtime.SetupServiceBasedRuntime(proc.GetService(), runtime.DefaultRuntime())
 	t.Cleanup(func() { runtime.SetupServiceBasedRuntime(proc.GetService(), oldRuntime) })
-	runtime.ServiceRuntime(proc.GetService()).SetGlobalVariables(runtime.CNMemoryThrottler, throttler)
 	ioBytes, err := ioutil.IOEnvelope([][]types.Type{{types.T_int64.ToType(), types.T_varchar.ToType()}}, unit, unit)
 	require.NoError(t, err)
 	owner := rscthrottler.NewMemThrottler("insert-working-set", 1, rscthrottler.WithConstLimit(8<<30))
+	if throttler == nil {
+		total := (24 << 20) + ioBytes
+		owner = rscthrottler.NewMemThrottler("insert-zero-data", 1,
+			rscthrottler.WithConstLimit(total), rscthrottler.WithMemorySampleForTesting(total, 0),
+			rscthrottler.WithAcquirePolicy(rscthrottler.AcquirePolicyForCNFlushS3, rscthrottler.MaxAcquireForCNFlushS3))
+		throttler = owner
+	}
+	runtime.ServiceRuntime(proc.GetService()).SetGlobalVariables(runtime.CNMemoryThrottler, throttler)
 	ws, err := owner.(rscthrottler.WorkingSetThrottler).ReserveWorkingSetCandidatesUntilFit(proc.Ctx, []rscthrottler.WorkingSetSpec{{
 		UnitBytes: unit, Inputs: []rscthrottler.InputSlotSpec{{Name: "csv", Count: 1, Bytes: 8 << 20}, {Name: "output", Count: 1, Bytes: 16 << 20}}, IOBytes: ioBytes,
 	}})
@@ -217,22 +224,27 @@ func (fs *controlledInsertDeleteFailureFS) Delete(ctx context.Context, names ...
 }
 
 func TestControlledInsertPartialEvalDeletesUnreadObjects(t *testing.T) {
-	for _, mode := range []string{"memory", "spool", "delete failure"} {
+	for _, mode := range []string{"memory", "spool", "delete failure", "broken spool"} {
 		t.Run(mode, func(t *testing.T) {
 			proc, op, _ := controlledInsertFixture(t, &controlledTestThrottler{t: t})
 			s := op.ctr.controlled
 			fs, err := fileservice.NewMemoryFS("shared", fileservice.DisabledCacheConfig, nil)
 			require.NoError(t, err)
-			s.fs = fs
-			op.AppendChild(controlledInput(t, proc, 3, 1))
+			fault := &controlledInsertDeleteFailureFS{FileService: fs}
+			s.fs = fault
+			count := 3
+			if mode == "broken spool" {
+				count = 66 // Force the cleanup identities themselves to spill.
+			}
+			op.AppendChild(controlledInput(t, proc, count, 1))
 			result, err := op.Call(proc)
 			require.NoError(t, err)
 			require.NotNil(t, result.Batch)
 			firstStats := objectio.ObjectStats(result.Batch.Vecs[1].GetBytesAt(0))
-			proc.Base.ImportMemory.AcceptInsertFile(*firstStats.ObjectName().Short())
+			require.NoError(t, proc.Base.ImportMemory.WriteInsertOutput(result.Batch.ExtraBuf, func() error { return nil }))
 			first := firstStats.ObjectName().String()
 			names := controlledInsertObjectNames(t, fs)
-			require.Len(t, names, 3)
+			require.Len(t, names, count)
 			if mode != "memory" {
 				require.NoError(t, s.spoolStats(proc.Ctx))
 			}
@@ -244,18 +256,30 @@ func TestControlledInsertPartialEvalDeletesUnreadObjects(t *testing.T) {
 				_, err := s.statsSpool.ReadAt(unread[:], 0)
 				require.NoError(t, err)
 				failedName := unread.ObjectName().String()
-				s.fs = &controlledInsertDeleteFailureFS{FileService: fs, failedName: failedName, err: deleteErr}
+				fault.failedName, fault.err = failedName, deleteErr
 				wantRemaining = append(wantRemaining, failedName)
 			}
-			ctx, cancel := context.WithCancel(proc.Ctx)
-			proc.Ctx = ctx
-			cancel()
-			_, err = op.Call(proc)
-			require.ErrorIs(t, err, context.Canceled)
+			if mode == "broken spool" {
+				require.NoError(t, s.statsSpool.Truncate(0))
+				_, err = op.Call(proc)
+				require.ErrorIs(t, err, io.EOF)
+			} else {
+				ctx, cancel := context.WithCancel(proc.Ctx)
+				proc.Ctx = ctx
+				cancel()
+				_, err = op.Call(proc)
+				require.ErrorIs(t, err, context.Canceled)
+			}
 			if deleteErr != nil {
+				require.ErrorIs(t, err, deleteErr)
+				_, err = proc.Base.ImportMemory.CleanupInsertFiles(context.Background())
 				require.ErrorIs(t, err, deleteErr)
 			}
 			require.ElementsMatch(t, wantRemaining, controlledInsertObjectNames(t, fs))
+			fault.failedName = ""
+			_, err = proc.Base.ImportMemory.CleanupInsertFiles(context.Background())
+			require.NoError(t, err)
+			require.Equal(t, []string{first}, controlledInsertObjectNames(t, fs))
 			_, err = fs.StatFile(context.Background(), first)
 			require.NoError(t, err, "the downstream consumer owns the emitted object")
 		})
@@ -335,8 +359,9 @@ func TestControlledInsertSpoolQuotaFailureDeletesCollectedAndUnstoredObjects(t *
 }
 
 func TestControlledInsertZeroDataCreditsStreamsCompleteObjectFrames(t *testing.T) {
-	deny := &controlledTestThrottler{t: t}
-	proc, op, ws := controlledInsertFixture(t, deny)
+	proc, op, ws := controlledInsertFixture(t, nil)
+	owner := op.ctr.controlled.throttler.(rscthrottler.WorkingSetThrottler)
+	require.Zero(t, owner.WorkingSetHeadroom().Available)
 	const rows = objectio.BlockMaxRows + 1
 	op.AppendChild(controlledInput(t, proc, 3, rows))
 	state := op.ctr.controlled
@@ -389,8 +414,7 @@ func TestControlledInsertZeroDataCreditsStreamsCompleteObjectFrames(t *testing.T
 		total += stats.Rows()
 	}
 	require.Equal(t, uint32(3*rows), total)
-	require.Zero(t, deny.acquired)
-	require.Zero(t, deny.balance)
+	require.Zero(t, owner.WorkingSetHeadroom().Available)
 	dataMP, outputMP := state.dataMP, state.outputMP
 	op.Reset(proc, false, nil)
 	require.Zero(t, dataMP.AllocatedBytes())

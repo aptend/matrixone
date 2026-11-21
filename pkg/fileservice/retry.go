@@ -38,7 +38,7 @@ func DeleteBatchBestEffort(ctx context.Context, fs FileService, files []string) 
 		_, err := DoWithRetryContext(ctx, "delete unpublished file", func() (struct{}, error) {
 			return struct{}{}, fs.Delete(ctx, name)
 		}, 3, IsRetryableError)
-		if err != nil && firstErr == nil {
+		if err != nil && !moerr.IsMoErrCode(err, moerr.ErrFileNotFound) && firstErr == nil {
 			firstErr = errors.Join(moerr.NewInternalErrorf(ctx, "delete unpublished file %s", name), err)
 		}
 	}

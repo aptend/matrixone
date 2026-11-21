@@ -376,6 +376,7 @@ func (insert *Insert) insert_s3(proc *process.Process, analyzer process.Analyzer
 				return vm.CancelResult, err
 			}
 			err = insert.ctr.s3Writer.Write(proc.Ctx, input.Batch)
+			insert.reportS3WriterMaterialization()
 			if err != nil {
 				insert.ctr.state = vm.End
 				return vm.CancelResult, err
@@ -461,7 +462,7 @@ func (insert *Insert) s3WriteMemoryReservation(size int) int64 {
 }
 
 func (insert *Insert) tryAcquireS3WriteMemory(ask int64) bool {
-	if _, ok := insert.ctr.s3MemThrottler.Acquire(ask); ok {
+	if _, ok := rscthrottler.AcquireForRunningWriter(insert.ctr.s3MemThrottler, ask); ok {
 		insert.ctr.s3MemGranted += ask
 		return true
 	}

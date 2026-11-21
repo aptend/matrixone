@@ -41,28 +41,28 @@ import (
 // admitted domains. Build retains compact object stats in the output slot;
 // Eval expands the original MergeBlock protocol one object per Call.
 type controlledS3 struct {
-	proc         *process.Process
-	owner        *Insert
-	fs           fileservice.FileService
-	memory       *process.ImportMemory
-	throttler    rscthrottler.RSCThrottler
-	dataMP       *mpool.MPool
-	outputMP     *mpool.MPool
-	outputSlot   *rscthrottler.InputLease
-	writer       *colexec.CNS3Writer
-	unit         int64
-	bufferBytes  int64
-	staged       int64
-	mu           sync.Mutex
-	granted      int64
-	mutations    int
-	statsSpool   *colexec.MetadataSpool
-	statsCount   int64
-	stats        *vector.Vector
-	pendingStats []objectio.ObjectStats // Unstored suffix if collecting a transferred list fails.
-	read         int
-	output       *batch.Batch
-	counters     *perfcounter.CounterSet
+	proc        *process.Process
+	owner       *Insert
+	fs          fileservice.FileService
+	memory      *process.ImportMemory
+	throttler   rscthrottler.RSCThrottler
+	dataMP      *mpool.MPool
+	outputMP    *mpool.MPool
+	outputSlot  *rscthrottler.InputLease
+	writer      *colexec.CNS3Writer
+	unit        int64
+	bufferBytes int64
+	staged      int64
+	mu          sync.Mutex
+	granted     int64
+	mutations   int
+	statsSpool  *colexec.MetadataSpool
+	statsCount  int64
+	stats       *vector.Vector
+	fileOwner   *process.InsertFileOwner
+	read        int
+	output      *batch.Batch
+	counters    *perfcounter.CounterSet
 }
 
 func (insert *Insert) insertControlledS3(proc *process.Process, analyzer process.Analyzer) (result vm.CallResult, err error) {
@@ -104,7 +104,7 @@ func (insert *Insert) insertControlledS3(proc *process.Process, analyzer process
 		}
 		if output != nil {
 			stats := objectio.ObjectStats(output.Vecs[1].GetBytesAt(0))
-			if err = s.memory.TrackInsertFile(s.fs, *stats.ObjectName().Short()); err != nil {
+			if output.ExtraBuf, err = s.fileOwner.Publish(*stats.ObjectName().Short()); err != nil {
 				return vm.CancelResult, err
 			}
 			s.read++
@@ -343,9 +343,7 @@ func (s *controlledS3) flush(proc *process.Process, analyzer process.Analyzer) e
 	// Close drains async jobs and destroys the retained free list. Its source
 	// callbacks may return only actual capacity, never the prepaid next N.
 	if err != nil {
-		cleanupCtx, cancel := s.cleanupContext()
-		err = errors.Join(err, s.writer.Discard(cleanupCtx))
-		cancel()
+		err = errors.Join(err, s.retireWriter())
 	} else {
 		err = errors.Join(s.collectStats(proc.Ctx, stats), s.writer.Close())
 	}
@@ -371,10 +369,41 @@ func (s *controlledS3) reportCounters(analyzer process.Analyzer) {
 	}
 }
 
+func (s *controlledS3) ensureFileOwner() error {
+	if s.fileOwner == nil && s.memory != nil {
+		owner, err := s.memory.NewInsertFileOwner(s.fs)
+		if err != nil {
+			return err
+		}
+		s.fileOwner = owner
+	}
+	return nil
+}
+
+func (s *controlledS3) retireWriter() error {
+	if err := s.ensureFileOwner(); err != nil {
+		return err
+	}
+	s.fileOwner.RetainUnpublished(s.writer.TakePersistedForCleanup()...)
+	return s.writer.Close()
+}
+
 func (s *controlledS3) collectStats(ctx context.Context, stats []objectio.ObjectStats) error {
+	if len(stats) == 0 {
+		return nil
+	}
+	if err := s.ensureFileOwner(); err != nil {
+		return err
+	}
+	if s.fileOwner != nil {
+		if err := s.fileOwner.Retain(stats, func() (process.InsertFileJournal, error) {
+			return colexec.NewMetadataSpool(s.proc)
+		}); err != nil {
+			return err
+		}
+	}
 	for i := range stats {
 		if err := s.collectStat(ctx, &stats[i]); err != nil {
-			s.pendingStats = stats[i:]
 			return err
 		}
 	}
@@ -402,7 +431,7 @@ func (s *controlledS3) collectStat(ctx context.Context, stat *objectio.ObjectSta
 			s.stats = vector.NewOffHeapVecWithType(types.T_binary.ToType())
 		}
 		growth := s.stats.AppendAllocation(1, objectio.ObjectStatsLen)
-		err = colexec.GrowMetadataOutput(ctx, s.outputSlot, s.outputMP.AllocatedBytes(), growth)
+		err = colexec.GrowMetadataOutput(ctx, s.outputSlot, s.outputMP.AllocatedBytes()+process.InsertFileOwnerBytes, growth)
 		if err == nil {
 			return vector.AppendBytes(s.stats, stat[:], false, s.outputMP)
 		}
@@ -462,7 +491,7 @@ func (s *controlledS3) readOutput(ctx context.Context) (*batch.Batch, error) {
 	for i, count := range counts {
 		allocation += s.output.Vecs[i].AppendAllocation(int(count), int(count*widths[i]))
 	}
-	if err := colexec.GrowMetadataOutput(ctx, s.outputSlot, s.outputMP.AllocatedBytes(), allocation); err != nil {
+	if err := colexec.GrowMetadataOutput(ctx, s.outputSlot, s.outputMP.AllocatedBytes()+process.InsertFileOwnerBytes, allocation); err != nil {
 		var capacity *rscthrottler.WorkingSetCapacityError
 		if s.statsSpool != nil || !errors.As(err, &capacity) {
 			return nil, err
@@ -490,7 +519,7 @@ func (s *controlledS3) close() (err error) {
 	defer cancel()
 	s.begin()
 	if s.writer != nil {
-		err = s.writer.Discard(cleanupCtx)
+		err = s.retireWriter()
 		s.writer = nil
 	}
 	if s.owner != nil && s.owner.OpAnalyzer != nil {
@@ -499,8 +528,9 @@ func (s *controlledS3) close() (err error) {
 	// Reconcile after the writer's callbacks have joined and before deleting
 	// its pool; otherwise the final grant would lose its measurable owner.
 	s.end()
-	err = errors.Join(err, s.cleanupPendingObjects(cleanupCtx))
-	s.pendingStats = nil
+	if s.fileOwner != nil {
+		err = errors.Join(err, s.fileOwner.CleanupUnpublished(cleanupCtx))
+	}
 	if s.output != nil {
 		s.output.Clean(s.outputMP)
 		s.output = nil
@@ -532,47 +562,6 @@ func (s *controlledS3) close() (err error) {
 
 func (s *controlledS3) cleanupContext() (context.Context, context.CancelFunc) {
 	return context.WithTimeoutCause(context.WithoutCancel(s.proc.Ctx), 10*time.Second, moerr.CauseCleanUpUselessFiles)
-}
-
-func (s *controlledS3) cleanupPendingObjects(ctx context.Context) error {
-	if s.fs == nil {
-		return nil
-	}
-	var firstErr error
-	names := make([]string, 0, 128)
-	flush := func() {
-		if err := fileservice.DeleteBatchBestEffort(ctx, s.fs, names); firstErr == nil {
-			firstErr = err
-		}
-		names = names[:0]
-	}
-	remove := func(stat *objectio.ObjectStats) {
-		names = append(names, stat.ObjectName().String())
-		if len(names) == cap(names) {
-			flush()
-		}
-	}
-	// The statement owns frames before the producer advances this cursor.
-	for i := int64(s.read); s.statsSpool != nil && i < s.statsCount && ctx.Err() == nil; i++ {
-		var stat objectio.ObjectStats
-		if _, err := s.statsSpool.ReadAt(stat[:], i*int64(objectio.ObjectStatsLen)); err != nil {
-			firstErr = errors.Join(firstErr, err)
-			break
-		}
-		remove(&stat)
-	}
-	for i := s.read; s.stats != nil && i < s.stats.Length() && ctx.Err() == nil; i++ {
-		stat := objectio.ObjectStats(s.stats.GetBytesAt(i))
-		remove(&stat)
-	}
-	for i := range s.pendingStats {
-		if ctx.Err() != nil {
-			break
-		}
-		remove(&s.pendingStats[i])
-	}
-	flush()
-	return errors.Join(firstErr, context.Cause(ctx))
 }
 
 func appendStatToSpool(spool *colexec.MetadataSpool, stats *objectio.ObjectStats) error {

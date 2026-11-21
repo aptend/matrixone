@@ -53,6 +53,9 @@ type memoryCoordinator struct {
 	ioUsed           int64
 	tickets          map[*WorkingSet]struct{}
 	dataReserved     atomic.Int64
+	dataMaterialized int64 // mu guards reports from running S3 writers.
+	dataRetired      atomic.Uint64
+	sampleCoverage   dataSampleCoverage // guarded by sampleMu
 	sampleCount      atomic.Uint64
 	reclaimCount     atomic.Uint64
 	nativeCount      atomic.Uint64
@@ -416,7 +419,7 @@ func (m *memThrottler) WorkingSetHeadroom() WorkingSetHeadroomSnapshot {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	s := WorkingSetHeadroomSnapshot{Limit: int64(m.actualTotalMemory.Load())}
-	s.Available = max(0, m.physicalHeadroom()-c.dataReserved.Load()-c.inputPromise.Load()-c.workspacePromise.Load())
+	s.Available = max(0, m.physicalHeadroom()-m.uncoveredData()-c.inputPromise.Load()-c.workspacePromise.Load())
 	if m.sampleInvalid.Load() {
 		s.Available = 0
 	}
@@ -623,7 +626,7 @@ func (m *memThrottler) reserveWorkingSetCandidates(ctx context.Context, specs []
 					continue
 				}
 				if retryDOP {
-					available := cnFlushS3PhysicalAvailable(m, m.reserved.Load())
+					available := cnFlushS3PhysicalAvailable(m)
 					if m.sampleInvalid.Load() {
 						available = 0
 					}
@@ -672,11 +675,51 @@ func (m *memThrottler) physicalFits(ask int64) bool {
 		return true
 	}
 	c := m.memoryCoordinator()
-	for _, value := range []int64{c.inputPromise.Load(), c.workspacePromise.Load(), max(c.dataReserved.Load(), m.reserved.Load()), ask} {
+	for _, value := range []int64{c.inputPromise.Load(), c.workspacePromise.Load(), m.uncoveredData(), ask} {
 		if value < 0 || value > remaining {
 			return false
 		}
 		remaining -= value
 	}
 	return true
+}
+
+// Sample credit applies only to materialized bytes present before the sample.
+// A retirement invalidates that much credit even if later grants refill the pool.
+type dataSampleCoverage struct {
+	bytes   int64
+	retired uint64
+}
+
+func (c *memoryCoordinator) dataCoverage() dataSampleCoverage {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return dataSampleCoverage{bytes: c.dataMaterialized, retired: c.dataRetired.Load()}
+}
+
+func (m *memThrottler) uncoveredData() int64 {
+	c := m.memoryCoordinator()
+	reserved := max(c.dataReserved.Load(), m.reserved.Load())
+	if credit := m.dataCoverage.Load(); credit != nil {
+		if retired := c.dataRetired.Load() - credit.retired; retired < uint64(credit.bytes) {
+			reserved -= min(reserved, credit.bytes-int64(retired))
+		}
+	}
+	return reserved
+}
+
+// ReportWriterMaterialization reports changes in the staged bytes backed by
+// ordinary writer grants. An acquired but unused grant receives no RSS credit.
+func ReportWriterMaterialization(t RSCThrottler, change int64) {
+	m, ok := t.(*memThrottler)
+	if !ok || change == 0 {
+		return
+	}
+	c := m.memoryCoordinator()
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.dataMaterialized += change
+	if change < 0 {
+		c.dataRetired.Add(uint64(-change))
+	}
 }

@@ -17,7 +17,6 @@ import (
 	"bytes"
 
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
-	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/perfcounter"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
 	"github.com/matrixorigin/matrixone/pkg/vm"
@@ -86,16 +85,11 @@ func (mergeBlock *MergeBlock) Call(proc *process.Process) (vm.CallResult, error)
 
 		//batches in mp will be deeply copied into txn's workspace.
 		if err = process.MeasureFilesystemWaitErr(analyzer, func() error {
-			if err := mergeBlock.container.source.Write(newCtx, metadata); err != nil {
-				return err
-			}
+			write := func() error { return mergeBlock.container.source.Write(newCtx, metadata) }
 			if memory := proc.Base.ImportMemory; memory != nil {
-				for i := range metadata.Vecs[1].Length() {
-					stats := objectio.ObjectStats(metadata.Vecs[1].GetBytesAt(i))
-					memory.AcceptInsertFile(*stats.ObjectName().Short())
-				}
+				return memory.WriteInsertOutput(bat.ExtraBuf, write)
 			}
-			return nil
+			return write()
 		}); err != nil {
 			return input, err
 		}

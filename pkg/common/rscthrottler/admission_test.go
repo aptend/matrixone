@@ -788,3 +788,31 @@ func TestMemoryAdmissionWorkerRetiresBeforeRestart(t *testing.T) {
 	await(t, replacement)
 	require.Equal(t, int32(2), calls.Load())
 }
+
+func TestSampledWriterMaterializationDoesNotCreditUnconsumedOrReusedGrants(t *testing.T) {
+	const MiB = int64(1 << 20)
+	const total = 1024 * MiB
+	m, c, _ := admissionFixture(t, total, total, 0)
+	_, ok := m.Acquire(450 * MiB)
+	require.True(t, ok)
+	defer func() { m.Release(m.reserved.Load()) }()
+	ReportWriterMaterialization(m, 400*MiB)
+	c.readSample = func() memorySample { return memorySample{rss: 700 * MiB, total: total} }
+	c.invalidateSample()
+	m.ForceRefresh()
+	require.EqualValues(t, 274*MiB, m.WorkingSetHeadroom().Available)
+	_, ok = AcquireForRunningWriter(m, 1024)
+	require.True(t, ok)
+	require.EqualValues(t, 274*MiB-1024, m.WorkingSetHeadroom().Available)
+
+	ReportWriterMaterialization(m, -400*MiB)
+	m.Release(450*MiB + 1024)
+	_, ok = m.Acquire(300 * MiB)
+	require.True(t, ok)
+	ReportWriterMaterialization(m, 300*MiB)
+	defer ReportWriterMaterialization(m, -300*MiB)
+	require.EqualValues(t, 24*MiB, m.WorkingSetHeadroom().Available,
+		"new allocations cannot reuse retired sampled credit")
+	_, ok = AcquireForRunningWriter(m, 25*MiB)
+	require.False(t, ok)
+}

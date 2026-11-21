@@ -428,6 +428,7 @@ type Sinker struct {
 		inMemoryBounds      []int
 		persisted           []objectio.ObjectStats
 		inMemorySize        int
+		generation          uint64
 		memorySizeThreshold int
 		aborted             bool
 	}
@@ -1020,6 +1021,7 @@ func (sinker *Sinker) drainPipeline() error {
 }
 
 func (sinker *Sinker) trySpill(ctx context.Context) error {
+	sinker.staged.generation++
 	// Sorted merge output stays local while W runs. A pipeline output clone
 	// must not outlive W without its own data credit; use streaming IO for this
 	// bounded-workspace case. The no-sort path can transfer its existing D.
@@ -1877,29 +1879,37 @@ func (sinker *Sinker) StagedSize() int {
 	return sinker.staged.inMemorySize
 }
 
-// CleanupPersisted retires uploads and removes results of an aborted owner.
-// Use only before result handoff, and still Close to release the buffers.
-func (sinker *Sinker) CleanupPersisted(ctx context.Context) error {
+// StagedGeneration changes when a spill can replace the staged backing.
+func (sinker *Sinker) StagedGeneration() uint64 { return sinker.staged.generation }
+
+// TakePersistedForCleanup joins uploads and transfers successful outputs from
+// an aborted writer. It includes files completed before another upload failed.
+func (sinker *Sinker) TakePersistedForCleanup() [][]objectio.ObjectStats {
 	if sinker.pipe.result != nil {
 		sinker.pipe.result.cancel()
 		_ = sinker.drainPipeline()
 	}
+	owned := [][]objectio.ObjectStats{sinker.result.persisted, sinker.staged.persisted}
+	sinker.result.persisted = nil
+	sinker.staged.persisted = nil
+	if sinker.pipe.result != nil {
+		owned = append(owned, sinker.pipe.result.persisted)
+		sinker.pipe.result.persisted = nil
+	}
+	return owned
+}
+
+// CleanupPersisted retires uploads and removes results of an aborted owner.
+// Use only before result handoff, and still Close to release the buffers.
+func (sinker *Sinker) CleanupPersisted(ctx context.Context) error {
 	var first error
-	remove := func(stats []objectio.ObjectStats) {
-		for _, stat := range stats {
+	for _, owned := range sinker.TakePersistedForCleanup() {
+		for _, stat := range owned {
 			if err := sinker.fs.Delete(ctx, stat.ObjectName().String()); first == nil {
 				first = err
 			}
 		}
 	}
-	remove(sinker.result.persisted)
-	remove(sinker.staged.persisted)
-	if sinker.pipe.result != nil {
-		remove(sinker.pipe.result.persisted)
-		sinker.pipe.result.persisted = nil
-	}
-	sinker.result.persisted = nil
-	sinker.staged.persisted = nil
 	return first
 }
 

@@ -82,21 +82,15 @@ func profileRecordAlloc(skip int, ptr uintptr, sz int64) {
 	values.Bytes.Inuse.Add(sz)
 	values.Objects.Inuse.Add(1)
 
-	profileRestore(ptr, values)
+	shard := getProfileShard(ptr)
+	shard.mu.Lock()
+	shard.m[ptr] = values
+	shard.mu.Unlock()
 }
 
 func profileRecordFree(ptr uintptr, sz int64) {
-	if values := profileDetach(ptr); values != nil {
-		values.Bytes.Inuse.Add(-sz)
-		values.Objects.Inuse.Add(-1)
-	}
-}
-
-// Detach address-keyed state before the physical allocator can reuse its address.
-// The caller owns the returned sample until rollback or successful retirement.
-func profileDetach(ptr uintptr) *malloc.HeapSampleValues {
 	if !profilingEnabled.Load() {
-		return nil
+		return
 	}
 	shard := getProfileShard(ptr)
 	shard.mu.Lock()
@@ -105,15 +99,9 @@ func profileDetach(ptr uintptr) *malloc.HeapSampleValues {
 		delete(shard.m, ptr)
 	}
 	shard.mu.Unlock()
-	return values
-}
-
-func profileRestore(ptr uintptr, values *malloc.HeapSampleValues) {
-	if values != nil {
-		shard := getProfileShard(ptr)
-		shard.mu.Lock()
-		shard.m[ptr] = values
-		shard.mu.Unlock()
+	if ok {
+		values.Bytes.Inuse.Add(-sz)
+		values.Objects.Inuse.Add(-1)
 	}
 }
 
@@ -156,11 +144,11 @@ func profileRecordAccountedFree(lease allocationLease, sz int64) {
 	values.Objects.Inuse.Add(-1)
 }
 
-func profileRecordRealloc(skip int, old *malloc.HeapSampleValues, newPtr uintptr, oldSz, newSz int64) {
-	if old != nil {
-		old.Bytes.Inuse.Add(-oldSz)
-		old.Objects.Inuse.Add(-1)
+func profileRecordRealloc(skip int, oldPtr, newPtr uintptr, oldSz, newSz int64) {
+	if !profilingEnabled.Load() {
+		return
 	}
+	profileRecordFree(oldPtr, oldSz)
 	profileRecordAlloc(skip, newPtr, newSz)
 }
 

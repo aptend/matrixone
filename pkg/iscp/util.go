@@ -508,32 +508,23 @@ func GetTaskRunner(
 	return readSingleTaskRunner(result)
 }
 
-// Result callbacks carry logical cardinality; a constant vector can encode
-// several rows in one physical value. Do not infer lease uniqueness from it.
 func readSingleTaskRunner(result executor.Result) (string, error) {
-	var runner string
-	var rowCount int
+	runners := make([]string, 0, 1)
 	result.ReadRows(func(rows int, cols []*vector.Vector) bool {
 		if rows == 0 {
 			return true
 		}
-		rowCount += rows
-		if rowCount != 1 {
-			return false
-		}
-		if !cols[0].IsNull(0) {
-			runner = cols[0].GetStringAt(0)
-		}
-		return true
+		runners = append(runners, executor.GetStringRows(cols[0])...)
+		return len(runners) < 2
 	})
-	if rowCount == 0 {
+	if len(runners) == 0 {
 		return "", nil
 	}
-	if rowCount != 1 {
-		return "", moerr.NewInternalErrorNoCtx(fmt.Sprintf("unexpected rows count: %d", rowCount))
+	if len(runners) != 1 {
+		return "", moerr.NewInternalErrorNoCtx(fmt.Sprintf("unexpected rows count: %d", len(runners)))
 	}
-	if runner == "" {
+	if runners[0] == "" {
 		return "", moerr.NewInternalErrorNoCtx("task runner is null")
 	}
-	return runner, nil
+	return runners[0], nil
 }

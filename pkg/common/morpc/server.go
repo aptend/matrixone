@@ -392,10 +392,9 @@ func (s *server) startWriteLoop(cs *clientSession) error {
 				}
 				failUnwritten := func(values []*Future, err error) {
 					for _, f := range values {
-						oneWay := f.oneWay
 						cs.releaseMessage(f.send)
 						f.messageSent(err)
-						if oneWay {
+						if f.oneWay {
 							f.Close()
 						}
 					}
@@ -446,7 +445,7 @@ func (s *server) startWriteLoop(cs *clientSession) error {
 					}
 					if err := cs.conn.Write(f.send, goetty.WriteOptions{}); err != nil {
 						s.logger.Error("write response failed",
-							zap.Uint64("request-id", f.getSendMessageID()),
+							zap.Uint64("request-id", f.send.Message.GetID()),
 							zap.Error(err))
 						if err == goetty.ErrIllegalState {
 							cs.releaseMessage(f.send)
@@ -508,11 +507,6 @@ func (s *server) closeClientSession(cs *clientSession) {
 	if err := cs.Close(); err != nil {
 		s.logger.Error("close client session failed",
 			zap.Error(err))
-	}
-	// Only the writer's finalizer (or rejected start) releases getSession's
-	// reference, after the last Encode/Flush access to the session buffers.
-	if err := cs.conn.Close(); err != nil {
-		s.logger.Error("release client session transport failed", zap.Error(err))
 	}
 }
 
@@ -642,11 +636,6 @@ func (s *sentStreamState) contains(id uint64) bool {
 	return ok
 }
 
-type receivedStreamState struct {
-	sequence  uint32
-	finishing bool
-}
-
 type clientSession struct {
 	metrics       *serverMetrics
 	codec         Codec
@@ -657,7 +646,7 @@ type clientSession struct {
 	// map from a handler goroutine, so streamStateMu is the synchronization
 	// boundary for validation and terminal retirement.
 	streamStateMu           sync.Mutex
-	receivedStreamSequences map[uint64]receivedStreamState
+	receivedStreamSequences map[uint64]uint32
 	sentStreams             sentStreamState
 	cancel                  context.CancelFunc
 	ctx                     context.Context
@@ -686,7 +675,7 @@ func newClientSession(
 		disconnectedC:           make(chan struct{}, 1),
 		codec:                   codec,
 		c:                       make(chan *Future, 1024),
-		receivedStreamSequences: make(map[uint64]receivedStreamState),
+		receivedStreamSequences: make(map[uint64]uint32),
 		conn:                    conn,
 		ctx:                     ctx,
 		cancel:                  cancel,
@@ -733,8 +722,7 @@ func (cs *clientSession) Close() error {
 		c.cancelContexts()
 	}
 	cs.cancelWrite()
-	// Interrupt socket I/O without releasing the active writer's buffers.
-	return cs.conn.Disconnect()
+	return cs.conn.Close()
 }
 
 func (cs *clientSession) disconnected() {
@@ -755,10 +743,9 @@ func (cs *clientSession) cleanSend() {
 			if !ok {
 				return
 			}
-			oneWay := f.oneWay
 			cs.releaseMessage(f.send)
 			f.messageSent(backendClosed)
-			if oneWay {
+			if f.oneWay {
 				f.Close()
 			}
 		default:
@@ -824,10 +811,9 @@ func (cs *clientSession) send(msg RPCMessage) (*Future, error) {
 	select {
 	case cs.c <- f:
 	case <-msg.Ctx.Done():
-		oneWay := f.oneWay
 		cs.releaseMessage(msg)
 		f.Close()
-		if !oneWay {
+		if !f.oneWay {
 			f.unRef()
 		}
 		return nil, msg.Ctx.Err()
@@ -902,15 +888,8 @@ func (cs *clientSession) validateStreamRequest(
 	sequence uint32) bool {
 	cs.streamStateMu.Lock()
 	defer cs.streamStateMu.Unlock()
-	cs.mu.RLock()
-	closed := cs.mu.closed
-	cs.mu.RUnlock()
-	if closed {
-		return false
-	}
-	state := cs.receivedStreamSequences[id]
-	expectSequence := state.sequence + 1
-	if state.finishing || sequence != expectSequence {
+	expectSequence := cs.receivedStreamSequences[id] + 1
+	if sequence != expectSequence {
 		return false
 	}
 	if sequence == 1 {
@@ -922,44 +901,37 @@ func (cs *clientSession) validateStreamRequest(
 			cs.metrics.sentStreamStateGauge.Inc()
 		}
 	}
-	cs.receivedStreamSequences[id] = receivedStreamState{sequence: sequence}
+	cs.receivedStreamSequences[id] = sequence
 	return true
 }
 
 func (cs *clientSession) lastReceivedStreamSequence(id uint64) uint32 {
 	cs.streamStateMu.Lock()
 	defer cs.streamStateMu.Unlock()
-	return cs.receivedStreamSequences[id].sequence
+	return cs.receivedStreamSequences[id]
 }
 
 // FinishStream synchronously flushes the final response before removing both
-// receive and send sequence entries. A terminal claim excludes later requests
-// without holding streamStateMu across a send that Close may need to complete.
+// receive and send sequence entries. Holding streamStateMu prevents the IO loop
+// from validating a later request against half-retired state.
 func (cs *clientSession) FinishStream(
 	ctx context.Context,
 	token StreamTerminalToken,
 	response Message,
 ) error {
 	cs.streamStateMu.Lock()
-	state, exists := cs.receivedStreamSequences[token.streamID]
-	valid := exists && !state.finishing && token.owner == cs &&
-		state.sequence == token.sequence &&
+	valid := token.owner == cs &&
+		cs.receivedStreamSequences[token.streamID] == token.sequence &&
 		response != nil && response.GetID() == token.streamID
 	if !valid {
 		cs.streamStateMu.Unlock()
-		if response != nil {
-			cs.releaseMessage(RPCMessage{Message: response})
-		}
 		_ = cs.Close()
 		return moerr.NewStreamClosedNoCtx()
 	}
-	state.finishing = true
-	cs.receivedStreamSequences[token.streamID] = state
-	cs.streamStateMu.Unlock()
 
 	cache, err := cs.GetCache(token.streamID)
 	if err != nil || cache != nil {
-		cs.releaseMessage(RPCMessage{Message: response})
+		cs.streamStateMu.Unlock()
 		_ = cs.Close()
 		if err != nil {
 			return err
@@ -968,23 +940,19 @@ func (cs *clientSession) FinishStream(
 	}
 
 	err = cs.Write(ctx, response)
+	if err == nil {
+		delete(cs.receivedStreamSequences, token.streamID)
+		cs.sentStreams.finish(token.streamID)
+		if cs.metrics != nil {
+			cs.metrics.receivedStreamStateGauge.Dec()
+			cs.metrics.sentStreamStateGauge.Dec()
+		}
+	}
+	cs.streamStateMu.Unlock()
 	if err != nil {
 		_ = cs.Close()
-		return err
 	}
-	cs.streamStateMu.Lock()
-	defer cs.streamStateMu.Unlock()
-	current, exists := cs.receivedStreamSequences[token.streamID]
-	if !exists || current != state {
-		return moerr.NewStreamClosedNoCtx()
-	}
-	delete(cs.receivedStreamSequences, token.streamID)
-	cs.sentStreams.finish(token.streamID)
-	if cs.metrics != nil {
-		cs.metrics.receivedStreamStateGauge.Dec()
-		cs.metrics.sentStreamStateGauge.Dec()
-	}
-	return nil
+	return err
 }
 
 func (cs *clientSession) CreateCache(

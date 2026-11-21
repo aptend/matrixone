@@ -16,11 +16,34 @@ package fileservice
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/matrixorigin/matrixone/pkg/common/moerr"
 	"github.com/matrixorigin/matrixone/pkg/logutil"
 	"go.uber.org/zap"
 )
+
+// DeleteBatchBestEffort takes one bounded batch of file names. If bulk deletion
+// fails, retry individual files so a failed key does not leave the others behind.
+func DeleteBatchBestEffort(ctx context.Context, fs FileService, files []string) error {
+	if len(files) == 0 {
+		return nil
+	}
+	if err := fs.Delete(ctx, files...); err == nil {
+		return nil
+	}
+	var firstErr error
+	for _, name := range files {
+		_, err := DoWithRetryContext(ctx, "delete unpublished file", func() (struct{}, error) {
+			return struct{}{}, fs.Delete(ctx, name)
+		}, 3, IsRetryableError)
+		if err != nil && firstErr == nil {
+			firstErr = errors.Join(moerr.NewInternalErrorf(ctx, "delete unpublished file %s", name), err)
+		}
+	}
+	return firstErr
+}
 
 const (
 	maxRetryAttemps      = 128

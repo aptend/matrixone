@@ -99,10 +99,15 @@ func (insert *Insert) insertControlledS3(proc *process.Process, analyzer process
 	}
 	if insert.ctr.state == vm.Eval {
 		var output *batch.Batch
-		if output, err = s.next(proc.Ctx); err != nil {
+		if output, err = s.readOutput(proc.Ctx); err != nil {
 			return vm.CancelResult, err
 		}
 		if output != nil {
+			stats := objectio.ObjectStats(output.Vecs[1].GetBytesAt(0))
+			if err = s.memory.TrackInsertFile(s.fs, *stats.ObjectName().Short()); err != nil {
+				return vm.CancelResult, err
+			}
+			s.read++
 			result = vm.NewCallResult()
 			result.Batch = output
 			return result, nil
@@ -422,7 +427,7 @@ func (s *controlledS3) metadataFrameLimit() (int64, error) {
 	return min(limit, s.outputSlot.Capacity()/4), nil
 }
 
-func (s *controlledS3) next(ctx context.Context) (*batch.Batch, error) {
+func (s *controlledS3) readOutput(ctx context.Context) (*batch.Batch, error) {
 	if err := context.Cause(ctx); err != nil {
 		return nil, err
 	}
@@ -467,7 +472,7 @@ func (s *controlledS3) next(ctx context.Context) (*batch.Batch, error) {
 		if err := s.spoolStats(ctx); err != nil {
 			return nil, err
 		}
-		return s.next(ctx)
+		return s.readOutput(ctx)
 	}
 	for i, count := range counts {
 		if err := s.output.Vecs[i].PreExtendWithArea(int(count), int(count*widths[i]), s.outputMP); err != nil {
@@ -477,7 +482,6 @@ func (s *controlledS3) next(ctx context.Context) (*batch.Batch, error) {
 	if err := colexec.ExpandObjectStatsToBatch(s.outputMP, false, s.output, true, stats); err != nil {
 		return nil, err
 	}
-	s.read++
 	return s.output, nil
 }
 
@@ -537,19 +541,8 @@ func (s *controlledS3) cleanupPendingObjects(ctx context.Context) error {
 	var firstErr error
 	names := make([]string, 0, 128)
 	flush := func() {
-		if len(names) == 0 {
-			return
-		}
-		if _, err := ioutil.DeleteUnpublishedObjects(ctx, s.fs, names...); err != nil {
-			// A partial multi-delete must not prevent cleanup of later keys.
-			for _, name := range names {
-				_, err := fileservice.DoWithRetryContext(ctx, "delete controlled INSERT object", func() (struct{}, error) {
-					return struct{}{}, s.fs.Delete(ctx, name)
-				}, 3, fileservice.IsRetryableError)
-				if err != nil && firstErr == nil {
-					firstErr = errors.Join(moerr.NewInternalErrorf(ctx, "delete controlled INSERT object %s", name), err)
-				}
-			}
+		if err := fileservice.DeleteBatchBestEffort(ctx, s.fs, names); firstErr == nil {
+			firstErr = err
 		}
 		names = names[:0]
 	}
@@ -559,7 +552,7 @@ func (s *controlledS3) cleanupPendingObjects(ctx context.Context) error {
 			flush()
 		}
 	}
-	// Only a complete frame returned by next advances the handoff watermark.
+	// The statement owns frames before the producer advances this cursor.
 	for i := int64(s.read); s.statsSpool != nil && i < s.statsCount && ctx.Err() == nil; i++ {
 		var stat objectio.ObjectStats
 		if _, err := s.statsSpool.ReadAt(stat[:], i*int64(objectio.ObjectStatsLen)); err != nil {

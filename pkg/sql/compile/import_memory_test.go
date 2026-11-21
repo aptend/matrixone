@@ -188,7 +188,10 @@ func memoryCompileFixture(t *testing.T, parallel int) *Compile {
 	proc := process.NewTopProcess(context.Background(), mpool.MustNewZero(), nil, nil, nil, nil, nil, nil, nil, nil, nil)
 	t.Cleanup(proc.Free)
 	c := &Compile{addr: "127.0.0.1:6001", proc: proc, ncpu: parallel, scopes: []*Scope{memorySourceScope("127.0.0.1:6001", parallel, 1)}}
-	t.Cleanup(c.endImportMemory)
+	t.Cleanup(func() {
+		_, err := c.endImportMemory()
+		require.NoError(t, err)
+	})
 	return c
 }
 

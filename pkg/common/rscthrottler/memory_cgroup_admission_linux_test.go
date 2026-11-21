@@ -34,25 +34,34 @@ const testPrivateCgroupCurrent = int64(438996992)
 func legacyMemoryControllerFixture(t *testing.T, child string) (string, cgroup1.Hierarchy) {
 	t.Helper()
 	parent := t.TempDir()
-	directory := filepath.Join(parent, "memory", child)
+	mountpoint := filepath.Join(parent, "memory")
+	directory := filepath.Join(mountpoint, child)
+	writeLegacyMemoryFixture(t, directory, testPrivateCgroupLimit, testPrivateCgroupCurrent)
+	if child != "" {
+		writeLegacyMemoryFixture(t, mountpoint, testPrivateCgroupLimit, testPrivateCgroupCurrent)
+	}
+	controller := cgroup1.NewMemory(parent)
+	return directory, func() ([]cgroup1.Subsystem, error) { return []cgroup1.Subsystem{controller}, nil }
+}
+
+func writeLegacyMemoryFixture(t *testing.T, directory string, limit, current int64) {
+	t.Helper()
 	require.NoError(t, os.MkdirAll(directory, 0700))
 	write := func(name, value string) {
 		require.NoError(t, os.WriteFile(filepath.Join(directory, name), []byte(value), 0600))
 	}
-	write("memory.stat", fmt.Sprintf("hierarchical_memory_limit %d\ntotal_inactive_file 0\ntotal_dirty 0\ntotal_writeback 0\n", testPrivateCgroupLimit))
+	write("memory.stat", fmt.Sprintf("hierarchical_memory_limit %d\ntotal_inactive_file 0\ntotal_dirty 0\ntotal_writeback 0\n", limit))
 	write("memory.oom_control", "oom_kill_disable 0\nunder_oom 0\noom_kill 0\n")
 	for _, module := range []string{"", "memsw.", "kmem.", "kmem.tcp."} {
 		usage := int64(0)
 		if module == "" {
-			usage = testPrivateCgroupCurrent
+			usage = current
 		}
 		write("memory."+module+"usage_in_bytes", fmt.Sprint(usage))
 		write("memory."+module+"max_usage_in_bytes", fmt.Sprint(usage))
 		write("memory."+module+"failcnt", "0")
-		write("memory."+module+"limit_in_bytes", fmt.Sprint(testPrivateCgroupLimit))
+		write("memory."+module+"limit_in_bytes", fmt.Sprint(limit))
 	}
-	controller := cgroup1.NewMemory(parent)
-	return directory, func() ([]cgroup1.Subsystem, error) { return []cgroup1.Subsystem{controller}, nil }
 }
 
 func memoryMountFixture(t *testing.T, records string, id uint64, fsType, controller, mountpoint string) memoryCgroupMount {
@@ -76,10 +85,10 @@ func TestLegacyPrivateMountRootFeedsRealAdmission(t *testing.T) {
 	_, oldErr := cgroup1.Load(legacyPath, cgroup1.WithHiearchy(hierarchy))
 	require.ErrorIs(t, oldErr, cgroup1.ErrCgroupDeleted)
 	mount := memoryMountFixture(t, mountinfo, 23, "cgroup", "memory", root)
-	read := func() (int64, int64, int64, error) {
+	read := func() (int64, int64, int64, *int64, error) {
 		return readLegacyMemory(group, mount, legacyPath, hierarchy)
 	}
-	limit, current, inactive, err := read()
+	limit, current, inactive, _, err := read()
 	require.NoError(t, err)
 	require.Equal(t, testPrivateCgroupLimit, limit)
 	require.Equal(t, testPrivateCgroupCurrent, current)
@@ -87,8 +96,8 @@ func TestLegacyPrivateMountRootFeedsRealAdmission(t *testing.T) {
 
 	m, coordinator, queued := admissionFixture(t, 64<<30, 50<<30, 348098560)
 	coordinator.readSample = func() memorySample {
-		limit, current, inactive, err := read()
-		return memorySample{total: 64 << 30, rss: 348098560, limit: limit, current: current, inactiveFile: inactive, cgroupObserved: err == nil, cgroupErr: err, err: err}
+		limit, current, inactive, headroom, err := read()
+		return memorySample{total: 64 << 30, rss: 348098560, limit: limit, current: current, inactiveFile: inactive, cgroupHeadroom: headroom, cgroupObserved: err == nil, cgroupErr: err, err: err}
 	}
 	m.ForceRefresh()
 	require.Equal(t, uint64(testPrivateCgroupLimit), m.actualTotalMemory.Load(), "controller55Gi must replace host64Gi")
@@ -129,7 +138,7 @@ func TestLegacyMemoryValidChildKeepsExistingPathAndSelectedController(t *testing
 	mountinfo := fmt.Sprintf("23 1 0:3 /tenant/container %s ro - cgroup cgroup rw,memory\n", mountpoint)
 	mount := memoryMountFixture(t, mountinfo, 23, "cgroup", "memory", mountpoint)
 	path := cgroup1.StaticPath("/child")
-	limit, current, _, err := readLegacyMemory("/tenant/container/child", mount, path, hierarchy)
+	limit, current, _, _, err := readLegacyMemory("/tenant/container/child", mount, path, hierarchy)
 	require.NoError(t, err)
 	require.Equal(t, testPrivateCgroupLimit, limit)
 	require.Equal(t, testPrivateCgroupCurrent, current)
@@ -139,10 +148,52 @@ func TestLegacyMemoryValidChildKeepsExistingPathAndSelectedController(t *testing
 	require.ErrorContains(t, err, "identity mismatch")
 	require.NotErrorIs(t, err, errNoMemoryController)
 	mount = memoryMountFixture(t, wrongAlias+mountinfo, 23, "cgroup", "memory", mountpoint)
-	limit, current, _, err = readLegacyMemory("/tenant/container/child", mount, path, hierarchy)
+	limit, current, _, _, err = readLegacyMemory("/tenant/container/child", mount, path, hierarchy)
 	require.NoError(t, err, "another mount alias must not replace the kernel-selected controller")
 	require.Equal(t, testPrivateCgroupLimit, limit)
 	require.Equal(t, testPrivateCgroupCurrent, current)
+}
+
+func TestLegacyAncestorUsageConstrainsRealAdmission(t *testing.T) {
+	const GiB = int64(1 << 30)
+	leaf, hierarchy := legacyMemoryControllerFixture(t, "pod/cn")
+	parent := filepath.Dir(leaf)
+	mountpoint := filepath.Dir(parent)
+	writeLegacyMemoryFixture(t, parent, 8*GiB, 15*GiB/2)
+	writeLegacyMemoryFixture(t, leaf, 4*GiB, GiB/2)
+	group := "/tenant/pod/cn"
+	mount := memoryMountFixture(t, fmt.Sprintf("23 1 0:3 /tenant %s ro - cgroup cgroup rw,memory\n", mountpoint), 23, "cgroup", "memory", mountpoint)
+	m, c, _ := admissionFixture(t, 64*GiB, 50*GiB, GiB/2)
+	c.readSample = func() memorySample {
+		limit, current, inactive, headroom, err := readLegacyMemory(group, mount, cgroup1.StaticPath(group), hierarchy)
+		return memorySample{total: 64 * GiB, rss: GiB / 2, limit: limit, current: current, inactiveFile: inactive, cgroupHeadroom: headroom, cgroupObserved: err == nil, cgroupErr: err, err: err}
+	}
+	m.ForceRefresh()
+	require.Equal(t, WorkingSetHeadroomSnapshot{Limit: 4 * GiB, Available: GiB / 2}, m.WorkingSetHeadroom())
+	w, ok, err := m.TryReserveWorkingSet(context.Background(), candidateSpec(1<<20, GiB, 0))
+	require.NoError(t, err)
+	require.False(t, ok)
+	require.Nil(t, w)
+	w, ok, err = m.TryReserveWorkingSet(context.Background(), candidateSpec(1<<20, GiB/2, 0))
+	require.NoError(t, err)
+	require.True(t, ok)
+	w.Close()
+
+	require.NoError(t, os.Remove(filepath.Join(parent, "memory.usage_in_bytes")))
+	c.invalidateSample()
+	m.ForceRefresh()
+	require.Equal(t, WorkingSetHeadroomSnapshot{Limit: 4 * GiB}, m.WorkingSetHeadroom())
+	require.False(t, m.physicalFits(1), "a visible ancestor with a missing sample is not spare memory")
+}
+
+func TestLegacyHiddenAncestorLimitFailsClosed(t *testing.T) {
+	root, hierarchy := legacyMemoryControllerFixture(t, "")
+	group := "/tenant/pod/cn"
+	mount := memoryMountFixture(t, fmt.Sprintf("23 1 0:3 %s %s ro - cgroup cgroup rw,memory\n", group, root), 23, "cgroup", "memory", root)
+	require.NoError(t, os.WriteFile(filepath.Join(root, "memory.stat"), []byte("hierarchical_memory_limit 8589934592\n"), 0600))
+	_, _, _, _, err := readLegacyMemory(group, mount, cgroup1.StaticPath(group), hierarchy)
+	require.ErrorContains(t, err, "outside the visible hierarchy")
+	require.NotErrorIs(t, err, errNoMemoryController)
 }
 
 func TestLegacyEscapedRootDescendantAndStackedMountsUseDecodedPath(t *testing.T) {
@@ -173,7 +224,7 @@ func TestLegacyEscapedRootDescendantAndStackedMountsUseDecodedPath(t *testing.T)
 			legacyPath := cgroup1.StaticPath(test.group)
 			_, err := cgroup1.Load(legacyPath, cgroup1.WithHiearchy(hierarchy))
 			require.ErrorIs(t, err, cgroup1.ErrCgroupDeleted)
-			limit, current, _, err := readLegacyMemory(test.group, mount, legacyPath, hierarchy)
+			limit, current, _, _, err := readLegacyMemory(test.group, mount, legacyPath, hierarchy)
 			require.NoError(t, err)
 			require.Equal(t, testPrivateCgroupLimit, limit)
 			require.Equal(t, testPrivateCgroupCurrent, current)
@@ -187,7 +238,7 @@ func TestLegacyPrivateMountPartialAccountingRemainsFailure(t *testing.T) {
 			root, hierarchy := legacyMemoryControllerFixture(t, "")
 			mountinfo := fmt.Sprintf("23 1 0:3 /tenant/container %s ro - cgroup cgroup rw,memory\n", root)
 			require.NoError(t, os.Remove(filepath.Join(root, file)))
-			_, _, _, err := readLegacyMemory("/tenant/container", memoryMountFixture(t, mountinfo, 23, "cgroup", "memory", root), cgroup1.StaticPath("/tenant/container"), hierarchy)
+			_, _, _, _, err := readLegacyMemory("/tenant/container", memoryMountFixture(t, mountinfo, 23, "cgroup", "memory", root), cgroup1.StaticPath("/tenant/container"), hierarchy)
 			require.Error(t, err)
 			require.NotErrorIs(t, err, errNoMemoryController, "a partial real controller cannot select host fallback")
 		})
@@ -195,7 +246,7 @@ func TestLegacyPrivateMountPartialAccountingRemainsFailure(t *testing.T) {
 	root, hierarchy := legacyMemoryControllerFixture(t, "")
 	mountinfo := fmt.Sprintf("23 1 0:3 /tenant/container %s ro - cgroup cgroup rw,memory\n", root)
 	require.NoError(t, os.WriteFile(filepath.Join(root, "memory.usage_in_bytes"), []byte("broken\n"), 0600))
-	_, _, _, err := readLegacyMemory("/tenant/container", memoryMountFixture(t, mountinfo, 23, "cgroup", "memory", root), cgroup1.StaticPath("/tenant/container"), hierarchy)
+	_, _, _, _, err := readLegacyMemory("/tenant/container", memoryMountFixture(t, mountinfo, 23, "cgroup", "memory", root), cgroup1.StaticPath("/tenant/container"), hierarchy)
 	require.Error(t, err)
 	require.NotErrorIs(t, err, errNoMemoryController)
 }

@@ -29,6 +29,8 @@ import (
 	"github.com/matrixorigin/matrixone/pkg/container/pSpool"
 	"github.com/matrixorigin/matrixone/pkg/container/types"
 	"github.com/matrixorigin/matrixone/pkg/container/vector"
+	"github.com/matrixorigin/matrixone/pkg/fileservice"
+	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/vm/process"
 	"github.com/stretchr/testify/require"
 )
@@ -56,6 +58,27 @@ func TestImportMemoryRetiresAbandonedSpoolsAndTicket(t *testing.T) {
 	require.Nil(t, c.proc.Base.ImportMemory)
 	c.endImportMemory()
 	require.Equal(t, baseline, c.proc.Mp().AllocatedBytes())
+}
+
+func TestImportMemoryRetiresFilesWithoutConsumer(t *testing.T) {
+	c := memoryCompileFixture(t, 1)
+	installSpoolTestMemory(t, c)
+	memory := c.importMemory
+	fs, err := fileservice.NewMemoryFS("shared", fileservice.DisabledCacheConfig, nil)
+	require.NoError(t, err)
+	id := objectio.NewObjectid()
+	name := objectio.BuildObjectNameWithObjectID(&id)
+	require.NoError(t, fs.Write(c.proc.Ctx, fileservice.IOVector{
+		FilePath: name.String(),
+		Entries:  []fileservice.IOEntry{{Size: 1, Data: []byte{1}}},
+	}))
+	require.NoError(t, memory.TrackInsertFile(fs, *name.Short()))
+	count, err := c.endImportMemory()
+	require.NoError(t, err)
+	require.Equal(t, 1, count)
+	_, err = fs.StatFile(context.Background(), name.String())
+	require.Error(t, err)
+	require.ErrorIs(t, memory.TrackInsertFile(fs, *name.Short()), rscthrottler.ErrWorkingSetClosed)
 }
 
 func TestJoinedLegacySpoolCleanupPreservesUnownedControlledBase(t *testing.T) {

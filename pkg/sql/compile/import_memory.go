@@ -17,7 +17,6 @@ package compile
 import (
 	"context"
 	"fmt"
-	"maps"
 	"math"
 
 	"github.com/matrixorigin/matrixone/pkg/common/moerr"
@@ -285,13 +284,18 @@ func (c *Compile) installImportMemory(memory *process.ImportMemory) {
 	}
 }
 
-func (c *Compile) endImportMemory() {
+func (c *Compile) endImportMemory() (int, error) {
 	if c.importMemory == nil {
-		return
+		return 0, nil
 	}
 	// The joined owner drains every receiver edge (including direct remote
 	// notifications), then destroys slots, before returning its complete promise.
 	c.closePipelineSpoolsAfterReadersStopped()
+	ctx := context.Background()
+	if c.proc != nil && c.proc.Ctx != nil {
+		ctx = c.proc.Ctx
+	}
+	pending, err := c.importMemory.CleanupInsertFiles(ctx)
 	for base, previous := range c.importMemoryBases {
 		if base.ImportMemory == c.importMemory {
 			base.ImportMemory = previous
@@ -300,10 +304,11 @@ func (c *Compile) endImportMemory() {
 	c.importMemory.WorkingSet.Close()
 	c.importMemory = nil
 	c.importMemoryBases = nil
+	return pending, err
 }
 
 func (c *Compile) recompileImportMemory(ctx context.Context, parallel int) (*Compile, error) {
-	next := NewCompile(c.addr, c.db, c.sql, c.tenant, c.uid, c.e, c.proc, c.stmt, c.isInternal, maps.Clone(c.cnLabel), c.startAt)
+	next := NewCompile(c.addr, c.db, c.sql, c.tenant, c.uid, c.e, c.proc, c.stmt, c.isInternal, c.cnLabel, c.startAt)
 	next.resultSink = c.resultSink
 	next.executionGeneration = c.executionGeneration
 	c.copyAllocationAccountLifecycleTo(next)

@@ -72,32 +72,32 @@ func readCgroupMemory(sample *memorySample) error {
 	if e != nil {
 		return e
 	}
-	sample.limit, sample.current, sample.inactiveFile, e = readLegacyMemory(groups[string(cgroup1.Memory)], mount, cgroup1.PidPath(os.Getpid()), func() ([]cgroup1.Subsystem, error) { return subsystems, nil })
+	sample.limit, sample.current, sample.inactiveFile, sample.cgroupHeadroom, e = readLegacyMemory(groups[string(cgroup1.Memory)], mount, cgroup1.PidPath(os.Getpid()), func() ([]cgroup1.Subsystem, error) { return subsystems, nil })
 	return e
 }
 
 // readLegacyMemory retains the existing controller and Stat implementation.
 // Selected metadata and the hierarchy are explicit only at this private boundary
 // so tests can exercise a real temporary controller without mounting cgroupfs.
-func readLegacyMemory(group string, mount memoryCgroupMount, path cgroup1.Path, hierarchy cgroup1.Hierarchy) (limit, current, inactive int64, err error) {
+func readLegacyMemory(group string, mount memoryCgroupMount, path cgroup1.Path, hierarchy cgroup1.Hierarchy) (limit, current, inactive int64, headroom *int64, err error) {
 	subsystems, e := hierarchy()
 	if e != nil {
-		return 0, 0, 0, legacyMemoryError(e)
+		return 0, 0, 0, nil, legacyMemoryError(e)
 	}
 	mountpoint, e := legacyMemoryControllerPath(subsystems)
 	if e != nil {
-		return 0, 0, 0, e
+		return 0, 0, 0, nil, e
 	}
 	if mount.mountpoint != mountpoint {
-		return 0, 0, 0, moerr.NewInternalErrorNoCtx("memory cgroup mount does not match selected controller")
+		return 0, 0, 0, nil, moerr.NewInternalErrorNoCtx("memory cgroup mount does not match selected controller")
 	}
 	directory, e := resolveMemoryCgroupPath(group, mount)
 	if e != nil {
-		return 0, 0, 0, e
+		return 0, 0, 0, nil, e
 	}
 	relative, e := filepath.Rel(mountpoint, directory)
 	if e != nil {
-		return 0, 0, 0, e
+		return 0, 0, 0, nil, e
 	}
 	memoryPath := "/"
 	if relative != "." {
@@ -114,22 +114,86 @@ func readLegacyMemory(group string, mount memoryCgroupMount, path cgroup1.Path, 
 	}
 	cg, e := cgroup1.Load(path, cgroup1.WithHiearchy(func() ([]cgroup1.Subsystem, error) { return subsystems, nil }))
 	if e != nil {
-		return 0, 0, 0, legacyMemoryError(e)
+		return 0, 0, 0, nil, legacyMemoryError(e)
 	}
 	stats, e := cg.Stat(cgroup1.IgnoreNotExist)
 	if e != nil {
-		return 0, 0, 0, e
+		return 0, 0, 0, nil, e
 	}
 	m := stats.GetMemory()
 	if m == nil {
-		return 0, 0, 0, moerr.NewInternalErrorNoCtx("incomplete cgroup memory accounting")
+		return 0, 0, 0, nil, moerr.NewInternalErrorNoCtx("incomplete cgroup memory accounting")
 	}
 	if m.GetUsage() == nil || m.GetUsage().GetUsage() == 0 {
-		return 0, 0, 0, moerr.NewInternalErrorNoCtx("incomplete cgroup memory usage")
+		return 0, 0, 0, nil, moerr.NewInternalErrorNoCtx("incomplete cgroup memory usage")
 	}
 	inactive = max(0, memoryInt(m.GetTotalInactiveFile())-memoryInt(m.GetTotalDirty()))
 	inactive = max(0, inactive-memoryInt(m.GetTotalWriteback()))
-	return memoryInt(m.GetHierarchicalMemoryLimit()), memoryInt(m.GetUsage().GetUsage()), inactive, nil
+	current = memoryInt(m.GetUsage().GetUsage())
+	limit, headroom, err = readLegacyMemoryHeadroom(directory, mount, legacyLimit(m.GetHierarchicalMemoryLimit()), current, inactive)
+	return
+}
+
+func legacyLimit(value uint64) int64 {
+	// The v1 kernel encodes unlimited as LONG_MAX rounded down to a page.
+	if value >= uint64(math.MaxInt64)-uint64(os.Getpagesize()-1) {
+		return math.MaxInt64
+	}
+	return int64(value)
+}
+
+func readLegacyMemoryValue(dir, file string) (uint64, error) {
+	data, err := os.ReadFile(filepath.Join(dir, file))
+	if err != nil {
+		return 0, err
+	}
+	return strconv.ParseUint(strings.TrimSpace(string(data)), 10, 64)
+}
+
+func readLegacyMemoryHeadroom(leaf string, mount memoryCgroupMount, reportedLimit, leafCurrent, leafInactive int64) (int64, *int64, error) {
+	limit, headroom := int64(math.MaxInt64), int64(math.MaxInt64)
+	for dir := leaf; ; dir = filepath.Dir(dir) {
+		value, err := readLegacyMemoryValue(dir, "memory.limit_in_bytes")
+		if errors.Is(err, os.ErrNotExist) && dir == mount.mountpoint && mount.root == "/" {
+			// The global cgroup root has no effective memory limit.
+			break
+		}
+		if err != nil {
+			return 0, nil, err
+		}
+		if ownLimit := legacyLimit(value); ownLimit != math.MaxInt64 {
+			current, inactive := leafCurrent, leafInactive
+			if dir != leaf {
+				usage, err := readLegacyMemoryValue(dir, "memory.usage_in_bytes")
+				if err != nil {
+					return 0, nil, err
+				}
+				current = memoryInt(usage)
+				stat, err := os.ReadFile(filepath.Join(dir, "memory.stat"))
+				if err != nil {
+					return 0, nil, err
+				}
+				inactive, err = reclaimableFileBytes(stat, "total_inactive_file", "total_dirty", "total_writeback")
+				if err != nil {
+					return 0, nil, err
+				}
+			}
+			limit = min(limit, ownLimit)
+			headroom = min(headroom, max(0, ownLimit-max(0, current-inactive)))
+		}
+		if dir == mount.mountpoint {
+			break
+		}
+	}
+	// A lower hierarchical limit can reveal a controller above the mount.
+	// Its usage cannot be inferred from the leaf, so deny new commitments.
+	if reportedLimit > 0 && reportedLimit < limit {
+		return 0, nil, moerr.NewInternalErrorNoCtx("cgroup v1 memory limit is outside the visible hierarchy")
+	}
+	if headroom == math.MaxInt64 {
+		return limit, nil, nil
+	}
+	return limit, &headroom, nil
 }
 
 func legacyMemoryControllerPath(subsystems []cgroup1.Subsystem) (string, error) {
@@ -220,25 +284,30 @@ func readUnifiedMemory(path string) (limit, current, inactive int64, err error) 
 		return 0, 0, 0, e
 	}
 	current = memoryInt(n)
-	fields := strings.Fields(string(data[2]))
+	inactive, err = reclaimableFileBytes(data[2], "inactive_file", "file_dirty", "file_writeback")
+	return
+}
+
+func reclaimableFileBytes(data []byte, inactiveKey, dirtyKey, writebackKey string) (int64, error) {
+	fields := strings.Fields(string(data))
 	if len(fields) == 0 || len(fields)%2 != 0 {
-		return 0, 0, 0, moerr.NewInternalErrorNoCtx("incomplete cgroup memory.stat")
+		return 0, moerr.NewInternalErrorNoCtx("incomplete cgroup memory.stat")
 	}
 	values := make(map[string]int64)
 	for i := 0; i < len(fields); i += 2 {
-		n, e = strconv.ParseUint(fields[i+1], 10, 64)
+		n, e := strconv.ParseUint(fields[i+1], 10, 64)
 		if e != nil {
-			return 0, 0, 0, e
+			return 0, e
 		}
 		values[fields[i]] = memoryInt(n)
 	}
 	// Older kernels may omit dirty/writeback counters. In that case retain all
 	// file pages in the pressure estimate rather than inventing reclaim credit.
-	raw, hasInactive := values["inactive_file"]
-	dirty, hasDirty := values["file_dirty"]
-	writeback, hasWriteback := values["file_writeback"]
+	raw, hasInactive := values[inactiveKey]
+	dirty, hasDirty := values[dirtyKey]
+	writeback, hasWriteback := values[writebackKey]
 	if hasInactive && hasDirty && hasWriteback {
-		inactive = max(0, max(0, raw-dirty)-writeback)
+		return max(0, max(0, raw-dirty)-writeback), nil
 	}
-	return
+	return 0, nil
 }

@@ -263,10 +263,16 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 	var coordinatorPhaseStart time.Time
 	var coordinatorPhaseBase time.Duration
 	var allocationAttempt *statementAllocationAttempt
-	finishAllocationAttempt := func() error {
+	finishAllocationAttempt := func() (finishErr error) {
 		if runC != nil {
 			runC.closePipelineSpoolsAfterReadersStopped()
-			defer runC.endImportMemory()
+			defer func() {
+				pending, cleanupErr := runC.endImportMemory()
+				if pending != 0 && err == nil {
+					cleanupErr = errors.Join(cleanupErr, moerr.NewInternalErrorf(execTopContext, "INSERT finished with %d unregistered output objects", pending))
+				}
+				finishErr = errors.Join(finishErr, cleanupErr)
+			}()
 		}
 		if allocationAttempt == nil {
 			return nil
@@ -276,7 +282,7 @@ func (c *Compile) Run(_ uint64) (queryResult *util2.RunResult, err error) {
 		if runC != nil && runC.allocationAttempt == attempt {
 			runC.allocationAttempt = nil
 		}
-		_, finishErr := attempt.finish()
+		_, finishErr = attempt.finish()
 		return finishErr
 	}
 	finishCurrentAttempt := func(retried bool) {

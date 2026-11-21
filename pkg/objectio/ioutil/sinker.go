@@ -1155,7 +1155,7 @@ func (sinker *Sinker) trySpillMergeSortBounded(ctx context.Context, workspace *r
 		func(b *batch.Batch) (*batch.Batch, error) {
 			data = append(data, b)
 			return newBuffer(), nil
-		}, mp, sinker.putBackOneInMemory, math.MaxInt64)
+		}, mp, sinker.putBackOneInMemory)
 	if err != nil {
 		return err
 	}
@@ -1230,7 +1230,6 @@ func (sinker *Sinker) trySpillMergeSortStreaming(
 		streamSinker,
 		mp,
 		sinker.putBackOneInMemory,
-		math.MaxInt64,
 	)
 	return err
 }
@@ -1294,7 +1293,6 @@ func (sinker *Sinker) trySpillMergeSortAccumulate(
 		innersinker,
 		mp,
 		sinker.putBackOneInMemory,
-		math.MaxInt64,
 	)
 	if err != nil {
 		return err
@@ -1389,7 +1387,6 @@ func (sinker *Sinker) trySpillMergeSortPipeline(ctx context.Context) (err error)
 		streamSubmit,
 		sinker.mp,
 		sinker.putBackOneInMemory,
-		math.MaxInt64,
 	)
 	if err != nil {
 		return err

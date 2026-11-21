@@ -17,6 +17,7 @@ import (
 	"bytes"
 
 	"github.com/matrixorigin/matrixone/pkg/container/batch"
+	"github.com/matrixorigin/matrixone/pkg/objectio"
 	"github.com/matrixorigin/matrixone/pkg/perfcounter"
 	"github.com/matrixorigin/matrixone/pkg/sql/colexec"
 	"github.com/matrixorigin/matrixone/pkg/vm"
@@ -79,16 +80,26 @@ func (mergeBlock *MergeBlock) Call(proc *process.Process) (vm.CallResult, error)
 
 	// handle origin/main table.
 	if mergeBlock.container.mp[0].RowCount() > 0 {
+		metadata := mergeBlock.container.mp[0]
 		crs := analyzer.GetOpCounterSet()
 		newCtx := perfcounter.AttachS3RequestKey(proc.Ctx, crs)
 
 		//batches in mp will be deeply copied into txn's workspace.
 		if err = process.MeasureFilesystemWaitErr(analyzer, func() error {
-			return mergeBlock.container.source.Write(newCtx, mergeBlock.container.mp[0])
+			if err := mergeBlock.container.source.Write(newCtx, metadata); err != nil {
+				return err
+			}
+			if memory := proc.Base.ImportMemory; memory != nil {
+				for i := range metadata.Vecs[1].Length() {
+					stats := objectio.ObjectStats(metadata.Vecs[1].GetBytesAt(i))
+					memory.AcceptInsertFile(*stats.ObjectName().Short())
+				}
+			}
+			return nil
 		}); err != nil {
 			return input, err
 		}
-		analyzer.AddWrittenRows(int64(mergeBlock.container.mp[0].RowCount()))
+		analyzer.AddWrittenRows(int64(metadata.RowCount()))
 	}
 
 	for _, bat := range mergeBlock.container.mp2[0] {

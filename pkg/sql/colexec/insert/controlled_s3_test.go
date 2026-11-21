@@ -109,6 +109,10 @@ func controlledInsertFixtureWithUnit(t *testing.T, throttler *controlledTestThro
 	require.NoError(t, err)
 	t.Cleanup(ws.Close)
 	proc.Base.ImportMemory = &process.ImportMemory{WorkingSet: ws, UnitBytes: unit, SourceBytes: 8 << 20, OutputBytes: 16 << 20, IOBytes: ioBytes}
+	t.Cleanup(func() {
+		_, err := proc.Base.ImportMemory.CleanupInsertFiles(context.Background())
+		require.NoError(t, err)
+	})
 	op := &Insert{ToWriteS3: true, InsertCtx: &InsertCtx{TableDef: testInsertS3TableDef(), Attrs: []string{"a", "b"}, AddAffectedRows: true}}
 	t.Cleanup(func() { op.Free(proc, false, nil) })
 	require.NoError(t, op.Prepare(proc))
@@ -225,6 +229,7 @@ func TestControlledInsertPartialEvalDeletesUnreadObjects(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, result.Batch)
 			firstStats := objectio.ObjectStats(result.Batch.Vecs[1].GetBytesAt(0))
+			proc.Base.ImportMemory.AcceptInsertFile(*firstStats.ObjectName().Short())
 			first := firstStats.ObjectName().String()
 			names := controlledInsertObjectNames(t, fs)
 			require.Len(t, names, 3)
@@ -255,6 +260,50 @@ func TestControlledInsertPartialEvalDeletesUnreadObjects(t *testing.T) {
 			require.NoError(t, err, "the downstream consumer owns the emitted object")
 		})
 	}
+}
+
+func TestControlledInsertConsumerFailureKeepsCleanupOwner(t *testing.T) {
+	proc, op, _ := controlledInsertFixture(t, &controlledTestThrottler{t: t})
+	fs, err := fileservice.NewMemoryFS("shared", fileservice.DisabledCacheConfig, nil)
+	require.NoError(t, err)
+	op.ctr.controlled.fs = fs
+	op.AppendChild(controlledInput(t, proc, 3, 1))
+	ctrl := gomock.NewController(t)
+	eng := mock_frontend.NewMockEngine(ctrl)
+	db := mock_frontend.NewMockDatabase(ctrl)
+	rel := mock_frontend.NewMockRelation(ctrl)
+	eng.EXPECT().Database(gomock.Any(), gomock.Any(), gomock.Any()).Return(db, nil)
+	db.EXPECT().Relation(gomock.Any(), gomock.Any(), gomock.Any()).Return(rel, nil)
+	writeErr := errors.New("workspace refused uploaded object")
+	var accepted string
+	gomock.InOrder(
+		rel.EXPECT().Write(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, b *batch.Batch) error {
+			stats := objectio.ObjectStats(b.Vecs[1].GetBytesAt(0))
+			accepted = stats.ObjectName().String()
+			return nil
+		}),
+		rel.EXPECT().Write(gomock.Any(), gomock.Any()).Return(writeErr),
+	)
+	consumer := mergeblock.NewArgument().WithEngine(eng).WithObjectRef(&plan.ObjectRef{SchemaName: "test", ObjName: "t1"})
+	t.Cleanup(func() { consumer.Free(proc, false, nil); consumer.Release() })
+	consumer.AppendChild(op)
+	require.NoError(t, consumer.Prepare(proc))
+	_, err = consumer.Call(proc)
+	require.NoError(t, err)
+	_, err = consumer.Call(proc)
+	require.ErrorIs(t, err, writeErr)
+	require.Len(t, controlledInsertObjectNames(t, fs), 3)
+
+	// A producer may reset before all its frames are consumed. The joined
+	// statement owner decides which of the delivered frames may be removed.
+	op.Reset(proc, true, writeErr)
+	consumer.Reset(proc, true, writeErr)
+	ctx, cancel := context.WithCancel(proc.Ctx)
+	cancel()
+	retired, err := proc.Base.ImportMemory.CleanupInsertFiles(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 1, retired)
+	require.Equal(t, []string{accepted}, controlledInsertObjectNames(t, fs))
 }
 
 func TestControlledInsertSpoolQuotaFailureDeletesCollectedAndUnstoredObjects(t *testing.T) {
@@ -445,9 +494,10 @@ func TestControlledInsertCompletedMetadataFrames(t *testing.T) {
 				require.Equal(t, objects, s.stats.Length(), "retain compact stats until Eval")
 			}
 			for i := range stats {
-				frame, err := s.next(proc.Ctx)
+				frame, err := s.readOutput(proc.Ctx)
 				require.NoError(t, err)
 				require.NotNil(t, frame)
+				s.read++
 				require.EqualValues(t, blocks, frame.Vecs[0].Length(), "all blocks of one object stay together")
 				require.Equal(t, 1, frame.Vecs[1].Length())
 				require.Equal(t, stats[i][:], frame.Vecs[1].GetBytesAt(0), "preserve each object's identity and row count")
@@ -456,7 +506,7 @@ func TestControlledInsertCompletedMetadataFrames(t *testing.T) {
 				require.LessOrEqual(t, int64(encodedSize), frameLimit)
 				require.LessOrEqual(t, s.outputMP.AllocatedBytes(), s.outputSlot.Capacity())
 			}
-			frame, err := s.next(proc.Ctx)
+			frame, err := s.readOutput(proc.Ctx)
 			require.NoError(t, err)
 			require.Nil(t, frame, "no duplicate or trailing object")
 			outputMP := s.outputMP
@@ -604,11 +654,12 @@ func checkControlledInsertPipeline(t *testing.T, grants int, cancelUpload, colle
 	var rows uint32
 	var objects int
 	for {
-		frame, err := s.next(proc.Ctx)
+		frame, err := s.readOutput(proc.Ctx)
 		require.NoError(t, err)
 		if frame == nil {
 			break
 		}
+		s.read++
 		require.Equal(t, 1, frame.Vecs[1].Length(), "a completed-object burst must not coalesce metadata frames")
 		objects += frame.Vecs[1].Length()
 		for i := 0; i < frame.Vecs[1].Length(); i++ {
@@ -673,9 +724,10 @@ func TestControlledInsertMetadataSpoolsUnderPressure(t *testing.T) {
 			start := 0
 			if mode == "eval_resume" {
 				require.Nil(t, s.statsSpool)
-				frame, err := s.next(proc.Ctx)
+				frame, err := s.readOutput(proc.Ctx)
 				require.NoError(t, err)
 				require.Equal(t, stats[0][:], frame.Vecs[1].GetBytesAt(0))
+				s.read++
 				require.NoError(t, s.spoolStats(proc.Ctx))
 				start = 1
 			}
@@ -687,25 +739,26 @@ func TestControlledInsertMetadataSpoolsUnderPressure(t *testing.T) {
 			case "cancel":
 				ctx, cancel := context.WithCancel(proc.Ctx)
 				cancel()
-				_, err := s.next(ctx)
+				_, err := s.readOutput(ctx)
 				require.ErrorIs(t, err, context.Canceled)
 			case "read_error":
 				require.NoError(t, file.Truncate(0))
-				_, err := s.next(proc.Ctx)
+				_, err := s.readOutput(proc.Ctx)
 				require.ErrorIs(t, err, io.EOF)
 			case "write_error":
 				require.NoError(t, file.File.Close())
 				require.Error(t, s.collectStats(proc.Ctx, stats[:1]))
 			default:
 				for i := start; i < len(stats); i++ {
-					frame, err := s.next(proc.Ctx)
+					frame, err := s.readOutput(proc.Ctx)
 					require.NoError(t, err)
 					require.NotNil(t, frame)
+					s.read++
 					require.Equal(t, stats[i][:], frame.Vecs[1].GetBytesAt(0))
 					require.Equal(t, 8, frame.Vecs[0].Length(), "one complete object per frame")
 					require.LessOrEqual(t, s.outputMP.AllocatedBytes(), lease.Capacity())
 				}
-				frame, err := s.next(proc.Ctx)
+				frame, err := s.readOutput(proc.Ctx)
 				require.NoError(t, err)
 				require.Nil(t, frame)
 			}

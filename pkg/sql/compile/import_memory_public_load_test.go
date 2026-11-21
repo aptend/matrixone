@@ -270,7 +270,10 @@ func compileMemoryLoad(t *testing.T, cc *memoryLoadCatalog, ctrl *gomock.Control
 	require.NoError(t, err)
 	c := NewCompile(addr, "test", sql, "", "", mockEngine, proc, statements[0], false, nil, time.Now())
 	t.Cleanup(c.Release)
-	t.Cleanup(c.endImportMemory)
+	t.Cleanup(func() {
+		_, err := c.endImportMemory()
+		require.NoError(t, err)
+	})
 	c.ncpu = parallel
 	require.NoError(t, c.Compile(ctx, pn, func(*batch.Batch, *perfcounter.CounterSet) error { return nil }))
 	return c

@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"os"
 	"slices"
 	"strconv"
@@ -137,7 +138,7 @@ func NewCompile(
 	c.stmt = stmt
 	c.addr = addr
 	c.isInternal = isInternal
-	c.cnLabel = cnLabel
+	c.cnLabel = maps.Clone(cnLabel)
 	c.startAt = startAt
 	c.disableRetry = false
 	c.ncpu = system.GoMaxProcs()
@@ -279,7 +280,11 @@ func UpdateScopeTxnOffset(scope *Scope, txnOffset int) {
 }
 
 func (c *Compile) clear() {
-	defer c.endImportMemory()
+	defer func() {
+		if _, err := c.endImportMemory(); err != nil {
+			logutil.Errorf("import object cleanup failed: %v", err)
+		}
+	}()
 	if c.anal != nil {
 		c.anal.release()
 	}

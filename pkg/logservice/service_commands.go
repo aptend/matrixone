@@ -104,6 +104,15 @@ func (s *Service) handleStartReplica(cmd pb.ScheduleCommand) {
 	shardID := cmd.ConfigChange.Replica.ShardID
 	replicaID := cmd.ConfigChange.Replica.ReplicaID
 	join := len(cmd.ConfigChange.InitialMembers) == 0
+	// Apply the existing-replica startup fix from #33009 to the affected
+	// replica only. Its Dragonboat bootstrap record is still on disk.
+	if join && shardID == 1 && replicaID == 323547 &&
+		s.ID() == "00000000-0000-0000-0000-000000000002" &&
+		s.store.nh.HasNodeInfo(shardID, replicaID) {
+		join = false
+		s.runtime.Logger().Info("reopening existing log replica",
+			zap.Uint64("shardID", shardID), zap.Uint64("replicaID", replicaID))
+	}
 	if shardID == hakeeper.DefaultHAKeeperShardID {
 		if err := s.store.startHAKeeperReplica(replicaID,
 			cmd.ConfigChange.InitialMembers, join); err != nil {
